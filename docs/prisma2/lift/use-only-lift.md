@@ -1,3 +1,11 @@
+---
+id: prisma2/lift/use-only-lift
+title: 使用 Lift (无 Photon)
+description: 将 Lift 用作迁移系统，而无需使用 Photon 来进行数据库访问。
+---
+
+> 翻译：[赵南](https://github.com/znnan)
+
 # 使用 Lift (无 Photon)
 
 你可以将 Lift 用作迁移系统，而无需使用 Photon 来进行数据库访问。当你的应用程序是用 Photon 尚不支持的编程语言编写的，或是暂时无法修改历史代码时，此功能很有用。

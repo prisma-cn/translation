@@ -1,3 +1,11 @@
+---
+id: prisma2/lift/steps
+title: 迁移步骤
+description: 当使用 prisma lift 时所需要的迁移步骤
+---
+
+> 翻译：[赵南](https://github.com/znnan)
+
 # 迁移步骤
 
 > 你可以在[此处](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs)找到迁移步骤的实现并在[测试](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs)中详细了解其行为。
