@@ -25,7 +25,7 @@ model User {
 }
 ```
 
-这将生成以下类型为`CreateModel`的迁移步骤
+这将生成以下类型为 `CreateModel` 的迁移步骤
 
 ```json
 {
@@ -35,7 +35,7 @@ model User {
 }
 ```
 
->  为简洁起见，省略了其他步骤类型的生成步骤.
+> 为简洁起见，省略了其他步骤类型的生成步骤.
 
 ### `UpdateModel`
 
