@@ -1,22 +1,22 @@
-# Migration steps
+# 迁移步骤
 
-> You can find the implementation of the migration steps [here](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs) and learn more about their behaviour in the tests [here](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs).
+> 你可以在[此处](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs)找到迁移步骤的实现并在[测试](https://github.com/prisma/prisma/blob/alpha/server/prisma-rs/migration-engine/connectors/migration-connector/tests/steps_tests.rs)中详细了解其行为。
 
-## Step types
+## 步骤类型
 
-### `CreateModel`
+### `建立模型`
 
-#### Properties
+#### 特性
 
-- `name` (string): The name of the new model.
-- `embedded` (boolean): Specifies whether the model is an _embedded_ type.
-- `db_name` (string, optional): TBD
+- `name` (string): 新模型的名字.
+- `embedded` (boolean): 定义模型是否为一个 _embedded_ 类型.
+- `db_name` (string, optional): 待定
 
-#### Examples
+#### 例子
 
-##### Adding a new model
+##### 添加一个新模型
 
-Assume the following model is added to the datamodel:
+假设以下模型被添加到数据模型中:
 
 ```groovy
 model User {
@@ -25,7 +25,7 @@ model User {
 }
 ```
 
-This generates the following migration step of type `CreateModel`:
+这将生成以下类型为`CreateModel`的迁移步骤
 
 ```json
 {
@@ -35,7 +35,7 @@ This generates the following migration step of type `CreateModel`:
 }
 ```
 
-> The generated steps of other step types are omitted for brevity.
+>  为简洁起见，省略了其他步骤类型的生成步骤.
 
 ### `UpdateModel`
 

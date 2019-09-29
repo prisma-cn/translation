@@ -1,88 +1,89 @@
-# Using Lift (without Photon)
+# 使用 Lift (无 Photon)
 
-You can use Lift as your migration system without using Photon for database access. This is useful when your application is written in a programming language that's not yet supported by Photon or when it's not possible to swap out the current data access code.
+您可以将Lift用作迁移系统，而无需使用Photon来进行数据库访问。当您的应用程序是用Photon尚不支持的编程语言编写的，或者无法换出当前数据访问代码时，此功能很有用。
 
-When using Lift without Photon, there are two ways to get started:
+当使用不带Photon的Lift时，有两种入门方法：
 
-- **From scratch**: Write your data model and map it to the database
-- **With an existing database**: Introspect your database to obtain your initial data model
+- **从头开始**: 编写数据模型并将其映射到数据库
+- **With an existing database**: 内省数据库以获得初始数据模型
 
-## Getting started with Lift
+## Lift入门
 
-### 1. Install the Prisma CLI
+### 1. 安装Prisma CLI
 
 ```
 npm install -g prisma2
 ```
 
-### 2. Set up project using `prisma init`
+### 2. 使用`prisma init`设置项目
 
-Run the following command to initialize a new project:
+运行以下命令以初始化新项目:
 
 ```
 prisma init hello-world
 ```
 
-Then follow the interactive prompt:
+然后按照交互式提示进行操作:
 
-1. Select your database type
+1. 选择你的数据库类型
    - **SQLite**
    - **MySQL**
    - **PostgreSQL**
-   - MongoDB (coming soon)
-2. Provide your database credentials ([more info](#database-credentials))
-3. Select the database (MySQL, MongoDB) or schema (PostgreSQL)
-4. Select **Only Lift**
+   - MongoDB (即将推出)
+2. 提供你的数据库凭据 ([更多信息](#database-credentials))
+3. 选择数据库 (MySQL, MongoDB) 或schema (PostgreSQL)
+4. 选择 **Only Lift**
 
-Once you're done with the interactive prompt, the CLI generates your initial data model which reflects your current database schema. The data model connects to your database by listing it as a data source.
+完成交互式提示后，CLI会生成反映当前数据库模式的初始数据模型。数据模型通过将其列为数据源来连接到数据库。
 
-### 3. Migrate your database with Lift
+### 3. 使用Lift迁移数据库
 
-Every schema migration with Lift is a 3-step-process:
+使用Lift进行的每个模式迁移都是一个三步过程:
 
-1. **Adjust data model**: Change your [data model definition](../data-modeling.md#data-model-definition) to match your desired database schema.
-1. **Save migration**: Run `prisma2 lift save` to create your [migration files](./migration-files.md) on the file system.
-1. **Run migration**: Run `prisma2 lift up` to perform the migration against your database.
+1. **调整数据模型**: 更改 [数据模型定义](../data-modeling.md#data-model-definition) 以匹配所需的数据库模式.
+1. **保存迁移**: 运行 `prisma2 lift save` 在文件系统上创建您的 [迁移文件](./migration-files.md)。
+1. **运行迁移**: 运行 `prisma2 lift up` 对数据库执行迁移。
 
-## Database credentials
+## 数据库凭证
 
-<Details><Summary>Database credentials for <strong>SQLite</strong></Summary>
+<Details><Summary><strong>SQLite</strong>的数据库凭证</Summary>
 <br />
-When using SQLite, you need to provide the _file path_ to your existing SQLite database file.
+使用SQLite时，您需要提供 _file path_ 到现有SQLite数据库文件。
 
 </Details>
 
-<Details><Summary>Database credentials for <strong>MySQL</strong></Summary>
+<Details><Summary><strong>MySQL</strong>的数据库凭证</Summary>
 <br />
-When using MySQL, you need to provide the following information to connect your existing MySQL database server:
+使用MySQL时，需要提供以下信息来连接现有的MySQL数据库服务器:
 
-- **Host**: The IP address/domain of your database server, e.g. `localhost`.
-- **Post**: The port on which your database server listens, e.g. `5432` (PostgreSQL) or `3306` (MySQL).
-- **User**: The database user, e.g. `admin`.
-- **Password**: The password for the database user.
-- **SSL**: Whether or not your database server uses SSL.
+- **Host**: 数据库服务器的IP地址/域，例如`localhost`。
+- **Post**: 数据库服务器监听的端口，例如`5432`（PostgreSQL）或`3306`（MySQL）。
+- **User**: 数据库用户，例如`admin`。
+- **Password**: 数据库用户的密码。
+- **SSL**: 您的数据库服务器是否使用SSL。
 
-Once provided, the CLI will prompt you to select one of the existing **databases** on your MySQL server for introspection.
+提供后，CLI将提示您选择MySQL服务器上现有的**数据库**之一进行自省。
 
 </Details>
 
-<Details><Summary>Database credentials for <strong>PostgreSQL</strong></Summary>
+<Details><Summary><strong>PostgreSQL</strong>的数据库凭证</Summary>
 <br />
-When using PostgreSQL, you need to provide the following information to connect your existing MySQL database server:
+使用PostgreSQL时，需要提供以下信息来连接现有的MySQL数据库服务器：
 
-- **Host**: The IP address/domain of your database server, e.g. `localhost`.
-- **Port**: The port on which your database server listens, e.g. `5432` (PostgreSQL) or `3306` (MySQL).
-- **Database**: The name of the database which contains the schema to introspect.
-- **User**: The database user, e.g. `admin`.
-- **Password**: The password for the database user.
-- **SSL**: Whether or not your database server uses SSL.
+- **Host**: 数据库服务器的IP地址/域，例如`localhost`。
+- **Port**: 数据库服务器监听的端口，例如`5432`（PostgreSQL）或`3306`（MySQL）。
+- **Database**: 包含要内省的schema的数据库的名称。
+- **User**: 数据库用户，例如`admin`。
+- **Password**: 数据库用户的密码。
+- **SSL**: 您的数据库服务器是否使用SSL。
 
-Once provided, the CLI will prompt you to select one of the existing **schemas** on your MySQL server for introspection.
+提供后，CLI将提示您选择MySQL服务器上现有的**schemas**之一进行自省。
 
 </Details>
 
-<Details><Summary>Database credentials for <strong>MongoDB</strong></Summary>
+<Details><Summary><strong>MongoDB</strong>的数据库凭据</Summary>
 <br />
-When using MongoDB, you need to provide your [MongoDB connection string](https://docs.mongodb.com/manual/reference/connection-string), e.g. `http://user1:myPassword@localhost:27017/admin`. Note that this must include the database credentials as well as the [`authSource`](https://docs.mongodb.com/manual/reference/connection-string/#authentication-options) database that's storing the credentials of your MongoDB `admin` user (by default it is often called `admin`).
+
+使用MongoDB时，您需要提供[MongoDB连接字符串](https://docs.mongodb.com/manual/reference/connection-string), 例如`http://user1:myPassword@localhost:27017/admin`。请注意，这必须包括数据库凭据以及用于存储MongoDB `admin` 用户（默认情况下通常称为`admin`）凭据的[`authSource`](https://docs.mongodb.com/manual/reference/connection-string/#authentication-options)数据库。
 
 </Details>
