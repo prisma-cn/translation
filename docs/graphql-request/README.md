@@ -40,10 +40,10 @@ request('https://api.graph.cool/simple/v1/movies', query).then(data => console.l
 ```js
 import { request, GraphQLClient } from 'graphql-request';
 
-// Run GraphQL queries/mutations using a static function 使用静态函数运行graphql queries(查询)/mutations(突变)
+// 使用静态函数运行graphql queries(查询)/mutations(突变)
 request(endpoint, query, variables).then(data => console.log(data));
 
-// ... or create a GraphQL client instance to send requests 或者创建一个graphql客户端实例来发送请求
+// ...或者创建一个graphql客户端实例来发送请求
 const client = new GraphQLClient(endpoint, { headers: {} });
 client.request(query, variables).then(data => console.log(data));
 ```
@@ -249,9 +249,6 @@ main().catch(error => console.error(error));
 [TypeScript Source](examples/cookie-support-for-node)
 
 ### 接收raw的响应
-
-The `request` method will return the `data` or `errors` key from the response.
-If you need to access the `extensions` key you can use the `rawRequest` method:
 `request` 方法将从响应中返回数据或错误。 如果你需要访问扩展键，你可以使用 rawRequest 方法:
 
 ```js
