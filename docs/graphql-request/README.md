@@ -4,21 +4,21 @@
 
 📡 支持脚本或简单应用的 Node 和浏览器的最小 GraphQL 客户端
 
-## Features
+## 特点
 
-- Most **simple and lightweight** GraphQL client  最简单和轻量级的 GraphQL 客户端
-- Promise-based API (works with `async` / `await`) 基于Promise 的 API (与`async` / `await`)
-- Typescript support (Flow coming soon) 支持Typescript脚本(Flow版本即将推出)
+- 最简单和轻量级的 GraphQL 客户端
+- 基于Promise 的 API (与`async` / `await`)
+- 支持Typescript脚本(Flow版本即将推出)
 
-## Install 安装
+## 安装
 
 ```sh
 npm install graphql-request
 ```
 
-## Quickstart 快速开始
+## 快速开始
 
-Send a GraphQL query with a single line of code.  用一行代码发送一个 GraphQL 查询。 ▶️ [Try it out](https://runkit.com/593130bdfad7120012472003/593130bdfad7120012472004).
+用一行代码发送一个 GraphQL 查询。 ▶️ [Try it out](https://runkit.com/593130bdfad7120012472003/593130bdfad7120012472004).
 
 ```js
 import { request } from 'graphql-request';
@@ -35,7 +35,7 @@ const query = `{
 request('https://api.graph.cool/simple/v1/movies', query).then(data => console.log(data));
 ```
 
-## Usage 使用
+## 使用
 
 ```js
 import { request, GraphQLClient } from 'graphql-request';
@@ -48,9 +48,9 @@ const client = new GraphQLClient(endpoint, { headers: {} });
 client.request(query, variables).then(data => console.log(data));
 ```
 
-## Examples 例子
+## 例子
 
-### Authentication via HTTP header  通过 HTTP 头进行身份验证
+### 通过 HTTP 头进行身份验证
 
 ```js
 import { GraphQLClient } from 'graphql-request';
@@ -84,7 +84,7 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/authentication-via-http-header.ts)
 
-### Passing more options to fetch   传递更多的配置参数
+### 传递更多的配置参数
 
 ```js
 import { GraphQLClient } from 'graphql-request';
@@ -117,7 +117,7 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/passing-more-options-to-fetch.ts)
 
-### Using variables 使用变量
+### 使用变量
 
 ```js
 import { request } from 'graphql-request';
@@ -149,7 +149,7 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/using-variables.ts)
 
-### Error handling 错误处理
+### 错误处理
 
 ```js
 import { request } from 'graphql-request';
@@ -182,7 +182,7 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/error-handling)
 
-### Using `require` instead of `import`  使用 `require` 而不是 `import` (支持多种模块导入方式)
+###  使用 `require` 而不是 `import` (支持多种模块导入方式)
 
 ```js
 const { request } = require('graphql-request');
@@ -208,7 +208,7 @@ async function main() {
 main().catch(error => console.error(error));
 ```
 
-### Cookie support for `node` 支持使用Cookie
+###  支持使用Cookie
 
 ```sh
 npm install fetch-cookie
@@ -248,11 +248,11 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/cookie-support-for-node)
 
-### Receiving a raw response 接收raw的响应
+### 接收raw的响应
 
 The `request` method will return the `data` or `errors` key from the response.
 If you need to access the `extensions` key you can use the `rawRequest` method:
-Request 方法将从响应中返回数据或错误键。 如果你需要访问扩展键，你可以使用 rawRequest 方法:
+`request` 方法将从响应中返回数据或错误。 如果你需要访问扩展键，你可以使用 rawRequest 方法:
 
 ```js
 import { rawRequest } from 'graphql-request';
@@ -280,31 +280,23 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/receiving-a-raw-response)
 
-### More examples coming soon... 更多的例子即将来临... ..
+### 更多的例子即将来临... ..
 
 - Fragments
 - Using [`graphql-tag`](https://github.com/apollographql/graphql-tag)
 
-## FAQ 常见问题
+## 常见问题
 
-### What's the difference between `graphql-request`, Apollo and Relay?  `graphql-request` 和 `Apollo` 和 `Relay` 之间有什么区别
+### `graphql-request` 和 `Apollo` 和 `Relay` 之间有什么区别？
 
-`graphql-request` is the most minimal and simplest to use GraphQL client. It's perfect for small scripts or simple apps.
 `Graphql-request` 是使用 GraphQL 客户端最简单的方法。 它非常适合小脚本或者简单的应用程序。
-
-Compared to GraphQL clients like Apollo or Relay, `graphql-request` doesn't have a built-in cache and has no integrations for frontend frameworks. The goal is to keep the package and API as minimal as possible.
-
 与 Apollo 或 Relay 这样的 GraphQL 客户机相比，`GraphQL-request` 没有内置的缓存，也没有前端框架的集成。 我们的目标是保持包和 API 尽可能最小化。
 
-### So what about Lokka?
+### So what about Lokka? 
+`Lokka`很棒，但它仍然需要大量的[代码配置](https://github.com/kadirahq/lokka-transport-http)才能发送一个简单的 GraphQL 查询。 `Graphql-request` 与`Lokka`相比工作量更小，但使用起来更简单。
 
-Lokka is great but it still requires [a lot of setup code](https://github.com/kadirahq/lokka-transport-http) to be able to send a simple GraphQL query. `graphql-request` does less work compared to Lokka but is a lot simpler to use.
+## 帮助和社区 [![Slack Status](https://slack.prisma.io/badge.svg)](https://slack.prisma.io) 
 
-`Lokka`很棒，但它仍然需要大量的代码配置才能发送一个简单的 GraphQL 查询。 `Graphql-request` 与`Lokka`相比工作量更小，但使用起来更简单。
-
-## Help & Community [![Slack Status](https://slack.prisma.io/badge.svg)](https://slack.prisma.io)
-
-Join our [Slack community](http://slack.prisma.io/) if you run into issues or have questions. We love talking to you!
 加入我们的[Slack 社区](http://slack.prisma.io/)，如果你遇到问题或有问题。我们喜欢与你交谈！
 
 <p align="center"><a href="https://oss.prisma.io"><img src="https://imgur.com/IMU2ERq.png" alt="Prisma" height="170px"></a></p>
