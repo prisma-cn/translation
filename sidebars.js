@@ -6,28 +6,35 @@
  */
 
 module.exports = {
-  test: {
-    'Advanced Guides': ['test1', 'advanced-themes', 'tt/ad2'],
+  Prisma2: {
+    介绍: ['prisma2/readme', 'prisma2/getting-started'],
+    核心: ['prisma2/core'],
   },
-  docs: {
-    Docusaurus: ['introduction', /*'motivation', */ 'design-principles', 'contributing'],
-    'Getting Started': ['installation', 'configuration'],
-    Guides: [
-      'creating-pages',
-      'styling-layout',
-      'static-assets',
-      {
-        type: 'category',
-        label: 'Docs',
-        items: ['markdown-features', 'sidebar'],
-      },
-      'blog',
-      'analytics',
-      'seo',
-      'search',
-      'using-plugins',
-      'using-themes',
-    ],
-    'API Reference': ['cli', 'docusaurus-core', 'docusaurus.config.js', 'lifecycle-apis'],
+  Photon: {
+    介绍: ['prisma2/photon/readme'],
+  },
+  Lift: {
+    介绍: ['prisma2/lift/readme'],
+  },
+  Yoga2: {
+    介绍: ['yoga2/readme'],
+  },
+  Nexus: {
+    介绍: ['nexus/readme'],
+  },
+  GraphQL: {
+    介绍: ['graphql-js/readme'],
+  },
+  Apollo: {
+    介绍: ['apollo/readme'],
+  },
+  'Apollo Client': {
+    介绍: ['apollo-client/readme'],
+  },
+  'Apollo Server': {
+    介绍: ['apollo-server/readme'],
+  },
+  'GraphQL Code Generator': {
+    介绍: ['graphql-code-generator/readme'],
   },
 };

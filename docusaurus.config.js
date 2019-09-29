@@ -12,7 +12,7 @@ module.exports = {
   projectName: 'prisma',
   baseUrl: '/',
   url: 'https://prisma.yoga',
-  favicon: 'img/prisma.ico',
+  favicon: 'favicon.ico',
   plugins: [
     [
       '@docusaurus/plugin-ideal-image',
@@ -45,7 +45,7 @@ module.exports = {
   // themes: ['@docusaurus/theme-live-codeblock'],
   themeConfig: {
     prismTheme: require('prism-react-renderer/themes/vsDark'),
-    image: 'img/prisma.png',
+    image: 'site/prisma-2.png',
     // gtag: {
     //   trackingID: 'UA-141789564-1',
     // },
@@ -61,13 +61,24 @@ module.exports = {
       title: 'Prisma',
       logo: {
         alt: 'Prisma Logo',
-        src: 'img/prisma.svg',
+        src: 'prisma-logo.svg',
       },
       links: [
-        { to: 'docs/introduction', label: 'Docs', position: 'left' },
-        { to: 'test/test2', label: 'Test', position: 'left' },
+        { to: 'docs/prisma2/readme', label: 'Prisma2', position: 'left' },
+        { to: 'docs/prisma2/photon', label: 'Photon', position: 'left' },
+        { to: 'docs/prisma2/lift', label: 'Lift', position: 'left' },
+        { to: 'docs/yoga2/readme', label: 'Yoga2', position: 'left' },
+        { to: 'docs/nexus/readme', label: 'Nexus', position: 'left' },
+        { to: 'docs/graphql-js/readme', label: 'GraphQL', position: 'left' },
+        { to: 'docs/apollo/readme', label: 'Apollo', position: 'left' },
+        { to: 'docs/graphql-code-generator/readme', label: 'Codegen', position: 'left' },
         { to: 'blog', label: 'Blog', position: 'left' },
         { to: 'showcase', label: 'Showcase', position: 'left' },
+        {
+          href: 'https://prisma.1wire.com',
+          label: 'Prisma1',
+          position: 'right',
+        },
         {
           href: 'https://github.com/prisma/prisma',
           label: 'GitHub',
@@ -124,7 +135,7 @@ module.exports = {
       ],
       logo: {
         alt: 'Prisma Logo',
-        src: 'https://prisma.io/img/oss_logo.png',
+        src: 'prisma-cn.svg',
       },
       copyright: `Copyright © ${new Date().getFullYear()} prisma.yoga`,
     },

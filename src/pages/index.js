@@ -73,11 +73,11 @@ function Home() {
             <img
               alt="Docusaurus with Keytar"
               className={styles['index-hero-logo']}
-              src={withBaseUrl('img/docusaurus_keytar.svg')}
+              src={withBaseUrl('prisma-logo.svg')}
             />
             {siteConfig.title}{' '}
-            <span className={styles['index-hero-project-keywords']}>Open Source</span> documentation
-            websites.
+            {/* <span className={styles['index-hero-project-keywords']}>Open Source</span> documentation
+            websites. */}
           </h1>
           <div className={styles['index-ctas']}>
             <Link
