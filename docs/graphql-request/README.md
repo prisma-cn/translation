@@ -248,7 +248,7 @@ main().catch(error => console.error(error));
 
 [TypeScript Source](examples/cookie-support-for-node)
 
-### Receiving a raw response 收到raw的响应
+### Receiving a raw response 接收raw的响应
 
 The `request` method will return the `data` or `errors` key from the response.
 If you need to access the `extensions` key you can use the `rawRequest` method:
