@@ -48,7 +48,7 @@ prisma2、apollo、graphql-js、graphql-tools 项目需要在每篇文档顶部�
 
 ## 协作流程
 
-利用[github project](https://github.com/orgs/prisma-cn/projects/1) 进行协作，从 to do 领取任务后，放入 in progress 列，翻译完成后放入 review 列，在翻译中遇到自定义组件的问题自行解决或寻求开发组成员帮助，然后审阅组人员从 review 中选择某项文档进行审阅，通顺无错后签名，我二次审阅后放入 done 列，完成流程。
+利用[github project](https://github.com/prisma-cn/translation/projects/1) 进行协作，从 to do 领取任务后，放入 in progress 列，翻译完成后放入 review 列，在翻译中遇到自定义组件的问题自行解决或寻求开发组成员帮助，然后审阅组人员从 review 中选择某项文档进行审阅，通顺无错后签名，我二次审阅后放入 done 列，完成流程。
 
 git 模式采用单 master 多用户瀑布开发，每人一个自己名字命名的分支，提交前先从 master pull 最新版本，解决冲突后 push，审阅后合并到 master 中。
 
