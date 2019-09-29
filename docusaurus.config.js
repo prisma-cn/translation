@@ -65,8 +65,6 @@ module.exports = {
       },
       links: [
         { to: 'docs/prisma2/readme', label: 'Prisma2', position: 'left' },
-        { to: 'docs/prisma2/photon', label: 'Photon', position: 'left' },
-        { to: 'docs/prisma2/lift', label: 'Lift', position: 'left' },
         { to: 'docs/yoga2/readme', label: 'Yoga2', position: 'left' },
         { to: 'docs/nexus/readme', label: 'Nexus', position: 'left' },
         { to: 'docs/graphql-js/readme', label: 'GraphQL', position: 'left' },

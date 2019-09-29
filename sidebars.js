@@ -9,12 +9,8 @@ module.exports = {
   Prisma2: {
     介绍: ['prisma2/readme', 'prisma2/getting-started'],
     核心: ['prisma2/core'],
-  },
-  Photon: {
-    介绍: ['prisma2/photon/readme'],
-  },
-  Lift: {
-    介绍: ['prisma2/lift/readme'],
+    Photon: ['prisma2/photon/api'],
+    Lift: ['prisma2/lift/use-only-lift', 'steps', 'migration-files'],
   },
   Yoga2: {
     介绍: ['yoga2/readme'],
