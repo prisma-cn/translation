@@ -1,3 +1,11 @@
+---
+id: /graphql-request/readme
+title: graphql-request 客户端
+description: 最简单和轻量级的 GraphQL 客户端-支持脚本或简单应用的 Node 和浏览器
+---
+
+翻译：[CGerAJ](https://github.com/CGerAJ)
+
 # graphql-request
 
 [![CircleCI](https://circleci.com/gh/prisma/graphql-request.svg?style=shield)](https://circleci.com/gh/prisma/graphql-request) [![npm version](https://badge.fury.io/js/graphql-request.svg)](https://badge.fury.io/js/graphql-request)
