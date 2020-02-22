@@ -1,0 +1,163 @@
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+:root {
+  --ifm-color-primary: #3578e5;
+  --ifm-color-primary-dark: #1d68e1;
+  --ifm-color-primary-darker: #1b62d4;
+  --ifm-color-primary-darkest: #1751af;
+  --ifm-color-primary-light: #4e89e8;
+  --ifm-color-primary-lighter: #5a91ea;
+  --ifm-color-primary-lightest: #80aaef;
+}
+
+html[data-theme='dark'] {
+  --ifm-color-feedback-background: #f0f8ff;
+}
+
+@media screen and (max-width: 996px) {
+  :root {
+    --ifm-font-size-base: 15px;
+  }
+}
+
+@media screen and (min-width: 997px) {
+  :root {
+    --ifm-font-size-base: 17px;
+  }
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgb(72, 77, 91);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+.navbar__brand {
+  color: #5fded4 !important;
+}
+
+.navbar__link {
+  font-size: 16px;
+}
+
+.page-header {
+  height: 100vh;
+}
+.page-header .container > .content-center.brand .h1-seo,
+.page-header .container > .content-center.brand h3 {
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.page-header .container > .content-center.brand .h1-seo span,
+.page-header .container > .content-center.brand h3 span {
+  font-weight: 600;
+}
+.page-header .container > .content-center.brand .h1-seo {
+  font-size: 5em;
+}
+.page-header .category-absolute {
+  position: absolute;
+  top: 100vh;
+  margin-top: -60px;
+  padding: 0 15px;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.5);
+}
+@keyframes move-left-right {
+  0% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(-10px);
+  }
+}
+.squares {
+  animation: move-left-right 1s infinite;
+  background: #5fded4;
+  background: -webkit-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
+  background: -o-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
+  background: -moz-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
+  background: linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
+  position: absolute;
+  transition: 0.5s ease-out;
+  overflow: hidden;
+  border-radius: 20%;
+}
+.squares.square1 {
+  animation: move-left-right 4s infinite;
+  height: 300px;
+  width: 300px;
+  opacity: 0.5;
+  left: 3%;
+  top: -21%;
+}
+.squares.square2 {
+  animation: move-left-right 6s infinite;
+  height: 400px;
+  width: 400px;
+  opacity: 0.4;
+  right: -5%;
+  top: -12%;
+}
+.squares.square3 {
+  animation: move-left-right 5s infinite;
+  height: 200px;
+  width: 200px;
+  opacity: 0.1;
+  left: -5%;
+  bottom: 0%;
+}
+.squares.square4 {
+  animation: move-left-right 10s infinite;
+  height: 100px;
+  width: 100px;
+  opacity: 0.9;
+  right: 27%;
+  top: 70%;
+}
+.squares.square5 {
+  animation: move-left-right 6s infinite;
+  height: 250px;
+  width: 250px;
+  opacity: 0.1;
+  left: 32%;
+  bottom: 29%;
+}
+.squares.square6 {
+  animation: move-left-right 9s infinite;
+  left: 10%;
+  top: 35%;
+  height: 80px;
+  width: 80px;
+  opacity: 0.8;
+}
+.squares.square7 {
+  animation: move-left-right 3s infinite;
+  width: 300px;
+  height: 300px;
+  right: -5%;
+  bottom: 0%;
+  opacity: 0.1;
+}
+
+.card__image {
+  flex: 1;
+}
+
+.top20 {
+  margin-top: 20px;
+}
+
+.left {
+  text-align: left;
+}
