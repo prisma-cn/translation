@@ -1,0 +1,89 @@
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.section {
+  padding: 72px 0;
+}
+
+.sectionAlt {
+  background-color: var(--ifm-color-emphasis-inverse-alpha-30);
+}
+
+.sectionInner {
+  margin: 0 auto;
+}
+
+.featureImage {
+  max-width: 60%;
+  max-height: 128px;
+  margin: 0 auto;
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroProjectTagline {
+  color: #333;
+  font-size: 40px;
+  margin: 0;
+  z-index: 100;
+}
+
+.heroDesc {
+  font-size: 20px;
+  color: #666;
+  z-index: 100;
+}
+
+@keyframes jackInTheBox {
+  from {
+    opacity: 0;
+    transform: scale(0.1) rotate(30deg);
+    transform-origin: center bottom;
+  }
+
+  50% {
+    transform: rotate(-10deg);
+  }
+
+  70% {
+    transform: rotate(3deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.heroLogo {
+  animation-duration: 2s;
+  animation-name: jackInTheBox;
+  width: 200px;
+  margin: 100px;
+  margin-right: -100px;
+  z-index: 100;
+}
+
+@media only screen and (max-width: 768px) {
+  .hero {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .heroInner {
+    flex-direction: column-reverse;
+  }
+
+  .heroLogo {
+    width: 100px;
+    margin-right: 100px;
+  }
+}
