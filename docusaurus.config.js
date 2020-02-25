@@ -6,16 +6,16 @@
  */
 
 module.exports = {
-  title: 'Prisma2中文文档',
-  tagline: '新一代ORM框架，快速开发GraphQL服务、REST API和微服务等',
+  title: 'Prisma中文文档',
+  tagline: '现代化数据库工具集，读写、迁移、构建你的数据库',
   organizationName: 'prisma',
-  projectName: 'prisma2',
+  projectName: 'prisma',
   baseUrl: '/',
   url: 'https://prisma.yoga',
   favicon: 'https://prisma.yoga/favicon.ico',
   customFields: {
     description:
-      'Prisma 是新一代的ORM框架，能够管理复杂的数据库构建和读写，拥有优异的开发体验，快速开发GraphQL、REST、gRRC等服务。适用于任意语言和数据库。',
+      'Prisma 是新一代的数据库工具集，ORM框架，能够管理复杂的数据库构建和读写，拥有优异的开发体验，快速开发GraphQL、REST、gRRC等服务。适用于任意语言和数据库。',
   },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [],
@@ -26,13 +26,13 @@ module.exports = {
         docs: {
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/prisma/prisma2/edit/master/website/',
-          showLastUpdateAuthor: true,
-          showLastUpdateTime: true,
+          // editUrl: 'https://github.com/prisma/prisma2/edit/master/website/',
+          // showLastUpdateAuthor: true,
+          // showLastUpdateTime: true,
         },
         blog: {
           path: 'blog',
-          postsPerPage: 3,
+          postsPerPage: 10,
           feedOptions: {
             type: 'all',
             copyright: `Copyright © ${new Date().getFullYear()} prisma.yoga`,
@@ -49,31 +49,38 @@ module.exports = {
       theme: require('prism-react-renderer/themes/vsDark'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
     },
-    image: 'site/prisma-2.png',
+    image: 'site/og-image.png',
     // gtag: {
-    //   trackingID: 'UA-141789564-1',
+    //   trackingID: '',
     // },
     // algolia: {
-    //   apiKey: '47ecd3b21be71c5822571b9f59e52544',
-    //   indexName: 'docusaurus-2',
+    //   apiKey: '',
+    //   indexName: 'prisma-cn',
     //   algoliaOptions: {
     //     facetFilters: [`version:${versions[0]}`],
     //   },
     // },
     navbar: {
       hideOnScroll: true,
-      title: 'Prisma2',
+      title: 'Prisma',
       logo: {
         alt: 'prisma Logo',
-        src: 'prisma1/favicon/prisma-cn.svg',
+        src: 'prisma-logo.svg',
+        srcDark: 'prisma-logo-white.svg',
       },
       links: [
-        { to: 'docs/getting-started/README', label: 'Docs', position: 'left' },
-        { to: 'blog', label: 'Blog', position: 'left' },
-        { to: 'showcase', label: 'Showcase', position: 'left' },
+        { to: 'docs/prisma2/getting-started/README', label: 'Prisma2', position: 'left' },
+        { to: 'docs/prisma1/start', label: 'V1', position: 'left' },
+        { to: 'blog', label: '博客', position: 'left' },
+        { to: 'showcase', label: '用户案例', position: 'left' },
         {
-          href: 'https://github.com/prisma/prisma2',
+          href: 'https://github.com/prisma/prisma',
           label: 'GitHub',
+          position: 'right',
+        },
+        {
+          to: 'wechat',
+          label: '微信群',
           position: 'right',
         },
       ],
@@ -85,16 +92,16 @@ module.exports = {
           title: '文档',
           items: [
             {
-              label: '介绍',
-              to: 'docs/introduction',
+              label: 'Prisma2',
+              to: 'docs/prisma2/README',
             },
             {
-              label: '理解',
-              to: 'docs/installation',
+              label: 'Prisma1',
+              to: 'docs/prisma1/start',
             },
             {
               label: '从 v1 升级到 v2',
-              to: 'docs/migrating-from-v1-to-v2',
+              to: 'docs/prisma2/upgrade-guides/upgrading-from-prisma-1',
             },
           ],
         },
@@ -102,11 +109,15 @@ module.exports = {
           title: '社区',
           items: [
             {
+              label: '微信群',
+              to: 'wechat',
+            },
+            {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/prisma',
             },
             {
-              label: 'Help',
+              label: '帮助',
               to: 'help',
             },
           ],
@@ -115,7 +126,7 @@ module.exports = {
           title: '更多',
           items: [
             {
-              label: 'Blog',
+              label: '博客',
               to: 'blog',
             },
             {
@@ -126,19 +137,12 @@ module.exports = {
               label: 'Twitter',
               href: 'https://twitter.com/prisma',
             },
-            {
-              html: `
-                <a href="https://www.netlify.com" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-                  <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
-                </a>
-              `,
-            },
           ],
         },
       ],
       logo: {
         alt: 'Prisma Open Source Logo',
-        src: 'https://prisma.yoga/prisma-logo.svg',
+        src: '/prisma-logo-white.svg',
         href: 'https://prisma.io/',
       },
       copyright: `Copyright © ${new Date().getFullYear()} prisma.yoga`,

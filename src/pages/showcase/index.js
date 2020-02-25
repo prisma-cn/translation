@@ -42,7 +42,11 @@ function Showcase() {
               <div key={user.title} className='col col--4 top20'>
                 <div className={classnames('card', styles.showcaseUser)}>
                   <div className='card__image'>
-                    <img src={user.preview} alt={user.title} />
+                    <img
+                      style={{ height: '100%', objectFit: 'cover' }}
+                      src={user.preview}
+                      alt={user.title}
+                    />
                   </div>
                   <div className='card__body'>
                     <div className='avatar'>
@@ -55,7 +59,7 @@ function Showcase() {
                   {(user.website || user.source) && (
                     <div className='card__footer'>
                       <div className='button-group button-group--block'>
-                        {/* {user.website && (
+                        {user.website && (
                           <a
                             className='button button--small button--secondary button--block'
                             href={user.website}
@@ -64,7 +68,7 @@ function Showcase() {
                           >
                             网站
                           </a>
-                        )} */}
+                        )}
                         {user.source && (
                           <a
                             className='button button--small button--secondary button--block'
@@ -72,7 +76,7 @@ function Showcase() {
                             target='_blank'
                             rel='noreferrer noopener'
                           >
-                            网站
+                            相关资料
                           </a>
                         )}
                       </div>
