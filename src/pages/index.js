@@ -89,7 +89,7 @@ function Home() {
         <div className='squares square4' />
         <div className='squares square5' />
         <div className='squares square6' />
-        <div className='squares square7' />
+        <div className='squares square7' />      
         <div className={styles.hero}>
           <div className={styles.heroInner}>
             {/* <h1 className='padding-top--md'>Prisma2</h1> */}

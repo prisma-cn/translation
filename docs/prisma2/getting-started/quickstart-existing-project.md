@@ -1,4 +1,11 @@
-# Quickstart: Add Prisma to an existing project
+---
+title: 在已有项目中加入Prisma
+description: 本章示范如何在已有项目中加入Prisma，结合原先的项目和代码，改善效率和开发体验。
+author: Victor
+author_url: https://kangwenchang.com
+author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
+author_title: Prisma 爱好者
+---
 
 This page explains how to get started with Prisma in an existing project.
 

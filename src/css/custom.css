@@ -48,6 +48,8 @@ html[data-theme='dark'] {
 
 .page-header {
   height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 .page-header .container > .content-center.brand .h1-seo,
 .page-header .container > .content-center.brand h3 {

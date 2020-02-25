@@ -1,62 +1,70 @@
-# How to provide feedback for Prisma 2?
+---
+title: 给Prisma 2反馈
+description: Prisma 2 的反馈渠道，怎么给Prisma 2 提供建议。
+author: Victor
+author_url: https://kangwenchang.com
+author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
+author_title: Prisma 爱好者
+---
 
-Prisma 2 is currently running in _Preview_ and has a number of [limitations](./limitations.md). It is not yet considered production-ready! There will a _General Availability_ release later this year where we issue a stable and production-ready version.
+Prisma 2 当前正在 _preview_ 阶段，并具有多个[限制](./limitations.md)。尚未 production-ready！今年将发布 _General Availability_ 版本，我们将发布稳定且可投入生产的版本。
 
-We are aware that we have been moving very fast and Prisma users had to endure a number of breaking changes since the initial Prisma release in January 2018.
+自 2018 年 1 月发布最初的 Prisma 以来，我们一直在快速开发并更新，Prisma 用户必须忍受许多重大变化。
 
-Our primary goal with Prisma 2 is to **minimize breaking changes in the future**.
+Prisma 2 的主要目标是**最大限度地减少未来的重大变化**。
 
-For that, a full rewrite of Prisma was necessary so that we can build upon a proper foundation to address the use cases and requirements that have been brought up by our community members over the past two years.
+为此，必须完全重写 Prisma，以便我们可以建立合适的架构，以解决社区成员在过去两年中提出的用例和要求。
 
 ## TLDR
 
-- Join the [`#prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) channel on Slack
-- Track the progress of Prisma 2 here: [`isprisma2ready.com`](https://www.isprisma2ready.com)
-- Open issues in following repos:
-  - General Prisma 2 questions and catch-all for problems and questions: [`prisma2`](https://github.com/prisma/prisma2)
-  - Problems/questions regarding Prisma Migrate: [`migrate`](https://github.com/prisma/migrate)
-  - Problems/questions regarding Prisma Client JS: [`prisma-client-js`](https://github.com/prisma/prisma-client-js)
+- 加入[微信群](/wechat)
+- 加入 [`#prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) Slack 频道
+- 在这个网站跟踪进度: [`isprisma2ready.com`](https://www.isprisma2ready.com)
+- 在这些 repo 中提交 issue:
+  - Prisma 2 的整体问题: [`prisma2`](https://github.com/prisma/prisma2)
+  - Prisma Migrate 的问题: [`migrate`](https://github.com/prisma/migrate)
+  - Prisma Client JS 的问题: [`prisma-client-js`](https://github.com/prisma/prisma-client-js)
 
-## Your opinion matters – a lot!
+## 你的意见非常重要
 
-While Prisma 2 is running in Preview, you can still help us steer the high-level direction as well as figure out specifics of how Prisma should work! After we issue a stable release of Prisma 2 later this year, there will be a lot less leeway to incorporate major changes into Prisma 2. **Now is the right time to provide feedback!**
+当 Prisma 2 在 Preview 时，您仍然可以帮助我们，提供意见或建议 Prisma 应该如何发展！在今年发布稳定的 Prisma 2 版本之后，将重大更改合并进 Prisma 2 的情况将大大减少。**现在是提供反馈的最佳时机！**
 
-There are multiple ways how you can provide feedback! See below for a number of different options.
+您可以通过多种方式提供反馈！请参阅下面的许多不同选项。
 
-### Informal and personal discussions on Slack
+### 在 Slack 非正式讨论和个人讨论
 
-We have created a dedicated Slack channel for the pioneers that are exploring Prisma 2: [**`#prisma2-preview`**](https://prisma.slack.com/messages/CKQTGR6T0/).
+我们为探索 Prisma 2 的开发者创建了专用的 Slack 频道：[**`#prisma2-preview`**](https://prisma.slack.com/messages/CKQTGR6T0/).
 
-This Slack channel is mainly used for quick and informal conversations. If you have product feedback, questions or run into bugs, please be sure to persist these on GitHub (more info in the sections below). When you're asking a question on Slack, you can ideally already link to a corresponding GitHub issue so that this question can be answered in public.
+这个 Slack 频道主要用于快速和非正式的对话。如果您有产品反馈，问题或遇到错误，请确保将其保留在 GitHub 上(更多信息在下面的部分中)。当您在 Slack 上提出问题时，理想情况下，您可以链接到相应的 GitHub 问题，以便可以在公共场合回答此问题。
 
-### Product feedback, feature requests and wild wishes on GitHub
+### GitHub 上的反馈，功能请求和愿望
 
-As mentioned above, while Prisma 2 is running in Preview, there is still time to share _your opinion_ of how Prisma 2 should work. Please make sure to persists any kind of product feedback, feature requests or wild wishes as a GitHub issue in the [`prisma2`](https://github.com/prisma/prisma2) repository!
+如上所述，Prisma 2 正在 Preview 阶段，请不吝分享您对 Prisma 2 应该如何开发的看法。请确保在[`prisma2`](https://github.com/prisma/prisma2)库中将任何形式的反馈提交 GitHub issue！
 
-### Reporting issues and asking questions on GitHub
+### 在 GitHub 上报告问题并提出问题
 
-Whenever you're running into an issue with Prisma 2, it's likely that it's not your fault, but ours!
+每当您遇到 Prisma 2 的问题时，很可能不是您的错，而是我们的错！
 
-In any of the following scenarios, please make sure to create a GitHub issue to bring your problem to our attention:
+在以下任何情况下，请确保创建 GitHub issue，以使您的问题引起我们的注意：
 
-- You're running into an error.
-- You have a question about something.
-- You expected something to work differently.
-- You are surprised by a certain behavior.
-- The documentation on something isn't clear.
-- You wish there was documentation on something.
+- 您遇到了错误。
+- 您对某事有疑问。
+- 您期望有些事情会有所不同。
+- 您对某种情况感到惊讶。
+- 关于某些内容的文档尚不清楚。
+- 您希望有某些内容的文档。
 
-If your issue relates to either Prisma Client JS or Prisma Migrate specifically, you can open an issue directly in the respective repositories:
+如果您的问题与 Prisma Client JS 或 Prisma Migrate 特别相关，则可以直接在相应的存储库中打开问题：
 
 - [Open an issue for **Prisma Client JS**](https://github.com/prisma/prisma-client-js/issues/new)
 - [Open an issue for **Prima Migrate**](https://github.com/prisma/migrate/issues/new)
 
-Otherwise, the default place for opening issues is the official `prisma2` repo (when in doubt, create the issue here):
+提交 issue 的默认位置是官方的`prisma2`库(如有疑问，请在此处创建问题)：
 
 - [Open a general **Prisma 2** issue](https://github.com/prisma/prisma2/issues/new)
 
-Once you created a GitHub issue, feel free to post it in the [`#prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) Slack channel so that we can react quickly.
+创建 GitHub issue 后，请随时将其发布在[`＃prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/)Slack 频道中，以便我们快速做出反应。
 
-## We are here for you
+## 我们在这里为您服务
 
-We are extremely eager to get your feedback! Please feel free to reach out to us personally during the Preview period if you can't find an appropriate place for your specific feedback.
+我们非常渴望获得您的反馈！如果有合适的反馈意见，请在预览期间随时与我们联系。
