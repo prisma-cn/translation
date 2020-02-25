@@ -22,11 +22,23 @@
   max-height: 128px;
   margin: 0 auto;
 }
-
+.dbImage {
+  width: 60%;
+}
+.heroContainer {
+  display: flex;
+  width: 300px;
+  max-width: 100%;
+  margin-top: 100px;
+  align-self: center;
+  justify-content: space-around;
+  z-index: 1000;
+}
 .heroInner {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .heroProjectTagline {
@@ -40,6 +52,10 @@
   font-size: 20px;
   color: #666;
   z-index: 100;
+}
+.feature {
+  font-size: 0.8em;
+  line-height: 2;
 }
 
 @keyframes jackInTheBox {
@@ -66,9 +82,8 @@
 .heroLogo {
   animation-duration: 2s;
   animation-name: jackInTheBox;
-  width: 200px;
-  margin: 100px;
-  margin-right: -100px;
+  width: 400px;
+  margin-top: 200px;
   z-index: 100;
 }
 
@@ -76,14 +91,5 @@
   .hero {
     padding-left: 20px;
     padding-right: 20px;
-  }
-
-  .heroInner {
-    flex-direction: column-reverse;
-  }
-
-  .heroLogo {
-    width: 100px;
-    margin-right: 100px;
   }
 }

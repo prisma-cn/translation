@@ -6,13 +6,13 @@
  */
 
 :root {
-  --ifm-color-primary: #3578e5;
-  --ifm-color-primary-dark: #1d68e1;
-  --ifm-color-primary-darker: #1b62d4;
-  --ifm-color-primary-darkest: #1751af;
-  --ifm-color-primary-light: #4e89e8;
-  --ifm-color-primary-lighter: #5a91ea;
-  --ifm-color-primary-lightest: #80aaef;
+  --ifm-color-primary: #2196f3;
+  --ifm-color-primary-dark: #0d89ec;
+  --ifm-color-primary-darker: #0c81df;
+  --ifm-color-primary-darkest: #0a6bb7;
+  --ifm-color-primary-light: #3ba2f4;
+  --ifm-color-primary-lighter: #48a9f5;
+  --ifm-color-primary-lightest: #70bbf7;
 }
 
 html[data-theme='dark'] {
@@ -39,7 +39,7 @@ html[data-theme='dark'] {
 }
 
 .navbar__brand {
-  color: #5fded4 !important;
+  color: inherit;
 }
 
 .navbar__link {
@@ -83,11 +83,11 @@ html[data-theme='dark'] {
 }
 .squares {
   animation: move-left-right 1s infinite;
-  background: #5fded4;
-  background: -webkit-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
-  background: -o-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
-  background: -moz-linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
-  background: linear-gradient(0deg, #5fded4 0%, #68fff4 100%);
+  background: #64b5f6;
+  background: -webkit-linear-gradient(0deg, #64b5f6 0%, #e3f2fd 100%);
+  background: -o-linear-gradient(0deg, #64b5f6 0%, #e3f2fd 100%);
+  background: -moz-linear-gradient(0deg, #64b5f6 0%, #e3f2fd 100%);
+  background: linear-gradient(0deg, #64b5f6 0%, #e3f2fd 100%);
   position: absolute;
   transition: 0.5s ease-out;
   overflow: hidden;
@@ -158,6 +158,18 @@ html[data-theme='dark'] {
   margin-top: 20px;
 }
 
+.pt70 {
+  padding-top: 72px;
+}
+
 .left {
   text-align: left;
+}
+
+.pd20 {
+  padding: 20px 0;
+}
+
+.blogPostTitle_node_modules-\@docusaurus-theme-classic-src-theme-BlogPostItem- {
+  font-size: 2em !important;
 }
