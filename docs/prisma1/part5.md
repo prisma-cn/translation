@@ -632,7 +632,7 @@ graphql get-schema --endpoint **YOUR_PRISMA_ENDPOINT** --output prisma.graphql -
 
 了解 Prisma API 具体功能的另一种方法是探索 GraphQL Playground 中自动生成的 API 文档。 你可以通过单击 Playground 右边缘的绿色** SCHEMA ** - 按钮来执行此操作：
 
-![](/prisma1/images/XdVy80I.png)
+![](/prisma1/images/XdVy80I.jpg)
 
 #### 本页数据模型例子
 
@@ -1191,7 +1191,7 @@ graphql get-schema --endpoint **YOUR_PRISMA_ENDPOINT** --output prisma.graphql -
 
 了解你的 Prisma API 的具体能力的另一种方式是通过打开 GraphQL Playground 内自动生成的 API 文档。你可以通过点击在 Playground 的右边按钮**SCHEMA**:
 
-![](/prisma1/images/ArteAJQ.png)
+![](/prisma1/images/ArteAJQ.jpg)
 
 #### 数据模型本页例子
 
@@ -1651,7 +1651,7 @@ graphql get-schema --endpoint **YOUR_PRISMA_ENDPOINT** --output prisma.graphql -
 
 了解你的 Prisma API 的具体能力的另一种方式是通过查看 GraphQL Playground 内自动生成的 API 文档。你可以通过点击在 Playground 的右边按钮链接**SCHEMA**:
 
-![](/prisma1/images/ArteAJQ.png)
+![](/prisma1/images/ArteAJQ.jpg)
 
 #### 本例的 datamodel
 

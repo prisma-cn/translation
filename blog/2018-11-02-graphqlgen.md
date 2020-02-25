@@ -9,7 +9,7 @@ graphqlgen 根据 Graphql schema 翻译出 resolver 的类型定义文件和脚�
 
 prisma 的自动化因此由 50%提升到 75%，而且因为自动化，coding 起来更加安全方便。
 
-![graphqlgen](prisma1/images/graphqlgen.png)
+![graphqlgen](prisma1/images/graphqlgen.jpg)
 
 类型安全为开发人员带来了很多好处。 最值得注意的是， **编译时错误检查**和 **自动完成**使开发人员对代码充满信心并提高了工作效率。
 

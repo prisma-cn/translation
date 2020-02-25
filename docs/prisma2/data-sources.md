@@ -1,12 +1,19 @@
-# Data source
+---
+title: 数据源
+description: Prisma 2 的数据源。可以是数据库，GraphQL APIs，REST APIs，第三方APIs。
+author: Victor
+author_url: https://kangwenchang.com
+author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
+author_title: Prisma 爱好者
+---
 
-A data source can be any resource or service that you can data read from or write data to programmatically.
+你可以用任何库和服务的读取或写入来当作 prisma 的数据源。
 
-A few examples are:
+比如说:
 
-- Databases
+- 数据库
 - GraphQL APIs
 - REST APIs
-- 3rd-party APIs (e.g. the Stripe API)
+- 第三方 APIs (例如：微信 API)
 
-You can also implement your own connectors for data sources. More info on that will follow soon.
+你也可以为数据源实现自己的连接器。后面发布相关信息。
