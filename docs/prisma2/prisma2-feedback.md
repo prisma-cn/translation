@@ -15,7 +15,7 @@ Prisma 2 的主要目标是**最大限度地减少未来的重大变化**。
 
 为此，必须完全重写 Prisma，以便我们可以建立合适的架构，以解决社区成员在过去两年中提出的用例和要求。
 
-## TLDR
+## 概括
 
 - 加入[微信群](/wechat)
 - 加入 [`#prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) Slack 频道
