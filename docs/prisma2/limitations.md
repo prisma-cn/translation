@@ -1,22 +1,29 @@
-# Current limitations
+---
+title: 当前限制
+description: 目前在使用prisma2 的过程中需要注意一些限制
+author: Victor
+author_url: https://kangwenchang.com
+author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
+author_title: Prisma 爱好者
+---
 
-During the Preview period of Prisma 2 there are missing features and other limitations you should be aware of.
+在 Prisma 2 的预览期间，您应注意缺少的功能和其他限制。
 
-## Functionality limitations
+## 功能限制
 
-- Embedded types are not implemented yet ([tracking issue](https://github.com/prisma/migrate/issues/43)).
-- Many other types are not fully implemented yet (e.g. `citext` or `varchar(n)` for PostgreSQL).
-- Models must have an `@id` attribute and it must take one of these forms:
-    - `Int  @id  @default(autoincrement())`
-    - `String  @id  @default(uuid())`
-    - `String  @id  @default(cuid())`  
-- When [introspecting](./introspection.md) a database, Prisma for now only recognizes many-to-many relations that follow the Prisma conventions for [relation tables](https://github.com/prisma/prisma2/blob/master/docs/relations.md#mn).
-- Non-interactive terminals (like Git Bash on Windows) are currently not supported by Prisma2 CLI ([tracking issues](https://github.com/prisma/prisma2/issues/554)).
+- Embedded 类型目前没有支持 ([相关 issue](https://github.com/prisma/migrate/issues/43)).
+- 许多其他类型尚未完全实现 (例如 PostgreSQL 中的 `citext` 或 `varchar(n)` ).
+- Models 必须拥有 `@id` 属性并且必须为如下形式之一:
+  - `Int @id @default(autoincrement())`
+  - `String @id @default(uuid())`
+  - `String @id @default(cuid())`
+- 当 [introspecting](./introspection.md) 数据库时, 目前 Prisma 仅识别遵循 Prisma 约定的关系表的多对多关系 [relation tables](./relations.md).
+- Prisma2 CLI 当前不支持非交互式终端（例如 Windows 上的 Git Bash） ([相关 issues](https://github.com/prisma/prisma2/issues/554)).
 
-## Out of scope functionality
+## 超出范围的功能
 
-The following functionality is currently not part of Prisma and will most probably not be added before GA:
+以下功能当前不属于 Prisma 的一部分，很可能不会在 GA 之前添加：
 
-- Realtime API or subscriptions (In the future (after GA), Prisma will have an events engine that might enable this feature, but there is no ETA for this yet) ([tracking issue](https://github.com/prisma/prisma2/issues/298)).
-- Go client ("Prisma Client Go") ([tracking issue](https://github.com/prisma/prisma2/issues/571)).
-- Using Prisma tools (e.g. Prisma Client JS or Migrate) in combination with a Prisma server/cluster ([tracking issue](https://github.com/prisma/prisma2/issues/370)).
+- 实时 API 或订阅 subscriptions（将来，Prisma 将可能有一个启用此功能的事件引擎，但尚无此功能的预计完成时间）（[相关问题]（https://github.com/prisma/prisma2/issues/298）。
+- Go client（“Prisma Client Go”）（[相关问题]（https://github.com/prisma/prisma2/issues/571））。
+- 与 Prisma server/集群结合使用 Prisma tools（例如 Prisma Client JS 或 Migrate） ([相关 issue](https://github.com/prisma/prisma2/issues/370)).
