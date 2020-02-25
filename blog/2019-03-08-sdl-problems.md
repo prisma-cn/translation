@@ -7,7 +7,7 @@ tags: [prisma1, nexus]
 
 GraphQL 服务器开发的工具在过去两年中爆炸式增长。我们认为对大多数工具的需求来自流行的 Schema 优先方法 - 并且可以通过替代方案解决：代码优先。
 
-![img](prisma1/images/the-problems-of-schema-first-graphql-development.png)
+![img](prisma1/images/the-problems-of-schema-first-graphql-development.jpg)
 
 <!--truncate-->
 
@@ -255,7 +255,7 @@ const schema = makeExecutableSchema({
 
 编写大型 GraphQL 模式时，通常不希望所有 GraphQL 类型定义都驻留在同一文件中。相反，您希望将它们分成更小的部分（例如，根据*功能*或*产品*）。
 
-![image-20190308140805155](/static/assets/image-20190308140805155.png)
+![image-20190308140805155](/static/assets/image-20190308140805155.jpg)
 
 **工具/解决方案：**像[`graphql-import`](https://github.com/prisma/graphql-import)或最近的[`graphql-modules`](https://graphql-modules.com/)这样的工具可以帮助解决。`graphql-import`使用自定义导入语法编写为 SDL 注释。`graphql-modules`是一个工具集，可以帮助解决*模式分离*，*解析程序组合*以及 GraphQL 服务器的*可伸缩结构*的实现。
 
@@ -283,7 +283,7 @@ GraphQL 架构基于强类型系统，在开发过程中可以带来巨大的好
 
 在探索了解决它们的问题领域和各种工具之后，似乎 SDL 第一次开发最终*可以*发挥作用 - 而且它还要求开发人员学习和使用大量其他工具。
 
-![image-20190308141238294](/static/assets/image-20190308141238294.png)
+![image-20190308141238294](/static/assets/image-20190308141238294.jpg)
 
 #### 解决方法，解决方法，解决方法.....：
 
@@ -323,7 +323,7 @@ SDL 优先的另一个问题是，无论使用哪种编程语言，它都会通�
 
 虽然 `graphql-js`API 非常冗长，但是其他语言中有许多流行的框架基于代码优先方法工作，例如已经提到的，以及 Python 或 Elixir。[`graphlq-ruby`](https://github.com/rmosolgo/graphql-ruby) [`sangria-graphql`](https://github.com/sangria-graphql/sangria)[`graphene`](https://github.com/graphql-python/graphene)[`absinthe-graphql`](https://github.com/absinthe-graphql/absinthe)
 
-![image-20190308141926516](/static/assets/image-20190308141926516.png)
+![image-20190308141926516](/static/assets/image-20190308141926516.jpg)
 
 #### 代码优先实践
 

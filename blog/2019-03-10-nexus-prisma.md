@@ -7,7 +7,7 @@ tags: [prisma1, nexus]
 
 [GraphQL Nexus](https://nexus.js.org/)是 JavaScript / TypeScript 的代码优先、类型安全的 GraphQL API 框架。了解如何使用 Prisma client 和[`nexus-prisma`](https://github.com/prisma/nexus-prisma)插件将其连接到数据库。
 
-![img](prisma1/images/using-graphql-nexus-with-a-database.png)
+![img](prisma1/images/using-graphql-nexus-with-a-database.jpg)
 
 <!--truncate-->
 
@@ -466,8 +466,6 @@ const schema =  makePrismaSchema （{
 ```
 
 请注意，您的编辑器能够根据生成的 CRUD 构建基块建议传递到 prismaObjectType 和 prismaFields 中的内容。这意味着当您键入 prismaObjectType（''）并点击 ctrl+space 时，它显示了所有生成的 CRUD 构建块的名称。当调用 t.prismafields（['']）时，它表示 t 的字段:
-
-![Jietu20190308-123954-HD](/static/assets/Jietu20190308-123954-HD.gif)
 
 ##### 4.2）向`Post`模型添加计算字段
 
