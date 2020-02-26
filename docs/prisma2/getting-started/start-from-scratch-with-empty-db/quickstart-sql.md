@@ -39,7 +39,6 @@ author_title: Prisma 爱好者
 
     CREATE TABLE "public"."Post" (
       post_id SERIAL PRIMARY KEY NOT NULL,
-      -- created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       title VARCHAR(255) NOT NULL,
       content TEXT,
       author_id INTEGER,
@@ -149,7 +148,6 @@ author_title: Prisma 爱好者
 
     CREATE TABLE Post (
       post_id BIGINT NOT NULL AUTO_INCREMENT,
-      -- created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       title VARCHAR(255) NOT NULL,
       content TEXT,
       author_id BIGINT,
@@ -261,7 +259,6 @@ author_title: Prisma 爱好者
 
     CREATE TABLE Post (
       post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      -- created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       title VARCHAR(255) NOT NULL,
       content TEXT,
       author_id INTEGER,
