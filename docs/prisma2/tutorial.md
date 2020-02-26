@@ -564,7 +564,7 @@ npm start
 
 这将导致以下终端输出，确认所有操作都成功运行：
 
-![](/prisma2/O5vX9iP.png)
+![out](/prisma2/O5vX9iP.png)
 
 如果你有数据库 GUI，也可以验证是否已在此处创建所有记录。
 
@@ -622,7 +622,7 @@ $ prisma2 dev
 
 你可以使用 Prisma Studio 浏览数据库的数据。打开终端中显示的地址(正常来说在[`http://localhost:5555/`](http://localhost:5555/)):
 
-![](/prisma2/4h9nk7i.png)
+![studio](/prisma2/4h9nk7i.png)
 
 > **注意**: 有任何反馈意见可以提在此处[`studio`](https://github.com/prisma/studio)
 
