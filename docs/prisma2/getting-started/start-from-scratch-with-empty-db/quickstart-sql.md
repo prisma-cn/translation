@@ -1,5 +1,5 @@
 ---
-title: 用SQL创建数据库并使用Prisma
+title: 用SQL创建数据库开始
 description: 本章示范在新数据库中执行SQL并使用Prisma migrations 解析后进行开发。
 author: Victor
 author_url: https://kangwenchang.com
