@@ -54,6 +54,10 @@ module.exports = {
         type: 'doc',
         id: 'prisma2/relations',
       },
+      {
+        type: 'doc',
+        id: 'prisma2/transactions',
+      },
     ],
     'Prisma CLI': [
       {
