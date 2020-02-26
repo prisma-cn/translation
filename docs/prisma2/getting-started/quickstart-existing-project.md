@@ -250,4 +250,4 @@ npx ts-node script.ts
 
 如果您在本指南中使用了自己的数据库并且不确定要查询的内容，则可以打`prisma.`使用编辑器的自动补全功能来帮助创建查询，然后按<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 可以建议您使用任何模型作为查询。选择模型并随后添加另一个点`.`后，您可以再次使用<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 决定对模型进行操作(例如，`findMany`, `create`, `update`, ...)。选择操作之后，您可以再次调用自动完成功能探索提供的参数。
 
-![](https://imgur.com/p4kdfhH.gif)
+![auto](/prisma2/p4kdfhH.gif)

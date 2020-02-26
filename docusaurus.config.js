@@ -93,7 +93,7 @@ module.exports = {
           items: [
             {
               label: 'Prisma2',
-              to: 'docs/prisma2/README',
+              to: 'docs/prisma2/getting-started/README',
             },
             {
               label: 'Prisma1',
