@@ -18,19 +18,12 @@ module.exports = {
         id: 'prisma2/getting-started/quickstart-existing-project',
       },
       {
-        type: 'category',
-        label: '从零开始',
-        items: [
-          {
-            type: 'doc',
-            id: 'prisma2/getting-started/start-from-scratch-with-empty-db/quickstart-sql',
-          },
-          {
-            type: 'doc',
-            id:
-              'prisma2/getting-started/start-from-scratch-with-empty-db/quickstart-prisma-migrate',
-          },
-        ],
+        type: 'doc',
+        id: 'prisma2/getting-started/start-from-scratch-with-empty-db/quickstart-sql',
+      },
+      {
+        type: 'doc',
+        id: 'prisma2/getting-started/start-from-scratch-with-empty-db/quickstart-prisma-migrate',
       },
       {
         type: 'doc',
@@ -44,10 +37,6 @@ module.exports = {
       },
       {
         type: 'doc',
-        id: 'prisma2/data-sources',
-      },
-      {
-        type: 'doc',
         id: 'prisma2/data-modeling',
       },
       {
@@ -56,7 +45,7 @@ module.exports = {
       },
       {
         type: 'doc',
-        id: 'prisma2/transactions',
+        id: 'prisma2/data-sources',
       },
     ],
     'Prisma CLI': [
@@ -162,6 +151,14 @@ module.exports = {
     其他: [
       {
         type: 'doc',
+        id: 'prisma2/faq',
+      },
+      {
+        type: 'doc',
+        id: 'prisma2/glossary',
+      },
+      {
+        type: 'doc',
         id: 'prisma2/limitations',
       },
       {
@@ -170,7 +167,7 @@ module.exports = {
       },
       {
         type: 'doc',
-        id: 'prisma2/telemetry',
+        id: 'prisma2/transactions',
       },
       {
         type: 'doc',
@@ -178,15 +175,11 @@ module.exports = {
       },
       {
         type: 'doc',
+        id: 'prisma2/telemetry',
+      },
+      {
+        type: 'doc',
         id: 'prisma2/releases',
-      },
-      {
-        type: 'doc',
-        id: 'prisma2/glossary',
-      },
-      {
-        type: 'doc',
-        id: 'prisma2/faq',
       },
     ],
   },
