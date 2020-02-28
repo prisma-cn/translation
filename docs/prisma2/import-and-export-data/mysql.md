@@ -1,113 +1,110 @@
-# Importing and exporting data with MySQL
+# 使用 MySQL 导入和导出数据
 
-This document describes how you can export data from and import data into a MySQL database. You can learn more about this topic in the official [MySQL docs](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html).
+本文档介绍了如何从 MySQL 数据库导出数据或将数据导入 MySQL 数据库。您可以在官方 [MySQL docs](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 中了解有关此主题的更多信息。
 
-## Data export with `mysqldump`
+## 使用 `mysqldump` 导出数据
 
-[`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) is a native MySQL command line utility you can use to export data from your MySQL database. To see all the options for this command, run `mysqldump --help`.
+[`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 是本机 MySQL 命令行实用程序，可用于从 MySQL 数据库导出数据。要查看该命令的所有选项，请运行 `mysqldump --help`。
 
-Note that your [MySQL installation](https://dev.mysql.com/doc/refman/8.0/en/installing.html) comes with `mysqldump` by default, typically contained in `/usr/local/mysql/bin` on Mac OS. This means you can either invoke the command by pointing to that directory `/usr/local/mysql/bin/mysqldump` or [adding it to your `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac#answer-35338119) so that you can run `mysqldump` without specifying the directory.
+请注意，默认情况下，您的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysqldump` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 目录中 。这意味着您可以通过指向该目录 `/usr/local/mysql/bin/mysqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便您无需指定目录就可以运行 `mysqldump`。
 
-From the MySQL docs: 
+引用 MySQL 文档：
 
-> The `mysqldump` client utility performs logical backups, producing a set of SQL statements that can be executed to reproduce the original database object definitions and table data. It dumps one or more MySQL databases for backup or transfer to another SQL server. The `mysqldump` command can also generate output in CSV, other delimited text, or XML format.
+> `mysqldump` 客户端实用程序执行逻辑备份，生成一组 SQL 语句，可以执行这些语句来重现原始的数据库对象定义和表数据。它 dump 一个或多个 MySQL 数据库以进行备份或转移到另一台 SQL 服务器。 `mysqldump` 命令还可以生成 CSV，其他定义文本或 XML 格式的输出。
 
-The command looks like this:
+该命令如下所示：
 
 ```psql
 mysqldump DB_NAME > OUTPUT_FILE
 ```
 
-You need to replace the `DB_NAME` and `OUTPUT_FILE` placeholders with the respective values for: 
+您需要将 `DB_NAME` 和 `OUTPUT_FILE` 占位符替换为以下各项的相应值：
 
-- your **database name**
-- the name of the desired **output file** (should end on `.sql`)
+- 您的 **数据库名称**
+- 所需的 **输出文件** 的名称(应以 `.sql` 结尾)
 
-For example, to export data from a local MySQL server from a database called `mydb` into a file called `mydb.sql`, you can use the following command:
+例如，要将数据从本地 MySQL 服务器中名为 `mydb` 的数据库导出到名为 `mydb.sql` 的文件，可以使用以下命令：
 
 ```
 mysqldump mydb > mydb.sql
 ```
 
-#### Providing database credentials
+#### 提供数据库凭证
 
-You can add the following arguments to specify the location of your MySQL database server:
+您可以添加以下参数来指定 MySQL 数据库服务器的位置：
 
-| Argument | Default | Description |  
-| --- | --- | --- |
-| `--host` (short: `-h`) | `localhost` | The address of the server's host machine | 
-| `--port` (short: `-p`) | - | The port of the server's host machine where the MySQL server is listening | 
+| 参数项                | 默认值      | 描述                                   |
+| --------------------- | ----------- | -------------------------------------- |
+| `--host` (简称: `-h`) | `localhost` | 服务器主机的地址                       |
+| `--port` (简称: `-p`) | -           | MySQL 服务器正在侦听的服务器主机的端口 |
 
-To authenticate against the MySQL database server, you can use the following argument:
+要针对 MySQL 数据库服务器进行身份验证，可以使用以下参数：
 
-| Argument | Default | Description |  
-| --- | --- | --- |
-| `--user` (short: `-u`) | - | The name of the database user. | 
-| `--password` (short: `-p`) | - | Trigger password prompt. | 
+| 参数项                    | 默认值 | 描述               |
+| ------------------------- | ------ | ------------------ |
+| `--user` (简称: `-u`)     | -      | 数据库用户的名称。 |
+| `--password` (简称: `-p`) | -      | 触发密码提示。     |
 
-For example, if you want to export data from a MySQL database that has the following [connection string](../core/connectors/mysql.md):
+例如，如果要从具有以下 [连接字符串](../core/connectors/mysql.md) 的 MySQL 数据库中导出数据：
 
 ```
 mysql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus
 ```
 
-You can use the following `mysqldump` command:
+您可以使用以下 `mysqldump` 命令：
 
 ```
 mysqldump --host ec2-46-137-91-216.eu-west-1.compute.amazonaws.com --port --user opnmyfngbknppm --password d50rgmkqi2ipus > backup.sql
 ```
 
-Note that **this command will trigger a prompt where you need to specify the password** for the provided user.
+请注意，**此命令将触发提示，提示您需要指定用户的密码** 。
 
-#### Controlling the output
+#### 控制输出
 
-There might be cases where you don't want to dump the _entire_ database, for example you might want to:
+在某些情况下，您可能不想 dump 整个数据库，例如，您可能希望：
 
-- dump only the actual data but exclude the [DDL](https://www.postgresql.org/docs/8.4/ddl.html) (i.e. the SQL statements that define your database schema like `CREATE TABLE`,...)
-- dump only the DDL but exclude the actual data
-- exclude specic tables
+- 仅 dump 实际数据，但不包括 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) (即，定义数据库 schema (如 `CREATE TABLE`，...的 SQL 语句等)
+- 仅 dump  DDL，但排除实际数据
+- 排除特殊表
 
-Here's an overview of a few command line options you can use in these scenarios:
+以下是在这些情况下可以使用的一些命令行选项的概述：
 
-| Argument | Default | Description |  
-| --- | --- | --- |
-| `--no-create-db` (short: `-n`) | `false` | Exclude any [DDL](https://www.postgresql.org/docs/8.4/ddl.html) statements and export only data. | 
-| `--no-data` (short: `-d`) | `false` | Exclude data and export only [DDL](https://www.postgresql.org/docs/8.4/ddl.html) statements. | 
-| `--tables`| _includes all tables by default_ | Explicitly specify the names of the tables to be dumped. | 
-| `--ignore-table` | - | Exclude specific tables from the dump. | 
+| 参数项                        | 默认值         | 描述                                                                        |
+| ----------------------------- | -------------- | --------------------------------------------------------------------------- |
+| `--no-create-db` (简称: `-n`) | `false`        |                                                                             | `--no-create-db` (short: `-n`) | `false` | 排除任何 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句，仅导出数据。 |
+| `--no-data` (简称: `-d`)      | `false`        | 排除数据并仅导出 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句。 |
+| `--tables`                    | 默认包含所有表 | 明确指定要 dump 的表的名称。                                                  |
+| `--ignore-table`              | -              | 从 dump 中排除特定的表。                                                      |
 
-## Importing data from SQL files
+## 从 SQL 文件导入数据
 
-After having used `mysqldump` to export your MySQL database as a SQL file, you can restore the state of the database by feeding the SQL file into [`mysql`](https://dev.mysql.com/doc/refman/8.0/en/mysql.html):
+使用 mysqldump 将 MySQL 数据库导出为 SQL 文件后，您可以通过将 SQL 文件输入 [mysql](https://dev.mysql.com/doc/refman/8.0/en/mysql.html) 中来恢复数据库状态：
 
 ```
 mysql DB_NAME INPUT_FILE
 ```
 
-Note that your [MySQL installation](https://dev.mysql.com/doc/refman/8.0/en/installing.html) comes with `mysql` by default, typically contained in `/usr/local/mysql/bin` on Mac OS. This means you can either invoke the command by pointing to that directory `/usr/local/mysql/bin/mysmysqlqldump` or [adding it to your `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac#answer-35338119) so that you can run `mysql` without specifying the directory.
+请注意，默认情况下，您的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysql` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 中。这意味着您可以通过指向该目录 `/usr/local/mysql/bin/mysmysqlqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便您无需指定目录即可运行 `mysql` 命令。
 
-You need to replace the `DB_NAME` and `INPUT_FILE` placeholders with the respective values for: 
+您需要将 `DB_NAME` 和 `INPUT_FILE` 占位符替换为以下各项的相应值：
 
-- your **database name** (a database with hat name must be created beforehand!)
-- the name of the target **input file** (likely ends on `.sql`)
+- 您的 **数据库名称** (必须是一个已经创建成功的数据库名称！)
+- 目标 **输入文件** 的名称(可能以 `.sql` 结尾)
 
-For example:
+例如：
 
 ```
 mysql mydb < mydb.sql
 ```
 
-To authenticate, you can use the `--user` and `--password` options discussed above:
+要进行身份验证，可以使用上文中的 `--user` 和 `--password` 选项：
 
 ```
 mysql --user root --password mydb < mydb.sql
 ```
 
-To create a database beforehand, you can use the following SQL statement:
+要预先创建数据库，可以使用以下 SQL 语句：
 
 ```sql
 CREATE DATABASE mydb;
 ```
-
-
-

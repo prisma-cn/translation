@@ -1,7 +1,7 @@
-# Importing and exporting data
+# 导入和导出数据
 
-As Prisma 2 currently doesn't provide a way to import and export data from/into a database, the documents in this folder describe **native import/export flows** for the databases that are supported by Prisma:
+由于 Prisma 2 当前不提供从数据库导入数据或向数据库导出数据的方法，因此此文件夹中的文档描述了 Prisma 支持的数据库的 **本机导入/导出流程**：
 
-- [Importing and exporting data with PostgreSQL](./postresql.md)
-- [Importing and exporting data with MySQL](./mysql.md)
-- [Importing and exporting data with SQLite](./sqlite.md)
+- [使用 PostgreSQL 导入和导出数据](./postresql.md)
+- [使用 MySQL 导入和导出数据](./mysql.md)
+- [使用 SQLite 导入和导出数据](./sqlite.md)
