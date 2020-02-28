@@ -26,9 +26,9 @@ module.exports = {
         docs: {
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          // editUrl: 'https://github.com/prisma/prisma2/edit/master/website/',
-          // showLastUpdateAuthor: true,
-          // showLastUpdateTime: true,
+          editUrl: 'https://github.com/prisma-cn/translation/',
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
         },
         blog: {
           path: 'blog',
