@@ -1,12 +1,19 @@
-# 使用 MySQL 导入和导出数据
+---
+title: MySQL数据的导入和导出
+description: Prisma 2 中MySQL数据的导入和导出。
+author: zz
+author_url: https://github.com/zhylninc
+author_image_url: https://avatars2.githubusercontent.com/u/3182099?s=400&v=4
+author_title: Prisma 爱好者
+---
 
-本文档介绍了如何从 MySQL 数据库导出数据或将数据导入 MySQL 数据库。您可以在官方 [MySQL docs](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 中了解有关此主题的更多信息。
+本文档介绍了如何从 MySQL 数据库导出数据或将数据导入 MySQL 数据库。你可以在官方 [MySQL docs](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 中了解有关此主题的更多信息。
 
 ## 使用 `mysqldump` 导出数据
 
 [`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 是本机 MySQL 命令行实用程序，可用于从 MySQL 数据库导出数据。要查看该命令的所有选项，请运行 `mysqldump --help`。
 
-请注意，默认情况下，您的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysqldump` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 目录中 。这意味着您可以通过指向该目录 `/usr/local/mysql/bin/mysqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便您无需指定目录就可以运行 `mysqldump`。
+请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysqldump` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 目录中 。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便你无需指定目录就可以运行 `mysqldump`。
 
 引用 MySQL 文档：
 
@@ -18,9 +25,9 @@
 mysqldump DB_NAME > OUTPUT_FILE
 ```
 
-您需要将 `DB_NAME` 和 `OUTPUT_FILE` 占位符替换为以下各项的相应值：
+你需要将 `DB_NAME` 和 `OUTPUT_FILE` 占位符替换为以下各项的相应值：
 
-- 您的 **数据库名称**
+- 你的 **数据库名称**
 - 所需的 **输出文件** 的名称(应以 `.sql` 结尾)
 
 例如，要将数据从本地 MySQL 服务器中名为 `mydb` 的数据库导出到名为 `mydb.sql` 的文件，可以使用以下命令：
@@ -31,7 +38,7 @@ mysqldump mydb > mydb.sql
 
 #### 提供数据库凭证
 
-您可以添加以下参数来指定 MySQL 数据库服务器的位置：
+你可以添加以下参数来指定 MySQL 数据库服务器的位置：
 
 | 参数项                | 默认值      | 描述                                   |
 | --------------------- | ----------- | -------------------------------------- |
@@ -51,20 +58,20 @@ mysqldump mydb > mydb.sql
 mysql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus
 ```
 
-您可以使用以下 `mysqldump` 命令：
+你可以使用以下 `mysqldump` 命令：
 
 ```
 mysqldump --host ec2-46-137-91-216.eu-west-1.compute.amazonaws.com --port --user opnmyfngbknppm --password d50rgmkqi2ipus > backup.sql
 ```
 
-请注意，**此命令将触发提示，提示您需要指定用户的密码** 。
+请注意，**此命令将触发提示，提示你需要指定用户的密码** 。
 
 #### 控制输出
 
-在某些情况下，您可能不想 dump 整个数据库，例如，您可能希望：
+在某些情况下，你可能不想 dump 整个数据库，例如，你可能希望：
 
 - 仅 dump 实际数据，但不包括 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) (即，定义数据库 schema (如 `CREATE TABLE`，...的 SQL 语句等)
-- 仅 dump  DDL，但排除实际数据
+- 仅 dump DDL，但排除实际数据
 - 排除特殊表
 
 以下是在这些情况下可以使用的一些命令行选项的概述：
@@ -73,22 +80,22 @@ mysqldump --host ec2-46-137-91-216.eu-west-1.compute.amazonaws.com --port --user
 | ----------------------------- | -------------- | --------------------------------------------------------------------------- |
 | `--no-create-db` (简称: `-n`) | `false`        |                                                                             | `--no-create-db` (short: `-n`) | `false` | 排除任何 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句，仅导出数据。 |
 | `--no-data` (简称: `-d`)      | `false`        | 排除数据并仅导出 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句。 |
-| `--tables`                    | 默认包含所有表 | 明确指定要 dump 的表的名称。                                                  |
-| `--ignore-table`              | -              | 从 dump 中排除特定的表。                                                      |
+| `--tables`                    | 默认包含所有表 | 明确指定要 dump 的表的名称。                                                |
+| `--ignore-table`              | -              | 从 dump 中排除特定的表。                                                    |
 
 ## 从 SQL 文件导入数据
 
-使用 mysqldump 将 MySQL 数据库导出为 SQL 文件后，您可以通过将 SQL 文件输入 [mysql](https://dev.mysql.com/doc/refman/8.0/en/mysql.html) 中来恢复数据库状态：
+使用 mysqldump 将 MySQL 数据库导出为 SQL 文件后，你可以通过将 SQL 文件导入 [mysql](https://dev.mysql.com/doc/refman/8.0/en/mysql.html) 中来恢复数据库状态：
 
 ```
 mysql DB_NAME INPUT_FILE
 ```
 
-请注意，默认情况下，您的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysql` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 中。这意味着您可以通过指向该目录 `/usr/local/mysql/bin/mysmysqlqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便您无需指定目录即可运行 `mysql` 命令。
+请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysql` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 中。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysmysqlqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便你无需指定目录即可运行 `mysql` 命令。
 
-您需要将 `DB_NAME` 和 `INPUT_FILE` 占位符替换为以下各项的相应值：
+你需要将 `DB_NAME` 和 `INPUT_FILE` 占位符替换为以下各项的相应值：
 
-- 您的 **数据库名称** (必须是一个已经创建成功的数据库名称！)
+- 你的 **数据库名称** (必须是一个已经创建成功的数据库名称！)
 - 目标 **输入文件** 的名称(可能以 `.sql` 结尾)
 
 例如：
