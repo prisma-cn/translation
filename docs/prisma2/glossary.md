@@ -64,7 +64,7 @@ PSL 是书写[schema 文件](#prisma-schema-file)的语法的名字。
 
 ### 迁移-Migration
 
-有时也被成为:
+有时也被称为:
 
 - 数据库迁移-Database migration
 - Schema 迁移-Schema migration
@@ -77,7 +77,7 @@ PSL 是书写[schema 文件](#prisma-schema-file)的语法的名字。
 
 ### 模型-Model
 
-[模型](./data-modeling.md#models) 代表 _应它们直接映射到底层数据源中的结构_，比如关系型数据库中的*表*，文档型数据库中的*集合* 。 [生成的 Prisma Client JS API](./prisma-client-js/api.md) 会为你[数据模型](#data-model-definition)中的每个模型暴露 CRUD 操作。
+[模型](./data-modeling.md#models) 代表 _直接映射到底层数据库中的结构_，比如关系型数据库中的*表 table*，文档型数据库中的*集合 collection* 。 [生成的 Prisma Client JS API](./prisma-client-js/api.md) 会为你[数据模型](#data-model-definition)中的每个模型暴露 CRUD 操作。
 
 ### 数据模型定义-Data model definition
 
@@ -136,7 +136,7 @@ Go 语言生成器即将到来！
 
 决定了 Prisma Client JS API 被调用时返回模型中的哪些字段。 默认的[选择集合](./prisma-client-js/api.md#selection-sets)中包含如下类型：
 
-- 无延迟的[标量字段](./data-modeling.md#scalar-types)-non-lazy scalar fields
+- [标量字段](./data-modeling.md#scalar-types)-non-lazy scalar fields
 - 枚举类型-enums
 - 内置字段-[embed](./data-modeling.md#embeds) fields
 
