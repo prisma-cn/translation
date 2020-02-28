@@ -7,12 +7,6 @@ author_image_url: https://www.lsz8617.com/static/img/about-me/about-me1.jpg
 author_title: 代码小白
 ---
 
-# 术语
-
-<!-- ### Composite model
-
-A composite model is a model that doesn't directly map to a structure (e.g. a _table_ or a _collection_) in the underlying data source. Instead, it's composed out of multiple parts from the underlying database. -->
-
 ## 目录
 
 - [数据源-Data source]()
@@ -146,7 +140,7 @@ Go 语言生成器即将到来！
 - 枚举类型-enums
 - 内置字段-[embed](./data-modeling.md#embeds) fields
 
-Prisma Client JS API被调用时，选择集合可以通过 [`select`](./prisma-client-js/api.md#select-exclusively-via-select) 或 [`include`](./prisma-client-js/api.md#include-additionally-via-include)选择性的操作。
+Prisma Client JS API 被调用时，选择集合可以通过 [`select`](./prisma-client-js/api.md#select-exclusively-via-select) 或 [`include`](./prisma-client-js/api.md#include-additionally-via-include)选择性的操作。
 
 ### 类型修饰符-Type modifier
 
@@ -154,4 +148,4 @@ Prisma Client JS API被调用时，选择集合可以通过 [`select`](./prisma-
 
 ### 查询引擎-Query engine
 
-查询引擎根据来自Prisma Client JS的请求生成和优化数据库查询。
+查询引擎根据来自 Prisma Client JS 的请求生成和优化数据库查询。
