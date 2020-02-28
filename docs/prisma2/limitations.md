@@ -7,7 +7,7 @@ author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
 author_title: Prisma 爱好者
 ---
 
-在 Prisma 2 的预览期间，您应注意缺少的功能和其他限制。
+在 Prisma 2 的预览期间，你应注意缺少的功能和其他限制。
 
 ## 功能限制
 

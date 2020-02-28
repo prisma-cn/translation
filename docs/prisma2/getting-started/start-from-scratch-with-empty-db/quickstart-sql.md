@@ -9,7 +9,7 @@ author_title: Prisma 爱好者
 
 ## 目录
 
-- 选择您的数据库:
+- 选择你的数据库:
   - [PostgreSQL](#postgresql)
   - [MySQL](#mysql)
   - [SQLite](#sqlite)
@@ -18,10 +18,10 @@ author_title: Prisma 爱好者
 
 请按照以下步骤进行初始设置：
 
-1.  运行`mkdir hello-prisma`创建您的项目目录
+1.  运行`mkdir hello-prisma`创建你的项目目录
 2.  运行`cd hello-prisma`进入目录
 3.  运行`touch schema.prisma`创建一个空的[Pri​​sma schema](../../prisma-schema-file.md)
-4.  在 Prisma schema 中添加一个`datasource`，并将您的数据库连接字符串设置为`url`，例如：
+4.  在 Prisma schema 中添加一个`datasource`，并将你的数据库连接字符串设置为`url`，例如：
     ```prisma
     datasource db {
       provider = "postgresql"
@@ -57,7 +57,7 @@ author_title: Prisma 爱好者
     ```
     psql -h __HOST__ -d __DATABASE__ -U __USER__ -f schema.sql
     ```
-    请注意，您需要使用你真实的数据库信息替换大写的占位符，例如:
+    请注意，你需要使用你真实的数据库信息替换大写的占位符，例如:
     ```
     psql -h localhost -d hello-prisma -U janedoe -f schema.sql
     ```
@@ -126,10 +126,10 @@ author_title: Prisma 爱好者
 
 请按照以下步骤进行初始设置：
 
-1.  运行`mkdir hello-prisma`创建您的项目目录
+1.  运行`mkdir hello-prisma`创建你的项目目录
 2.  运行`cd hello-prisma`进入目录
 3.  运行`touch schema.prisma`创建一个空的[Pri​​sma schema](../../prisma-schema-file.md)
-4.  在 Prisma schema 中添加一个`datasource`，并将您的数据库连接字符串设置为`url`，例如：
+4.  在 Prisma schema 中添加一个`datasource`，并将你的数据库连接字符串设置为`url`，例如：
     ```prisma
     datasource db {
       provider = "mysql"
@@ -168,7 +168,7 @@ author_title: Prisma 爱好者
     ```
     mysql -u __USER__ -p __DATABASE__ < schema.sql
     ```
-    请注意，您需要使用你真实的数据库信息替换大写的占位符，例如:
+    请注意，你需要使用你真实的数据库信息替换大写的占位符，例如:
     ```
     mysql -u root -p hello-prisma < schema.sql
     ```
@@ -238,10 +238,10 @@ author_title: Prisma 爱好者
 
 请按照以下步骤进行初始设置：
 
-1.  运行`mkdir hello-prisma`创建您的项目目录
+1.  运行`mkdir hello-prisma`创建你的项目目录
 2.  运行`cd hello-prisma`进入目录
 3.  运行`touch schema.prisma`创建一个空的[Pri​​sma schema](../../prisma-schema-file.md)
-4.  在 Prisma schema 中添加一个`datasource`，并将您的数据库连接字符串设置为`url`，例如：
+4.  在 Prisma schema 中添加一个`datasource`，并将你的数据库连接字符串设置为`url`，例如：
     ```prisma
     datasource db {
       provider = "sqlite"

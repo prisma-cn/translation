@@ -28,7 +28,7 @@ author_title: Prisma 爱好者
 
 Prisma Client JS 提供了一个数据访问 API ，可以从数据库读写数据。对于关系数据库，Prisma Client JS 的 API 是基于 SQL 进行抽象的，其中事务是常见的功能。尽管 Prisma Client JS 没有和 SQL 级事务拥有相同的灵活性，但它涵盖了开发人员常用的[**嵌套写入**](./relations.md#nested-writes)类型事务的绝大多数用例。
 
-嵌套写入可让您在执行单个 Prisma Client JS API 中调用多种不同操作，这些代码片段涉及多个[**相关联**](./relations.md#nested-writes)的记录，例如 同时创建 **post** 和 **user** ，或者在更新 **order** 时同时更新 **invoice**。在执行嵌套写入时，Prisma Client JS 会确保它整体执行成功或失败。
+嵌套写入可让你在执行单个 Prisma Client JS API 中调用多种不同操作，这些代码片段涉及多个[**相关联**](./relations.md#nested-writes)的记录，例如 同时创建 **post** 和 **user** ，或者在更新 **order** 时同时更新 **invoice**。在执行嵌套写入时，Prisma Client JS 会确保它整体执行成功或失败。
 
 以下是 Prisma Client JS API 中嵌套写入的示例：
 
@@ -98,4 +98,4 @@ prisma.transaction(async tx => {
 
 在这种情况下，API 提供了一种将一系列操作包装在事务中执行的回调方法，因此可以保证整体执行成功或失败。
 
-如果您希望看到将来支持的事务方法, [请加入 Github 讨论](https://github.com/prisma/prisma2/issues/312).
+如果你希望看到将来支持的事务方法, [请加入 Github 讨论](https://github.com/prisma/prisma2/issues/312).

@@ -11,19 +11,19 @@ author_title: Prisma 爱好者
 
 ## 简略版指南
 
-按照以下步骤将 Prisma 与现有数据库一起使用。请注意，这些步骤假定您已经有一个 Node.js 或 TypeScript 项目(如果没有，请遵循下面的[完整指南](#完整指南))：
+按照以下步骤将 Prisma 与现有数据库一起使用。请注意，这些步骤假定你已经有一个 Node.js 或 TypeScript 项目(如果没有，请遵循下面的[完整指南](#完整指南))：
 
 - 安装 prisma2 作为开发依赖项：`npm install prisma2 --save-dev`
 - 运行`npx prisma2 init`创建一个空的[Pri​​sma schema](../prisma-schema-file.md)
-- 将 Prisma schema 中`datasource`的`url`设置为您的数据库连接 URL
+- 将 Prisma schema 中`datasource`的`url`设置为你的数据库连接 URL
 - 运行`prisma2 introspect`从数据库 schema 中获取数据模型 data model
-- 运行`npm install @prisma/client`将 Prisma Client npm 包添加到您的项目中
+- 运行`npm install @prisma/client`将 Prisma Client npm 包添加到你的项目中
 - 运行`prisma2 generate`生成 Prisma Client
-- 将 Prisma Client 导入您的代码：`import { PrismaClient } from '@prisma/client'`
+- 将 Prisma Client 导入你的代码：`import { PrismaClient } from '@prisma/client'`
 - 实例化 Prisma Client：`const prisma = new PrismaClient()`
 - 在代码中使用 Prisma Client(可使用编辑器的自动补全功能来探索其 API)
 
-> **注意**：如果 Prisma 对于您的数据库 schema 的 introspection 自省失败，请[提交 issue](https://github.com/prisma/prisma2/issues/new)并告诉我们出了什么问题。如果您想帮助我们使 Prisma 更好用，请[与我们共享您的数据库 SQL schema](https://github.com/prisma/prisma2/issues/757)，以便我们可以将其添加到我们的 introspection 测试用例中。
+> **注意**：如果 Prisma 对于你的数据库 schema 的 introspection 自省失败，请[提交 issue](https://github.com/prisma/prisma2/issues/new)并告诉我们出了什么问题。如果你想帮助我们使 Prisma 更好用，请[与我们共享你的数据库 SQL schema](https://github.com/prisma/prisma2/issues/757)，以便我们可以将其添加到我们的 introspection 测试用例中。
 
 ## 完整指南
 
@@ -37,7 +37,7 @@ author_title: Prisma 爱好者
 - 尚不支持`ENUM`类型。内省将成功但是会忽略数据库 schema 中的`ENUM`类型。
 - `TIMESTAMP WITH TIMEZONE`类型现在是支持的(映射到 Prisma 的`DateTime`类型)，但[当前无法用 Prisma Client 查询](https://github.com/prisma/prisma2/issues/1386)。
 
-### 1.为您的数据库设置 Prisma
+### 1.为你的数据库设置 Prisma
 
 首先，运行以下命令以创建一个空的 Prisma schema 文件：
 
@@ -62,10 +62,10 @@ datasource db {
 // 连接字符串的其他示例是:
 // SQLite: url = "file:./dev.db"
 // MySQL:  url = "mysql://admin:admin@localhost:3306/mydb"
-// 您还可以使用环境变量来指定连接字符串: https://pris.ly/d/prisma-schema#using-environment-variables
+// 你还可以使用环境变量来指定连接字符串: https://pris.ly/d/prisma-schema#using-environment-variables
 
-// 通过添加 `generator` 部分, 您可以指定要生成Prisma的数据库客户端。
-// 客户端是通过运行 `prisma generate` 命令生成的，位于`node_modules/@prisma`下，并可以在您的代码中导入:
+// 通过添加 `generator` 部分, 你可以指定要生成Prisma的数据库客户端。
+// 客户端是通过运行 `prisma generate` 命令生成的，位于`node_modules/@prisma`下，并可以在你的代码中导入:
 // import { PrismaClient } from '@prisma/client'
 generator client {
   provider = "prisma-client-js"
@@ -73,16 +73,16 @@ generator client {
 
 // 下一步：
 // 1. 将数据库连接字符串替换“datasource”里的“url”
-// 2. 执行 `prisma2 introspect` 使您的数据模型导入schema
+// 2. 执行 `prisma2 introspect` 使你的数据模型导入schema
 // 3. 执行 `prisma2 generate` 来生成 Prisma Client JS
-// 4. 开始在您的应用程序中使用Prisma Client JS
+// 4. 开始在你的应用程序中使用Prisma Client JS
 ```
 
-该文件包含许多注释，告诉您如何使用。
+该文件包含许多注释，告诉你如何使用。
 
-首先，您需要提供数据库的连接 URL 作为`datasource`的`url`。这是必填部分，以便 Prisma 可以解析数据库 schema 并生成 Prisma Client。
+首先，你需要提供数据库的连接 URL 作为`datasource`的`url`。这是必填部分，以便 Prisma 可以解析数据库 schema 并生成 Prisma Client。
 
-数据库的连接 URL 的格式通常取决于您使用的数据库(拼写全大写的部分是占位符，代表您的实际连接详细信息)：
+数据库的连接 URL 的格式通常取决于你使用的数据库(拼写全大写的部分是占位符，代表你的实际连接详细信息)：
 
 - MySQL: `mysql://USER:PASSWORD@HOST:PORT/DATABASE`
 - PostgreSQL: `postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA`
@@ -97,7 +97,7 @@ datasource db {
 }
 ```
 
-在本地运行 PostgreSQL 时，您的用户名和密码以及数据库名称通常对应于您操作系统的当前*user*，例如：
+在本地运行 PostgreSQL 时，你的用户名和密码以及数据库名称通常对应于你操作系统的当前*user*，例如：
 
 ```prisma
 datasource db {
@@ -129,9 +129,9 @@ generator client {
 npx prisma2 introspect
 ```
 
-> **注意**：如果 Prisma 对您的数据库 schema introspect 失败，请[提个 issue](https://github.com/prisma/prisma2/issues/new)并告诉我们出了什么问题。如果您想帮助我们使 Prisma 更好用，请[与我们共享您的数据库 SQL schema](https://github.com/prisma/prisma2/issues/757)，以便我们可以将其添加到我们的 introspect 测试用例中。
+> **注意**：如果 Prisma 对你的数据库 schema introspect 失败，请[提个 issue](https://github.com/prisma/prisma2/issues/new)并告诉我们出了什么问题。如果你想帮助我们使 Prisma 更好用，请[与我们共享你的数据库 SQL schema](https://github.com/prisma/prisma2/issues/757)，以便我们可以将其添加到我们的 introspect 测试用例中。
 
-此命令连接到您的数据库并检查其 schema。然后，Prisma 将基于该 schema 将许多模型添加到 Prisma schema 文件中，这些模型代表您的应用程序的数据模型。该数据模型将成为 Prisma Client 生成的数据访问 API 的基础。
+此命令连接到你的数据库并检查其 schema。然后，Prisma 将基于该 schema 将许多模型添加到 Prisma schema 文件中，这些模型代表你的应用程序的数据模型。该数据模型将成为 Prisma Client 生成的数据访问 API 的基础。
 
 出于本指南的目的，我们使用以下 SQL schema：
 
@@ -187,7 +187,7 @@ model users {
 
 ## 3.生成 Prisma Client
 
-Prisma Client 是自动生成的且类型安全的数据库客户端，适合您的数据库架构。请注意，您将需要一个 Node.js/TypeScript 项目来生成 Prisma Client，因为它依赖于`@prisma/client`依赖项。在本指南中，将使用 TypeScript。
+Prisma Client 是自动生成的且类型安全的数据库客户端，适合你的数据库架构。请注意，你将需要一个 Node.js/TypeScript 项目来生成 Prisma Client，因为它依赖于`@prisma/client`依赖项。在本指南中，将使用 TypeScript。
 
 如果还没有，请运行以下命令来创建简单的 TypeScript 项目：
 
@@ -199,7 +199,7 @@ touch script.ts
 touch tsconfig.json
 ```
 
-接下来，将以下内容添加到您的`tsconfig.json`中：
+接下来，将以下内容添加到你的`tsconfig.json`中：
 
 ```json
 {
@@ -213,13 +213,13 @@ touch tsconfig.json
 }
 ```
 
-现在您可以生成 Prisma Client：
+现在你可以生成 Prisma Client：
 
 ```
 npx prisma2 generate
 ```
 
-您的 Prisma Client API 现在可以从`node_modules/@prisma/client`中使用了。
+你的 Prisma Client API 现在可以从`node_modules/@prisma/client`中使用了。
 
 ## 4.使用 Prisma Client 读取和写入数据库中的数据
 
@@ -242,12 +242,12 @@ async function main() {
 main();
 ```
 
-这是一个简单的 API 调用，可从`users`表中获取所有记录。您可以使用以下命令运行脚本：
+这是一个简单的 API 调用，可从`users`表中获取所有记录。你可以使用以下命令运行脚本：
 
 ```
 npx ts-node script.ts
 ```
 
-如果您在本指南中使用了自己的数据库并且不确定要查询的内容，则可以打`prisma.`使用编辑器的自动补全功能来帮助创建查询，然后按<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 可以建议您使用任何模型作为查询。选择模型并随后添加另一个点`.`后，您可以再次使用<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 决定对模型进行操作(例如，`findMany`, `create`, `update`, ...)。选择操作之后，您可以再次调用自动完成功能探索提供的参数。
+如果你在本指南中使用了自己的数据库并且不确定要查询的内容，则可以打`prisma.`使用编辑器的自动补全功能来帮助创建查询，然后按<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 可以建议你使用任何模型作为查询。选择模型并随后添加另一个点`.`后，你可以再次使用<kbd>CTRL</kbd>+<kbd>SPACE</kbd> 决定对模型进行操作(例如，`findMany`, `create`, `update`, ...)。选择操作之后，你可以再次调用自动完成功能探索提供的参数。
 
 ![auto](/prisma2/p4kdfhH.gif)

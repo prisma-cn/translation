@@ -9,14 +9,14 @@ author_title: Prisma 爱好者
 
 本章内容为将 Prisma 连接到空数据库来开始新项目。它使用 Prisma Migrate 构建和迁移数据库 schema。
 
-> **警告**：Prisma Migrate 目前处于**experimental**状态。使用以下任何命令时，您都需要加上如下参数`--experimental`，例如`prisma2 migrate save --name 'init' --experimental`
+> **警告**：Prisma Migrate 目前处于**experimental**状态。使用以下任何命令时，你都需要加上如下参数`--experimental`，例如`prisma2 migrate save --name 'init' --experimental`
 
 请按照以下步骤进行初始设置：
 
-1.  运行`mkdir hello-prisma`创建您的项目目录
+1.  运行`mkdir hello-prisma`创建你的项目目录
 2.  运行`cd hello-prisma`进入目录
 3.  运行`touch schema.prisma`创建一个空的[Pri​​sma schema](../../prisma-schema-file.md)
-4.  在 Prisma schema 中添加一个`datasource`，并将您的数据库连接字符串设置为`url`，例如：
+4.  在 Prisma schema 中添加一个`datasource`，并将你的数据库连接字符串设置为`url`，例如：
     ```prisma
     datasource db {
       provider = "postgresql"
@@ -54,7 +54,7 @@ author_title: Prisma 爱好者
       provider = "prisma-client-js"
     }
     ```
-7.  运行以下命令来配置您的项目(TypeScript)：
+7.  运行以下命令来配置你的项目(TypeScript)：
     ```
     npm init -y
     npm install typescript ts-node prisma2 --save-dev
@@ -77,7 +77,7 @@ author_title: Prisma 爱好者
     npx prisma2 migrate save --name 'init' --experimental
     npx prisma2 migrate up --experimental
     ```
-10. 执行以下命令根据您的 data model 生成 Prisma Client：
+10. 执行以下命令根据你的 data model 生成 Prisma Client：
     `npx prisma2 generate`
 11. 运行`touch index.ts`创建一个 ts 文件并添加以下代码：
 
