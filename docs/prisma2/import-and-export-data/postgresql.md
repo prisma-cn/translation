@@ -1,98 +1,101 @@
-# Importing and exporting data with PostgreSQL
+＃ 使用 PostgreSQL 导入和导出数据
 
-This document describes how you can export data from and import data into a PostgreSQL database. You can learn more about this topic in the official [PostgreSQL docs](https://www.postgresql.org/docs/9.1/backup-dump.html).
+本文档介绍了如何从 PostgreSQL 数据库导出数据和将数据导入 PostgreSQL 数据库。您可以在官方 [PostgreSQL 文档](https://www.postgresql.org/docs/9.1/backup-dump.html) 了解有关此主题的更多信息。
 
-## Data export with SQL Dump
+##使用 SQL Dump 导出数据
 
-[SQL Dump](https://www.postgresql.org/docs/9.1/backup-dump.html) is a native PostgreSQL utility you can use to export data from your PostgreSQL database. To see all the options for this command, run `pg_dump --help`.
+[SQL Dump](https://www.postgresql.org/docs/9.1/backup-dump.html) 是一个本地 PostgreSQL 实用程序，可用于从 PostgreSQL 数据库导出数据。要查看该命令的所有选项，请运行 `pg_dump --help`.
 
-From the PostgreSQL docs: 
+引用 PostgreSQL 文档:
 
-> The idea behind this dump method is to generate a text file with SQL commands that, when fed back to the server, will recreate the database in the same state as it was at the time of the dump. PostgreSQL provides the utility program `pg_dump` for this purpose. 
-> `pg_dump` is a regular PostgreSQL client application (albeit a particularly clever one). This means that you can perform this backup procedure from any remote host that has access to the database. But remember that pg_dump does not operate with special permissions. In particular, it must have read access to all tables that you want to back up, so in practice you almost always have to run it as a database superuser.
+> 这种 dump 方法的思想是使用 SQL 命令生成一个文本文件，当将其反馈给服务器时，它将以与 dump 时相同的状态重新创建数据库。 PostgreSQL 为此提供了实用程序 `pg_dump`。
 
-The command looks like this:
+> `pg_dump` 是一个常规的 PostgreSQL 客户端应用程序（尽管是一个特别聪明的应用程序）。这意味着您可以从任何有权访问数据库的远程主机上执行此备份过程。但是请记住，pg_dump 不能在特殊权限下运行。特别是，它必须对要备份的所有表都具有读取访问权限，因此实际上，您总是必须以数据库超级用户身份运行它。
+
+该命令如下所示：
 
 ```psql
 pg_dump DB_NAME > OUTPUT_FILE
 ```
 
-You need to replace the `DB_NAME` and `OUTPUT_FILE` placeholders with the respective values for: 
+您需要将 `DB_NAME` 和 `OUTPUT_FILE` 占位符替换为以下各项的相应值：
 
-- your **database name**
-- the name of the desired **output file** (should end on `.sql`)
+- 您的 **数据库名称**
+- 所需的 **输出文件** 的名称(应以 `.sql` 结尾)
 
-For example, to export data from a local PostgreSQL server from a database called `mydb` into a file called `mydb.sql`, you can use the following command:
+例如，要将数据从本地 PostgreSQL 服务器从名为 `mydb` 的数据库导出到名为 `mydb.sql` 的文件中，可以使用以下命令：
 
 ```
 pg_dump mydb > mydb.sql
 ```
 
-If your database schema uses [Object Idenfitifier Types](https://www.postgresql.org/docs/8.1/datatype-oid.html) (OIDs), you'll need to run `pg_dump` with the `--oids` (short: `-o`) option: `pg_dump mydb --oids > mydb.sql`.
+如果您的数据库  使用 [Object 标识符类型](https://www.postgresql.org/docs/8.1/datatype-oid.html) (OIDs), 则需要使用 `pg_dump` 时加入参数项 `--oids` (简称: `-o`) : `pg_dump mydb --oids > mydb.sql`.
 
-#### Providing database credentials
+#### 提供数据库凭证
 
-You can add the following arguments to specify the location of your PostgreSQL database server:
+您可以添加以下参数来指定 PostgreSQL 数据库服务器的位置：
 
-| Argument | Default | Env var | Description |  
-| --- | --- | --- | --- |
-| `--host` (short: `-h`) | `localhost` | `PGHOST` | The address of the server's host machine | 
-| `--port` (short: `-p`) | - | `PGPORT` | The port of the server's host machine where the PostgreSQL server is listening | 
-To authenticate against the PostgreSQL database server, you can use the following argument:
+| 参数项                | 默认值      | 环境变量 | 描述                                        |
+| --------------------- | ----------- | -------- | ------------------------------------------- |
+| `--host` (简称: `-h`) | `localhost` | `PGHOST` | 服务器主机的地址                            |
+| `--port` (简称: `-p`) | -           | `PGPORT` | PostgreSQL 服务器正在侦听的服务器主机的端口 |
 
-| Argument | Default | Env var | Description |  
-| --- | --- | --- | --- |
-| `--username` (short: `-U`) | _your current operating system user name_ | `PGUSER` | The name of the database user. | 
+要针对 PostgreSQL 数据库服务器进行身份验证，可以使用以下参数：
 
-For example, if you want to export data from a PostgerSQL database that has the following [connection string](../core/connectors/postgresql.md):
+| 参数项                    | 默认值                 | 环境变量 | 描述               |
+| ------------------------- | ---------------------- | -------- | ------------------ |
+| `--username` (简称: `-U`) | 您当前的操作系统用户名 | `PGUSER` | 数据库用户的名称。 |
+
+例如，如果要从具有以下 [连接字符串](../core/connectors/postgresql.md) 的 PostgerSQL 数据库中导出数据：
 
 ```
 postgresql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus
 ```
 
-You can use the following `pg_dump` command:
+您可以使用以下 `pg_dump` 命令:
 
 ```
 pg_dump --host ec2-46-137-91-216.eu-west-1.compute.amazonaws.com --port 5432 --user opnmyfngbknppm d50rgmkqi2ipus > heroku_backup.sql
 ```
 
-Note that **this command will trigger a prompt where you need to specify the password** for the provided user.
 
-#### Controlling the output
+请注意，**此命令将触发提示，提示您需要为提供的用户指定密码**。
 
-There might be cases where you don't want to dump the _entire_ database, for example you might want to:
+#### 控制输出
 
-- dump only the actual data but exclude the [DDL](https://www.postgresql.org/docs/8.4/ddl.html) (i.e. the SQL statements that define your database schema like `CREATE TABLE`,...)
-- dump only the DDL but exclude the actual data
-- exclude a specific PostgreSQL schema
-- exclude large files
-- exclude specic tables
+在某些情况下，您可能不想 dump 整个数据库，例如，您可能希望：
 
-Here's an overview of a few command line options you can use in these scenarios:
+- 仅 dump 实际数据，但不包括 [DDL](https://www.postgresql.org/docs/8.4/ddl.html)  (即，定义数据库 schema (如 `CREATE TABLE`，...的 SQL 语句等)
+- 仅 dump  DDL，但排除实际数据
+- 排除特定的 PostgreSQL schema
+- 排除大文件
+- 排除特殊表
 
-| Argument | Default | Description |  
-| --- | --- | --- |
-| `--data-only` (short: `-a`) | `false` | Exclude any [DDL](https://www.postgresql.org/docs/8.4/ddl.html) statements and export only data. | 
-| `--schema-only` (short: `-s`) | `false` | Exclude data and export only [DDL](https://www.postgresql.org/docs/8.4/ddl.html) statements. | 
-| `--blobs` (short: `-b`) | `true` unless either `-schema`, `--table`, or `--schema-only` options are specified | Include binary large objects. | 
-| `--no-blobs` (short: `-B`) | `false` | Exclude binary large objects. | 
-| `--table` (short: `-t`) | _includes all tables by default_ | Explicitly specify the names of the tables to be dumped. | 
-| `--exclude-table` (short: `-T`) | - | Exclude specific tables from the dump. | 
+以下是在这些情况下可以使用的一些命令行选项的概述：
 
-## Importing data from SQL files
+| 参数项                        | 默认值         | 描述                                                                        |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `--data-only` (简称: `-a`)     | `false`                                                                             | 排除任何 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句，仅导出数据。|
+| `--schema-only` (简称: `-s`)   | `false`                                                                             | 排除数据并仅导出 [DDL](https://www.postgresql.org/docs/8.4/ddl.html) 语句。    |
+| `--blobs` (简称: `-b`)         |  除非指定 `-schema`, `--table`, 或仅 `--schema-only` 选项，否则为 `true`|包括二进制大对象。                                                                 |
+| `--no-blobs` (简称: `-B`)      | `false`                                                                             | 排除二进制大对象。                                                     |
+| `--table` (简称: `-t`)         | 默认包含所有表                                                    | 明确指定要 dump 的表的名称。                                        |
+| `--exclude-table` (简称: `-T`) | -                                                                                   | 从 dump 中排除特定的表。                                           |
 
-After having used SQL Dump to export your PostgreSQL database as a SQL file, you can restore the state of the database by feeding the SQL file into [`psql`](https://www.postgresql.org/docs/9.3/app-psql.html):
+## 从 SQL 文件导入数据
+
+使用 SQL Dump 将 PostgreSQL 数据库导出为 SQL 文件后，您可以通过将 SQL 文件输入到 [`psql`](https://www.postgresql.org/docs/9.3/app-psql.html):
 
 ```
 psql DB_NAME < INPUT_FILE
 ```
 
-You need to replace the `DB_NAME` and `INPUT_FILE` placeholders with the respective values for: 
+您需要将 `DB_NAME` 和 `INPUT_FILE` 占位符替换为以下各项的相应值：
 
-- your **database name** (a database with hat name must be created beforehand!)
-- the name of the target **input file** (likely ends on `.sql`)
+- 您的 **数据库名称** (必须是一个已经创建成功的数据库名称！)
+- 目标 **输入文件** 的名称(可能以 `.sql` 结尾)
 
-To create the database `DB_NAME` beforehand, you can use the [`template0`](https://www.postgresql.org/docs/9.5/manage-ag-templatedbs.html) (which creates a plain user database that doesn't contain any site-local additions):
+要预先创建数据库 `DB_NAME` ，可以使用 [`template0`](https://www.postgresql.org/docs/9.5/manage-ag-templatedbs.html) (这将创建一个不包含任何站点本地添加内容的普通用户数据库):
 
 ```sql
 CREATE DATABASE dbname TEMPLATE template0;

@@ -1,18 +1,18 @@
-# Importing and exporting data with SQLite
+# 使用 SQLite 导入和导出数据
 
-This document describes how you can export data from and import data into a SQLite database. You can learn more about this topic in the official [SQLite docs](https://www.sqlitetutorial.net/sqlite-dump/).
+本文档介绍了如何从 SQLite 数据库导出数据以及将数据导入 SQLite 数据库。您可以在官方 [SQLite 文档](https://www.sqlitetutorial.net/sqlite-dump/)中了解有 关此主题的更多信息。
 
-## Data export with `sqlite3`
+## 使用 `sqlite3` 导出数据 
 
-[`sqlite3`](https://www.sqlite.org/cli.html) is a native SQLite command line utility you can use for various workflows accross your SQLite database. To see all the options for this command, run `sqlite3 --help`. Exporting data is typically done with the `.dump` command within the `sqlite3` prompt.
+[`sqlite3`](https://www.sqlite.org/cli.html) 是一个本地 SQLite 命令行实用程序，可用于整个 SQLite 数据库的各种工作流程。要查看此命令的所有选项，请运行 `sqlite3 --help`。导出数据通常是在 `sqlite3` 提示符下使用 `.dump` 命令完成的。
 
-To export data, you need to enter the `sqlite3` prompt and point it to the location of your SQLite database file (ends on `.db`):
+要导出数据，您需要输入 `sqlite3` 提示符并将其指向您的SQLite数据库文件的位置（以 `.db` 结尾）：
 
 ```
 sqlite3 ./dev.db
 ```
 
-Once you're in the prompt, you can export data as follows:
+出现提示后，可以按以下方式导出数据：
 
 ```
 sqlite> .output ./backup.sql
@@ -20,7 +20,7 @@ sqlite> .dump
 sqlite> .exit
 ```
 
-Alternatively, you can export a specific table by adding the table name after the `.dump` command in the prompt. For example the following command only dumps the `users` table:
+另外，您可以通过在提示中的 `.dump` 命令之后添加表名来导出特定表。例如，以下命令仅 dump `users` 表:
 
 ```
 sqlite> .output ./backup_users.sql
@@ -28,7 +28,7 @@ sqlite> .dump users
 sqlite> .exit
 ```
 
-If you want to exclude all data and only export the _database schema_ ([DDL](https://en.wikipedia.org/wiki/Data_definition_language)), you can use `.schema` instead of `.dump`:
+如果要排除所有数据而仅导出 _数据库 schema_ ( [DDL](https://en.wikipedia.org/wiki/Data_definition_language) ), 则可以使用 `.schema` 而不是 `.dump`:
 
 ```
 sqlite> .output ./backup_schema.sql
@@ -36,17 +36,19 @@ sqlite> .schema
 sqlite> .exit
 ```
 
-## Importing data from SQL files
+## 从 SQL 文件导入数据
 
-After having used the `.dump` command insinde the `sqlite3` prompt to export your SQLite database as a SQL file, you can restore the state of the database by feeding the SQL file back into `sqlite3` using the `.read` command.
+使用 `.dump` 命令插入 `sqlite3` 提示符以将 SQLite 数据库导出为 SQL 文件后，您可以通过使用 `.read` 命令将 SQL 文件返回到 `sqlite3` 中来恢复数据库的状态。 。
 
 Before you can use the `.read` command, you need to enter the `sqlite3` prompt and point it to your SQLite database file:
+
+在使用 `.read` 命令之前，您需要输入 `sqlite3` 提示符并将其指向您的 SQLite 数据库文件：
 
 ```
 sqlite3 ./restore.db
 ```
 
-Now you can import the data from your SQL files as follows:
+现在，您可以按照以下步骤从 SQL 文件导入数据：
 
 ```
 .read ./backup.sql
