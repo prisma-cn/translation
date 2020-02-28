@@ -7,8 +7,6 @@ author_image_url: https://avatars1.githubusercontent.com/u/54462?s=460&v=4
 author_title: 数据分析、机器学习、JS/TS技术爱好者
 ---
 
-# Prisma 的 schema 文件
-
 schema 文件 (简称: _schema file_, _Prisma schema_ 或 _schema_) 是 Prisma 的主要配置文件. 它通常叫做 `schema.prisma`, 且由以下部分构成:
 
 - [**数据源**](./data-sources.md): 用来说明 Prisma 如何连接到数据源(例如 PostgreSQL 数据库)
@@ -17,8 +15,8 @@ schema 文件 (简称: _schema file_, _Prisma schema_ 或 _schema_) 是 Prisma �
 
 当执行 `prisma2` 命令时，CLI 会从 schema 文件中读取内容并进行相关操作，比如:
 
-- `prisma2 generate`: 从 schema 文件中读取 _所有的_ 上述信息，然后生成数据源客户端代码(比如 Photon.js).
-- `prisma2 migrate save --experimental`: 读取数据源和数据模型定义，然后进行一次迁移.
+- `prisma2 generate`: 从 schema 文件中读取 _所有的_ 上述信息，然后生成数据源客户端代码(比如 Prisma Client JS).
+- `prisma2 migrate save --experimental`: 读取数据源和数据模型定义，然后进行一次迁移 migration。
 
 在使用 CLI 命令时，你还可以在 schema 文件中[使用环境变量](#使用环境变量)。
 
@@ -44,7 +42,7 @@ model User {
   email     String   @unique
   name      String?
   role      Role     @default(USER)
-  posts     Post[]
+  post      Post[]
 }
 
 model Post {
@@ -82,17 +80,17 @@ schema 文件是用 Prisma Schema Language(PSL)编写的。 你可以在[规范]
 
 #### 配置数据源的字段
 
-| 名称       | 是否必需 | 类型                                   | 说明                                                                                                                                                 |
-| ---------- | -------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider` | **是**  | Enum (`postgresql`, `mysql`, `sqlite`) | 说明要使用的数据源连接器.                                                                                                               |
-| `url`      | **是**  | String (URL)                           | 包含认证信息的连接 URL. 每个数据源连接器文档中都有对应的 URL 构成语法。大多数连接器的 URL 语法就是对应数据库 URL 的语法。 |
-| `enabled`  | 否       | Boolean                                | 是否能使用环境变量配置数据源. **默认**: `true`.                                                                             |
+| 名称       | 是否必需 | 类型                                   | 说明                                                                                                                      |
+| ---------- | -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `provider` | **是**   | Enum (`postgresql`, `mysql`, `sqlite`) | 说明要使用的数据源连接器.                                                                                                 |
+| `url`      | **是**   | String (URL)                           | 包含认证信息的连接 URL. 每个数据源连接器文档中都有对应的 URL 构成语法。大多数连接器的 URL 语法就是对应数据库 URL 的语法。 |
+| `enabled`  | 否       | Boolean                                | 是否能使用环境变量配置数据源. **默认**: `true`.                                                                           |
 
 数据源连接器可以带有自己的字段，这样可以让用户根据所连接数据源的特定功能定制其数据模型。
 
 #### 命名约定
 
-数据源通常是以提供者(`provider`)的名字命名(比如下面使用数据库名来命名):
+数据源通常是以(`provider`)的名字命名(比如下面使用数据库名来命名):
 
 ```prisma
 datasource sqlite {
@@ -119,11 +117,11 @@ datasource postgresql {
 
 #### 字段
 
-| 名称            | 是否必需     | 类型                                                                                                                                  | 说明                                                                                                                      |
-| --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`      | **是**      | 字符串(是一个文件路径)或 枚举类型(Enum (`prisma-client-js`))                                                                               | 描述要使用哪个生成器。这可以指向实现生成器的文件，也可以直接指定内置生成器(比如 `prisma-client-js`) |
-| `output`        | _(可选)_ | 字符串(是一个文件路径)                                                                                                                    | 决定了生成的客户端的位置                                                                                |
-| `binaryTargets` | _(可选)_ | 枚举类型的列表 (预构建的二进制文件 [在这里](https://github.com/prisma/specs/blob/master/binaries/Readme.md#table-of-binaries)). | 用声明的方式下载所需的二进制文件                                                                               |
+| 名称            | 是否必需 | 类型                                                                                                                            | 说明                                                                                                |
+| --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `provider`      | **是**   | 字符串(是一个文件路径)或 枚举类型(Enum (`prisma-client-js`))                                                                    | 描述要使用哪个生成器。这可以指向实现生成器的文件，也可以直接指定内置生成器(比如 `prisma-client-js`) |
+| `output`        | _(可选)_ | 字符串(是一个文件路径)                                                                                                          | 决定了生成的客户端的位置                                                                            |
+| `binaryTargets` | _(可选)_ | 枚举类型的列表 (预构建的二进制文件 [在这里](https://github.com/prisma/specs/blob/master/binaries/Readme.md#table-of-binaries)). | 用声明的方式下载所需的二进制文件                                                                    |
 
 - 生成器可以有自己的字段，允许用户自定义的生成行为
 - Both `binaryTargets`.(译: 这一部分可忽略, Prisma 现在会根据不同的操作系统自动下载需要的二进制文件)
@@ -150,7 +148,7 @@ generator ts {
 }
 ```
 
-> **注**: prisma-client-js 默认的输出路径是你的 `node_modules` 目录. 可以像上面代码片段中的第二个示例一样, 指定输出路径。
+> **注**: prisma-client-js 默认的输出路径是你的 `node_modules` 目录。也可以像上面代码片段中的第二个示例一样, 指定输出路径。
 
 ### 数据模型定义
 
@@ -213,9 +211,8 @@ DATABASE_URL=postgresql://test:test@localhost:5432/test?schema=public
 
 当运行任何需要访问通过 `datasource` 定义的数据库的命令时(例如 Prisma 2 introspect)，Prisma CLI 会自动从 `.env` 文件读取加载 `DATABASE_URL` 环境变量。
 
-> **警告**: 不要把你的 `.env` 文件提交到版本控制系统里面去.
+> **警告**: 不要把你的 `.env` 文件提交到版本控制系统如 github 里面去.
 
-<!--
 ### 通过环境变量切换数据源
 
 你可以通过环境变量使用不同的环境, 比如:
@@ -245,18 +242,18 @@ export POSTGRES_URL=postgresql://test:test@localhost:5432/test?schema=public
 
 ```bash
 source ./dev_env
-``` -->
+```
 
 ### 在 Prisma Client JS 中使用环境变量
 
 虽然 Prisma 2 CLI 会自动使用 `.env` 文件，但 Prisma Client JS 不能原生支持 [`dotenv`](https://github.com/motdotla/dotenv) 或类似的库. 如果你想要在运行时使用不同的环境变量, 你需要在代码中实例化 `PrismaClient` 之前手动读入环境变量, 比如使用 `dotenv`:
 
 ```ts
-import { PrismaClient } from '@prisma/client'
-import * as dotenv from 'dotenv'
+import { PrismaClient } from '@prisma/client';
+import * as dotenv from 'dotenv';
 
-dotenv.config() // 读入环境变量
-const prisma = new PrismaClient()
+dotenv.config(); // 读入环境变量
+const prisma = new PrismaClient();
 ```
 
 ## 注释
@@ -264,7 +261,7 @@ const prisma = new PrismaClient()
 schema 文件中有两种类型的注释:
 
 - `// 注释`: 这种注释是为了 schema 文件的可读性，它并不会存在于 schema 的抽象语法树(AST)中.
-- `/// 注释`:  这种注释会出现在 schema 文件的抽象语法树(AST)中, 可以用来对 AST 的节点进行描述, 也可以是自由、浮动的注释. 其他工具可以使用这些注释向用户提供额外的信息.
+- `/// 注释`: 这种注释会出现在 schema 文件的抽象语法树(AST)中, 可以用来对 AST 的节点进行描述, 也可以是自由、浮动的注释. 其他工具可以使用这些注释向用户提供额外的信息.
 
 这有几个不同的例子:
 
@@ -279,7 +276,7 @@ model User {
 
 // 这句注释只是为了方便你理解. 它不会出现在 AST 中.
 
-/// 这句自由、浮动的注释会以 `Comment` 节点出现在 AST 中, 
+/// 这句自由、浮动的注释会以 `Comment` 节点出现在 AST 中,
 /// 但是它不会附加到任何其他的节点上. 我们在其他地方可以使用它的注释内容, 就像
 /// godoc.org 做的那样.
 
@@ -291,12 +288,12 @@ model Customer {}
 在 [gofmt](https://golang.org/cmd/gofmt/) 和 [prettier](https://github.com/prettier/prettier) 工具的带领下, PDL 语法提供了对
 `.prisma` 文件格式化的能力.
 
-有点像 `gofmt`, 但不像 `prettier`, 这里没有办法配置具体怎样格式化. **只能以一种方式格式化 prisma 文件**.
+有点像 `gofmt`, 但不像 `prettier`, 这里没有办法配置具体怎样格式化. **只能以一种固定方式格式化 prisma 文件**.
 
 这种严格的方式有两个好处:
 
 1. 不会有屎色自行车棚的问题(译: 参见[由屎色自行车棚引发的思考](https://juejin.im/post/5aa882eaf265da23923607bd)). Go 社区有这么一句话, "Gofmt 的风格没人会喜欢, 但是 Gofmt 的风格是每个人的最爱."
-2. 版本控制系统中, 不会有 schema 中空格不同, 这种类型的提交.
+2. 版本控制系统中, 不会有 schema 中"空格不同"这种类型的提交.
 
 ### 格式化规则
 
@@ -345,7 +342,7 @@ block _ {
 ```prisma
 block _ {
   id          String       @id
-  first_name  LongNumeric  @default
+  first_name   LongNumeric  @default
 }
 ```
 
@@ -355,7 +352,7 @@ block _ {
 block _ {
   id          String       @id
                            @default
-  first_name  LongNumeric  @default
+  first_name   LongNumeric  @default
 }
 ```
 
