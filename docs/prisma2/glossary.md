@@ -18,7 +18,7 @@ author_title: 代码小白
 - [迁移引擎-Migration engine](#migration-engine)
 - [模型-Model](#model)
 - [数据模型定义-Data model definition](#data-model-definition)
-- [嵌套写法-Nested write](#nested-write)
+- [嵌套写入-Nested write](#nested-write)
 - [Prisma 客户端-Prisma Client](#prisma-client)
 - [Prisma schema 文件-Prisma schema file](#prisma-schema-file)
 - [标量类型-Scalar type](#scalar-type)
@@ -90,9 +90,9 @@ PSL 是书写[schema 文件](#prisma-schema-file)的语法的名字。
 
 包含你所有模型的定义。[数据模型定义](./data-modeling.md#data-model-definition) 也是[schema 文件](#prisma-schema-file)的一部分。
 
-### 嵌套写法-Nested write
+### 嵌套写入-Nested write
 
-Prisma Client JS 允许你执行嵌套创建, 嵌套更新和相关模型的嵌套连接。[嵌套写法](./relations.md#nested-writes) 总是带有原子性事物的。 [了解更多相关 Prisma Client JS API](./prisma-client-js/api.md).
+Prisma Client JS 允许你执行嵌套创建, 嵌套更新和相关模型的嵌套连接。[嵌套写法](./relations.md#nested-writes) 都是带有原子性事务的。 [了解更多相关 Prisma Client JS API](./prisma-client-js/api.md).
 
 ### Prisma 客户端-Prisma Client
 
