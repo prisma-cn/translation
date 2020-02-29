@@ -1,6 +1,5 @@
 # 升级指引 (Prisma 1 to Prisma 2)
 
-This upgrade guide describes how to migrate a Node.js project that's based on [Prisma 1](https://github.com/prisma/prisma) and uses the [Prisma client](https://www.prisma.io/docs/prisma-client/) to Prisma 2.
 该升级指用于帮助你将一个基于[Prisma 1](https://github.com/prisma/prisma)并使用了[Prisma client](https://www.prisma.io/docs/prisma-client/)的Node.js项目迁移到Prisma 2。
 
 ## Overview
