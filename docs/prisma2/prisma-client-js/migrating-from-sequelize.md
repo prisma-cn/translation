@@ -1,3 +1,12 @@
+---
+title: 从Sequelize迁移到Prisma Client JS
+description: 本章提供了从Sequelize迁移到Prisma Client JS的流程
+author: LiaoEden
+author_url: https://juejin.im/user/58b6389aac502e006bb55168
+author_image_url: https://avatars1.githubusercontent.com/u/28903167?s=460&v=4
+author_title: Prisma 爱好者
+---
+
 # 教程: 从Sequelize迁移到Prisma Client JS
 
 <!-- [Sequelize](https://sequelize.org/) and [Prisma Client JS](https://photonjs.prisma.io/) both act as abstraction layers between your application and your database, but each works differently under the hood and provides different types of abstractions. -->
