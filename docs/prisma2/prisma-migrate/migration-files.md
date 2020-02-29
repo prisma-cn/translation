@@ -1,6 +1,13 @@
-# Migration files
+---
+title: 迁移文件
+description: Prisma 2 迁移文件，介绍了如何在 Prisma 2 中进行 Schema 的迁移。
+author: Zander
+author_url: https://xuezenghui.com
+author_image_url: https://xuezenghui.com/images/avatar.jpeg
+author_title: 能饮一杯无？
+---
 
-When saving a migration with `prisma2 migrate save --experimental`, Prisma creates three migration files for you:
+使用`prisma2 migrate save --experimental`命令可保存迁移，Prisma 会为你创建以下三个迁移文件：
 
 - `README.md`
 - `datamodel.prisma`
@@ -8,15 +15,15 @@ When saving a migration with `prisma2 migrate save --experimental`, Prisma creat
 
 ## `README.md`
 
-The README contains information about the migration in human-readable form:
+README 以易于理解的 Markdown 格式记录迁移的有关信息：
 
-- An overview of the SQL statements that will be executed by Prisma when you run `prisma2 migrate up --experimental`
-- A diff of the changes in your [Prisma schema](../prisma-schema-file.md)
+- 当你运行 `prisma2 migrate up --experimental` 命令时，Prisma 将会执行 SQL 语句的概述。
+- 你的 [Prisma schema](../prisma-schema-file.md) 迁移前后的变化及差异。
 
 ## `schema.prisma`
 
-The `schema.prisma` file represents the target [Prisma schema](../prisma-schema-file.md) of the migration.
+`schema.prisma` 文件为迁移完成后的 [Prisma schema](../prisma-schema-file.md)。
 
 ## `steps.json`
 
-The `steps.json` is another representation of the steps that will be performed by Prisma when you're executing the migration with `prisma2 migrate up --experimental`. You can learn more about it in the [spec](https://github.com/prisma/specs/tree/master/lift#step).
+当你使用 `prisma2 migrate up --experimental` 命令进行 Prisma 的迁移操作时，执行的步骤也会记录在 `steps.json` 文件中，你可以在 [spec](https://github.com/prisma/specs/tree/master/lift#step) 中了解相关的更多信息。
