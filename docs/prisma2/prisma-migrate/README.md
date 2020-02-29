@@ -1,7 +1,7 @@
-# Prisma Migrate
+# Prisma 迁移
 
-This directory contains the documentation for the Prisma Migrate, Prisma 2's schema migration tool. To learn more about the respective CLI commands, check out the docs for the [Prisma 2 CLI](../prisma2-cli.md).
+该目录包含 Prisma Migrate（Prisma2 的 Schema 迁移工具）的相关文档。要想了解有关各个 CLI 命令的更多信息，请查看 [Prisma 2 CLI](../prisma2-cli.md) 文档。
 
-> **Warning**: Prisma Migrate is currently in an **experimental** state. When using any of the the `prisma2 migrate` commands, you need to explicitly opt-in to that functionality via an `--experimental` flag, e.g. `prisma2 migrate save --experimental`.
+> **警告**: Prisma 迁移功能目前处于“实验”阶段。当使用任何 `prisma2 migrate` 相关命令时，都需要通过 `--experimental` 标志明确您选择使用该功能，例如 `prisma2 migrate save --experimental`。
 
-- [Migration files](./migration-files.md)
+- [迁移文件](./migration-files.md)
