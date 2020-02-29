@@ -1,4 +1,11 @@
-# Prisma 迁移
+---
+title: Prisma Migrate
+description: Prisma Migrate。
+author: Zander
+author_url: https://xuezenghui.com
+author_image_url: https://xuezenghui.com/images/avatar.jpeg
+author_title: 能饮一杯无？
+---
 
 该目录包含 Prisma Migrate（Prisma2 的 Schema 迁移工具）的相关文档。要想了解有关各个 CLI 命令的更多信息，请查看 [Prisma 2 CLI](../prisma2-cli.md) 文档。
 
