@@ -1,10 +1,19 @@
-# Usage with module bundlers
+---
+title: 与模块捆绑器一起使用
+description: 与模块捆绑器一起使用须知
+author: LiaoEden
+author_url: https://juejin.im/user/58b6389aac502e006bb55168
+author_image_url: https://avatars1.githubusercontent.com/u/28903167?s=460&v=4
+author_title: Prisma 爱好者
+---
 
-_Module bundlers_ bundle JavaScript modules into a single JavaScript file. Most bundlers work by copying over the JavaScript code from a variety of source files into the target file. 
+# 与模块捆绑器一起使用
 
-Since Prisma Client JS is not only based on JavaScript code, but also relies on the **query engine binary** to be available, you need to make sure that your bundled code has access to the binary.
+_Module bundlers_ 将JavaScript模块捆绑到一个JavaScript文件中。大多数捆绑程序通过将JavaScript代码从各种源文件复制到目标文件来工作。
 
-To do so, you can use plugins that let you copy over static assets:
+由于Prisma Client JS不仅基于JavaScript代码，而且还依赖于**查询引擎二进制文件**可用，因此您需要确保捆绑的代码可以访问二进制文件。
+
+为此，您可以使用插件来复制静态资源
 
 | Bundler | Plugin |
 | :-- | :-- |
