@@ -1,5 +1,5 @@
 ---
-title: 迁移文件
+title: 迁移文件 Migration Files
 description: Prisma 2 迁移文件，介绍了如何在 Prisma 2 中进行 Schema 的迁移。
 author: Zander
 author_url: https://xuezenghui.com
@@ -17,7 +17,7 @@ author_title: 能饮一杯无？
 
 README 以易于理解的 Markdown 格式记录迁移的有关信息：
 
-- 当你运行 `prisma2 migrate up --experimental` 命令时，Prisma 将会执行 SQL 语句的概述。
+- 当你运行 `prisma2 migrate up --experimental` 命令时 Prisma 将会执行 SQL 语句的概述。
 - 你的 [Prisma schema](../prisma-schema-file.md) 迁移前后的变化及差异。
 
 ## `schema.prisma`
