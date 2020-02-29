@@ -1,3 +1,12 @@
+---
+title: 与模块捆绑器一起使用
+description: 与模块捆绑器一起使用须知
+author: LiaoEden
+author_url: https://juejin.im/user/58b6389aac502e006bb55168
+author_image_url: https://avatars1.githubusercontent.com/u/28903167?s=460&v=4
+author_title: Prisma 爱好者
+---
+
 # 与模块捆绑器一起使用
 
 _Module bundlers_ 将JavaScript模块捆绑到一个JavaScript文件中。大多数捆绑程序通过将JavaScript代码从各种源文件复制到目标文件来工作。
