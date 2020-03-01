@@ -189,7 +189,7 @@ datasource pg {
 
 对很多开发工具而言, 使用 [`.env`](https://github.com/motdotla/dotenv) 来定义环境变量是一种最佳实践.
 
-Prisma 对 `.env` 文件提供原生支持. 这意味着当运行 Prisma CLI 命令时，`.env` 文件将自动加载。
+Prisma 对 `.env` 文件提供原生支持. 这意味着当运行 Prisma CLI 命令时，`.env` 文件将自动加载。**但需要注意，`.env`文件要和 schema 文件放在同一目录。**
 
 比如，通常情况下，你可以通过环境变量来设置数据库连接 URL:
 
@@ -253,6 +253,7 @@ import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // 读入环境变量
+console.log(`The connection URL is ${process.env.DATABASE_URL}`);
 const prisma = new PrismaClient();
 ```
 
