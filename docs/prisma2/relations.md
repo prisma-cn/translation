@@ -7,8 +7,6 @@ author_image_url: https://github.com/xuxusheng.png?size=400
 author_title: qq：20691718，欢迎交流。
 ---
 
-# 关联（Relations）
-
 本章是[数据建模（data modeling）](./data-modeling.md)章节的扩展，详细讨论了数据模型定义中的关联（relations）部分。
 
 页面中的例子都基于这个 [schema 文件](./data-modeling.md)：
@@ -24,7 +22,7 @@ datasource mysql {
 model User {
   id        Int      @id
   posts     Post[]
-  profile   Profile?
+  profile    Profile?
 }
 
 model Profile {
@@ -65,13 +63,13 @@ enum Role {
 - **如果你想要多对多（m：n）的关联，你必须始终指定两个关联字段。** Prisma2 将会维护一个关联表来追踪所有关联的实例。
 - **如果你忽略一个关联字段，该关联将被自动推断为一对多（1:n）的关联。**
   - 如果你忽略了另一端为 _非列表关联字段(non-list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多（1：n）的关联，这意味着缺失的反向关联字段被默认为 _列表（list）_。
-  - 如果你忽略了另一端为 _列表关联字段(list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多（1：n）的关联，这意味着缺失的反向关联字段被默认为 _单个值（single value）_（i.e. not a _list_）。
+  - 如果你忽略了另一端为 _列表关联字段(list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多（1：n）的关联，这意味着缺失的反向关联字段被默认为 _单个值（single value）_（不是 _列表_）。
 
-> **注意**：这种行为可能很快就会改变，并且可能总是要求双方都明确表述关联关系。请遵循[规范](https://github.com/prisma/specs/tree/master/schema#relations)以获取更多信息。
+> **注意**：这种推断可能很快就会改变，并且可能总是要求双方都明确表述关联关系。请遵循[规范](https://github.com/prisma/specs/tree/master/schema#relations)以获取更多信息。
 
 ## `@relation` 属性
 
-`@relation` 属性可以在需要的时候消除关联关系的歧义。
+`@relation` 属性可以在一定程度上消除关联关系的歧义。
 
 用法如下：
 
@@ -79,19 +77,19 @@ enum Role {
 @relation(_name: String?, references: Identifier[]?)
 ```
 
-- `references` _（可选）_：要引用的[字段](./data-modeling.md#fields)名列表。
+- `references` _（可选）_：要引用的[字段](./data-modeling.md#fields)列表。
 - `name` _（可选）_：定义关联关系的 _名称_。如果是多对多（m：m）的关联, 这个名字还决定了底层数据库中关联表的名称。
 
-> **注意**：级联删除尚未实现。你可以在这个 [GitHub issue](https://github.com/prisma/prisma2/issues/267) 中追踪这个功能的进度。
+> **注意**：级联删除尚未实现。你可以在这个 [GitHub issue](https://github.com/prisma/prisma2/issues/267) 中查看这个功能的进度。
 
 ## 1:1
 
-要保持1：1关联，必须始终在关联的两端指定关联字段。 Prisma 可以防止在关联中意外存储多个记录。
+要保持 1：1 关联，必须始终在关联的两端指定关联字段。 Prisma 可以防止在关联中意外存储多个记录。
 
 ```prisma
 model User {
   id        Int      @id
-  profile   Profile?
+  profile    Profile?
 }
 
 model Profile {
@@ -118,7 +116,7 @@ model Profile {
 ```prisma
 model User {
   id        Int      @id
-  profile   Profile? @relation(references: [id])
+  profile    Profile?  @relation(references: [id])
 }
 
 model Profile {
@@ -143,7 +141,7 @@ model Profile {
 ```prisma
 model User {
   id        Int        @id
-  customer  Profile?   @relation(references: id)
+  customer  Profile?    @relation(references: id)
 }
 
 model Profile {
@@ -212,7 +210,7 @@ model Post {
 
 ## m:n
 
-两侧的返回值都有可能是一个为空的列表，这是对关系型数据库中标准实现的改进，关系型数据库要求应用程序开发人员处理诸如中间关系表之类的实现细节。在Prisma中，每个连接器都将以给定存储引擎上最有效的方式来实现此概念，并暴露 API 同时隐藏实现细节。
+双方的返回值都有可能是一个为空的列表，这是对关系型数据库中标准实现的改进，关系型数据库要求应用程序开发人员处理诸如中间关系表之类的实现细节。在 Prisma 中，每个连接器都将以给定存储引擎上最有效的方式来实现此概念，暴露 API 的同时隐藏了实现细节。
 
 ```prisma
 model Post {
@@ -237,8 +235,8 @@ Prisma 会为每个模型创建一张表，并加上下面所示的关联表：
 | id           | integer |
 
 | **\_CategoryToPost** |         |
-| ------------------ | ------- |
-| id                 | integer |
+| -------------------- | ------- |
+| id                   | integer |
 
 要修改关联表的名称，你可以使用 `@relation` 属性的 `name` 参数：
 
@@ -265,9 +263,8 @@ model Category {
 | id           | integer |
 
 | **\_MyRelationTable** |         |
-| ------------------ | ------- |
-| id                 | integer |
-
+| --------------------- | ------- |
+| id                    | integer |
 
 > **注意**：现在无法删除关系表名称的下划线，但很快就会支持。在[规范](https://github.com/prisma/specs/blob/master/schema/Readme.md#explicit-many-to-many-mn-relationships)中了解更多信息。
 
@@ -284,10 +281,10 @@ model User {
 
 这会被作为 1：1 的关联关系处理，结果如下表所示：
 
-| **User** |         |
-| ------------ | ------- |
-| id           | integer |
-| reportsTo    | integer |
+| **User**  |         |
+| --------- | ------- |
+| id        | integer |
+| reportsTo | integer |
 
 对于 1：n 的关联关系，你需要让自引用字段是一个列表：
 
@@ -320,7 +317,7 @@ model User {
 }
 ```
 
-如果你的模型有不止一个自引用，你必须明确的加上所有的关联字段，同时用 `@relation` 属性来修饰他们。
+如果你的模型有不止一个自引用，你必须明确的加上所有的关联字段，同时用 `@relation` 属性来指定它们。
 
 ```prisma
 model User {
@@ -338,52 +335,49 @@ model User {
 [自动生成的 Prisma Client JS API](./prisma-client-js/api.md)附带了许多非常有用的与关联相关的功能（示例如下）：
 
 - 使用 Fluent API 遍历返回的对象上的关联关系。
-- Fluent API to traverse relations on the returned object
 - 基于事务的嵌套创建、更新和连接（也称为嵌套写入）
 - 通过 `select` 和 `include` 嵌套读取（eager loading）
-- 关联过滤器（关联对象上的过滤器，i.e. 在应用过滤器之前执行JOIN）
+- 关联过滤器（关联对象上的过滤器，例如在应用过滤器之前执行 JOIN）
 
 ### Fluent API
 
-Fluent API 使您可以通过函数调用来流畅的遍历模型之间的关联关系，需要注意的是最后一个函数调用的最后一个模型决定了整个请求返回的内容。
+Fluent API 可以通过函数调用遍历模型之间的关联关系，需要注意的是最后一个函数调用的最后一个模型决定了整个请求返回的内容。
 
 这个请求会返回指定 `user` 的所有 `post`：
 
 ```ts
 const postsByUser: Post[] = await prisma.user
   .findOne({ where: { email: 'ada@prisma.io' } })
-  .posts()
+  .posts();
 ```
 
 这个请求会返回指定 `post` 的所有 `category`；
 
 ```ts
-const categoriesOfPost: Category[] = await prisma.post
-  .findOne({ where: { id: 1 } })
-  .categories()
+const categoriesOfPost: Category[] = await prisma.post.findOne({ where: { id: 1 } }).categories();
 ```
 
 尽管 Fluent API 允许你使用可链式调用的查询，有时你可能想要在已经知道特定字段的情况下处理特定的模型（比如获取指定 `author` 的所有 `post`）。
 
-你可以像这样重写查询：
+查询如下所示：
 
 ```ts
 const postsByUser: Post[] = await prisma.post.findMany({
   where: {
     author: { id: author.id },
   },
-})
+});
 ```
 
-注意，如果要查询关联关系，你必须指定要搜索的字段（`id`）。
+注意，如果要查询关联关系，你必须要指定搜索字段的（`id`）。
 
 ### 嵌套写入 (事务)
-  
+
 嵌套写入提供了一个强大的 API 来将关联数据写入你的数据库。并进一步对在同一个 Prisma Client JS API 调用中跨多个表的创建、更新和删除操作提供了事务保证。嵌套写入的嵌套级别可以是任意深度的。
 
 当使用模型的创建（`create`）或更新（`update`）函数时，模型的关联字段可以使用嵌套写入。每个函数都可以使用下列的嵌套写入操作。
 
-- 一对一（1：1）关联字段 (e.g. 上面示例数据模型中 `User` 的 `profile` 字段)
+- 一对一（1：1）关联字段 (例如上面示例数据模型中 `User` 的 `profile` 字段)
   - `create`
     - `create`: 创建新的 user 和新的 profile
     - `connect`: 创建新的 user 并关联到现有 profile
@@ -394,7 +388,7 @@ const postsByUser: Post[] = await prisma.post.findMany({
     - `upsert`: 通过更新关联的 profile 或创建新 profile 来更新 user
     - `delete` (仅当关联是可选的情况下): 删除现有 profile 来更新 user
     - `disconnect` (仅当关联是可选的情况下): 通过移除和 profile 的关联来更新 user
-- 一对多（1：n）关联字段 (e.g. 上面示例数据模型中 `User` 的 `posts` 字段)
+- 一对多（1：n）关联字段 (例如上面示例数据模型中 `User` 的 `posts` 字段)
   - `create`
     - `create`: 创建一个新 user 和一个或多个新 post
     - `connect`: 创建一个新 user 并关联到一个或多个现有 post
@@ -423,7 +417,7 @@ const newUser: User = await prisma.user.create({
       ],
     },
   },
-})
+});
 ```
 
 ```ts
@@ -435,7 +429,7 @@ const updatedPost: Post = await prisma.post.update({
       connect: { email: 'alice@prisma.io' },
     },
   },
-})
+});
 ```
 
 ```ts
@@ -447,7 +441,7 @@ const post: Post = await prisma.post.update({
   where: {
     id: 'ck0c7jl4t0001jpcbfxft600e',
   },
-})
+});
 ```
 
 在下个示例中，假设有一个叫做 `Comment` 的模型，并关联到 `User` 和 `Post`，如下所示：
@@ -508,8 +502,7 @@ const post = await prisma.post.create({
                         name: 'Bob',
                         posts: {
                           create: {
-                            title:
-                              'I am Bob and this is the first post on my blog',
+                            title: 'I am Bob and this is the first post on my blog',
                           },
                         },
                       },
@@ -523,7 +516,7 @@ const post = await prisma.post.create({
       },
     },
   },
-})
+});
 ```
 
 ### 嵌套读取 (贪婪加载 eager loading)
@@ -537,20 +530,20 @@ const allPosts = await prisma.post.findMany({
     id: true,
     author: true,
   },
-})
+});
 ```
 
 ```ts
-// 返回的 post 对象会包含 `Post` 模型中所有的标量类型，以及每个 post 的所有类型信息（categories）
+// 返回的 post 对象会包含 `Post` 模型中所有的标量类型，以及每个 post 的所有分类信息（categories）
 const allPosts = await prisma.post.findMany({
   include: {
     categories: true,
   },
-})
+});
 ```
 
 ```ts
-// 返回的对象会包含 `User` 模型的所有标量类型，以及他们对应的所有 post 数据，以及 post 对应的 author，以及 author 对应的所有 post 数据。
+// 返回的对象会包含 `User` 模型的所有标量类型，以及他们对应的所有 post 数据，以及 post 对应的 author，以及 author 对应的所有 post 数据。该嵌套仅展示，并无实际意义。
 await prisma.user.findMany({
   include: {
     posts: {
@@ -563,7 +556,7 @@ await prisma.user.findMany({
       },
     },
   },
-})
+});
 ```
 
 ### 关联过滤器（Relation filters）
@@ -580,5 +573,5 @@ const posts: Post[] = await prisma.user
     where: {
       title: { startsWith: 'Hello' },
     },
-  })
+  });
 ```
