@@ -1,10 +1,18 @@
-# PostgreSQL data source connector
+---
+title: Prisma 2 Core PostgreSQL connector
+description: 本章为Prisma 2 核心组件 PostgreSql 数据连接器
+author: wsafight
+author_url: https://github.com/wsafight
+author_title: Prisma 爱好者
+---
 
-The PostgreSQL data source connector connects Prisma to a PostgreSQL database server.
+# PostgreSQL 数据源连接器
 
-## Example
+PostgreSQL 数据源连接器将 Prisma 连接到 PostgreSQL 数据。
 
-To connect to a PostgreSQL database server, you need to configure a [`datasource`](../../prisma-schema-file.md#data-sources) block in your [schema file](../../prisma-schema-file.md):
+## 例子
+
+要连接到 PostgreSQL 数据库服务，您需要在 [schema 文件](../../prisma-schema-file.md)中配置一个 [`datasource` 数据源](../../prisma-schema-file.md#d数据源):
 
 ```prisma
 datasource postgresql {
@@ -12,21 +20,23 @@ datasource postgresql {
   url      = env("DATABASE_URL")
 }
 
-// ... the file should also contain a data model definition and (optionally) generators
+// ... 文件还应该包含数据模型定义和(可选的)生成器
 ```
 
-The fields passed to the `datasource` block are:
+`datasource` 定义如下：
 
-- `provider`: Specifies the `postgresql` data source connector.
-- `url`: Specifies the [connection string](#connection-string) for the PostgreSQL database server. In this case, we're [using an environment variable](../../prisma-schema-file.md#using-environment-variables) to provide the connection string.
+- `provider`: 用 `postgresql` 指定 PostgreSQL 数据源连接器。
+- `url`: 指定 PostgreSQL 数据库的[连接字符串](#connection-string)。在这种情况下，我们 [使用环境变量](../../prisma-schema-file.md#使用环境变量) 来提供连接字符串。
 
-Find more information on the `datasource` fields [here](../../prisma-schema-file.md#data-sources).
 
-## Data model mapping
+可以在配置项 `datasource` 中找到更多信息 [点击这里](../../prisma-schema-file.md#数据源)。
 
-The PostgreSQL connector maps the [scalar types](../../data-modeling.md#scalar-types) from the [data model](../../data-modeling.md#scalar-types) as follows to native column types:
+## 数据模型映射
 
-| Data model  | PostgreSQL  |
+PostgreSQL 连接器将[标量类型](../../data-modeling.md#标量类型)从[数据模型](../../data-modeling.md)映射到原生数据类型，如下所示：
+
+
+| 数据模型  | PostgreSQL  |
 | -------- | --------- | 
 | `String`   | `text`      | 
 | `Boolean`  | `boolean`   |
@@ -34,14 +44,14 @@ The PostgreSQL connector maps the [scalar types](../../data-modeling.md#scalar-t
 | `Float`    | `real`      |
 | `Datetime` | `timestamp` |
 
-## Connection details
+## 连接细节
 
-### Connection string
+### 连接字符串
 
-PostgreSQL offers two styles of connection strings:
+PostgreSQL 提供两种方式的连接字符串：
 
-- Key-value string: `host=localhost port=5432 database=mydb connect_timeout=10`
-- Connection URI:
+- 键值对字符串: `host=localhost port=5432 database=mydb connect_timeout=10`
+- 连接 URI:
   ```
   postgresql://
   postgresql://localhost
@@ -53,60 +63,60 @@ PostgreSQL offers two styles of connection strings:
   postgresql://host1:123,host2:456/somedb?target_session_attrs=any&application_name=myapp
   ```
 
-See the [official documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) for details.
+请参考[官方文档](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING)了解更多详细信息。
 
-The connection URI needs to follow the [official format](https://www.postgresql.org/docs/10/libpq-connect.html#id-1.7.3.8.3.6) for PostgreSQL connection strings:
+连接 URI 必须遵循PostgreSQL连接字符串的[正式格式](https://www.postgresql.org/docs/10/libpq-connect.html#id-1.7.3.8.3.6)：
 
 ```
 postgresql://[user[:password]@][netloc][:port][,...][/database][?param1=value1&...]
 ```
 
-### Configuration options
+### 配置选项
 
-- `host`: The IP address/domain of your database server, e.g. `localhost`.
-- `port`: The port on which your database server listens, e.g. `5432`.
-- `database`: The name of the database with the target schema. 
-- `schema`: The name of the target schema. **Default**: `public`.
-- `user`: The database user, e.g. `admin`.
-- `password`: The password for the database user.
-- `connection_limit`: The connection limit specifies the maximum number of simultaneous connections that Prisma might have open to your database. The **default value** is calculated according to this formula: `num_physical_cpus * 2 + 1`.
-- `connect_timeout`: The maximum number of seconds to wait for a new connection. **Default**: `5`. 
-- `socket_timeout`: The maximum number of seconds to wait until a single query terminates. **Default**: `5`. 
+- `host`: 数据库服务器的 IP address/domain， e.g. `localhost`.
+- `port`: 数据库监听端口， e.g. `5432`。
+- `database`: 数据库名称以及目标 schema。 
+- `schema`: 目标 schema 名称。 **默认**: `public`.
+- `user`: 数据库用户, e.g. `admin`.
+- `password`: 数据库用户密码。
+- `connection_limit`: 指定限制 Prisma 连接数据库的的最大连接数。 **默认值** 计算公式: `物理 cpu 数量 * 2 + 1`。
+- `connect_timeout`: 等待新连接的最大秒数。 **默认**: `5`。 
+- `socket_timeout`: 等待单个查询终止的最大秒数。 **默认**: `5`。 
 
-See the next section to learn how you can configure an SSL connection.
+请参阅下一节以了解如何配置SSL连接。
 
-### Configuring an SSL connection
+### 配置 SSL 连接
 
-You can add various parameters to the connection string if your database server uses SSL. Here's an overview of the possible parameters:
+如果你需要在数据库服务连接使用中使用 SSL，可以在连接字符串中添加各种参数，以下是可能使用的参数概述：
 
 - `sslmode=(disable|prefer|require)`: 
-  - `prefer` (default): Prefer TLS if possible, accept plain text connections. 
-  - `disable`: Do not use TLS.
-  - `require`: Require TLS or fail if not possible.
-- `sslcert=<PATH>`: Path the the server certificate. This is the root certificate used by the database server to sign the client certificate. You need to provide this if the certificate doesn't exist in the trusted certificate store of your system. For Google Cloud this likely is `server-ca.pem`.
-- `sslidentity=<PATH>`: Path to the PKCS12 certificate database created from client cert and key. This is the SSL identity file in PKCS12 format which you will generate using the client key and client certificate. It combines these two files in a single file and secures them via a password (see next parameter). You can create this file using your client key and client certificate by using the following command (using `openssl`):
+  - `prefer` (默认): 尽可能使用 TLS，接受纯文本连接。
+  - `disable`: 不使用 TLS。
+  - `require`: 必须 TLS 或者在不可能使用 TLS 时失败。
+- `sslcert=<PATH>`: 服务器证书的路径。这是数据库服务器用来签署客户端证书的根证书。 如果系统的受信任证书存储中不存在证书，则需要提供此信息。对于 Google Cloud 则类似于 `server-ca.pem`。
+- `sslidentity=<PATH>`: 通过客户端证书和密钥创建的PKCS12证书数据库的路径。这是PKCS12格式的SSL身份文件，您将使用客户机密钥和客户机证书生成该文件。 它将这两个文件合并为一个文件，并通过密码保护它们（请参阅下一个参数）。.您可以使用以下命令（`openssl`）根据客户端密钥和客户端证书来创建此文件：
     ```
     openssl pkcs12 -export -out client-identity.p12 -inkey client-key.pem -in client-cert.pem
     ```
-- `sslpassword=<PASSWORD>`: Password that was used to secure the PKCS12 file. The `openssl` command listed in the previous step will ask for a password while creating the PKCS12 file, you will need to provide that same exact password here.
+- `sslpassword=<PASSWORD>`: 用于保护PKCS12文件的密码。 上一步中列出的 `openssl` 命令在创建PKCS12文件时会要求输入密码，您需要在此处提供相同的确认密码。
 - `sslaccept=(strict|accept_invalid_certs)`: 
-  - `strict`: Any missing value in the certificate will lead to an error. For Google Cloud, especially if the database doesn't have a domain name, the certificate might miss the domain/IP address, causing an error when connecting.
-  - `accept_invalid_certs` (default): Bypass this check. Be aware of the security consequences of this setting.
+  - `strict`: 证书中的任何缺失值都将导致错误。 对于Google Cloud 来说，如果数据库没有域名，证书可能会丢失 domain/ IP address，造成在连接时错误。
+  - `accept_invalid_certs` (默认): 绕过此检查。 请注意该设置的安全后果。
 
-To recap, in order to create a SSL connection to your database, you need: 
+回顾一下，为了创建到数据库的SSL连接，您需要：
 
 - A root [CA](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc778623(v=ws.10)?redirectedfrom=MSDN) file
 - A [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) client file
 - A [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) password
 
-Your database connection URL will look similar to this:
+您的数据库连接 URL 看起来像这样：
 
 ```
 postgresql://user:password@host?sslidentity=client-identity.p12&sslpassword=mypassword&sslcert=rootca.cert
 ```
 
-### Connecting via sockets
+### 通过 sockets 连接
 
-To connect to your PostgreSQL database via sockets, you must add a `host` field as a _query parameter_ to the connection string (instead of setting it as the `host` part of the URI). The value of this parameter then must point to the directory that contains the socket, e.g.: `postgresql://user:password@/database?host=/var/run/postgresql/`. 
+要通过 socket 连接到 PostgreSQL 数据库，必须将 `host` 作为查询参数添加到连接字符串中（而不是将其设置为 URl 一部分）。 然后此参数的值必须指向包含套接字的目录， e.g.: `postgresql://user:password@/database?host=/var/run/postgresql/`. 
 
-Learn more in this [GitHub issue](https://github.com/prisma/prisma2/issues/525).
+在该 [GitHub issue](https://github.com/prisma/prisma2/issues/525) 下可以了解更多。
