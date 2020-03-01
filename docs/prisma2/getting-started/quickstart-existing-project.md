@@ -57,7 +57,7 @@ npx prisma2 init
 // 了解有关数据库连接字符串的更多信息: https://pris.ly/d/connection-strings
 datasource db {
   provider = "postgresql" // 其他选择是: "mysql" 或 "sqlite"
-  url      = "postgresql://admin:admin@localhost:5432/mydb?schema=public"
+  url      =  env("DATABASE_URL")
 }
 // 连接字符串的其他示例是:
 // SQLite: url = "file:./dev.db"
@@ -71,6 +71,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// 它还会创建一个`.env`文件，你可以使用该文件来设置环境变量。它包含一个数据库连接URL的占位符，该占位符定义为“DATABASE_URL”环境变量。
 // 下一步：
 // 1. 将数据库连接字符串替换“datasource”里的“url”
 // 2. 执行 `prisma2 introspect` 使你的数据模型导入schema
@@ -107,19 +108,6 @@ datasource db {
 ```
 
 > **注意**：如果不确定为 PostgreSQL 连接 URL 的`schema`参数提供什么，则可以忽略它。在这种情况下，将使用默认 schema 名称`public`。例如`postgresql://victor:victor@localhost:5432/victor`
-
-使用上面的示例 URL，Prisma schema 现在将如下所示(已删除注释以提高可读性)：
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://spmhgyticvmvqh:XXX@ec2-54-247-181-239.eu-west-1.compute.amazonaws.com:5432/d37tkdumf8mre6?schema=public"
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-```
 
 ### 2.内省数据库以生成数据模型
 
@@ -233,13 +221,19 @@ const prisma = new PrismaClient();
 async function main() {
   const users = await prisma.user.findMany({
     include: {
-      postses: true,
+      posts: true,
     },
   });
   console.log(JSON.stringify(users));
 }
 
-main();
+main()
+  .catch(e => {
+    throw e;
+  })
+  .finally(async () => {
+    await prisma.disconnect();
+  });
 ```
 
 这是一个简单的 API 调用，可从`users`表中获取所有记录。你可以使用以下命令运行脚本：
