@@ -1,39 +1,40 @@
-# Prisma Client JS generator
+# Prisma Client JS 生成器
 
-The Prisma Client JS generator can be used in a [Prisma schema file](../../prisma-schema-file.md) to generate Prisma's database client for Node.js and TypeScript. The API of Prisma Client JS is documented [here](../../prisma-client-js/api.md).
+Prisma Client JS 生成器可以在 [Prisma schema 文件](../../prisma-schema-file.md)中使用，生成 Node.js和 TypeScript Prisma的数据库客户端。这里介绍了 Prisma Client JS 的 [API 文档](../../prisma-client-js/api.md) 。
 
-## Node.js requirements
+## Node.js 需求
 
-The generated data access code of the `prisma-client-js` generator targets [ES2016](https://exploringjs.com/es2016-es2017/) which means you need [Node.js 10.x](https://nodejs.org/en/download/releases/) or newer to be able to use it.
+`prisma-client-js` 生成器生成的数据访问代码以 ES2016 为目标，这意味着您需要 [Node.js 10.x](https://nodejs.org/en/download/releases/) 或更高版本才可以使用。
 
-## Specifying the right platform for Prisma Client JS
+## 为 Prisma Client JS 指定正确的平台
 
-Prisma Client JS depends on a _query engine_ that's running as a _binary_ on the same host as your application. When deploying your Prisma-based application to production, you need to ensure that the binary used by Prisma Client JS can run in your production environment, i.e. it needs to be compatible with the runtime of your deployment provider.
+Prisma Client JS 依赖于作为二进制文件在与应用程序相同的主机上运行的查询引擎。将基于Prisma的应用程序部署到生产中时，需要确保 Prisma Client JS 使用的二进制文件可以在生产环境中运行，即必须与部署提供程序的运行时兼容。
 
-The query engine binary is downloaded when you run `prisma2 generate`, it is then stored alongside the generated Prisma Client JS code inside `node_modules/@prisma` (or the [custom `output` path](../../prisma-client-js/codegen-and-node-setup.md) you specified). This section explains how you can determine which binary should be downloaded when `prisma2 generate` is executed to ensure compatibility at runtime.
+当你执行 `prisma2 generate` 时将会下载查询引擎二进制文件，然后将与生成 Prisma Client JS 代码一起存储在 `node_modules/@prisma` 中(或者你指定的 [自定义输入路径](../../prisma-client-js/codegen-and-node-setup.md))。本节会说明如何确认 `prisma generate` 执行时下载哪个二进制文件，以确认兼容。
 
-You can read more about this topic in the [specification](https://github.com/prisma/specs/blob/master/binaries/Readme.md).
+您可以在[规范中](https://github.com/prisma/specs/blob/master/binaries/Readme.md)阅读有关此主题的更多信息。
 
-### Terminology
+### 术语
 
-A **platform** is a _managed environment_. This includes deployment providers such as AWS Lambda, Google Cloud Functions and Netlify as well as operating systems such as Mac OS and Windows. A platform represents a _runtime environment_, i.e. the concrete version of the operating system and the installed packages available at runtime.
+**平台**是管理环境。其中包括类似于 AWS Lambda，Google Cloud Functions和 Netlify 部署服务提供者和 Mac OS and Windows 等操作系统（例如AWS Lambda，Google Cloud Functions和Netlify）以及操作系统（例如Mac OS和Windows）。 平台代表运行时环境，即操作系统的具体版本和运行时可用的已安装软件包。
 
-### Generator options
+### 生成器选项
 
-To determine the platform Prisma Client JS is running on, you can provide two options to the `prisma-client-js` generator:
+要确定运行Prisma Client JS的平台，可以为 `prisma-client-js` 生成器提供两个选项。
 
-| Name             | Required                                               | Description                                                                                                                                                                                                                | Purpose                                                   |
+| 名称             | 必需                                               | 描述                                                                                                                                                                                                                | 目的                                                   |
 | ---------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `binaryTargets`      | No                                                     | An array of binary names that are required by the application. Either a _file path_ to a binary, a package name from the [available binaries](#available-binaries) or the special value `"native"`. **Default**: `["native"]`. | Declarative way to download the required binaries.        |
+| `binaryTargets`      | 不是                                                   | 应用程序所需的二进制文件名称数组. 无论是二进制 _文件路径_,  [可用的二进制文件](#可用的二进制文件)包名 或者 特殊值 `"native"`。 **默认**: `["native"]`。 | 以声明的方式下载所需的二进制文件。      |
 
-If `binaryTargets` contains a _file path_ to a binary, you need to provide the path to the binary via an environment variable:
+如果 `binaryTargets` 包含二进制文件的 _文件路径_ ，则需要通过环境变量提供二进制文件的路径：
 
-- If you're using a custom binary for the **query engine** (Prisma Client JS), set the file path to it as the `PRISMA_QUERY_ENGINE_BINARY` environment variable.
-- If you're using a custom binary for the **migration engine**, set the file path to it as the `PRISMA_MIGRATION_ENGINE_BINARY` environment variable.
+- 如果您将自定义二进制文件用于 **查询引擎**（Prisma Client JS），则将其文件路径设置为`PRISMA_QUERY_ENGINE_BINARY` 的环境变量。
 
-### Default: The `native` platform
+- 如果您将自定义二进制文件用于 **迁移引擎**（Prisma Client JS），则将其文件路径设置为`PRISMA_MIGRATION_ENGINE_BINARY` 的环境变量。
 
-When no [generator options](#generator-options) are passed to the `prisma-client-js` generator in your [Prisma schema file](../prisma-schema-file.md), the Prisma CLI will download the binary for the operating system on which `prisma2 generate` was executed. The following two configurations are therefore equivalent, because `["native"]` is the default value for `binaryTargets`:
+### 默认： `native` 平台
+
+当您的 [Prisma schema 文件](../prisma-schema-file.md)没有传递任何[生成器选项](#生成器选项)时，执行 `prisma2 generate` 时 Prisma CLI 将下载针对当前操作系统的二进制文件。因此以下两配置是相等的。因为 `binaryTargets` 的默认值为 ["native"]
 
 ```prisma
 generator client {
@@ -42,7 +43,7 @@ generator client {
 }
 ```
 
-has the **same behavior** as:
+具有以下 **相同的行为**:
 
 ```prisma
 generator client {
@@ -50,15 +51,15 @@ generator client {
 }
 ```
 
-In both cases, the Prisma CLI determines the current operating system where `prisma2 generate` was invoked and downloads the compatible binary to store it in `node_modules`.
+在这两种情况下，当执行 `prisma2 generate` 时， Prisma CLI 都会下载当前操作系同兼容的二进制文件并将其存储在`node_modules` 中。
 
-### Available binaries
+### 可用的二进制文件
 
-We provide various pre-built binaries. You can find them in the [specs binary table](https://github.com/prisma/specs/blob/master/binaries/Readme.md#binary-build-targets).
+我们提供预先构建好的二进制文件。您可以在 [二进制表](https://github.com/prisma/specs/blob/master/binaries/Readme.md#binary-build-targets) 中寻找。
 
-### Example
+### 例子
 
-This example shows the configuration of a Prisma Client JS generator for local development (`native` can resolve to any other platform) and AWS Lambda (Node 10) as the production environment.
+此示例展示了Prisma Client JS 用于本地环境和 AWS Lambda（node 10）的配置。
 
 ```prisma
 generator client {
@@ -67,35 +68,35 @@ generator client {
 }
 ```
 
-## Manually compiling the query engine binary
+## 手动编译查询引擎二进制文件
 
-You can find the instructions for manually compiling the query engine binary [here](https://github.com/prisma/prisma-engine#building-prisma-engines).
+您可以在[此处](https://github.com/prisma/prisma-engine#building-prisma-engines)找到有关手动编译查询引擎二进制文件的说明。
 
-## Example
+## 例子
 
-To invoke the generator, you need to add a [`generator`](../../prisma-schema-file.md#generators-optional) block to your schema file and specify the `prisma-client-js` provider:
+要调用生成器，您需要在 schema 文件中添加 [`generator`](../../prisma-schema-file.md#generators-optional) 块，并指定 provider 为 `prisma-client-js`：
 
 ```prisma
 generator client {
   provider = "prisma-client-js"
 }
 
-// ... the file should also contain connectors and a data model definition
+// ... 文件还应该包含数据模型定义和(可选的)生成器
 ```
 
-Once added, you can invoke the generator using the following command:
+添加后，你可以使用以下命令来调用生成器
 
 ```
 prisma2 generate
 ```
 
-It will then store the generated Prisma Client JS API in the default location `node_modules/@prisma/client` directory. Learn more about the [generated Prisma Client JS API](../../prisma-client-js/api.md).
+然后它将 Prisma Client JS 生成的 API 存储在默认位置`node_modules/@prisma/client` 目录中。了解有关[生成的Prisma Client JS API](../../prisma-client-js/api.md) 的信息。
 
-## Mapping types from the data model
+## 数据模型中的映射类型
 
-The Prisma Client JS generator provides the following mapping from data model [scalar types](../../data-modeling.md#scalar-types) to JavaScript/TypeScript types:
+Prisma Client JS生成器提供了以下从数据模型[标量类型](../../data-modeling.md#scalar-types)到JavaScript / TypeScript类型的映射：
 
-| Type       | JS / TS   |
+| 类型       | JS / TS   |
 | ---------- | --------- |
 | `String`   | `string`  |
 | `Boolean`  | `boolean` |
@@ -103,9 +104,9 @@ The Prisma Client JS generator provides the following mapping from data model [s
 | `Float`    | `number`  |
 | `DateTime` | `Date`    |
 
-## Reserved model names
+## 保留模型名称
 
-When generating Prisma Client JS based on your [data model definition](./data-modeling.md#data-model-definition), there are a number of reserved names that you can't use for your models. Here is a list of the reserved names:
+根据您的[数据模型定义](./data-modeling.md#data-model-definition)生成Prisma Client JS时，有许多保留名称无法用于模型。这里是保留名称的列表：
 
 - `String`
 - `Int`
