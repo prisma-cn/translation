@@ -48,10 +48,10 @@ MySQL 连接器将[标量类型](../../data-modeling.md#标量类型)从[数据�
 
 MySQL 提供两种形式的连接字符串：
 
-- 键值对: `{user:'user', host:'localhost', schema:'world'}`
+- 键值对字符串: `{user:'user', host:'localhost', schema:'world'}`
 - 连接 URI: `mysql://user@localhost:3333`
 
-请参考[官方文档](https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html)查看更多详细信息。
+请参考[官方文档](https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html)了解更多详细信息。
 
 ### 配置选项
 
