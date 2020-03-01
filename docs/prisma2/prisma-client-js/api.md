@@ -1,6 +1,6 @@
 ---
 title: 生成Prisma客户端API(JavaScript/TypeScript)
-description: 本章提供了从Sequelize迁移到Prisma Client JS的流程
+description: 
 author: Nan Zhao
 author_url: https://github.com/znnan
 author_image_url: https://avatars0.githubusercontent.com/u/34448143?s=400&u=949ac05ac4184e0f0e1d842aac4575da66d937cc&v=4
