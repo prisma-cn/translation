@@ -31,7 +31,7 @@ Prisma Client JS 更像是一个“查询生成器”，返回简单对象，重
 
 Prisma Client JS 很快将提供丰富的查询分析。现在，你可以在实例化 Prisma Client 实例时将`debug`选项设置为`true`。在[这里](./prisma-client-js/api.md#debugging)了解更多信息。
 
-### 模式迁移（schema migrations）如何与 Prisma Client JS 一起使用？
+### 模式迁移(schema migrations)如何与 Prisma Client JS 一起使用？
 
 Prisma Client JS 不影响你现有的 DDL 系统。你可以保留现有的迁移系统，在每次 migration 后重新 introspect 数据库 schema 更新 Prisma Client JS 即可。在[这里](./prisma-client-js/use-only-prisma-client-js.md)了解更多信息。你还可以始终使用 Prisma 的`migrate` CLI 根据 Prisma 的声明性[数据模型定义](./data-modeling.md)执行 migration。
 

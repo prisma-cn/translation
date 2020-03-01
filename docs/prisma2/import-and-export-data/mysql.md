@@ -13,7 +13,7 @@ author_title: Prisma 爱好者
 
 [`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html) 是本机 MySQL 命令行实用程序，可用于从 MySQL 数据库导出数据。要查看该命令的所有选项，请运行 `mysqldump --help`。
 
-请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysqldump` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 目录中 。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便你无需指定目录就可以运行 `mysqldump`。
+请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysqldump` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 目录中 。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac#answer-35338119)，以便你无需指定目录就可以运行 `mysqldump`。
 
 引用 MySQL 文档：
 
@@ -91,7 +91,7 @@ mysqldump --host ec2-46-137-91-216.eu-west-1.compute.amazonaws.com --port --user
 mysql DB_NAME INPUT_FILE
 ```
 
-请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysql` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 中。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysmysqlqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac＃answer-35338119)，以便你无需指定目录即可运行 `mysql` 命令。
+请注意，默认情况下，你的 [MySQL 安装](https://dev.mysql.com/doc/refman/8.0/en/installing.html) 后带有 `mysql` 命令，Mac OS 上通常包含在 `/usr/local/mysql/bin` 中。这意味着你可以通过指向该目录 `/usr/local/mysql/bin/mysmysqlqldump` 或 [将其添加到 `PATH`](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac#answer-35338119)，以便你无需指定目录即可运行 `mysql` 命令。
 
 你需要将 `DB_NAME` 和 `INPUT_FILE` 占位符替换为以下各项的相应值：
 

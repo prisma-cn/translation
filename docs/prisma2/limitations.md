@@ -18,12 +18,12 @@ author_title: Prisma 爱好者
   - `String @id @default(uuid())`
   - `String @id @default(cuid())`
 - 当 [introspecting](./introspection.md) 数据库时, 目前 Prisma 仅识别遵循 Prisma 约定的关系表的多对多关系 [relation tables](./relations.md).
-- Prisma2 CLI 当前不支持非交互式终端（例如 Windows 上的 Git Bash） ([相关 issues](https://github.com/prisma/prisma2/issues/554)).
+- Prisma2 CLI 当前不支持非交互式终端(例如 Windows 上的 Git Bash) ([相关 issues](https://github.com/prisma/prisma2/issues/554)).
 
 ## 超出范围的功能
 
 以下功能当前不属于 Prisma 的一部分，很可能不会在 GA 之前添加：
 
-- 实时 API 或订阅 subscriptions（将来，Prisma 将可能有一个启用此功能的事件引擎，但尚无此功能的预计完成时间）（[相关问题]（https://github.com/prisma/prisma2/issues/298）。
-- Go client（“Prisma Client Go”）（[相关问题]（https://github.com/prisma/prisma2/issues/571））。
-- 与 Prisma server/集群结合使用 Prisma tools（例如 Prisma Client JS 或 Migrate） ([相关 issue](https://github.com/prisma/prisma2/issues/370)).
+- 实时 API 或订阅 subscriptions(将来，Prisma 将可能有一个启用此功能的事件引擎，但尚无此功能的预计完成时间)([相关问题](https://github.com/prisma/prisma2/issues/298)。
+- Go client(“Prisma Client Go”)([相关问题](https://github.com/prisma/prisma2/issues/571))。
+- 与 Prisma server/集群结合使用 Prisma tools(例如 Prisma Client JS 或 Migrate) ([相关 issue](https://github.com/prisma/prisma2/issues/370)).

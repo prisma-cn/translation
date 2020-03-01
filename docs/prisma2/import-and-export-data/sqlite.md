@@ -13,7 +13,7 @@ author_title: Prisma 爱好者
 
 [`sqlite3`](https://www.sqlite.org/cli.html) 是一个本地 SQLite 命令行实用程序，可用于整个 SQLite 数据库的各种工作流程。要查看此命令的所有选项，请运行 `sqlite3 --help`。导出数据通常是在 `sqlite3` 提示符下使用 `.dump` 命令完成的。
 
-要导出数据，你需要输入 `sqlite3` 提示符并将其指向你的 SQLite 数据库文件的位置（以 `.db` 结尾）：
+要导出数据，你需要输入 `sqlite3` 提示符并将其指向你的 SQLite 数据库文件的位置(以 `.db` 结尾)：
 
 ```
 sqlite3 ./dev.db

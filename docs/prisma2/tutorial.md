@@ -153,7 +153,7 @@ $ prisma2 init hello-prisma2
 
 ### 2.4. 给 Photon 选择合适的编程语言
 
-Photon 是类型安全的数据库客户端，当前支持 JavaScript 和 TypeScript（此库称为 Photon.js）。在本教程中，我们使用 TypeScript。
+Photon 是类型安全的数据库客户端，当前支持 JavaScript 和 TypeScript(此库称为 Photon.js)。在本教程中，我们使用 TypeScript。
 
 这里，当向导提示时选择 **TypeScript** .
 
@@ -161,7 +161,7 @@ Photon 是类型安全的数据库客户端，当前支持 JavaScript 和 TypeSc
   Select the programming language you want to use.
   Specifies the language for Photon (database client).
   选择要使用的编程语言。
-  指定Photon（数据库客户端）的语言。
+  指定Photon(数据库客户端)的语言。
 
 ┌─ Photon is available in these languages ─────────────────────────────────────────┐
 │                                                                                  │
@@ -380,7 +380,7 @@ model Post {
 import { Photon } from '@generated/photon';
 ```
 
-由于 Photon.js 生成到通常通过调用 npm install 填充的 `node_modules` 中，因此你应确保在每次调用 `npm install` 时也生成 Photon.js。这就是为什么将 `Prisma2 generate`（基于 Prisma schema 生成 Photon.js 的命令）作为`package.json`中的`postinstall`钩子的原因：
+由于 Photon.js 生成到通常通过调用 npm install 填充的 `node_modules` 中，因此你应确保在每次调用 `npm install` 时也生成 Photon.js。这就是为什么将 `Prisma2 generate`(基于 Prisma schema 生成 Photon.js 的命令)作为`package.json`中的`postinstall`钩子的原因：
 
 ```json
 {
@@ -407,7 +407,7 @@ import { Photon } from '@generated/photon';
 - 每当数据模型处于 _development_ 模式时，都会向`migrations/dev`中生成新的迁移记录。
 - 每当要使用 Lift 保留数据模型更改时，它都会获得自己的目录。
 
-在下一节中再详细了解这两种方法。请注意，在 dev 文件夹中已经存在一个名为首次迁移记录`watch-TIMESTAMP`（其中“ TIMESTAMP”是占位符，真实名称类似于`watch-20190903103132`）。这是因为 Prisma 已经准备了可以立即运行演示脚本的项目，也就是说，它已迁移了数据库以匹配你的数据模型定义(即数据库中已经存在`Post`和`User`表)。你可以通过数据库 GUI（例如[Postico]（https://eggerapps.at/postico/）或[TablePlus]（https://tableplus.com/））中浏览数据库架构来验证这一点：
+在下一节中再详细了解这两种方法。请注意，在 dev 文件夹中已经存在一个名为首次迁移记录`watch-TIMESTAMP`(其中“ TIMESTAMP”是占位符，真实名称类似于`watch-20190903103132`)。这是因为 Prisma 已经准备了可以立即运行演示脚本的项目，也就是说，它已迁移了数据库以匹配你的数据模型定义(即数据库中已经存在`Post`和`User`表)。你可以通过数据库 GUI(例如[Postico](https://eggerapps.at/postico/)或[TablePlus](https://tableplus.com/))中浏览数据库架构来验证这一点：
 
 请注意，在`migrations/dev`文件夹中的迁移被视为`throw away 丢弃`迁移。如果要将数据库模式迁移持久保存在 Lift 的*migration history*中，则需要使用`lift`子命令`prisma2 lift save`和`prisma2 lift up`来执行迁移。
 
@@ -661,7 +661,7 @@ model Post {
 - 它向数据库 schema 添加了一个`Category`表。它还向数据库 schema 添加了一个名为`_CategoryToPost`的 _relation table_ ，以表示多对多关系。请注意，关系表的样子将来将是可配置的，有关更多信息，请参见[spec](https://github.com/prisma/specs/tree/master/schema#explicit-many-to-many-mn-relationships)。
 - 它重新生成了 Photon API，为新的`Category`模型添加 CRUD 操作。
 
-由于 Photon API 已重新生成，因此我们现在可以更新`script.ts`中的代码来创建新`Category`并将其连接到现有（或新）post。例如，此代码段将创建一个名为“prisma”的新类别，并将其连接到两个现有帖子：
+由于 Photon API 已重新生成，因此我们现在可以更新`script.ts`中的代码来创建新`Category`并将其连接到现有(或新)post。例如，此代码段将创建一个名为“prisma”的新类别，并将其连接到两个现有帖子：
 
 Be sure to **save the file**. As you save it, you can observe your terminal window to see Prisma's activity:
 
@@ -685,8 +685,8 @@ const category = await photon.categories.create({
 
 如果想试用此代码段，要注意以下几点：
 
-- 需要将“**POST_ID_1**”和“**POST_ID_2**”占位符替换为之前创建的帖子的实际 ID 值（例如，可以在 Prisma Studio 中或使用数据库 GUI 来找到这些 ID）。
-- 需要从脚本中删除前面的代码（例如，通过将其注释掉），否则它将尝试使用相同的电子邮件地址重新创建“user”记录，这将导致报错。
+- 需要将“**POST_ID_1**”和“**POST_ID_2**”占位符替换为之前创建的帖子的实际 ID 值(例如，可以在 Prisma Studio 中或使用数据库 GUI 来找到这些 ID)。
+- 需要从脚本中删除前面的代码(例如，通过将其注释掉)，否则它将尝试使用相同的电子邮件地址重新创建“user”记录，这将导致报错。
 - 可以使用`npm start`调用脚本。
 
 ## 6. 使用 Lift 迁移数据库
@@ -746,7 +746,7 @@ hello-prisma2
 prisma2 lift up
 ```
 
-这会将数据模型映射到底层数据库中（即会 _变更你的数据库_ ）。
+这会将数据模型映射到底层数据库中(即会 _变更你的数据库_ )。
 
 ### 6.3. [可选]创建从数据库到 Prisma schema 的自定义映射
 

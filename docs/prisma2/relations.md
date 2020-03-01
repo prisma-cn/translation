@@ -1,13 +1,13 @@
 ---
-title: 关联（Relations）
-description: 本章是数据建模（data modeling）章节的扩展，详细讨论了数据模型定义中的关联（relations）部分。
+title: 关联(Relations)
+description: 本章是数据建模(data modeling)章节的扩展，详细讨论了数据模型定义中的关联(relations)部分。
 author: 许盛
 author_url: https://github.com/xuxusheng
 author_image_url: https://github.com/xuxusheng.png?size=400
 author_title: qq：20691718，欢迎交流。
 ---
 
-本章是[数据建模（data modeling）](./data-modeling.md)章节的扩展，详细讨论了数据模型定义中的关联（relations）部分。
+本章是[数据建模(data modeling)](./data-modeling.md)章节的扩展，详细讨论了数据模型定义中的关联(relations)部分。
 
 页面中的例子都基于这个 [schema 文件](./data-modeling.md)：
 
@@ -47,23 +47,23 @@ enum Role {
 }
 ```
 
-> 注意所有的[标量类型（scalars）](./data-modeling.md/#scalar-types)都在示例的的数据模型中移除了，以便专注于关联（relations）的学习。
+> 注意所有的[标量类型(scalars)](./data-modeling.md/#scalar-types)都在示例的的数据模型中移除了，以便专注于关联(relations)的学习。
 
-它包含了以下几种关联（relations）：
+它包含了以下几种关联(relations)：
 
 - 1:1: `User` <-> `Profile`
 - 1:n: `User` <-> `Post`
 - m:n: `Post` <-> `Category`
 
-## 什么时候需要反向关联（back-relation）字段？
+## 什么时候需要反向关联(back-relation)字段？
 
 在很多情况下你都可以忽略反向关联，prisma2 会用特定的方式去推断它。
 
-- **如果你想要一对一（1：1）的关联，你必须始终指定两个关联字段。** Prisma2 会保证关联的每一侧只能存储一个值。
-- **如果你想要多对多（m：n）的关联，你必须始终指定两个关联字段。** Prisma2 将会维护一个关联表来追踪所有关联的实例。
-- **如果你忽略一个关联字段，该关联将被自动推断为一对多（1:n）的关联。**
-  - 如果你忽略了另一端为 _非列表关联字段(non-list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多（1：n）的关联，这意味着缺失的反向关联字段被默认为 _列表（list）_。
-  - 如果你忽略了另一端为 _列表关联字段(list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多（1：n）的关联，这意味着缺失的反向关联字段被默认为 _单个值（single value）_（不是 _列表_）。
+- **如果你想要一对一(1：1)的关联，你必须始终指定两个关联字段。** Prisma2 会保证关联的每一侧只能存储一个值。
+- **如果你想要多对多(m：n)的关联，你必须始终指定两个关联字段。** Prisma2 将会维护一个关联表来追踪所有关联的实例。
+- **如果你忽略一个关联字段，该关联将被自动推断为一对多(1:n)的关联。**
+  - 如果你忽略了另一端为 _非列表关联字段(non-list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多(1：n)的关联，这意味着缺失的反向关联字段被默认为 _列表(list)_。
+  - 如果你忽略了另一端为 _列表关联字段(list relation field)_ 的关联中的反向关联字段，这将会被推断为一对多(1：n)的关联，这意味着缺失的反向关联字段被默认为 _单个值(single value)_(不是 _列表_)。
 
 > **注意**：这种推断可能很快就会改变，并且可能总是要求双方都明确表述关联关系。请遵循[规范](https://github.com/prisma/specs/tree/master/schema#relations)以获取更多信息。
 
@@ -77,8 +77,8 @@ enum Role {
 @relation(_name: String?, references: Identifier[]?)
 ```
 
-- `references` _（可选）_：要引用的[字段](./data-modeling.md#fields)列表。
-- `name` _（可选）_：定义关联关系的 _名称_。如果是多对多（m：m）的关联, 这个名字还决定了底层数据库中关联表的名称。
+- `references` _(可选)_：要引用的[字段](./data-modeling.md#fields)列表。
+- `name` _(可选)_：定义关联关系的 _名称_。如果是多对多(m：m)的关联, 这个名字还决定了底层数据库中关联表的名称。
 
 > **注意**：级联删除尚未实现。你可以在这个 [GitHub issue](https://github.com/prisma/prisma2/issues/267) 中查看这个功能的进度。
 
@@ -195,7 +195,7 @@ model Post {
 
 在这个例子中，`Post.author` 始终指向 `User` 的主键。
 
-关系型数据库的连接器（Connectors）会将其实现为两个表，并在 `Post` 表上使用外键进行约束：
+关系型数据库的连接器(Connectors)会将其实现为两个表，并在 `Post` 表上使用外键进行约束：
 
 | **User** |         |
 | -------- | ------- |
@@ -268,9 +268,9 @@ model Category {
 
 > **注意**：现在无法删除关系表名称的下划线，但很快就会支持。在[规范](https://github.com/prisma/specs/blob/master/schema/Readme.md#explicit-many-to-many-mn-relationships)中了解更多信息。
 
-## 自引用（Self-relations）
+## 自引用(Self-relations)
 
-Prisma 支持 _自引用关联关系（self-referential relations）_(short: _self relations_)，自引用是指一个模型不引用其他模型，而引用自身的关联关系，例如：
+Prisma 支持 _自引用关联关系(self-referential relations)_(short: _self relations_)，自引用是指一个模型不引用其他模型，而引用自身的关联关系，例如：
 
 ```prisma
 model User {
@@ -330,14 +330,14 @@ model User {
 }
 ```
 
-## 自动生成的 Prisma Client JS API 中的关联（Relations）
+## 自动生成的 Prisma Client JS API 中的关联(Relations)
 
-[自动生成的 Prisma Client JS API](./prisma-client-js/api.md)附带了许多非常有用的与关联相关的功能（示例如下）：
+[自动生成的 Prisma Client JS API](./prisma-client-js/api.md)附带了许多非常有用的与关联相关的功能(示例如下)：
 
 - 使用 Fluent API 遍历返回的对象上的关联关系。
-- 基于事务的嵌套创建、更新和连接（也称为嵌套写入）
-- 通过 `select` 和 `include` 嵌套读取（eager loading）
-- 关联过滤器（关联对象上的过滤器，例如在应用过滤器之前执行 JOIN）
+- 基于事务的嵌套创建、更新和连接(也称为嵌套写入)
+- 通过 `select` 和 `include` 嵌套读取(eager loading)
+- 关联过滤器(关联对象上的过滤器，例如在应用过滤器之前执行 JOIN)
 
 ### Fluent API
 
@@ -357,7 +357,7 @@ const postsByUser: Post[] = await prisma.user
 const categoriesOfPost: Category[] = await prisma.post.findOne({ where: { id: 1 } }).categories();
 ```
 
-尽管 Fluent API 允许你使用可链式调用的查询，有时你可能想要在已经知道特定字段的情况下处理特定的模型（比如获取指定 `author` 的所有 `post`）。
+尽管 Fluent API 允许你使用可链式调用的查询，有时你可能想要在已经知道特定字段的情况下处理特定的模型(比如获取指定 `author` 的所有 `post`)。
 
 查询如下所示：
 
@@ -369,15 +369,15 @@ const postsByUser: Post[] = await prisma.post.findMany({
 });
 ```
 
-注意，如果要查询关联关系，你必须要指定搜索字段的（`id`）。
+注意，如果要查询关联关系，你必须要指定搜索字段的(`id`)。
 
 ### 嵌套写入 (事务)
 
 嵌套写入提供了一个强大的 API 来将关联数据写入你的数据库。并进一步对在同一个 Prisma Client JS API 调用中跨多个表的创建、更新和删除操作提供了事务保证。嵌套写入的嵌套级别可以是任意深度的。
 
-当使用模型的创建（`create`）或更新（`update`）函数时，模型的关联字段可以使用嵌套写入。每个函数都可以使用下列的嵌套写入操作。
+当使用模型的创建(`create`)或更新(`update`)函数时，模型的关联字段可以使用嵌套写入。每个函数都可以使用下列的嵌套写入操作。
 
-- 一对一（1：1）关联字段 (例如上面示例数据模型中 `User` 的 `profile` 字段)
+- 一对一(1：1)关联字段 (例如上面示例数据模型中 `User` 的 `profile` 字段)
   - `create`
     - `create`: 创建新的 user 和新的 profile
     - `connect`: 创建新的 user 并关联到现有 profile
@@ -388,7 +388,7 @@ const postsByUser: Post[] = await prisma.post.findMany({
     - `upsert`: 通过更新关联的 profile 或创建新 profile 来更新 user
     - `delete` (仅当关联是可选的情况下): 删除现有 profile 来更新 user
     - `disconnect` (仅当关联是可选的情况下): 通过移除和 profile 的关联来更新 user
-- 一对多（1：n）关联字段 (例如上面示例数据模型中 `User` 的 `posts` 字段)
+- 一对多(1：n)关联字段 (例如上面示例数据模型中 `User` 的 `posts` 字段)
   - `create`
     - `create`: 创建一个新 user 和一个或多个新 post
     - `connect`: 创建一个新 user 并关联到一个或多个现有 post
@@ -521,7 +521,7 @@ const post = await prisma.post.create({
 
 ### 嵌套读取 (贪婪加载 eager loading)
 
-你可以通过 `select` 和 `inclue`（在[这里](./prisma-client-js/api.md#manipulating-the-selection-set)了解更多的不同之处）来贪婪加载（eager loading）（译者注：一次请求获取多个实体数据）模型上的关联关系。贪婪加载的模型关联关系可以嵌套任意深度。
+你可以通过 `select` 和 `inclue`(在[这里](./prisma-client-js/api.md#manipulating-the-selection-set)了解更多的不同之处)来贪婪加载(eager loading)(译者注：一次请求获取多个实体数据)模型上的关联关系。贪婪加载的模型关联关系可以嵌套任意深度。
 
 ```ts
 // 返回的 `post` 对象会只包含 `id` 属性，和对应各自的用户对象的 `author` 属性。
@@ -534,7 +534,7 @@ const allPosts = await prisma.post.findMany({
 ```
 
 ```ts
-// 返回的 post 对象会包含 `Post` 模型中所有的标量类型，以及每个 post 的所有分类信息（categories）
+// 返回的 post 对象会包含 `Post` 模型中所有的标量类型，以及每个 post 的所有分类信息(categories)
 const allPosts = await prisma.post.findMany({
   include: {
     categories: true,
@@ -559,7 +559,7 @@ await prisma.user.findMany({
 });
 ```
 
-### 关联过滤器（Relation filters）
+### 关联过滤器(Relation filters)
 
 关联过滤器是针对模型的关联对象的过滤操作，在 SQL 术语中，这意味着在应用过滤器之前已经执行了 JOIN。
 

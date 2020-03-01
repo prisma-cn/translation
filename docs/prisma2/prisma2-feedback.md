@@ -63,7 +63,7 @@ Prisma 2 的主要目标是**最大限度地减少未来的重大变化**。
 
 - [Open a general **Prisma 2** issue](https://github.com/prisma/prisma2/issues/new)
 
-创建 GitHub issue 后，请随时将其发布在[`＃prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/)Slack 频道中，以便我们快速做出反应。
+创建 GitHub issue 后，请随时将其发布在[`#prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/)Slack 频道中，以便我们快速做出反应。
 
 ## 我们在这里为你服务
 
