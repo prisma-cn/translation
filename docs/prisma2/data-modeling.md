@@ -60,7 +60,7 @@ model Post {
   author     User
   title      String
   published  Boolean    @default(false)
-  category   Category[]
+  categories   Category[]
 }
 
 model Category {
