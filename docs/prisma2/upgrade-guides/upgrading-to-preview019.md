@@ -1,8 +1,8 @@
-# Upgrading to `preview019`
+# 升级到 `preview019`
 
-In version `2.0.0-preview019`, scalar list support has been removed for MySQL and SQLite. For PostgreSQL, Prisma is now using [PostgreSQL native scalar lists(_arrays_)](https://www.postgresql.org/docs/9.1/arrays.html) under the hood.
+在`2.0.0-preview019`版本中，对 MySQL 和 SQLite 的标量列表到支持已被删除。对于 PostgreSQL，Prisma 的底层当前使用 [PostgreSQL native scalar lists(_arrays_)](https://www.postgresql.org/docs/9.1/arrays.html)
 
-The way how scalar lists used to be supported in previous versions of Prisma is as follows, consider this Prisma schema:
+在以前的 Prisma 版本中支持标量列表的方式如下，例如这个 Prisma schema:
 
 ```prisma
 datasource db {
@@ -21,7 +21,7 @@ model User {
 }
 ```
 
-This the SQL schema that gets generated when mapped to the DB:
+这是在映射到数据库时生成的SQL schema:
 
 ```sql
 -- Table Definition ----------------------------------------------
@@ -49,31 +49,31 @@ CREATE TABLE "User_coinflips" (
 CREATE UNIQUE INDEX "User_coinflips_pkey" ON "User_coinflips"("nodeId" int4_ops,position int4_ops);
 ```
 
-This means the data for the `coinflips: Boolean[]` list from the Prisma schema is actually stored in another table called `User_coinflips` which include the foreign key `nodeId` pointing to a `User` record.  
+这意味着 Prisma schema 中的`coinflips: Boolean[]`列表的数据实际上存储在另一个名为`User_coinflips`的表中，该表包含指向`nodeId`记录的外键`User`。
 
-## Workarounds when upgrading to `preview-019`
+## 升级到`preview-019`的变通方法
 
-### PostgreSQL, MySQL and SQLite
+### PostgreSQL、MySQL 和 SQLite
 
-Here's the envisioned workaround for MySQL and SQLite (note that PostgreSQL users alternatively can migrate their data to a native PostgreSQL array, more info [below](#only-postgresql)):
+以下是对 MySQL 和 SQLite 的设想解决方案 (注意，PostgreSQL用户也可以将他们的数据迁移到一个本地 PostgreSQL 数组中，更多信息[如下](#only-postgresql)):
 
-1. Copy the `User_coinflips` table, e.g. using:
+1. 复制`User_coinflips`表，例如:
     ```sql
     CREATE TABLE "User_coinflips_COPY" AS 
     TABLE "User_coinflips"; 
     ```
 
-1. Add a primary key so it's compliant with the current Prisma conventions:
+2. 添加一个主键，使它符合当前的 Prisma 约定:
     ```sql
     ALTER TABLE "User_coinflips_COPY" ADD COLUMN ID SERIAL PRIMARY KEY;
     ```
 
-1. Re-map this to your Prisma schema through introspection:
+3. 通过自省重新映射到你的 Prisma schema
     ```
     prisma2 introspect --url="postgresql://nikolasburk:nikolasburk@localhost:5432/coinflips"
     ```
 
-    This is the resulting Prisma schema:
+    Prisma schema 结果如下:
 
     ```prisma
     generator client {
@@ -98,7 +98,7 @@ Here's the envisioned workaround for MySQL and SQLite (note that PostgreSQL user
     }
     ```
 
-1. Manually add `coinflips` relation:
+4. 手动添加`coinflips`关系:
     ```diff
     model User {
       id        Int                   @id
@@ -107,7 +107,7 @@ Here's the envisioned workaround for MySQL and SQLite (note that PostgreSQL user
     }
     ```
 
-1. Manually change the type of `nodeId` to `User?`
+5. 手动将`nodeId`类型改为`User?`
     ```diff
     model User_coinflips_COPY {
       id       Int      @id
@@ -117,13 +117,13 @@ Here's the envisioned workaround for MySQL and SQLite (note that PostgreSQL user
     }
     ```
 
-1. Re-generate Prisma Client JS:
+6. 重新生成 Prisma Client JS:
 
     ```
     prisma2 generate
     ```
 
-In your application code, you can now adjust the Prisma Client JS API calls. To access the `coinflips` data, you will now have to always [`include`](https://github.com/prisma/prisma2/blob/master/docs/prisma-client-js/api.md#include-additionally-via-include) it in yout API calls:
+在您的应用程序代码中，现在可以调整 Prisma Client JS API 的调用。未来访问 `coinflips` 数据，您现在必须总是把它[`包含`](https://github.com/prisma/prisma2/blob/master/docs/prisma-client-js/api.md#include-additionally-via-include)在 API 调用中:
 
 ```ts
 const user = await prisma.user.findOne({ 
@@ -136,9 +136,9 @@ const user = await prisma.user.findOne({
 })
 ```
 
-> The `orderBy` is important to retain the order of the list.
+> `orderBy`对于保持列表的顺序很重要。
 
-This is the result from the API call:
+API 调用结果如下:
 
 ```js
 {
@@ -155,15 +155,15 @@ This is the result from the API call:
 }
 ```
 
-To access just the coinflip boolean values from the list, you can `map` of the `coinflips` on `user`:
+若只想访问列表中 coinflips 的 boolean 值，可以在`user`中执行`coinflips`的`map`:
 
 ```ts
 const currentCoinflips = user!.coinflips.map(cf => cf.value)
 ```
 
-> The exclamation mark above means that we're force unwrapping the `user` value. This is necessary because the `user` returned from the previous API call might be `null`.
+> 上面的感叹号表示我们正在强制展开`user`值。这是必要的，因为前一个API调用返回的`user`可能是`null`。
 
-Here's the value of `currentCoinflips` after the call to `map`:
+执行完`map`操作后`currentCoinflips`的值如下:
 
 ```js
 [ false, true, false, true, true, false ]
@@ -171,16 +171,16 @@ Here's the value of `currentCoinflips` after the call to `map`:
 
 ### Only PostgreSQL
 
-As scalar lists (i.e. [arrays](https://www.postgresql.org/docs/9.1/arrays.html)) are available as a native PostgreSQL feature, you can keep using the same notation of `coinflips: Boolean[]` in your Prisma schema.
+由于标量列表(i.e. [arrays](https://www.postgresql.org/docs/9.1/arrays.html))是PostgreSQL的一个本地特性，所以您可以在 Prisma schema 中继续使用相同的`coinflips: Boolean[]`。
 
-However, in order to do so you need to manually migrate the underlying data from the `User_coinflips` table into a PostgreSQL array. Here's how you can do that:
+但是，为了做到这一点，您需要手动将底层数据从`User_coinflips`表迁移到PostgreSQL数组中。可以这样做:
 
-1. Add the new `coinflips` column to the `User` tables:
+1. 在`User`表中新增`coinflips`列:
     ```sql
     ALTER TABLE "User" ADD COLUMN coinflips BOOLEAN[];
     ```
 
-1. Migrate the data from `"User_coinflips".value` to `"User.coinflips"`:
+1. 将数据从`"User_coinflips".value`迁移到`"User.coinflips"`:
     ```sql
     UPDATE "User"
       SET coinflips = t.flips
@@ -192,12 +192,12 @@ However, in order to do so you need to manually migrate the underlying data from
     where t."nodeId" = "User"."id";
     ```
 
-1. To cleanup, you can delete the `User_coinflips` table:
+1. 要清除，可以删除`User_coinflips`表:
     ```sql
     DROP TABLE "User_coinflips"
     ```
 
-You can keep using Prisma Client JS as before:
+您可以继续像之前那样使用 Prisma Client JS :
 
 ```ts
 const user = await prisma.user.findOne({ 
@@ -205,7 +205,7 @@ const user = await prisma.user.findOne({
 })
 ```
 
-This is the result from the API call:
+API 调用结果如下:
 
 ```js
 {
