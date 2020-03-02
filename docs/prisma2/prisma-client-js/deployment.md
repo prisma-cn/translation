@@ -13,7 +13,7 @@ Prisma Client JS 依赖于与应用程序一起运行的查询引擎二进制文
 
 <!-- The query engine binary is downloaded when you run `prisma2 generate`, it is then stored alongside the generated Prisma Client JS code inside `node_modules/@prisma` (or the [custom `output` path](./codegen-and-node-setup.md) you specified). -->
 
-查询引擎二进制文件是在你运行`prisma2 generate`时下载的，与生成的 Prisma Client JS 代码一起存储在`node_modules/@prisma`(或你指定的[自定义`output`路径](./codegen-and-node-setup.md)。
+查询引擎二进制文件是当你运行`prisma2 generate`时下载的，与生成的 Prisma Client JS 代码一起存储在`node_modules/@prisma`(或你指定的[自定义`output`路径](./codegen-and-node-setup.md)。
 
 <!-- **IMPORTANT**: To ensure the query engine binary is compatible with your production environment, you have to [specify the right platform for Prisma Client JS](../core/generators/prisma-client-js.md#specifying-the-right-platform-for-prisma-client-js). -->
 

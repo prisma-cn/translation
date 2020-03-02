@@ -1,6 +1,6 @@
 ---
 title: Prisma 2 Core
-description: 本章为Prisma 2 核心组件文档
+description: 本章为Prisma 2 核心组件文档目录
 author: wsafight
 author_url: https://github.com/wsafight
 author_title: Prisma 爱好者
@@ -15,4 +15,4 @@ author_title: Prisma 爱好者
   - [PostgreSQL](./connectors/postgresql.md)
   - [SQLite](./connectors/sqlite.md)
 - 生成器
-  - [Prisma Client JS](./generators/prisma-client-js.md)  
+  - [Prisma Client JS](./generators/prisma-client-js.md)
