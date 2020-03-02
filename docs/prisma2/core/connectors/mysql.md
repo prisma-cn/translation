@@ -1,10 +1,18 @@
-# MySQL data source connector
+---
+title: Prisma 2 MySQL connector
+description: 本章为Prisma 2 核心组件 MySQL 数据连接器
+author: wsafight
+author_url: https://github.com/wsafight
+author_title: Prisma 爱好者
+---
 
-The MySQL data source connector connects Prisma to a MySQL database server.
+# MySQL 数据源连接器
 
-## Example
+MySQL 数据源连接器将 Prisma 连接到 MySQL 数据库。
 
-To connect to a MySQL database server, you need to configure a [`datasource`](../../prisma-schema-file.md#data-sources) block in your [schema file](../../prisma-schema-file.md):
+## 例子
+
+要连接到 MySQL 数据库，您需要在 [schema 文件](../../prisma-schema-file.md)中配置一个 [`datasource 数据源`](../../prisma-schema-file.md#d数据源)：
 
 ```prisma
 datasource mysql {
@@ -12,21 +20,21 @@ datasource mysql {
   url      = env("DATABASE_URL")
 }
 
-// ... the file should also contain a data model definition and (optionally) generators
+// ... 文件还应该包含数据模型定义和(可选的)生成器
 ```
 
-The fields passed to the `datasource` block are:
+`datasource` 定义如下:
 
-- `provider`: Specifies the `mysql` data source connector.
-- `url`: Specifies the [connection string](#connection-string) for the MySQL database server. In this case, we're [using an environment variable](../../prisma-schema-file.md#using-environment-variables) to provide the connection string.
+- `provider`: 使用 `mysql` 指定 MySQL 数据源连接器。
+- `url`: 指定 MySql 数据库的[连接字符串](#connection-string)。在这种情况下，我们[使用环境变量](../../prisma-schema-file.md#使用环境变量) 来提供连接字符串。
 
-Find more information on the `datasource` fields [here](../../prisma-schema-file.md#data-sources).
+可以在配置项 `datasource` 中找到更多信息 [点击这里](../../prisma-schema-file.md#数据源)。
 
-## Data model mapping
+## 数据模型映射
 
-The MySQL connector maps the [scalar types](../../data-modeling.md#scalar-types) from the [data model](../../data-modeling.md) to native column types as follows:
+MySQL 连接器将[标量类型](../../data-modeling.md#标量类型)从[数据模型](../../data-modeling.md)映射到原生数据类型，如下所示：
 
-| Data model  | MySQL  |
+| 数据模型  | MySQL  |
 | -------- | --------- | 
 | `String`   | `TEXT`      | 
 | `Boolean`  | `BOOLEAN`   |
@@ -34,26 +42,26 @@ The MySQL connector maps the [scalar types](../../data-modeling.md#scalar-types)
 | `Float`    | `FLOAT`      |
 | `Datetime` | `TIMESTAMP` |
 
-## Connection details
+## 连接细节
 
-### Connection string
+### 连接字符串
 
-MySQL offers two styles of connection strings:
+MySQL 提供两种形式的连接字符串：
 
-- Key-value string: `{user:'user', host:'localhost', schema:'world'}`
-- Connection URI: `mysql://user@localhost:3333`
+- 键值对字符串: `{user:'user', host:'localhost', schema:'world'}`
+- 连接 URI: `mysql://user@localhost:3333`
 
-See the [official documentation](https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html) for details.
+请参考[官方文档](https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html)了解更多详细信息。
 
-### Configuration options
+### 配置选项
 
-- `host`: The IP address/domain of your database server, e.g. `localhost`.
-- `port`: The port on which your database server listens, e.g. `5432`.
-- `database`: The name of the database. 
-- `user`: The database user, e.g. `admin`.
-- `password`: The password for the database user.
-- `ssl`: Whether or not your database server uses SSL.
-- `connection_limit`: The connection limit specifies the maximum number of simultaneous connections that Prisma might have open to your database.
-- `socket`: If you want to connect via sockets, this parameter must specified a file path to the socket you want to use, e.g.: `"mysql://root@localhost/dbname?socket=(/tmp/mysql.sock)"`.
-- `connect_timeout`: The maximum number of seconds to wait for a new connection. **Default**: `5`. 
-- `socket_timeout`: The maximum number of seconds to wait until a single query terminates. **Default**: `5`. 
+- `host`: 数据库服务器的 IP 地址/域, e.g. `localhost`。
+- `port`: 数据库监听端口，e.g. `5432`。
+- `database`: 数据库名称。
+- `user`: 数据库用户， e.g. `admin`。
+- `password`: 数据库用户密码。
+- `ssl`: 服务器是否使用 SSL。
+- `connection_limit`: 指定限制 Prisma 连接数据库的的最大连接数。
+- `socket`: 如果想要使用 sockets 连接，则参数必须指定 socket 文件路径, e.g.: `"mysql://root@localhost/dbname?socket=(/tmp/mysql.sock)"`。
+- `connect_timeout`: 等待新连接最大的秒数。 **默认**: `5`。
+- `socket_timeout`: 等待单个查询终止的最大秒数。**默认**: `5`。 

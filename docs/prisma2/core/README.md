@@ -1,10 +1,18 @@
-# Core
+---
+title: Prisma 2 Core
+description: 本章为Prisma 2 核心组件文档
+author: wsafight
+author_url: https://github.com/wsafight
+author_title: Prisma 爱好者
+---
 
-This directory contains documentation about Prisma 2 core components:
+# 核心
 
-- Connectors
+此目录包含关于 Prisma 2 核心组件文档
+
+- 连接器
   - [MySQL](./connectors/mysql.md)
   - [PostgreSQL](./connectors/postgresql.md)
   - [SQLite](./connectors/sqlite.md)
-- Generators
-  - [Prisma Client JS](./generators/prisma-client-js.md)
+- 生成器
+  - [Prisma Client JS](./generators/prisma-client-js.md)  
