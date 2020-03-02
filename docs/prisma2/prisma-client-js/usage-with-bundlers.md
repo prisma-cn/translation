@@ -7,7 +7,7 @@ author_image_url: https://avatars1.githubusercontent.com/u/28903167?s=460&v=4
 author_title: Prisma 爱好者
 ---
 
-_Module bundlers_ 将 JavaScript 模块打包到一个 JavaScript 文件中。大多数打包程序通过将 JavaScript 代码从各种源文件复制到目标文件来工作。
+_Module bundlers_ 将 JavaScript 模块打包到一个 JavaScript 文件中。大多数打包程序的工作原理是将所有 JavaScript 代码从各种源文件编译并复制到同一个目标文件夹如`dist`或`build`目录。
 
 由于 Prisma Client JS 不仅基于 JavaScript 代码，而且还依赖于**查询引擎二进制文件**，因此你需要确保打包的代码可以访问二进制文件。
 
