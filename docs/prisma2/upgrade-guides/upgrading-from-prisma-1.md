@@ -1,70 +1,70 @@
-# Upgrade guide (Prisma 1 to Prisma 2)
+# 升级指引 (Prisma 1 to Prisma 2)
 
-This upgrade guide describes how to migrate a Node.js project that's based on [Prisma 1](https://github.com/prisma/prisma) and uses the [Prisma client](https://www.prisma.io/docs/prisma-client/) to Prisma 2.
+该升级指引帮助您将一个基于[Prisma1](https://github.com/prisma/prisma)并使用了[Prisma client](https://www.prisma.io/docs/prisma-client/)的Node.js项目迁移到Prisma2。
 
-## Overview
+## 概述
 
-On a high-level, the biggest differences between Prisma 1 and Prisma 2 are the following:
+Prisma2 与Prisma1 主要有以下几点区别：
 
-- Prisma 2 doesn't require hosting a database proxy server (i.e. the [Prisma server](https://www.prisma.io/docs/prisma-server/)).
-- Prisma 2 makes the features of Prisma 1 more modular:
-  - _Data modeling and migrations_ from Prisma 1 are now done via a dedicated `prisma2 migrate` subcommand
-  - _Database access using the Prisma client_ from Prisma 1 is done using Prisma Client JS
-- The Prisma 1 datamodel and the `prisma.yml` have been merged into the [Prisma schema](../prisma-schema-file.md) that's used in Prisma 2
-- Prisma 2 uses a its own modeling language instead of being based on GraphQL SDL
+- Prisma2 不需要托管数据库代理服务(i.e. the [Prisma server](https://www.prisma.io/docs/prisma-server/)).
+- Prisma2 使 Prisma1 的功能更加模块化:
+  - 可以通过专门提供的`prisma2 migrate`子命令实现 Prisma1 的 _数据建模和数据迁移_
+  - 使 Prisma Client JS 可以实现 Prisma1 _通过 Prisma client 访问数据库_ 的功能
+- Prisma1 的 datamodel 和`prisma.yml`已经合并到了 Prisma2 中的[Prisma schema](../prisma-schema-file.md) 
+- Prisma2 使用了自己的模型语言，替代基于 GraphQL SDL 的方式
 
-Based on these differences, the high-level steps to upgrade a project from using Prisma 1 are as follows:
+基于这些区别, 从 Prisma 1 升级的步骤如下:
 
-1. Install Prisma 2 CLI as a development dependency
-1. Use Prisma 2 CLI to convert your Prisma 1 datamodel to the Prisma schema
-1. Adjust your application code, specifically replace the API calls from the Prisma client with those of Prisma Client JS
+1. 安装 Prisma 2 CLI 作为一个 development dependency
+1. 使用 Prisma 2 CLI 把您的 Prisma 1 detamodel转换成 Prisma schema
+1. 校验您的项目代码, 用 Prisma client JS 的 API 调用替换 Prisma client 的API调用
 
-Note that the steps will look somewhat different if you're ...: 
+注意，出现这种情况时，您的步骤可能会有些不同： 
 
-- **not using the Prisma client** (e.g. because you're using Prisma bindings).
-- **building a GraphQL API using `nexus-prisma`**.
+- **没有使用 Prisma client** (e.g. 因为您正在用 Prisma bindings).
+- **使用 `nexus-prisma` 创建 GraphQL API**.
 
-Both scenarios will be covered in other upgrade guides. In this guide, we'll take a look at migrating a REST API from Prisma 1 to Prisma 2 based on this [Prisma 1 example](https://github.com/prisma/prisma-examples/tree/master/typescript/rest-express).
+这两种情况将在其他升级指引中介绍. 在这篇指引中, 我们将基于这个实例研究如何将一个REST API从Prisma1 迁移到Prisma2 : [Prisma 1 example](https://github.com/prisma/prisma-examples/tree/master/typescript/rest-express).
 
-> **Note**: If you're upgrading a project that uses `nexus-prisma`, be sure to check out [@AhmedElywa](https://github.com/AhmedElywa)'s project [`create-nexus-type`](https://github.com/oahtech/create-nexus-type) that converts Prisma models into Nexus `objectType` definitions.
+> **注意**: 如果您正在升级一个使用了 `nexus-prisma`的项目, 一定要check out [@AhmedElywa](https://github.com/AhmedElywa)的项目 [`create-nexus-type`](https://github.com/oahtech/create-nexus-type)， 它将Prisma模型转换为 Nexus `objectType` 定义.
 
-## 1. Install Prisma 2 CLI 
+## 1. 安装 Prisma 2 CLI 
 
-Prisma 2 CLI is currently available as the [`prisma2`](https://www.npmjs.com/package/prisma2) package on npm. You can install it in your Node.js project as follows (be sure to invoke this command in the directory where your `package.json` is located):
+Prisma 2 CLI 目前是 [`prisma2`](https://www.npmjs.com/package/prisma2) 的npm包。 您可以按如下方式将其安装到Node.js项目中 (确保在`package.json`所在的目录中调用该命令):
 
 ```
 npm install prisma2 --save-dev
 ```
 
-You can now use the local installation of the `prisma2` CLI using `npx`:
+现在可以通过`npx`使用在本地安装好的`prisma2`:
 
 ```
 npx prisma2
 ```
 
-## 2. Convert the Prisma 1 datamodel to a Prisma schema
+## 2. 将 Prisma1 的 datamodel 转换为 Prisma schema
 
-The [Prisma schema](./prisma-schema-file.md) is the foundation for any project that uses Prisma 2. Think of the Prisma schema as the combination of the Prisma 1 data model and `prisma.yml` configuration file.
+[Prisma schema](./prisma-schema-file.md) 是所有 Prisma2 项目的基础。 可以把Prisma schema 看作 Prisma1 数据模式和`prisma.yml`配置文件的组合。
 
-There are three ways of obtaining a Prisma schema based on an existing Prisma 1 project:
+有三种方式可以基于已有的 Prisma1 项目得到 Prisma schema:
 
-- Writing the Prisma schema by hand
-- Using introspection against the existing database
-- Using the `prisma2 convert` command
+- 手写 Prisma schema 
+- 对现有数据库使用 introspection
+- 是用`prisma2 convert`命令
 
-Note that [introspection is not yet available](https://github.com/prisma/prisma2/issues/781), so for the purpose of this upgrade guide you'll use the `prisma2 convert` command which converts a Prisma 1 data model to a Prisma schema file. Note that the resulting Prisma schema will not contain any data source and generator definitions yet, these must be added manually.
+需要注意的是，[introspection目前还不可用](https://github.com/prisma/prisma2/issues/781), 因此，在本升级指南中，您将使用`prisma2 convert`命令将prisma1 datamodel转换为Prisma schema文件。另外，得到的 Prisma schema 还不包含任何数据源和生成器定义, 这些必须手动添加.
 
-### 2.1. Convert the datamodel
+### 2.1. 转换datamodel
 
-Assuming your Prisma 1 datamodel is called `datamodel.prisma`, you can use the following command to create a Prisma schema file called `schema.prisma`:
+假设您的Prism1 datamodel名称为 `datamodel.prisma`, 您可以使用如下命令创建一个名为 `schema.prisma`的Prisma schema:
 
 ```bash
 cat datamodel.prisma | npx prisma2@2.0.0-preview017 convert > schema.prisma
 ```
 
-> **Note**: The `convert` command has been removed from Prisma 2 CLI in [2.0.0-preview018](https://github.com/prisma/prisma2/releases/tag/2.0.0-preview018) so you're using it based on an older CLI version.
+> **Note**: Prisma 2 CLI 在 [2.0.0-preview018](https://github.com/prisma/prisma2/releases/tag/2.0.0-preview018)版本移除了 `convert` 命令， 所以您正在使用老版本的CLI.
 
-Consider the [example datamodel](https://github.com/prisma/prisma-examples/blob/master/typescript/rest-express/prisma/datamodel.prisma):
+参考 [example datamodel](https://github.com/prisma/prisma-examples/blob/master/typescript/rest-express/prisma/datamodel.prisma):
 
 ```graphql
 type User {
@@ -84,8 +84,7 @@ type Post {
   author: User!
 }
 ```
-
-This Prisma 1 datamodel will be converted into the following Prisma schema:
+Prisma1的datamodel型被转换成Prisma schema，如下:
 
 ```prisma
 model User {
@@ -106,15 +105,15 @@ model Post {
 }
 ```
 
-> **Note**: The `@unique` attributes on the `id` fields are [redundant](https://github.com/prisma/prisma2/issues/786) as uniqueness is already implied by the `@id` attribute. It also contains another bug where it [doesn't convert `@default` attributes](https://github.com/prisma/prisma2/issues/790), so you need to manually add the `@default(true)` to the `published` field in the Prisma schema.
+> **Note**: `id`字段上的 `@unique`属性是[冗余的](https://github.com/prisma/prisma2/issues/786) ，因为 `@id` 属性已经说明了唯一性.  在[没有转换`@default`属性](https://github.com/prisma/prisma2/issues/790)的地方也包含了另一个bug, 所以您需要手动将`@default(true)` 属性添加到Prisma schema中的 `published` 字段上。
 
-### 2.2. Add the datasource
+### 2.2. 添加数据源
 
-In Prisma 1, the database connection is specified on the Docker image that's used to deploy the Prisma server. The Prisma server then exposes an HTTP endpoint that proxies all database requests from actual application code. That HTTP endpoint is specified in your `prisma.yml`.
+在 Prisma1 中，在用于部署 Prisma server 的 Docker 镜像中指定 数据连接。 Prisma 服务随后暴露一个HTTP端点，代理来自实际应用程序代码的所有数据库请求， 这个HTTP端点是在`prisma.yml`中指定的。
 
-With Prisma 2, the HTTP layer isn't exposed any more and the database client (Prisma Client JS) is configured to run requests "directly" against the database (that is, requests are proxied by its query engine, but there isn't an extra server any more).
+使用 Prisma2，HTTP层不再公开，数据库客户端(Prisma client JS)被配置为“直接”对数据库运行请求(即请求由其查询引擎代理，但不再有额外的server)。
 
-So, as a next step you'll need to tell Prisma 2 where your database is located. You can do so by adding a `datasource` block to your Prisma schema, here is what it looks like (using placeholder values):
+接下来，您需要告诉 Prisma2 您的数据库在哪。您可以添加一个`datasource` 模块到您的Prisma schema, 如下所示 (使用占位符):
 
 ```prisma
 datasource db {
@@ -123,15 +122,15 @@ datasource db {
 }
 ```
 
-You'll now need to replace the placeholder `DB_PROVIDER` and `DB_CONNECTION_STRING` with the actual connection details of your database.
+把 `DB_PROVIDER` 和 `DB_CONNECTION_STRING` 这两个占位符改成实际的数据库连接.
 
-For the `provider` field, you need to add either of three values:
+对于`provider`字段，需要添加以下三个值中的一个:
 
-- `mysql` for a MySQL database
-- `postgresql` for a PostgreSQL database
-- `sqlite` for a SQLite database
+- MySQL数据库: `mysql` 
+- PostgreSQL数据库: `postgresql`
+- SQLite数据库: `sqlite`
 
-The `url` field then defines the _connection string_ of the database. Assume the database configuration in your Docker Compose file that you used to deploy your Prisma server looks as follows:
+`url` 字段定义了数据库的 _连接字符串_ 。假设您使用Docker Compose部署您Prisma server，在Docker Compose中定义数据库链接配置，如下所示:
 
 ```yml
 databases:
@@ -148,7 +147,7 @@ databases:
     migrations: true
 ```
 
-Based on these connection details, you need to add the following `datasource` to the `schema.prisma` file that was created when you invoked `prisma2 convert`:
+根据这些连接细节，您需要把`datasource`添加到调用`prisma2 convert`时创建的`schema.prisma`文件中`:
 
 ```diff
 + datasource postgresql {
@@ -174,9 +173,9 @@ model Post {
 }
 ```
 
-### 2.3. Add the generator
+### 2.3. 添加生成器
 
-With Prisma 1, you specified which language variant of the Prisma client you wanted to use based in your `prisma.yml`, e.g.:
+在 Prisma1 中, 您可以在`prism .yml`中指定要使用 Prisma client 的哪种语言变体,例如:
 
 ```yml
 generate:
@@ -184,7 +183,7 @@ generate:
     output: ../src/generated/prisma-client/
 ```
 
-With Prisma 2, this information is now also contained inside the Prisma schema via a `generator` block. Add it to your your Prisma schema like so:
+在 Prisma2 中，这个信息现在也通过一个`generator`块包含在 Prisma schema 中。像这样把它添加到您的 Prisma schema中:
 
 ```diff
 datasource postgresql {
@@ -214,25 +213,26 @@ model Post {
 }
 ```
 
-Note that the code for Prisma Client JS [by default gets generated into `node_modules/@prisma/client`](https://github.com/prisma/prisma2/blob/master/docs/prisma-client-js/codegen-and-node-setup.md) but can be customized via an `output` field on the `generator` block. You also need to install `@prisma/client` as another npm dependency in your project.
+注意，默认情况下 Prisma Client JS 的代码会[被生成到 `node_modules/@prisma/client`](https://github.com/prisma/prisma2/blob/master/docs/prisma-client-js/codegen-and-node-setup.md)中，但是可以通过`generator` 块上的`output`字段进行定制。
+您也需要将 `@prisma/client` 作为另一个npm dependency 安装到您的项目中。
 
-## 3. Adjust the application to use Prisma Client JS
+## 3. 调整应用，使用 Prisma Client JS
 
-Prisma Client JS is generated into `node_modules/@prisma/client`. In order for this package to "survive" the pruning of Node.js package managers, you first need to install it as an npm dependency:
+Prisma Client JS 在`node_modules/@prisma/client`中生成，为了让这个包在Node.js包管理器的修剪中“存活”下来，您首先需要将它作为一个 npm 依赖来安装: 
 
 ```
 npm install @prisma/client
 ```
 
-The next thing you need to do in order to be able use Prisma Client JS in your application code is to generate it. Similar to Prisma 1, the generators in your Prisma schema file can be invoked by running the `generate` CLI command:
+为了能够在您的代码中使用Prisma Client JS，下面要做的就是生成它。 与Prisma1 类似，可以通过运行`generate`CLI命令来调用 Prisma schema 文件中的生成器:
 
 ```
 npx prisma2 generate
 ```
 
-To make the migration complete, you have to change your application code and replace the usage of the Prisma client with the new Prisma Client JS.
+要完成迁移，您必须更改应用程序代码，并使用新的Prisma Client JS 替换 Prisma client 的用法。
 
-The application code in our example is located in a single file and looks as follows:
+我们示例中的应用程序代码位于独立的文件中，如下所示:
 
 ```ts
 import * as express from 'express'
@@ -308,25 +308,25 @@ app.listen(3000, () =>
 )
 ```
 
-Consider each occurence of the Prisma client instance `prisma` and replacing with the respective usage of Prisma Client JS.
+考虑每一次 Prisma client 的实例`prisma`的出现，并用各自的Prisma Client JS的用法替换掉它。
 
-### 3.1. Adjusting the import
+### 3.1. 调整引入方式
 
-Since Prisma Client JS is generated into `node_modules/@prisma/client`, it is imported as follows:
+由于 Prisma Client JS 是在`node_modules/@prisma/client`中生成的，所以应这样引入:
 
 ```ts
 import { PrismaClient } from '@prisma/client'
 ```
 
-Note that this only imports the `PrismaClient` constructor, so you also need to instantiate a Prisma Client JS instance:
+注意，这里只引入了`PrismaClient`的 构造函数，所以您还需要创建一个 Prisma Client JS 的实例:
 
 ```ts
 const prisma = new PrismaClient()
 ```
 
-### 3.2. Adjusting the `/user` route (`POST`)
+### 3.2. 调整`/user`路由(`POST`)
 
-With the Prisma Client JS API, the `/user` route for `POST` requests has to be changed to:
+在Prisma Client JS API中，`POST`请求的`/user`路由须更改为:
 
 ```ts
 app.post(`/user`, async (req, res) => {
@@ -339,9 +339,9 @@ app.post(`/user`, async (req, res) => {
 })
 ```
 
-### 3.3. Adjusting the `/post` route (`POST`)
+### 3.3. 调整`/post`路由(`POST`)
 
-With the Prisma Client JS API, the `/post` route for `POST` requests has to be changed to:
+在 Prisma Client JS API 中，`POST`请求的`/post`路由须更改为:
 
 ```ts
 app.post(`/post`, async (req, res) => {
@@ -357,9 +357,9 @@ app.post(`/post`, async (req, res) => {
 })
 ```
 
-### 3.4. Adjusting the `/publish/:id` route (`PUT`)
+### 3.4. 调整 `/publish/:id` 路由(`PUT`)
 
-With the Prisma Client JS API, the `/publish/:id` route for `PUT` requests has to be changed to:
+在 Prisma Client JS API 中，`PUT`请求的`/publish/:id`路由须更改为:
 
 ```ts
 app.put('/publish/:id', async (req, res) => {
@@ -372,9 +372,9 @@ app.put('/publish/:id', async (req, res) => {
 })
 ```
 
-### 3.5. Adjusting the `/post/:id` route (`DELETE`)
+### 3.5. 调整`/post/:id`路由(`DELETE `)
 
-With the Prisma Client JS API, the `//post/:id` route for `DELETE` requests has to be changed to:
+在 Prisma Client JS API 中，`DELETE `请求的`/post/:id`路由须更改为:
 
 ```ts
 app.delete(`/post/:id`, async (req, res) => {
@@ -386,9 +386,9 @@ app.delete(`/post/:id`, async (req, res) => {
 })
 ```
 
-### 3.6. Adjusting the `/post/:id` route (`GET`)
+### 3.6. 调整`/post/:id`路由(`GET `)
 
-With the Prisma Client JS API, the `/post/:id` route for `GET` requests has to be changed to:
+在 Prisma Client JS API 中，`GET `请求的`/post/:id`路由须更改为:
 
 ```ts
 app.get(`/post/:id`, async (req, res) => {
@@ -400,9 +400,9 @@ app.get(`/post/:id`, async (req, res) => {
 })
 ```
 
-### 3.7. Adjusting the `/feed` route (`GET`)
+### 3.7. 调整`/feed `路由(`GET `) 
 
-With the Prisma Client JS API, the `/feed` route for `GET` requests has to be changed to:
+在 Prisma Client JS API 中，`GET `请求的`/feed `路由须更改为:
 
 ```ts
 app.get('/feed', async (req, res) => {
@@ -411,9 +411,9 @@ app.get('/feed', async (req, res) => {
 })
 ```
 
-### 3.8. Adjusting the `/filterPosts` route (`GET`)
+### 3.8. 调整`/filterPosts `路由(`GET `)
 
-With the Prisma Client JS API, the `/user` route for `POST` requests has to be changed to:
+在Prisma Client JS API中，`POST `请求的`/user `路由须更改为:
 
 ```ts
 app.get('/filterPosts', async (req, res) => {
@@ -434,16 +434,17 @@ app.get('/filterPosts', async (req, res) => {
 })
 ```
 
-## 4. Performing database migrations with Prisma Migrate
+## 4. 使用 Prisma Migrate 执行数据库迁移
 
-Going forward, you won't perform schema migrations using the `prisma deploy` command any more. Instead, you can use the `prisma2 migrate` commands. Every schema migration follows a 3-step-process:
+今后您不必再使用`prisma deploy`命令执行schema迁移，可以用`prisma2 migrate`替代它。每个 schema 迁移都遵循一个3步的过程:
 
-1. Adjust the data model inside your Prisma schema to reflect the desired change (e.g. adding a new model)
-1. Run `npx prisma2 migrate save --experimental` to save the migration on your file system (this doesn't perform the migration yet)
-1. Run `npx prisma2 migrate up --experimental` to actually perform the migration against your database
+1. 在您的 Prisma schema 中调整 data model，反映预期的更改 (例如添加一个新的model)
+2. 运行`npx prisma2 migrate save --experimental`，在您的文件系统上保存迁移(到这里还没有执行迁移)
+3. 运行`npx prisma2 migrate up --experimental`， 对您的数据库真正执行迁移
 
-> **Warning**: Prisma Migrate is currently in an **experimental** state. When using any of the commands below, you need to explicitly opt-in via an `--experimental` flag, e.g. `prisma2 migrate save --name 'init' --experimental`.
+> **Warning**: Prisma Migrate当前处于**实验**阶段. 执行以下命令时, 您需要通过一个`--experimental`标志明确地选择加入， 例如：
+`prisma2 migrate save --name 'init' --experimental`.
 
-## Summary
+## 总结
 
-In this upgrade guide, you learned how to upgrade an ExpressJS-based REST API from Prisma 1 to Prisma 2 that uses Prisma Client JS and Prisma Migrate. In the future, we'll cover more fine-grained upgrade scenarios, based on more complicated database schemas as well as for projects that are using GraphQL Nexus and `nexus-prisma`.
+在这篇升级指引中，您了解到了怎样使用 Prisma Client JS 和 Prisma Migrate 把 ExpressJS-based REST API 从 Prisma1 升级到 Prisma2。未来我们将基于更复杂的数据库模式，以及使用GraphQL Nexus和`nexus-prisma`的项目，介绍更细粒度的升级场景。
