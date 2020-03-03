@@ -1,5 +1,5 @@
 ---
-title: Prisma 2 的 schema 文件
+title: Prisma schema
 description: 这篇从宏观上讲解 Prisma schema 文件组成结构, 还包括注释、环境变量、格式化等相关规则。
 author: HaveF
 author_url: https://havef.github.io/

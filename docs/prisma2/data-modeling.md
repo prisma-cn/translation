@@ -1,5 +1,5 @@
 ---
-title: Prisma 2 数据建模
+title: Data modeling
 description: 数据模型(data model)是 schema 文件的重要组成部分, 这篇主要介绍数据模型(data model)相关的组成元素。
 author: HaveF
 author_url: https://havef.github.io/

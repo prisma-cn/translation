@@ -7,7 +7,7 @@ author_image_url: https://kangwenchang.com/static/favicon/logocorner.png
 author_title: Prisma 爱好者
 ---
 
-# Prisma 2 教程
+# 重要提示：此教程适用于 preview019 之前的版本，新的稍后更新
 
 通过这篇教程，我们将从实际出发全面地了解 Prisma 2 的生态系统，包括使用[**Lift**](http://lift.prisma.io)迁移数据库，使用[**Photon.js**](http://photonjs.prisma.io) 进行类型安全的数据库访问读写。
 

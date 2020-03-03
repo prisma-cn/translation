@@ -172,6 +172,6 @@ html[data-theme='dark'] {
   padding: 20px 0;
 }
 
-.blogPostTitle_node_modules-\@docusaurus-theme-classic-src-theme-BlogPostItem- {
-  font-size: 2em !important;
+h2 {
+  font-size: 1.5em !important;
 }

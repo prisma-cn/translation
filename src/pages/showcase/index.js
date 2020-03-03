@@ -41,12 +41,8 @@ function Showcase() {
             {row.map(user => (
               <div key={user.title} className='col col--4 top20'>
                 <div className={classnames('card', styles.showcaseUser)}>
-                  <div className='card__image'>
-                    <img
-                      style={{ height: '100%', objectFit: 'cover' }}
-                      src={user.preview}
-                      alt={user.title}
-                    />
+                  <div style={{ height: '200px' }} className='card__image'>
+                    <img className={styles.showcaseImg} src={user.preview} alt={user.title} />
                   </div>
                   <div className='card__body'>
                     <div className='avatar'>
