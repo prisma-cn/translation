@@ -509,16 +509,16 @@ const user = await prisma.user.findOne({
 | `select`  | `UserSelect`       | No       | Specifies which fields to include in the [selection set](#selection-sets).                                  |
 -->
 
-| 名称      | 类型               | 必要 | 描述                                                            |
-| --------- | ------------------ | ---- | --------------------------------------------------------------- |
-| `where`   | `UserWhereInput`   | 否   | 包裹模型的 _所有_ 字段，以便可以由任何模型属性过滤列表。        |
-| `orderBy` | `UserOrderByInput` | 否   | 你可以通过任何模型属性对返回的列表进行排序。                    |
-| `skip`    | `string`           | 否   | 指定应跳过列表中返回的对象的数量。                              |
-| `after`   | `string`           | 否   | 指定列表的起始对象(该值通常指定一个 `id` 或另一个唯一值)。      |
-| `before`  | `string`           | 否   | 指定列表的最后一个对象(该值通常指定一个 `id` 或另一个唯一值)。  |
-| `first`   | `number`           | 否   | 指定应在列表中返回多少个元素(从列表的 _beginning_ 中可以看到)。 |
-| `last`    | `number`           | 否   | 指定应在列表中返回多少个元素(从列表的 _end_ 可以看到)。         |
-| `select`  | `UserSelect`       | 否   | 指定要包含在[选择集](#selection-sets)中的字段。                 |
+| 名称      | 类型                   | 必要 | 描述                                                            |
+| --------- | ---------------------- | ---- | --------------------------------------------------------------- |
+| `where`   | `UserWhereInput`       | 否   | 包裹模型的 _所有_ 字段，以便可以由任何模型属性过滤列表。        |
+| `orderBy` | `UserOrderByInput`     | 否   | 你可以通过任何模型属性对返回的列表进行排序。                    |
+| `skip`    | `string`               | 否   | 指定应跳过列表中返回的对象的数量。                              |
+| `after`   | `UserWhereUniqueInput` | 否   | 指定列表的起始对象(该值通常指定一个 `id` 或另一个唯一值)。      |
+| `before`  | `UserWhereUniqueInput` | 否   | 指定列表的最后一个对象(该值通常指定一个 `id` 或另一个唯一值)。  |
+| `first`   | `number`               | 否   | 指定应在列表中返回多少个元素(从列表的 _beginning_ 中可以看到)。 |
+| `last`    | `number`               | 否   | 指定应在列表中返回多少个元素(从列表的 _end_ 可以看到)。         |
+| `select`  | `UserSelect`           | 否   | 指定要包含在[选择集](#selection-sets)中的字段。                 |
 
 <!-- #### Examples -->
 
