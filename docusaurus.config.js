@@ -134,8 +134,8 @@ module.exports = {
               href: 'https://github.com/prisma/prisma',
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/prisma',
+              label: '沪ICP备17023674号-6',
+              href: 'http://beian.miit.gov.cn/',
             },
           ],
         },

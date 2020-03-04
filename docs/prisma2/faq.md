@@ -33,7 +33,7 @@ Prisma Client JS 很快将提供丰富的查询分析。现在，你可以在实
 
 ### 模式迁移(schema migrations)如何与 Prisma Client JS 一起使用？
 
-Prisma Client JS 不影响你现有的 DDL 系统。你可以保留现有的迁移系统，在每次 migration 后重新 introspect 数据库 schema 更新 Prisma Client JS 即可。在[这里](./prisma-client-js/use-only-prisma-client-js.md)了解更多信息。你还可以始终使用 Prisma 的`migrate` CLI 根据 Prisma 的声明性[数据模型定义](./data-modeling.md)执行 migration。
+Prisma Client JS 不影响你现有的 DDL 系统。你可以保留现有的迁移系统，在每次 migration 后重新 introspect 数据库 schema 更新 Prisma Client JS 即可。你还可以始终使用 Prisma 的`migrate` CLI 根据 Prisma 的声明性[数据模型定义](./data-modeling.md)执行 migration。
 
 ### Prisma Client JS 是否已适合生产？我应该开始使用它吗？
 

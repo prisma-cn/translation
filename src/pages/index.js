@@ -89,7 +89,7 @@ function Home() {
         <div className='squares square4' />
         <div className='squares square5' />
         <div className='squares square6' />
-        <div className='squares square7' />      
+        <div className='squares square7' />
         <div className={styles.hero}>
           <div className={styles.heroInner}>
             {/* <h1 className='padding-top--md'>Prisma2</h1> */}
@@ -101,7 +101,7 @@ function Home() {
               <a href='https://github.com/prisma/prisma' target='_blank' rel='noopener noreferrer'>
                 GitHub
               </a>
-              <Link to={useBaseUrl('docs/directory')}>文档</Link>
+              <Link to={useBaseUrl('docs/prisma2/getting-started/README')}>文档</Link>
             </div>
           </div>
         </div>
@@ -186,7 +186,14 @@ function Home() {
       </div>
       <div className={styles.section}>
         <h2 className='text--center'>Prisma的未来</h2>
-        <img src='site/prisma-overview.png' alt='prisma future' />
+        <div className='text--center'>
+          <img
+            style={{ width: '1000px', maxWidth: '80%' }}
+            src='site/prisma-overview.png'
+            alt='prisma future'
+          />
+        </div>
+
         <div className='container text--center margin-bottom--xl'>
           <div className='row'>
             <div className='col'>

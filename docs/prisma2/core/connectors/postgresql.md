@@ -113,6 +113,6 @@ postgresql://user:password@host?sslidentity=client-identity.p12&sslpassword=mypa
 
 ### 通过 sockets 连接
 
-要通过 socket 连接到 PostgreSQL 数据库，必须将 `host` 作为查询参数添加到连接字符串中（而不是将其设置为 URl 一部分）。 然后此参数的值必须指向包含 socket 的目录， 例如: `postgresql://user:password@/database?host=/var/run/postgresql/`.
+要通过 socket 连接到 PostgreSQL 数据库，必须将 `host` 作为查询参数添加到连接字符串中（而不是将其设置为 URl 一部分）。 然后此参数的值必须指向包含 socket 的目录， 例如: `postgresql://user:password@localhost/database?host=/var/run/postgresql/`.
 
-在该 [GitHub issue](https://github.com/prisma/prisma2/issues/525) 下可以了解更多。
+在该 [GitHub issue](https://github.com/prisma/prisma-client-js/issues/437#issuecomment-592436707) 下可以了解更多。
