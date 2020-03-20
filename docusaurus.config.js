@@ -148,4 +148,10 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} prisma.yoga`,
     },
   },
+  scripts: [
+    {
+      scr: '/swbd.js',
+      async: true,
+    },
+  ],
 };

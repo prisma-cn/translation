@@ -7,7 +7,7 @@ tags: [prisma1, nexus]
 
 [GraphQL Nexus](https://nexus.js.org/)是 JavaScript / TypeScript 的代码优先、类型安全的 GraphQL API 框架。了解如何使用 Prisma client 和[`nexus-prisma`](https://github.com/prisma/nexus-prisma)插件将其连接到数据库。
 
-![img](prisma1/images/using-graphql-nexus-with-a-database.jpg)
+![img](/prisma1/images/using-graphql-nexus-with-a-database.jpg)
 
 <!--truncate-->
 
@@ -75,7 +75,7 @@ tags: [prisma1, nexus]
 
 当编写 GraphQL 服务器代码`nexus`和`nexus-prisma`时，暴露和定制你自己的 API 需要这些操作：
 
-![img](prisma1/images/dbEMHd5.png)
+![img](/prisma1/images/dbEMHd5.png)
 
 生成 CRUD 构建块后，您可以使用`prismaObjectType`from `nexus-prisma`开始公开（和自定义）它们。
 
@@ -422,7 +422,7 @@ mutation {
 
 `prismaObjectType`并`prismaFields`使用*白名单*方法，这意味着您需要明确列出要公开的字段。通配符运算符`*`包括*所有*字段。
 
-![img](prisma1/images/RLsS1lm.png)
+![img](/prisma1/images/RLsS1lm.png)
 
 #### 4）通过`nexus-prisma`自定义 GraphQL API
 
@@ -453,7 +453,7 @@ const User = prismaObjectType({
 
 通过调用`prismaFields`模型`t`，我们可以自定义公开的字段（及其参数）。因为`email`未包含在列表中，所以它已从我们的 GraphQL API 中删除。
 
-![img](prisma1/images/Zwby9Hs.png)
+![img](/prisma1/images/Zwby9Hs.png)
 
 要应用更改，您需要显式传递`User`到以下`types`内部的数组`makePrismaSchema`：
 
@@ -485,7 +485,7 @@ const Post = prismaObjectType({
 
 我们使用`t.string(...)`来自的 API 为我们的模型添加一个新字段`graphql-nexus`。因为它是一个计算字段（因此不能自动解析`nexus-prisma`），我们还需要附加一个解析器。
 
-![img](prisma1/images/64ipcsj.png)
+![img](/prisma1/images/64ipcsj.png)
 
 和以前一样，您需要将自定义`Post`模型显式添加到`types`数组中：
 

@@ -9,7 +9,7 @@ graphqlgen 根据 Graphql schema 翻译出 resolver 的类型定义文件和脚�
 
 prisma 的自动化因此由 50%提升到 75%，而且因为自动化，coding 起来更加安全方便。
 
-![graphqlgen](prisma1/images/graphqlgen.jpg)
+![graphqlgen](/prisma1/images/graphqlgen.jpg)
 
 类型安全为开发人员带来了很多好处。 最值得注意的是， **编译时错误检查**和 **自动完成**使开发人员对代码充满信心并提高了工作效率。
 
@@ -21,7 +21,7 @@ prisma 的自动化因此由 50%提升到 75%，而且因为自动化，coding �
 
 看图找错：
 
-![graphql](prisma1/images/iy9Lj2b.png)
+![graphql](/prisma1/images/iy9Lj2b.png)
 
 GraphQL resolver 实现中有**五个**错误：
 
@@ -39,7 +39,7 @@ GraphQL resolver 实现中有**五个**错误：
 
 在深入研究构建 GraphQL 服务器时出现的一些典型问题之前，让我们简要回顾一些相关的概念：GraphQL types, models, resolvers
 
-![graphql](prisma1/images/U25F2c0.png)
+![graphql](/prisma1/images/U25F2c0.png)
 
 在上图中，我们看到了`schema.graphql`中定义的 GraphQL types。
 
@@ -181,7 +181,7 @@ layout: file-per-type
 
 要调用代码生成过程，请运行 graphqlgen 命令：
 
-![graphql](prisma1/images/2KkOJN0.png)
+![graphql](/prisma1/images/2KkOJN0.png)
 
 这将从`graphqlgen.yml`读取配置并将生成的代码存储在：
 

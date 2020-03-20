@@ -32,7 +32,7 @@
   margin-top: 100px;
   align-self: center;
   justify-content: space-around;
-  z-index: 1000;
+  z-index: 100;
 }
 .heroInner {
   display: flex;

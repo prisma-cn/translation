@@ -7,7 +7,7 @@ tags: [prisma1, nexus]
 
 GraphQL 服务器开发的工具在过去两年中爆炸式增长。我们认为对大多数工具的需求来自流行的 Schema 优先方法 - 并且可以通过替代方案解决：代码优先。
 
-![img](prisma1/images/the-problems-of-schema-first-graphql-development.jpg)
+![img](/prisma1/images/the-problems-of-schema-first-graphql-development.jpg)
 
 <!--truncate-->
 
@@ -49,7 +49,7 @@ GraphQL 服务器开发的工具在过去两年中爆炸式增长。我们认为
 
 ### GraphQL 服务器开发的演变
 
-![img](prisma1/images/jFszNXY.png)
+![img](/prisma1/images/jFszNXY.png)
 
 #### 阶段 1：早期与 `graphql-js`
 
@@ -289,7 +289,7 @@ GraphQL 架构基于强类型系统，在开发过程中可以带来巨大的好
 
 在 Prisma，我们在推动 GraphQL 生态系统发展方面发挥了重要作用。许多提到的工具都是由我们的工程师和社区成员构建的。
 
-![img](prisma1/images/OLITh8y.png)
+![img](/prisma1/images/OLITh8y.png)
 
 经过几个月的开发和与 GraphQL 社区的密切互动，我们逐渐意识到我们只是在修复症状。这就像攻打[九头蛇 Boss](https://en.wikipedia.org/wiki/Lernaean_Hydra) - 解决一个问题导致一些新的问题。
 
