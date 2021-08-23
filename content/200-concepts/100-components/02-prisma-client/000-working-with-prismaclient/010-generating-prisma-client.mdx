@@ -1,18 +1,18 @@
 ---
-title: '生成 client'
-metaTitle: '生成 client (概念)'
-metaDescription: '此页面解释了如何生成 Prisma Client。它还在生成的 client 上提供额外的 context、典型工作流和 Node.js 配置。'
+title: '生成 Prisma client'
+metaTitle: '生成 Prisma client (概念)'
+metaDescription: '本章解释了如何生成 Prisma Client。它还在生成了的 client 上提供额外的上下文信息 context、典型的工作流和 Node.js 配置。'
 ---
 
 <TopBlock>
 
-Prisma Client 是一个自动生成的数据库 它是依据你的数据库 schema 定制的 client。 默认情况下, Prisma Client 生成到 `node_modules/.prisma/client` 文件夹, 但是 [你可以指定一个自定义位置](#using-a-custom-output-path).
+Prisma Client 是一个跟据你的数据库 schema 自动生成的定制化数据库客户端 client。默认情况下, Prisma Client 被生成到 `node_modules/.prisma/client` 文件夹下, 但是[你也可以指定一个自定义位置](#using-a-custom-output-path)。
 
-要生成并实例化 Prisma Client:
+生成并实例化 Prisma Client:
 
-1. 确保你已经 [在计算机上安装了 Prisma CLI](../../prisma-cli/installation).
+1. 确保你已经[在计算机上安装了 Prisma CLI](../../prisma-cli/installation)。
 
-1. 将以下 `generator` 定义添加到你的 Prisma schema 中:
+2. 将以下 `generator` 定义添加到你的 Prisma schema 中:
 
    ```prisma
    generator client {
@@ -20,7 +20,7 @@ Prisma Client 是一个自动生成的数据库 它是依据你的数据库 sche
    }
    ```
 
-1. 安装 `@prisma/client` npm 包:
+3. 安装 `@prisma/client` npm 包:
 
    ```terminal
    npm install @prisma/client
@@ -28,17 +28,17 @@ Prisma Client 是一个自动生成的数据库 它是依据你的数据库 sche
 
    <Admonition type="warning">
 
-   我们建议你保持 `prisma` **和** `@prisma/client`包同步，以避免任何意外的错误或行为。
+   我们建议你保持 `prisma` **和** `@prisma/client`包的版本同步，以避免发生任何意外的错误或行为。
 
    </Admonition>
 
-1. 使用以下命令生成 Prisma Client:
+4. 使用以下命令生成 Prisma Client:
 
    ```terminal
    prisma generate
    ```
 
-1. 现在你可以在代码中 [实例化 Prisma Client](instantiate-prisma-client) :
+5. 现在你可以在代码中[实例化 Prisma Client](instantiate-prisma-client):
 
    <TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="code"/>, <FileWithIcon text="JavaScript" icon="code"/>]}>
 
@@ -66,11 +66,11 @@ Prisma Client 是一个自动生成的数据库 它是依据你的数据库 sche
 
 > **重要提示**: 每次对 Prisma schema 进行更改后，你都需要重新运行命令 `prisma generate` 去更新生成的 Prisma Client 代码。
 
-以下是 Prisma Client 生成的典型工作流的图形说明:
+下图是 Prisma Client 生成过程的正常流程:
 
-![Prisma Client 生成的典型工作流的图形说明](https://res.cloudinary.com/prismaio/image/upload/v1628764839/docs/aRJmVFY_osasel.png)
+![Prisma Client 生成过程流程的图形说明](../../../../doc-images/aRJmVFY_osasel.png)
 
-还要注意，`prisma generate` 是当你安装 `@prisma/client` npm 包时 _自动_ 调用的。 所以，当你最初设置  Prisma Client 时, 通常可以保存上面列表中的第三步。
+还要注意，`prisma generate` 会在你安装 `@prisma/client` npm 包时*自动* 调用。 所以，当你初始化 Prisma Client 时, 只需要记住上面步骤中的第三步。
 
 </TopBlock>
 
@@ -78,34 +78,34 @@ Prisma Client 是一个自动生成的数据库 它是依据你的数据库 sche
 
 `@prisma/client` npm 包 包含了两个关键部分:
 
-- 1 `@prisma/client` 模块本身, 只有在你重新安装此包时改变
-- 2 `.prisma/client` 文件夹, [默认位置](#using-a-custom-output-path)是由你的 schema 产生的唯一 Prisma Client
+- `@prisma/client` 模块本身, 它只在你重新安装此包时改变
+- `.prisma/client` 文件夹。根据你的 schema 会自动生成唯一对应的 Prisma Client ，它所存放的[默认位置](#using-a-custom-output-path)在这里。
 
-
-`@prisma/client/index.d.ts` 导出 `.prisma/client`:
+`@prisma/client/index.d.ts` 会导出 `.prisma/client` 的类型:
 
 ```ts
 export * from '.prisma/client'
 ```
 
-这意味着你仍然导入 `@prisma/client` 到你自己的 `.ts` 文件中:
+这意味着你仍然需要导入 `@prisma/client` 到你自己的 `.ts` 文件中:
 
 ```ts
 import { PrismaClient } from '@prisma/client'
 ```
 
-Prisma Client 是由你的 Prisma schema 生成的，并且是你的项目所独有的。每次你更改 schema（例如，通过执行[schema migration](../../prisma-migrate)）并运行 `prisma generate` 时，客户端代码都会更改：
-![.prisma 和 @prisma 文件夹](https://www.prisma.io/docs/static/79546fa799b68a337dc6c9a2881d1cd0/3c492/prisma-client-node-module.png)
+Prisma Client 是根据你的 Prisma schema 生成的，并且是你的项目所独有的。每次你更改 schema（例如，通过执行[schema migration](../../prisma-migrate)）并运行 `prisma generate` 时，client 的代码都会更改：
 
-`.prisma` 文件夹不受 Node.js 包管理器 [修剪](https://docs.npmjs.com/cli/prune.html) 的影响。
+![.prisma 和 @prisma 文件夹](prisma-client-node-module.png)
+
+`.prisma` 文件夹不受 Node.js 包管理器的[pruning](https://docs.npmjs.com/cli/prune.html) 影响。
 
 ## Prisma Client 的位置
 
-如果你没有在 `generator` 块中指定自定义的 `output`, Prisma Client 会默认生成在 `./node_modules/.prisma/client` 文件夹. 这是 [保持默认目录的一些优点](#why-is-prisma-client-generated-into-node_modulesprismaclient-by-default).
+如果你没有在 `generator` 块中指定自定义的 `output`路径, Prisma Client 会默认生成在 `./node_modules/.prisma/client` 文件夹. 这是[保持默认目录的一些优点](#why).
 
-### 使用自定义的 `output` 路径
+### 使用自定义的 `output` 路径 {#using-a-custom-output-path}
 
-你可以在 `generator` 设置中指定一个 `output` 路径, 例如 (假设你的 `schema.prisma` 文件位于默认 `prisma` 子文件夹中)：
+你可以在 `generator` 设置中指定一个 `output` 路径, 如下所示 (假设你的 `schema.prisma` 文件位于默认 `prisma` 子文件夹中)：
 
 ```prisma
 generator client {
@@ -114,23 +114,23 @@ generator client {
 }
 ```
 
-运行 `prisma generate` 该 schema 文件后, 此 Prisma Client 包将位于：
+根据该 schema 文件运行 `prisma generate` 后, 对应的 Prisma Client 包将位于：
 
 ```
 ./src/generated/client
 ```
 
-要从自定义位置(例如, 从名为 `./src/script.ts` 的文件)导入 `PrismaClient` :
+从自定义位置(例如, 在名为 `./src/script.ts` 的文件中)导入 `PrismaClient` :
 
 ```ts
 import { PrismaClient } from './generated/client'
 ```
 
-### 为什么 Prisma Client 在 `node_modules/.prisma/client` 默认生成？
+### 为什么 Prisma Client 要在默认生成在`node_modules/.prisma/client`下？{#why}
 
 #### 导入 Prisma Client
 
-通过 Prisma Client 生成进 `node_modules/.prisma/client` 并从 `@prisma/client` 导出它，您可以将其导入并在代码中实例化客户端，如下所示：
+通过将 Prisma Client 生成进 `node_modules/.prisma/client` 并从 `@prisma/client` 导出这种方式，你可以像下面的示例一样将其导入并在代码中实例化客户端：
 
 ```js
 import { PrismaClient } from '@prisma/client'
@@ -150,13 +150,16 @@ const prisma = new PrismaClient()
 // 在你的应用程序中使用 `prisma` 来读取和写入数据库中的数据
 ```
 
-#### 默认情况下将查询引擎二进制文件置于版本控制之外
+#### 默认将查询引擎二进制文件置于版本控制之外
 
+Prisma Client 的功能基于一个*查询引擎 query engine*，该引擎作为一个 sidecar 进程与你的应用程序同时运行。当 `prisma generate` 被调用后，这个查询引擎的*二进制文件包*被下载并存储在 `output` 路径中。
 
-Prisma Client 是基于一个 _查询引擎_ ，该引擎作为一个 sidecar 进程与你的应用程序同时运行。当 `prisma generate` 被调用后，这个查询引擎 _二进制文件_ 被下载并存储 在 `output` 路径中。
+由于在 `node_modules` 中生成 Prisma Client， 所以默认情况下查询引擎就不受版本控制 (因为 `node_modules` 目录通常会被版本控制系统忽略)。如果它没有生成到 `node_modules` 中, 那么你需要指定忽略目录, 例如对于 Git 来说你需要将 `output` 路径添加到你的 `.gitignore` 文件中。
 
-通过 在 `node_modules` 中生成 Prisma Client， 默认情况下查询引擎不受版本控制 (因为 `node_modules` 版本控制通常会忽略). 如果它没有生成到 `node_modules` 中, 那么您需要明确忽略它, 例如对于 Git 你需要将 `output` 路径添加到你的 `.gitignore` 文件中。
+## 在 `postinstall` hook 中生成 Prisma Client
 
-## 在 `postinstall` hook 中生成 Prisma Client `@prisma/client`
+`@prisma/client` 的包定义了自己的 `postinstall` hook 钩子，当它被安装时就会执行。
 
- `@prisma/client` 包定义自己的 `postinstall` hook， 当包开始安装时它就开始执行。 这个 hook 调用了 `prisma generate` 命令并在默认位置 `node_modules/.prisma/client`生成 Prisma Client 代码。需要知道的是 `prisma` 必须是可用的，无论作为本地依赖项或者作为全局安装（建议始终将 `prisma` 包作为开发依赖项，使用 `npm install prisma --save-dev`，以避免版本冲突）。
+这个 hook 调用了 `prisma generate` 命令并在默认位置 `node_modules/.prisma/client`生成 Prisma Client 代码。
+
+注意这里需要 `prisma` 命令是能用的，无论作为本地依赖项或者作为全局依赖被提前安装（建议始终将 `prisma` 包作为开发依赖项，使用 `npm install prisma --save-dev`，以避免版本冲突）。
