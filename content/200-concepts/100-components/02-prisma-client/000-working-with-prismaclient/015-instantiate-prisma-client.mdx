@@ -1,13 +1,13 @@
 ---
-title: '实例化 client'
-metaTitle: '实例化 client (概念)'
-metaDescription: '在你的 App 如何创建并实例化 PrismaClient。'
+title: '创建 PrismaClient 实例'
+metaTitle: '创建 PrismaClient 实例 (概念)'
+metaDescription: '如何在你的应用中创建并使用 PrismaClient 实例。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-以下示例演示了如何从 [默认路径](generating-prisma-client#using-a-custom-output-path) 导入和实例化 [生成 client](generating-prisma-client)：
+以下示例演示了如何使用 [默认输出路径](generating-prisma-client#using-a-custom-output-path) 导入并创建你 [生成的 PrismaClient](generating-prisma-client) 实例：
 
 <TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="code"/>, <FileWithIcon text="Javascript" icon="code"/>]}>
 
@@ -35,27 +35,27 @@ const prisma = new PrismaClient()
 
 <Tip>
 
-你可以使用 [构造函数 参数](../../../../reference/api-reference/prisma-client-reference#prismaclient) <span class="api"></span>进一步的自定义 `PrismaClient` - 例如, 设置 [日志级别](logging) 或者自定义 [错误格式](error-formatting)。
+你可以使用 [构造函数参数](../../../../reference/api-reference/prisma-client-reference#prismaclient) <span class="api"></span>来进一步配置 `PrismaClient` - 例如, 设置 [日志级别](logging) 或者自定义 [错误格式化](error-formatting)。
 
 </Tip>
 
 </TopBlock>
 
-##  `PrismaClient` 实例的数量是重中之重
+## `PrismaClient` 实例的数量很重要
 
-你的的应用程序应该一般只创建 **一个** 实例的 `PrismaClient`。 如何实现这一点取决于您是否在 [长时间运行应用程序](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-long-running-applications) <span class="guide"></span>  或 [serverless 环境](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-serverless-environments) <span class="guide"></span> 中使用 Prisma。
+你的应用程序通常只应当创建 **一个** `PrismaClient` 实例。如何实现这一点取决于您是在 [长期运行的应用程序](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-long-running-applications) <span class="guide"></span> 还是在 [无主机 (serverless) 环境](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-serverless-environments) <span class="guide"></span> 中使用 Prisma。
 
-这样做的原因是每个实例 `PrismaClient` 管理一个连接池，这意味着大量客户端可以 **耗尽数据库连接数限制**。 这适用于所有数据库连接器。
+这样做的原因是每个 `PrismaClient` 实例会维护一个连接池，意味着大量数据库连接会 **耗尽数据库连接数限制**。这适用于所有数据库连接器 (database connector)。
 
-如果你使用 **MongoDB 连接器**, 则连接由 MongoDB 驱动连接池管理. 如果你使用 **关系型数据连接器**, 则连接由 Prisma's [连接池](connection-pool) 管理. 每个实例 `PrismaClient` 创建它自己的连接池.
+如果你使用 **MongoDB 连接器**, 这些数据库连接会由 MongoDB 驱动连接池管理。如果你使用 **关系型数据连接器**, 那么这些数据库连接会由 Prisma 的 [连接池](connection-pool) 管理。每个 `PrismaClient` 实例会创建各自的连接池。
 
-1. 每个 client 创建自己的 [查询引擎](../../prisma-engines/query-engine) 实例.
-1. 每个 查询引擎 创建一个 [连接池](connection-pool) 并且这个默认池的大小为:
+1. 每个 PrismaClient 实例会创建自己的 [查询引擎](../../prisma-engines/query-engine) 实例。
+2. 每个查询引擎会创建一个 [连接池](connection-pool) 并且这个连接池的默认大小为:
 
    - 关系型数据库： `num_physical_cpus * 2 + 1`
    - MongoDB：[`100`](https://docs.mongodb.com/manual/reference/connection-string/#mongodb-urioption-urioption.maxPoolSize)
 
-1. 太多的连接可能会开始 **减慢你的数据库** 并最终导致错误，就像：
+3. 太多的数据库连接可能会 **使你的数据库变慢** 并最终导致错误，像这样：
 
    ```
    Error in connector: Error querying the database: db error: FATAL: sorry, too many clients already
