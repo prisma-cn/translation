@@ -1,22 +1,22 @@
 ---
-title: 'Using custom model and field names'
-metaTitle: 'Using custom model and field names (Concepts)'
-metaDescription: 'Learn how you can decouple the naming of Prisma models from database tables to improve the ergonomics of the generated Prisma Client API.'
+title: '使用自定义模型和字段名称'
+metaTitle: '使用自定义模型和字段名称 (概念)'
+metaDescription: '了解你如何能将数据库表与 Prisma 模型命名分离，而提高生成 Prisma Client API 的效率。'
 ---
 
 <TopBlock>
 
-The Prisma Client API is generated based on the models in your [Prisma schema](../../prisma-schema). Models are _typically_ 1:1 mappings of your database tables.
+Prisma Client API 基于 [Prisma schema](../../prisma-schema) 中的模型生成的. 模型 _通常_ 是 1:1 映射你的数据库表。
 
-In some cases, especially when using [introspection](../../introspection), it might be useful to _decouple_ the naming of database tables and columns from the names that are used in your Prisma Client API. This can be done via the [`@map` and `@@map`](../../prisma-schema/data-model#mapping-model-names-to-tables-or-collections) attributes in your Prisma schema.
+在某些情况下，尤其是在使用 [内省](../../introspection) 时, 将数据库表和列的命名与 Prisma Client API 中使用的名称 _分离_ 可能很有用。可以通过你 Prisma schema 中的 [`@map` 和 `@@map`](../../prisma-schema/data-model#mapping-model-names-to-tables-or-collections) 属性来完成。
 
-You can use `@map` and `@@map` to rename MongoDB fields and collections respectively. This page uses a relational database example.
+你可以使用 `@map` 和 `@@map` 分别重命名 MongoDB 字段和集合。此页面使用关系型数据库来做示例。
 
 </TopBlock>
 
-## Example: Relational database
+## 示例： 关系型数据库
 
-Assume you have a relational database schema looking similar to this:
+假定你有一个类似如下的关系型数据库 schema：
 
 ```sql
 CREATE TABLE users (
@@ -47,7 +47,7 @@ CREATE TABLE post_in_categories (
 CREATE UNIQUE INDEX post_id_category_id_unique ON post_in_categories(post_id int4_ops,category_id int4_ops);
 ```
 
-When introspecting a database with that schema, you'll get a Prisma schema looking similar to this:
+当使用该 schema 内省数据库时, 你将得到一个类似如下的 Prisma schema ：
 
 ```prisma
 model categories {
@@ -91,11 +91,11 @@ model users {
 }
 ```
 
-The are a few "issues" with this Prisma schema when the Prisma Client API is generated:
+生成 Prisma Client API 时，此 Prisma schema 存在一些 "issues"：
 
-**Adhering to Prisma's naming conventions**
+**遵守 Prisma 的命名约定**
 
-Prisma has a [naming convention](../../../../reference/api-reference/prisma-schema-reference#naming-conventions) of **camelCasing** and using the **singular form** for Prisma models. If these naming conventions are not met, the Prisma schema can become harder to interpret and the generated Prisma Client API will feel less natural. Consider the following, generated model:
+Prisma 有一个 **驼峰** [命名规则](../../../../reference/api-reference/prisma-schema-reference#naming-conventions) 并为 Prisma models 使用 **单数形式**。 如果不满足这些命名约定，Prisma schema 可能会变得更难解释，并且生成的 Prisma Client API 会感觉不那么自然。考虑以下生成的模型：
 
 ```prisma
 model users {
@@ -105,7 +105,7 @@ model users {
 }
 ```
 
-Although `profiles` refers to a 1:1 relation, its type is currently called `profiles` in plural, suggesting that there might be many `profiles` in this relation. With Prisma conventions, the models and fields were _ideally_ named as follows:
+虽然 `profiles` 指明了 1:1 关系, 但它的类型目前被称为 `profiles` 复数，表明 profiles 这种关系可能有很多。使用 Prisma 约定，模型和字段的最佳命名如下：
 
 ```prisma
 model User {
@@ -115,22 +115,22 @@ model User {
 }
 ```
 
-Because these fields are "Prisma-level" [relation fields]() that do not manifest you can manually rename them in your Prisma schema.
+因为这些 “Prisma 级别” 的关系字段并不会被定义，你可以在 Prisma schema 中手动重命名它们。
 
-**Naming of annotated relation fields**
+**带注释的关系字段的命名**
 
-Foreign keys are represented as a combination of a [annotated relation fields](../../prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) and its corresponding relation scalar field in the Prisma schema. Here's how all the relations from the SQL schema are currently represented:
+外键在 Prisma schema 中表示为 [带注释的关系字段](../../prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) 及其对应的关系标量字段的组合。以下是 SQL 模式中所有关系的当前表示方式：
 
 ```prisma
 model categories {
   category_id        Int                  @id @default(autoincrement())
-  post_in_categories post_in_categories[] // virtual relation field
+  post_in_categories post_in_categories[] // 虚拟关系字段
 }
 
 model post_in_categories {
   category_id Int // relation scalar field
   post_id     Int // relation scalar field
-  categories  categories @relation(fields: [category_id], references: [category_id]) // virtual relation field
+  categories  categories @relation(fields: [category_id], references: [category_id]) // 虚拟关系字段
   posts       posts      @relation(fields: [post_id], references: [post_id])
 
   @@unique([post_id, category_id], name: "post_id_category_id_unique")
@@ -184,11 +184,11 @@ const userByProfile = await prisma.profiles
 
 In both cases, `user_id` is used to refer to an _entire_ "user object", not only to the `user_id` column. -->
 
-## Using `@map` and `@@map` to rename fields and models in the Prisma Client API
+## 使用 `@map` 和 `@@map` 重命名 Prisma Client API 中的字段和模型
 
-You can "rename" fields and models that are used in the Prisma Client by mapping them to the "original" names in the database using the `@map` and `@@map` attributes. For the [example](#example) above, you could e.g. annotate your models as follows to prevent the mentioned issues.
+你可以 “重命名” 在 Prisma Client 中使用的字段和模型，方法是使用 `@map` 和 `@@map` 属性将它们映射到数据库中的 “原始” 名称。对于上面的 [示例](#example)，你可以例如按如下方式注释模型以防止上述问题。
 
-_After_ you introspected your database with `prisma db pull`, you can manually adjust the resulting Prisma schema as follows:
+_之后_ 你使用 `prisma db pull` 内省你的数据库，你可以按如下手动调整所产生的 Prisma schema：
 
 ```prisma
 model Category {
@@ -230,10 +230,10 @@ model User {
 }
 ```
 
-With these changes, you're now adhering to Prisma's naming conventions and the generated Prisma Client API feels more "natural":
+通过这些更改，你现在遵循 Prisma 的命名约定，并且生成的 Prisma Client API 感觉更 “自然”：
 
 ```ts
-// Nested writes
+// 嵌套写入
 const profile = await prisma.profile.create({
   data: {
     bio: 'Hello World',
@@ -254,11 +254,11 @@ const userByProfile = await prisma.profile
   .user()
 ```
 
-## Renaming relation fields
+## 重命名关系字段
 
-Prisma-level [relation fields]() (sometimes referred to as "virtual relation fields") only exist in the Prisma schema, but do not actually manifest in the underlying database. You can therefore name these fields whatever you want.
+Prisma 级别的 [relation fields]()（有时称为 “虚拟关系字段” ）仅存在于 Prisma schema 中，但实际上并不存在于底层数据库中。因此，你可以随意命名这些字段。
 
-Consider the following example of an ambiguous relation in a SQL database:
+考虑以下 SQL 数据库中的歧义关系示例：
 
 ```sql
 CREATE TABLE "User" (
@@ -273,7 +273,7 @@ CREATE TABLE "Post" (
 );
 ```
 
-Prisma's introspection will output the following Prisma schema:
+Prisma 的内省将输出以下 Prisma schema：
 
 ```prisma
 model Post {
@@ -289,7 +289,7 @@ model User {
 }
 ```
 
-Since the names of the virtual relation fields `Post_Post_authorToUser` and `Post_Post_favoritedByToUser` are based on the generated relation names, they don't look very friendly in the Prisma Client API. In that case, you can rename the relation fields to anything you like, e.g.:
+由于虚拟关系字段名称 `Post_Post_authorToUser` 和 `Post_Post_favoritedByToUser` 是基于关系名称生成出来的，它们在 Prisma Client API 中看起来不太友好。在这种情况下，你可以将关系字段重命名为你喜欢的任何名称，例如：
 
 ```prisma
 model Post {
