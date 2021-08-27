@@ -1,35 +1,35 @@
 ---
-title: 'Migrate from TypeORM'
-metaTitle: 'How to migrate from TypeORM to Prisma'
-metaDescription: 'Learn how to migrate from TypeORM to Prisma'
+title: 'TypeORM 迁移到 Prisma'
+metaTitle: '如何从 TypeORM 迁移到 Prisma'
+metaDescription: '了解如何从 TypeORM 迁移到 Prisma'
 ---
 
 <TopBlock>
 
-This guide describes how to migrate from TypeORM to Prisma. It uses an extended version of the [TypeORM Express example](https://github.com/typeorm/typescript-express-example/) as a [sample project](https://github.com/prisma/migrate-from-typeorm-to-prisma) to demonstrate the migration steps. You can find the example used for this guide on [GitHub](https://github.com/prisma/migrate-from-typeorm-to-prisma).
+本文讲述如何从 `TypeORM` 迁移到 `Prisma`。 它使用 [TypeORM Express 示例](https://github.com/typeorm/typescript-express-example/) 的扩展版本作为 [示例项目](https://github.com/prisma/migrate-from-typeorm-to-prisma) 来演示迁移步骤。 您可以在 [GitHub](https://github.com/prisma/migrate-from-typeorm-to-prisma) 上找到用于本指南的示例。
 
-This migration guide uses PostgreSQL as as an example database, but it equally applies to any other relational database that's [supported by Prisma](../../reference/database-reference/supported-databases).
+本迁移指南使用 `PostgreSQL` 作为示例数据库，但它同样适用于 [Prisma 支持](../../reference/database-reference/supported-databases) 的其他关系数据库。
 
-You can learn how Prisma compares to TypeORM on the [Prisma vs TypeORM](../../concepts/more/comparisons/prisma-and-typeorm) page.
+您可以在 [Prisma vs TypeORM](../../concepts/more/comparisons/prisma-and-typeorm) 页面了解 Prisma 与 TypeORM 的对比。
 
 </TopBlock>
 
-## Overview of the migration process
+## 迁移过程
 
-Note that the steps for migrating from TypeORM to Prisma are always the same, no matter what kind of application or API layer you're building:
+注意，无论你构建何种类型的应用程序或 API 层，从 TypeORM 迁移到 Prisma 的步骤始终相同：
 
-1. Install the Prisma CLI
-1. Introspect your database
-1. Install Prisma Client
-1. Gradually replace your TypeORM queries with Prisma Client
+1. 安装 Prisma CLI
+1. 自测自己的数据库
+1. 安装 Prisma Client
+1. 用 Prisma Client 逐步替换 TypeORM 查询
 
-These steps apply, no matter if you're building a REST API (e.g. with Express, koa or NestJS), a GraphQL API (e.g. with Apollo Server, TypeGraphQL or Nexus) or any other kind of application that uses TypeORM for database access.
+无论是构建 REST API（例如 Express、koa 或 NestJS）、GraphQL API（例如 Apollo Server、TypeGraphQL 或 Nexus）还是使用 TypeORM 进行数据库访问的任何其他类型的应用程序，这些步骤都适用。
 
-Prisma lends itself really well for **incremental adoption**. This means, you don't have migrate your entire project from TypeORM to Prisma at once, but rather you can _step-by-step_ move your database queries from TypeORM to Prisma.
+Prisma 非常适合 **增量替换**。 你不必一次将整个项目从 TypeORM 迁移到 Prisma，而是可以一步步将数据库查询从 TypeORM 迁移到 Prisma。
 
-## Overview of the sample project
+## 示例项目
 
-For this guide, we'll use a REST API built with Express as a [sample project](https://github.com/prisma/migrate-from-typeorm-to-prisma) to migrate to Prisma. It has four models/entities:
+本指南使用 Express 构建的 REST API 作为 [示例项目](https://github.com/prisma/migrate-from-typeorm-to-prisma) 迁移到 Prisma。 它有四个模型（models）/实体（entities）：
 
 <TabbedContent tabs={[<FileWithIcon text="User.ts" icon="file"/>, <FileWithIcon text="Post.ts" icon="file"/>, <FileWithIcon text="Profile.ts" icon="file"/>, <FileWithIcon text="Category.ts" icon="file"/>]}>
 
@@ -124,23 +124,23 @@ export class Category {
 
 </TabbedContent>
 
-The models have the following relations:
+模型（models）有以下关系：
 
 - 1-1: `User` ↔ `Profile`
 - 1-n: `User` ↔ `Post`
 - m-n: `Post` ↔ `Category`
 
-The corresponding tables have been created using a generated TypeORM migration.
+相应的表已使用生成的 TypeORM 迁移创建。
 
-<details><summary>Expand to view details of the migration</summary>
+<details><summary>展开查看迁移详细信息</summary>
 
-The migration has been created using
+迁移已经创建使用
 
 ```terminal
 typeorm migration:generate -n Init
 ```
 
-This created the following migration file:
+创建了以下迁移文件：
 
 ```ts file=migrations/1605698662257-Init.ts
 import { MigrationInterface, QueryRunner } from 'typeorm'
@@ -210,7 +210,7 @@ export class Init1605698662257 implements MigrationInterface {
 
 </details>
 
-As mentioned before, this guide is an extended variation of the TypeORM Express example and uses the same file structure. The route handlers are located in the `src/controller` directory. From there, they are pulled into a central `src/routes.ts` file which is used to set up the required routes in `src/index.ts`:
+如上所述，本指南是 TypeORM Express 示例的扩展变体，并使用相同的文件结构。 路由处理程序位于 `src/controller` 目录中。 它们被放入 `src/routes.ts` 核心文件中，该文件用于在 `src/index.ts` 中配置路由：
 
 ```
 └── blog-typeorm
@@ -237,30 +237,30 @@ As mentioned before, this guide is an extended variation of the TypeORM Express 
     └── tsconfig.json
 ```
 
-## Step 1. Install the Prisma CLI
+## 步骤1，安装 Prisma CLI
 
-The first step to adopt Prisma is to [install the Prisma CLI](../../concepts/components/prisma-cli/installation#local-installation-recommended) in your project:
+第一步是在项目中 [安装 Prisma CLI](../../concepts/components/prisma-cli/installation#local-installation-recommended):
 
 ```terminal copy
 npm install prisma --save-dev
 ```
 
-## Step 2. Introspect your database
+## 步骤2，自测自己的数据库
 
-### 2.1. Set up Prisma
+### 2.1. 配置 Prisma
 
-Before you can introspect your database, you need to set up your [Prisma schema](../../concepts/components/prisma-schema) and connect Prisma to your database. Run the following command in your terminal to create a basic Prisma schema file:
+在您可以内省数据库之前，您需要配置 [Prisma schema](../../concepts/components/prisma-schema) 并将 Prisma 连接到您的数据库。 在终端中运行以下命令以创建基本的 Prisma 模式文件：
 
 ```terminal copy
 npx prisma init
 ```
 
-This command created a new directory called `prisma` with the following files for you:
+创建了一个名为 `prisma` 的新目录，其中包含以下文件：
 
-- `schema.prisma`: Your Prisma schema file that specifies your database connection and models
-- `.env`: A [`dotenv`](https://github.com/motdotla/dotenv) to configure your database connection URL as an environment variable
+- `schema.prisma`: 指定数据库连接和模型的 Prisma schema
+- `.env`: [`dotenv`](https://github.com/motdotla/dotenv) 将您的数据库连接 URL 配置为环境变量
 
-The Prisma schema file currently looks as follows:
+Prisma schema 文件内容目前是这样的：
 
 ```prisma file=prisma/schema.prisma
 // This is your Prisma schema file,
@@ -278,13 +278,13 @@ generator client {
 
 <Tip>
 
-If you're using VS Code, be sure to install the [Prisma VS Code extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) for syntax highlighting, formatting, auto-completion and a lot more cool features.
+如果您使用 VS Code，请安装 [Prisma VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) 用于语法高亮、格式化、自动完成等更酷的功能。
 
 </Tip>
 
-### 2.2. Connect your database
+### 2.2. 连接你的数据库
 
-If you're not using PostgreSQL, you need to adjust the `provider` field on the `datasource` block to the database you currently use:
+如果您没有使用 PostgreSQL，则需要将 `datasource` 块上的 `provider` 字段调整为您当前使用的数据库：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>, <FileWithIcon text="SQL Server" icon="database"/>, <FileWithIcon text="SQLite" icon="database"/>]}>
 
@@ -334,13 +334,13 @@ datasource db {
 
 </TabbedContent>
 
-Once that's done, you can configure your [database connection URL](../../reference/database-reference/connection-urls) in the `.env` file. Here's how the database connection from TypeORM maps to the connection URL format used by Prisma:
+完成后，您可以在 `.env` 文件中配置 [数据库连接 URL](../../reference/database-reference/connection-urls)。 以下是 TypeORM 的数据库连接如何映射到 Prisma 使用的连接 URL 格式：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>, <FileWithIcon text="SQL Server" icon="database"/>, <FileWithIcon text="SQLite" icon="database"/>]}>
 
 <tab>
 
-Assume you have the following database connection details in `ormconfig.json`:
+例如在 `ormconfig.json` 中有配置以下数据库连接信息：
 
 ```json file=ormconfig.json
 {
@@ -353,25 +353,25 @@ Assume you have the following database connection details in `ormconfig.json`:
 }
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-typeorm"
 ```
 
-Note that you can optionally configure the PostgreSQL [schema](https://www.postgresql.org/docs/9.1/ddl-schemas.html) by appending the `schema` argument to the connection URL:
+请注意，您可以通过将 `schema` 参数附加到连接 URL 来选择配置 PostgreSQL [schema](https://www.postgresql.org/docs/9.1/ddl-schemas.html)：
 
 ```sh file=.env
 DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-typeorm?schema=myschema"
 ```
 
-If not provided, the default schema called `public` is being used.
+如果未提供，则使用名为“public”的默认架构。
 
 </tab>
 
 <tab>
 
-Assume you have the following database connection details in `ormconfig.json`:
+假设在 `ormconfig.json` 中有以下数据库连接信息：
 
 ```json file=ormconfig.json
 {
@@ -384,7 +384,7 @@ Assume you have the following database connection details in `ormconfig.json`:
 }
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="mysql://alice:myPassword42@localhost:3306/blog-typeorm"
@@ -394,7 +394,7 @@ DATABASE_URL="mysql://alice:myPassword42@localhost:3306/blog-typeorm"
 
 <tab>
 
-Assume you have the following database connection details in `ormconfig.json`:
+假如 `ormconfig.json` 有以下数据库连接配置：
 
 ```json file=ormconfig.json
 {
@@ -407,13 +407,13 @@ Assume you have the following database connection details in `ormconfig.json`:
 }
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="sqlserver://localhost:1433;database=blog-typeorm;user=alice;password=myPassword42;trustServerCertificate=true"
 ```
 
-Note that if you are running on macOS **[and a version of Prisma before 2.15.0](https://github.com/prisma/tiberius/issues/65)**, you must use `encrypt=DANGER_PLAINTEXT` to work around the current [TLS limitation](https://github.com/prisma/prisma/issues/4075):
+请注意，如果您在 macOS **[和 2.15.0 之前的 Prisma 版本](https://github.com/prisma/tiberius/issues/65)** 上运行，则必须使用 `encrypt=DANGER_PLAINTEXT` 来处理 [TLS 限制](https://github.com/prisma/prisma/issues/4075)：
 
 ```
 DATABASE_URL="sqlserver://localhost:1433;database=blog-typeorm;user=alice;password=myPassword42;trustServerCertificate=true;encrypt=DANGER_PLAINTEXT" // DANGER_PLAINTEXT not needed in 2.15.0 and later
@@ -423,7 +423,7 @@ DATABASE_URL="sqlserver://localhost:1433;database=blog-typeorm;user=alice;passwo
 
 <tab>
 
-Assume you have the following database connection details in `ormconfig.json`:
+假如 `ormconfig.json` 有以下数据库连接配置：
 
 ```json file=ormconfig.json
 {
@@ -431,8 +431,7 @@ Assume you have the following database connection details in `ormconfig.json`:
   "database": "blog-typeorm"
 }
 ```
-
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="file:./blog-typeorm.db"
@@ -442,15 +441,14 @@ DATABASE_URL="file:./blog-typeorm.db"
 
 </TabbedContent>
 
-### 2.3. Run Prisma's introspection
+### 2.3. 执行 Prisma 内省
 
-With your connection URL in place, you can [introspect](../../concepts/components/introspection) your database to generate your Prisma models:
+连接 URL 后，可以 [introspect](../../concepts/components/introspection) 数据库以生成您的 Prisma 模型：
 
 ```terminal copy
 npx prisma db pull
 ```
-
-This creates the following Prisma models:
+创建了以下 Prisma 模式：
 
 ```prisma file=prisma/schema.prisma
 model typeorm_migrations {
@@ -504,26 +502,26 @@ model user {
 }
 ```
 
-The generated Prisma models represent your database tables and are the foundation for your programmatic Prisma Client API which allows you to send queries to your database.
+生成的 Prisma 模式呈现您的数据库表，并且是您的程序化 Prisma Client API 的基础，它允许您将查询发送到您的数据库。
 
-### 2.4. Adjust the Prisma schema (optional)
+### 2.4. 调整 Prisma schema（可选）
 
-The models that were generated via introspection currently _exactly_ map to your database tables. In this section, you'll learn how you can adjust the naming of the Prisma models to adhere to [Prisma's naming conventions](../../reference/api-reference/prisma-schema-reference#naming-conventions).
+通过内省生成的模型当前精确映射到您的数据库表。 在本节中，您将了解如何调整 Prisma 模型的命名并满足 [Prisma 的命名约定](../../reference/api-reference/prisma-schema-reference#naming-conventions)。
 
-All of these adjustment are entirely optional and you are free to skip to the next step already if you don't want to adjust anything for now. You can go back and make the adjustments at any later point.
+所有调整都是可选的，不想调整任何内容，可以跳到下一步。 以后的时间随时返回进行调整。
 
-As opposed to the current snake_case notation of Prisma models, Prisma's naming conventions are:
+与当前 Prisma 模型的 `snake_case` 符号相反，Prisma 的命名约定是：
 
-- PascalCase for model names
-- camelCase for field names
+- 模型命名遵守 `PascalCase`
+- 字段命名遵守 `camelCase`
 
-You can adjust the naming by _mapping_ the Prisma model and field names to the existing table and column names in the underlying database using `@@map` and `@map`.
+可以使用 `@@map` 和 `@map` 通过 映射到 Prisma 模型和字段名称到基础数据库中的现有表和列名称来调整命名。
 
-Also note that you can rename [relation fields](../../concepts/components/prisma-schema/relations#relation-fields) to optimize the Prisma Client API that you'll use later to send queries to your database. For example, the `post` field on the `user` model is a _list_, so a better name for this field would be `posts` to indicate that it's plural.
+另请注意，可以重命名 [关联字段](../../concepts/components/prisma-schema/relations#relation-fields) 以优化稍后将用于向数据库发送查询的 Prisma Client API。 例如，`user` 模型上的 `post` 字段是数组格式，因此这个字段的更好名称是 `posts` 以表明它是复数形式。
 
-You can further completely remove model that represents the TypeORM migrations table (called `_typeorm_migrations` here) from the Prisma schema.
+您可以进一步从 Prisma 模式中完全删除代表 TypeORM 迁移表（`_typeorm_migrations`）的模型。
 
-Here's an adjusted version of the Prisma schema that addresses these points:
+这是解决这些问题的 Prisma 模式的版本调整改动：
 
 ```prisma file=prisma/schema.prisma
 model Category {
@@ -579,25 +577,25 @@ model User {
 }
 ```
 
-## Step 3. Install Prisma Client
+## 步骤3，安装 Prisma Client
 
-As a next step, you can install Prisma Client in your project so that you can start replacing the database queries in your project that are currently made with TypeORM:
+在项目中安装 Prisma Client，以便开始替换项目中当前使用 TypeORM 进行的数据库查询：
 
 ```terminal
 npm install @prisma/client
 ```
 
-## Step 4. Replace your TypeORM queries with Prisma Client
+## 步骤 4， 用 Prisma Client 替换 TypeORM 查询
 
-In this section, we'll show a few sample queries that are being migrated from TypeORM to Prisma Client based on the example routes from the sample REST API project. For a comprehensive overview of how the Prisma Client API differs from TypeORM, check out the [API comparison](../../concepts/more/comparisons/prisma-and-typeorm#api-comparison) page.
+本节将展示一些基于 REST API 项目的示例路由从 TypeORM 迁移到 Prisma Client 的示例查询。 有关 Prisma 客户端 API 与 TypeORM 的区别，请查看 [API 比较](../../concepts/more/comparisons/prisma-and-typeorm#api-comparison) 。
 
-First, to set up the `PrismaClient` instance that you'll use to send database queries from the various route handlers. Create a new file named `prisma.ts` in the `src` directory:
+设置 `PrismaClient` 实例，您将使用该实例从各种路由处理程序发送数据库查询。 在 `src` 目录中创建一个名为 `prisma.ts` 的新文件：
 
 ```terminal copy
 touch src/prisma.ts
 ```
 
-Now, instantiate `PrismaClient` and export it from the file so you can use it in your route handlers later:
+实例化 PrismaClient 并将其从文件中导出，以便等下在路由处理程序中使用它：
 
 ```ts copy file=src/prisma.ts
 import { PrismaClient } from '@prisma/client'
@@ -605,19 +603,19 @@ import { PrismaClient } from '@prisma/client'
 export const prisma = new PrismaClient()
 ```
 
-### 4.1. Replacing queries in `GET` requests
+### 4.1. 替换 `GET` 请求中的查询
 
-The REST API has three routes that accept `GET` requests:
+REST API 有三个接受 `GET` 请求的路由：
 
-- `/feed`: Return all published posts
-- `/filterPosts?searchString=SEARCH_STRING`: Filter returned posts by `SEARCH_STRING`
-- `/post/:postId`: Returns a specific post
+- `/feed`: 返回所有已发布的帖子
+- `/filterPosts?searchString=SEARCH_STRING`: 通过关键字 `SEARCH_STRING` 过滤返回帖子
+- `/post/:postId`: 返回一篇帖子的详细信息
 
-Let's dive into the route handlers that implement these requests.
+让我们深入研究实现这些请求的路由处理程序。
 
 #### `/feed`
 
-The `/feed` handler is currently implemented as follows:
+`/feed` 实现如下：
 
 ```ts file=src/controllers/FeedAction.ts
 import { getManager } from 'typeorm'
@@ -635,9 +633,9 @@ export async function feedAction(req, res) {
 }
 ```
 
-Note that each returned `Post` object includes the relation to the `author` it's associated with. With TypeORM, including the relation is not type-safe. For example, if there was a typo in the relation that is retrieved, your database query would fail only at _runtime_ – the TypeScript compiler does not provide any safety here.
+注意，每个返回的 `Post` 对象都包含与其关联的 `author` 的关系。 使用 TypeORM，包括关系不是类型安全的。 例如，如果检索到的关系中存在拼写错误，您的数据库查询只会在运行阶段失败，TypeScript 编译器在此处不提供任何安全性。
 
-Here is how the same route is implemented using Prisma Client:
+使用 Prisma Client 实现相同路由：
 
 ```ts file=src/controllers/FeedAction.ts
 import { prisma } from '../prisma'
@@ -652,11 +650,11 @@ export async function feedAction(req, res) {
 }
 ```
 
-Note that the way how Prisma Client includes the `author` relation is absolutely type-safe. The TypeScript compiler would throw an error if you were trying to include a relation that does not exist on the `User` model.
+注意，Prisma Client 包含 `author` 关系的方式是绝对类型安全的。 如果您尝试包含 `User` 模型中不存在的关系，TypeScript 编译器会抛出错误。
 
 #### `/filterPosts?searchString=SEARCH_STRING`
 
-The `/filterPosts` handler is currently implemented as follows:
+`/filterPosts` 实现如下：
 
 ```ts file=src/controllers/FilterPostsActions.ts
 import { getManager, Like } from 'typeorm'
@@ -677,7 +675,7 @@ export async function filterPostsAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/FilterPostsActions.ts
 import { prisma } from '../prisma'
@@ -702,11 +700,11 @@ export async function filterPostsAction(req, res) {
 }
 ```
 
-Note that TypeORM by default combines several `where` conditions with an implicit `OR` operator. Prisma on the other hand [combines several `where` conditions with an implicit `AND` operator](../../concepts/components/prisma-client/filtering-and-sorting#retrieve-all-post-records-where-the-content-field-contains-prisma-and-published-is-false), so in this case the Prisma query needs to make the `OR` explicit.
+请注意，默认情况下 TypeORM 将几个 `where` 条件与一个隐式的 `OR` 运算符组合在一起。 Prisma 则是[将几个 `where` 条件与一个隐含的 `AND` 运算符结合起来](../../concepts/components/prisma-client/filtering-and-sorting#retrieve-all-post-records-where -the-content-field-contains-prisma-and-published-is-false)，在这种情况下，Prisma 查询需要明确地显示 `OR`。 
 
 #### `/post/:postId`
 
-The `/post/:postId` handler is currently implemented as follows:
+`/post/:postId` 实现如下：
 
 ```ts file=src/controllers/GetPostByIdAction.ts
 import { getManager } from 'typeorm'
@@ -722,7 +720,7 @@ export async function getPostByIdAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/GetPostByIdAction.ts
 import { prisma } from '../prisma'
@@ -738,17 +736,17 @@ export async function getPostByIdAction(req, res) {
 }
 ```
 
-### 4.2. Replacing queries in `POST` requests
+### 4.2. 替换 `POST` 请求中的查询
 
-The REST API has three routes that accept `POST` requests:
+REST API 有三个接受 `POST` 请求的路由：
 
-- `/user`: Creates a new `User` record
-- `/post`: Creates a new `User` record
-- `/user/:userId/profile`: Creates a new `Profile` record for a `User` record with a given ID
+- `/user`: 创建一个新的 `User` 记录
+- `/post`: 创建一个新的 `Post` 记录
+- `/user/:userId/profile`: 为特定 ID 的 `User` 记录创建一个新的 `Profile` 记录
 
 #### `/user`
 
-The `/user` handler is currently implemented as follows:
+`/user` 实现如下：
 
 ```ts file=src/controllers/CreateUserAction.ts
 import { getManager } from 'typeorm'
@@ -768,7 +766,7 @@ export async function createUserAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/CreateUserAction.ts
 import { prisma } from '../prisma'
@@ -789,7 +787,7 @@ export async function createUserAction(req, res) {
 
 #### `/post`
 
-The `/post` handler is currently implemented as follows:
+`/post` 实现如下：
 
 ```ts file=src/controllers/CreateDraftAction.ts
 import { getManager } from 'typeorm'
@@ -814,7 +812,7 @@ export async function createDraftAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/CreateDraftAction.ts
 import { prisma } from '../prisma'
@@ -836,11 +834,11 @@ export async function createDraftAction(req, res) {
 }
 ```
 
-Note that Prisma Client's nested write here save an initial query where first the `User` record needs to be retrieved by its `email`. That's because, with Prisma you can connect records in relations using any unique property.
+注意，Prisma Client 嵌套写入在此处保存了一个初始查询，其中首先需要通过其 `email` 检索 `User` 记录。使用 Prisma，您可以使用任何唯一属性连接关系中的记录。
 
 #### `/user/:userId/profile`
 
-The `/user/:userId/profile` handler is currently implemented as follows:
+`/user/:userId/profile` 实现如下：
 
 ```ts file=src/controllers/SetBioForUserAction.ts.ts
 import { getManager } from 'typeorm'
@@ -865,7 +863,7 @@ export async function setBioForUserAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/SetBioForUserAction.ts.ts
 import { prisma } from '../prisma'
@@ -889,17 +887,17 @@ export async function setBioForUserAction(req, res) {
 }
 ```
 
-### 4.3. Replacing queries in `PUT` requests
+### 4.3. 替换 `PUT` 请求中的查询
 
-The REST API has one route that accept a `PUT` request:
+REST API 有一个路由接受 `PUT` 请求:
 
-- `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`: Adds the post with `POST_ID` to the category with `CATEGORY_ID`
+- `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`: 将有 `POST_ID` 的帖子添加到有 `CATEGORY_ID` 的分类中
 
-Let's dive into the route handlers that implement these requests.
+让我们深入研究实现这些请求的路由处理程序。
 
 #### `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`
 
-The `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID` handler is currently implemented as follows:
+`/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID` 实现如下：
 
 ```ts file=src/controllers/AddPostToCategoryAction.ts
 import { getManager } from 'typeorm'
@@ -924,7 +922,7 @@ export async function addPostToCategoryAction(req, res) {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```ts file=src/controllers/AddPostToCategoryAction.ts
 import { prisma } from '../prisma'
@@ -951,7 +949,7 @@ export async function addPostToCategoryAction(req, res) {
 }
 ```
 
-Note that this Prisma Client can be made less verbose by modeling the relation as an [implicit many-to-many relation](#implicit-many-to-many-relations) instead. In that case, the query would look as follows:
+注意，通过将关系建模为 [隐式多对多关系](#implicit-many-to-many-relations)，可以使这个 Prisma Client 变得不那么冗长。 在这种情况下，查询将如下所示：
 
 ```ts file=src/controllers/AddPostToCategoryAction.ts
 const post = await prisma.post.update({
@@ -964,11 +962,11 @@ const post = await prisma.post.update({
 })
 ```
 
-## More
+## 其他
 
-### Implicit many-to-many relations
+### 隐式多对多关系
 
-Similar to the `@manyToMany` decorator in TypeORM, Prisma allows you to [model many-to-many relations _implicitly_](../../concepts/components/prisma-schema/relations#implicit-vs-explicit-many-to-many-relations). That is, a many-to-many relation where you do not have to manage the [relation table](../../concepts/components/prisma-schema/relations/many-to-many-relations#relation-tables) (also sometimes called JOIN table) _explicitly_ in your schema. Here is an example with TypeORM:
+与 TypeORM 中的 `@manyToMany` 装饰器类似，Prisma 允许您[建模多对多关系 _implicitly_](../../concepts/components/prisma-schema/relations#implicit-vs-explicit-many-relations）。 也就是说，多对多关系，您不必管理 [关系表](../../concepts/components/prisma-schema/relations/many-to-many-relations#relation-tables )（有时也称为 JOIN 表）_explicitly_ 在您的架构中。 这是 TypeORM 的示例：
 
 ```ts
 import {
@@ -1005,7 +1003,7 @@ export class Category {
 }
 ```
 
-If you generate and run a migration with TypeORM based on these models, TypeORM will automatically create the following relation table for you:
+如果你基于这些模型使用 TypeORM 生成并运行迁移，TypeORM 会自动为你创建以下关系表：
 
 ```sql
 -- Table Definition ----------------------------------------------
@@ -1021,7 +1019,7 @@ CREATE INDEX "IDX_93b566d522b73cb8bc46f7405b" ON post_categories_category("postI
 CREATE INDEX "IDX_a5e63f80ca58e7296d5864bd2d" ON post_categories_category("categoryId" int4_ops);
 ```
 
-If you introspect the database with Prisma, you'll get the following result in the Prisma schema (note that some relation field names have been adjusted to look friendlier compared to the raw version from introspection):
+如果您使用 Prisma 内省数据库，您将在 Prisma 模式中获得以下结果（注意，与内省的原始版本相比，某些关系字段名称做了更友好的调整）
 
 ```prisma file=schema.prisma
 model Category {
@@ -1057,9 +1055,9 @@ model PostToCategories {
 }
 ```
 
-In this Prisma schema, the many-to-many relation is modeled explicitly via the relation table `PostToCategories`
+在 Prisma schema 中，多对多关系是通过关系表 `PostToCategories` 显式建模的
 
-By adhering to the [conventions for Prisma relation tables](), the relation could look as follows:
+通过遵守 [Prisma 关系表的约定]()，关系如下所示： 
 
 ```prisma file=schema.prisma
 model Category {
@@ -1083,4 +1081,4 @@ model Post {
 }
 ```
 
-This would also result in a more ergonomic and less verbose Prisma Client API to modify the records in this relation, because you have a direct path from `Post` to `Category` (and the other way around) instead of needing to traverse the `PostToCategories` model first.
+结果是更符合人体工程学、更简洁的 Prisma Client API 来修改关系中的记录，因为您有从 `Post` 到 `Category` 的直接路径（反之亦然），而无需优先遍历 `PostToCategories` 模型。
