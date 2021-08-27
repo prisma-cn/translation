@@ -1,95 +1,95 @@
 ---
-title: 'Why Prisma?'
-metaTitle: 'Why Prisma? Comparison with SQL query builders & ORMs'
-metaDescription: 'Learn about the motivation for Prisma and how it compares to other Node.js and TypeScript database tools like ORMs and SQL query builders.'
+title: '为什么选择 Prisma?'
+metaTitle: '相比于 SQL 查询生成器（query builder）以及 ORM，为什么选择 Prisma?'
+metaDescription: '了解 Prisma 的设计动机，以及它与其他 Node.js 和 TypeScript 数据库工具（如 ORM 和 SQL 查询生成器）之间的对比。'
 ---
 
 <TopBlock>
 
-On this page, you'll learn about the motivation for Prisma and how it compares to other database tools like ORMs and SQL query builders.
+在本文中，你会了解到 Prisma 的设计动机，以及它与其他数据库工具，例如 ORM 和 SQL 查询生成器（query builder） 的对比。
 
-Working with relational databases is a major bottleneck in application development. Debugging SQL queries or complex ORM objects often consume hours of development time.
+与关系型数据库打交道，是应用程序开发中的一个主要瓶颈。调式 SQL 查询或复杂的 ORM 对象经常消耗数小时的开发时间。
 
-Prisma makes it easy for developers to reason about their database queries by providing a clean and type-safe API for submitting database queries which returns _plain old JavaScript objects_.
+Prisma 通过提供一个干净（clean）和类型安全（type-safe）的 API 来提交数据库查询，同时返回一个普通 JavaScript 对象（plain old JavaScript object），来使得开发者能够更容易地进行数据库查询。
 
 </TopBlock>
 
 ## TLDR
 
-Prisma's main goal is to make application developers more productive when working with databases. Here are a few examples of how Prisma achieves this:
+Prisma 的主要目的是使应用程序开发人员在与数据库打交道时能够更加高效。以下是 Prisma 如何实现这一点的例子：
 
-- **Thinking in objects** instead of mapping relational data
-- **Queries not classes** to avoid complex model objects
-- **Single source of truth** for database and application models
-- **Healthy constraints** that prevent common pitfalls and antipatterns
-- **An abstraction that makes the right thing easy** ("pit of success")
-- **Type-safe database queries** that can be validated at compile time
-- **Less boilerplate** so developers can focus on the important parts of their app
-- **Auto-completion in code editors** instead of needing to look up documentation
+- **用对象进行思考**，而不是映射关系型数据
+- **不使用类进行查询** 来避免复杂的模型对象
+- 数据库和应用程序使用 **单一的源**
+- **健康的约束** 来防止常见的陷阱和反模式（antipattern）
+- **一个使正确的事情变得更容易的抽象**（pit of success）
+- **类型安全的数据库查询**，可以在编译时进行校验
+- **更少的模板代码**，开发者可以专注于应用程序中的重要部分
+- **在代码编辑器中自动补全**，而不需要查询文档
 
-The remaining parts of this page discuss how Prisma compares to existing database tools.
+本文的剩余部分将讨论 Prisma 与现有数据库工具的对比。
 
-## Problems with SQL, ORMs and other database tools
+## SQL 语句、ORM 以及其他数据库工具存在的问题
 
-The main problem with the database tools that currently exist in the Node.js and TypeScript ecosystem is that they require a major tradeoff between _productivity_ and _control_.
+Node.js 和 TypeScript 生态中现有的数据库工具主要问题，是他们需要在 _生产力（productivity）_ 和 _可控性（control）_ 之间做一个平衡。
 
-![Productivity vs Control in ORMs, SQL query builders, and SQL](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/ruJmTac.png)
+![ORM、SQL 查询生成器和 SQL 语句中的生产力和可控性](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/ruJmTac.png)
 
-### Raw SQL: Full control, low productivity
+### 原生 SQL 语句：完全的可控性，低生产力
 
-With raw SQL (e.g. using the native [`pg`](https://node-postgres.com/) or [`mysql`](https://github.com/mysqljs/mysql#readme) Node.js database drivers) you have full control over your database operations. However, productivity suffers as sending plain SQL strings to the database is cumbersome and comes with a lot of overhead (manual connection handling, repetitive boilerplate, ...).
+编写原生 SQL 语句时（使用原生 [`pg`](https://node-postgres.com/) 或 [`mysql`](https://github.com/mysqljs/mysql#readme），你对你的数据库操作具有完全的控制力。但是，生产力会受到很大的影响，因为向数据库发送原生的 SQL 字符串很麻烦，而且有很多开销（例如手动维护连接、重复性的模板工作等等）。
 
-Another major issue with this approach is that you don't get any type safety for your query results. Of course, you can type the results manually but this is a huge amount of work and requires major refactorings each time you change your database schema or queries to keep the typings in sync.
+这种方法的另一个主要问题是，你的查询结果不是类型安全的。当然，你可以手动指定结果的类型，但是这是一个巨大的工作量，而且每次你改变数据库模式或查询时，都需要进行大量的重构工作以保持类型的同步。
 
-Furthermore, submitting SQL queries as plain strings means you don't get any autocompletion in your editors.
+此外，以纯字符串的形式提交 SQL 查询，意味着你无法在编辑器中得到任何自动补全的功能。
 
-### SQL query builders: High control, medium productivity
+### SQL 查询生成器（query builder）：高可控性，中等生产力
 
-A common solution that retains a high level of control and provides better productivity is to use a SQL query builder (e.g. [knex.js](https://knexjs.org/)). These sort of tools provide a programmatic abstraction to construct SQL queries.
+一个常见的解决方案是通过使用 SQL 查询生成器（query builder），它保留了高度的可控性，同时也提供了更好的生产力。这类工具为构建 SQL 查询提供了一个程序化的抽象。
 
-The biggest drawback with SQL query builders is that application developers still need to think about their data in terms of SQL. This incurs a cognitive and practical cost of translating relational data into objects. Another issue is that it's too easy to shoot yourself in the foot if you don't know exactly what you're doing in your SQL queries.
+SQL 查询生成器（query builder）最大的缺点，是应用开发人员依旧需要从 SQL 的角度来考虑他们的数据。这就产生了将关系型数据转化为对象的认知和实践成本。另一个问题是，如果你不能确切知道你在 SQL 查询中到底做了什么，你很容易搬起石头砸自己的脚。
 
-### ORMs: Less control, better productivity
+### ORMs: 低可控性, 高生产力
 
-ORMs abstract away from SQL by letting you _define your application models as classes_, these classes are mapped to tables in the database.
+ORM 通过让你 _将应用模型定义为类_ 来抽象出 SQL 语句，这些类会被映射到数据库中的表。
 
-> "Object relational mappers" (ORMs) exist to bridge the gap between the programmers' friend (the object), and the database's primitive (the relation). The reasons for these differing models are as much cultural as functional: programmers like objects because they encapsulate the state of a single thing in a running program. Databases like relations because they better suit whole-dataset constraints and efficient access patterns for the entire dataset.
+> "Object relational mappers"（ORM）的存在，是为了弥合程序员的朋友（对象）与数据库的原始（关联关系）之间的间隙。这些不同模型之间的差异，既是思维上的，也是功能上的：程序员更喜欢对象，因为它们封装了运行的程序中单一事物的状态。而数据库更喜欢关联关系（relation），因为它们更适合整个数据集的约束和针对整个数据集的有效访问模式。
 >
 > [The Troublesome Active Record Pattern, Cal Paterson (2020)](https://calpaterson.com/activerecord.html)
 
-You can then read and write data by calling methods on the instances of your model classes.
+然后你可以通过调用你的模型类实例上的方法来读写数据。
 
-This is way more convenient and comes closer to the mental model developers have when thinking about their data. So, what's the catch?
+这种方式就方便多了，也更加贴近开发者在考虑他们的数据时的思维模型。那么，有什么问题呢？
 
-> ORM represents a quagmire which starts well, gets more complicated as time passes, and before long entraps its users in a commitment that has no clear demarcation point, no clear win conditions, and no clear exit strategy.
+> ORM 就像是一个泥潭，它刚开始很好，但是随着时间的推移会变得越来越复杂，令用户在使用过程中进退两难。
 >
-> [The Vietnam of Computer Science, Ted Neward (2006)](http://blogs.tedneward.com/post/the-vietnam-of-computer-science/)
+[The Vietnam of Computer Science, Ted Neward (2006)](http://blogs.tedneward.com/post/the-vietnam-of-computer-science/)
 
-As an application developer, the mental model you have for your data is that of an _object_. The mental model for data in SQL on the other hand are _tables_.
+作为一个应用开发者，数据在你的思维模型中是一个 _对象（object）_。而在 SQL 中，它是 _表（table）_。
 
-The divide between these two different representations of data is often referred to as the [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object-relational_impedance_mismatch). The object-relational impedance mismatch also is a major reason why many developers don't like working with traditional ORMs.
+这两种不同的数据表现形式之间的鸿沟通常被称为 [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object-relational_impedance_mismatch)，而这也是许多开发者不喜欢使用传统 ORM 的主要原因。
 
-As an example, consider how data is organized and relationships are handled with each approach:
+比如说，考虑一下这两种方式分别是如何组织数据和处理关联关系的：
 
-- **Relational databases**: Data is typically normalized (flat) and uses foreign keys to link across entities. The entities then need to be JOINed to manifest the actual relationships.
-- **Object-oriented**: Objects can be deeply nested structures where you can traverse relationships simply by using dot notation.
+- **关系型数据库（Relational databases）**：数据通常是规范化的（扁平化的），然后通过外键来连接各实体。然后这些实体需要被连接（JOIN）起来，以体现实际的关联关系。
+- **面向对象（Object-oriented）**：对象可以是深度嵌套的结构，你可以通过点号（.）简单的遍历关联关系。
 
-This alludes to one of the major pitfalls with ORMs: While they make it _seem_ that you can simply traverse relationships using familiar dot notation, under the hood the ORM generates SQL JOINs which are expensive and have the potential to drastically slow down your application (one symptom of this is the [n+1 problem](https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping)).
+这暗示了 ORM 的一个主要缺陷。虽然它们使你 _看起来_ 可以简单地使用熟悉的点符号来遍历关系，但在底层实现中，ORM 生成的 SQL JOIN 语句代价是非常昂贵的，并且有可能大大降低你的应用程序的速度（一个例子就是 [n+1 问题](https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping) ）。
 
-To conclude: The appeal of ORMs is the premise of abstracting away the relational model and thinking about your data purely in terms of objects. While the premise is great, it's based on the wrong assumption that relational data can easily be mapped to objects which leads to lots of complications and pitfalls.
+总结一下：ORM 的吸引力在于抽象出关系模型的前提下，纯粹从对象的角度来考虑你的数据。虽然这个前提很好，但是它基于了一个错误的假设， 即关系型数据可以很容易地被映射到对象上，这导致了很多复杂的问题和陷阱。
 
-## Application developers should care about data – not SQL
+## 应用开发者应该关心数据 - 而不是 SQL
 
-Despite being developed in the 1970s(!), SQL has stood the test of time in an impressive manner. However, with the advancement and modernization of developers tools, it's worth asking if SQL really is the best abstraction for application developers to work with?
+尽管是在二十世纪七十年代开发的，但 SQL 已经以一种令人印象深刻的方式经受住了时间的考验。然而，随着开发人员工具的进步和现代化，值得一问的是，SQL 是否真的是应用程序开发人员工作的最佳抽象？
 
-After all, **developers should only care about the _data_ they need to implement a feature** and not spend time figuring out complicated SQL queries or massaging query results to fit their needs.
+毕竟，**开发人员应该只关心他们实现某项功能所需要的 _数据_**，而不是花时间去搞清楚复杂的 SQL 查询，或对查询结果进行调整以适应他们的需要。
 
-There's another argument to be made against SQL in application development. The power of SQL can be a blessing if you know exactly what you're doing, but its complexity can be a curse. There are a lot of [antipatterns](https://www.slideshare.net/billkarwin/sql-antipatterns-strike-back) and pitfalls that even experienced SQL users struggle to anticipate, often at the cost of performance and hours of debugging time.
+在应用程序开发中，还有一个反对 SQL 的理由。如果你清楚的知道你在做什么，那么 SQL 的力量是一种祝福，但它的复杂性可能是一种诅咒。有很多 [反模式（antipatterns）](https://www.slideshare.net/billkarwin/sql-antipatterns-strike-back) 和陷阱，即使是有经验的 SQL 用户也很难预料到，往往要以性能和几个小时的调式时间为代价。
 
-Developers should be able to ask for the data they need instead of having to worry about "doing the right thing" in their SQL queries. They should be using an abstraction that makes the right decisions for them. This can mean that the abstraction imposes certain "healthy" constraints that prevent developers from making mistakes.
+开发人员应该要求得到他们需要的数据，而不是去担心要在 SQL 查询中"做正确的事情"，他们应该使用一个能够为他们做出正确决定的抽象概念。这可能意味着该抽象概念添加了某些"健康"的约束，以防止开发人员犯错。
 
-## Prisma makes developers productive
+## Prisma 使开发人员的工作效率得到提高
 
-Prisma's main goal is to make application developers more productive when working with databases. Considering the tradeoff between productivity and control again, this is how Prisma fits in:
+Prisma 的主要目标是使应用开发人员在使用数据库时更具有生产力。再考虑生产力和可控性之间的平衡，这就是 Prisma 的作用。
 
 ![Prisma makes developers productive](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/38uWKzW.png)
