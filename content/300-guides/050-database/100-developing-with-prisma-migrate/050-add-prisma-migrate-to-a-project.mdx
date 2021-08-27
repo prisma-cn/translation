@@ -1,6 +1,6 @@
 ---
-title: Adding Prisma Migrate to an existing project
-metaDescription: Learn how to add Prisma Migrate to an existing project.
+title: 将Prisma Migrate添加到现有项目中
+metaDescription: 了解如何将Prisma Migrate添加到现有项目中。
 tocDepth: 2
 ---
 
@@ -8,58 +8,58 @@ tocDepth: 2
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-This guide describes how to add [Prisma Migrate](../../../concepts/components/prisma-migrate) to an existing project.
+本指南描述了如何将 [Prisma Migrate](../../../concepts/components/prisma-migrate) 添加到现有项目中。
 
 </TopBlock>
 
-## Update the development environment
+## 升级开发环境
 
-As part of adding Prisma Migrate to your development environment, you must **reset your development database**. This will result in data loss in the development database only.
+作为将 Prisma Migrate 添加到你的开发环境的一部分，你必须**重置你的开发数据库**。这将导致只有开发数据库的数据丢失。
 
-Production databases and any other database that cannot be reset should be [baselined to avoid data loss](#baseline-your-production-environment).
+生产型数据库和任何其他不能被重置的数据库应该被[baseline 以避免数据丢失](#baseline-your-production-environment).
 
-### Introspect to create or update your Prisma schema
+### 通过数据库自省(Introspect)来创建或更新你的 Prisma schema
 
-Make sure your Prisma schema is in sync with your database schema. This should already be true if you are using a previous version of Prisma Migrate.
+确保 Prisma schema 与你的数据库 schema 是同步的。 如果你之前用的是 Prisma Migrate 应该就没问题。
 
-1. Introspect the database to make sure that your Prisma schema is up-to-date:
+1. 通过数据库自省(Introspect)来确保 Prisma schema 是最新的:
 
    ```terminal
    prisma db pull
    ```
 
-### Initialize migration history
+### 初始化迁移历史 {#initialize-migration-history}
 
-To initialize a new migration history:
+初始化一个新的迁移历史:
 
-1. If you have a `prisma/migrations` folder, delete, move, rename, or archive this folder.
+1. 如果已经有 `prisma/migrations` 这个文件夹, 则删除，移动，重命名或者自行保存。
 
-1. Run the following command to create the first migration **without applying it**, in case you need to [modify the initial migration](#work-around-features-not-supported-by-prisma-schema-language):
+1. 运行下面的命令创建第一条迁移但**不执行**, 方便你可以对其[进行修改](#work-around-features-not-supported-by-prisma-schema-language):
 
    ```terminal
    prisma migrate dev --name initial-migration --create-only
    ```
 
-   Prisma Migrate will create a new migration directory with a SQL migration file in it:
+   Prisma Migrate 将创建一个新的迁移目录，其中包含一个 SQL 迁移文件:
 
    ```
    ./prisma/migrations/20210426141759_initial-migration
    ```
 
-### Work around features not supported by Prisma Schema Language
+### 对于 Prisma Schema Language 不支持的功能的解决方法 {#work-around-features-not-supported-by-prisma-schema-language}
 
-To include [unsupported database features](include-unsupported-database-features) that already exist in the database, you must replace or modify the initial migration SQL:
+为了包括数据库中已经存在的但[Prisma 不支持的功能](include-unsupported-database-features), 需要替换或修改原来的 SQL 迁移语句。
 
-1. Open the `migration.sql` file generated in the [Initialize migration history](#initialize-migration-history) section.
+1. 打开在[Initialize migration history](#initialize-migration-history)生成的`migration.sql`文件。
 
-1. Modify the generated SQL. For example:
+1. 修改生成的 SQL. For example:
 
-   - If the changes are minor, you can append additional custom SQL to the generated migration - the following example creates a partial index:
+   - 如果变化不大，你可以在生成的迁移文件中附加额外的自定义 SQL 语句--下面的例子创建了一个部分索引：
 
    ```sql highlight=3,4;add
    /* Generated migration SQL */
@@ -68,63 +68,63 @@ To include [unsupported database features](include-unsupported-database-features
     WHERE success;
    ```
 
-   - If the changes are significant, it can be easier to replace the entire migration file with the result of a database dump ([`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html), [`pg_dump`](https://www.postgresql.org/docs/12/app-pgdump.html))
+   - 如果变化很大，用数据库转储(database dump)([`mysqldump`](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html), [`pg_dump`](https://www.postgresql.org/docs/12/app-pgdump.html))的结果来替换整个迁移文件会更容易一些
 
-### Apply the initial migrations
+### 应用初始迁移
 
-To apply your initial migration(s):
+初始迁移步骤:
 
-1. Run the following command against your development database:
-
-   ```terminal
-   npx prisma migrate dev
-   ```
-
-   Prisma Migrate detects that the database is out of sync with the migration history and will prompt you to reset it. Confirm the reset (**in development environments only!**)
-
-1. Review the database schema to ensure the migration leads to the desired end-state (for example, by comparing the schema to the production database).
-
-The new migration history and the new database schema should now be in sync with your Prisma schema.
-
-### Commit the migration history and Prisma schema
-
-Commit the following to source control:
-
-- The entire migration history folder
-- The `schema.prisma` file
-
-## Reset other development environments
-
-To reset other development environments (for example, other team members' computers):
-
-1. Check out a copy of the repository with the new migration directory and the `schema.prisma` file
-2. Run the following command to reset the development database:
+1. 对你的开发数据库运行以下命令：
 
    ```terminal
    npx prisma migrate dev
    ```
 
-## Baseline your production environment
+   Prisma Migrate 检测到数据库与迁移历史不同步，将提示你重置。确认重置（**仅在开发环境中！**）。
 
-[Baselining](baselining) initializes a migration history for databases that contain data and **cannot be reset** - such as the production database. Baselining tells Prisma Migrate to assume that one or more migrations have already been applied.
+1. 审查数据库 schema，以确保迁移能达到预期的最终状态（例如，通过与生产数据库 schema 进行比较）。
+
+现在，新的迁移历史和新的数据库模式应该与你的 Prisma schema 保持同步了。
+
+### 提交迁移历史和 Prisma schema
+
+将以下内容进行源代码管理(git):
+
+- 整个迁移历史文件夹
+- `schema.prisma` 文件
+
+## 重置其他开发环境
+
+重置其他开发环境（例如，其他团队成员的计算机）:
+
+1. 拉取仓库中新的迁移目录和`schema.prisma`文件
+2. 运行下面的命令来重置开发数据库:
+
+   ```terminal
+   npx prisma migrate dev
+   ```
+
+## Baseline 生产环境 {#baseline-your-production-environment}
+
+[Baselining](baselining)为包含数据且不能被重置的数据库（如生产数据库）初始化迁移历史。Baselining 会通知 Prisma Migrate，假设一个或多个迁移已经被应用。
 
 ![A migration history represented by three migration files (file icon and name), surrounded by a a box labelled 'migration history'. The first migration is marked 'do not apply', and the second two migrations are marked 'apply'. An arrow labelled with the command 'prisma migrate deploy' points from the migration history to a database labelled 'production'.](deploy-db.png)
 
-To baseline a database:
+baseline 数据库步骤:
 
-1. Switch to an environment that has access to the database you want to baseline.
-1. Make sure you have a working copy of the new migrations directory.
-1. Run the following command to baseline a migration - this example marks the migration generated by the [Initialize migration history](#initialize-migration-history) step as already applied:
+1. 切换到一个可以访问你想要的 baseline 数据库的环境。
+1. 确保你有一个新迁移目录的工作副本。
+1. 运行下面命令来 baseline 迁移 - 本例将[初始化迁移历史](#initialize-migration-history)步骤所产生的迁移标记为已经应用：
 
    ```terminal
    prisma migrate resolve --applied 20210426141759_initial-migration
    ```
 
-1. If you need to baseline multiple migrations (for example, if you generated more migrations after transitioning your development environment), run the `prisma migrate resolve` command for each migration separately.
+1. 如果你需要 baseline 多个迁移（例如，从开发环境转移后产生了更多的迁移），请为每个迁移分别运行`prisma migrate resolve`命令。
 
-## Resolve migration issues in production databases
+## 解决生产数据库中的迁移问题
 
-In certain cases, you can run into issues with the migration history and that prevent you from applying further database migrations with `prisma migrate resolve`. This can happen if:
+在某些情况下，你可能会在迁移历史中遇到一些问题，从而导致你无法使用`prisma migrate resolve'进一步迁移数据库。这种情况可能发生在：
 
-- A migration failed, either because of an error or because it was interrupted while running (for example, unexpected shutdown)
-- The database needs to be baselined to skip certain migrations that are unnecessary on this database schema - this can be the case when a change to the database schema was done manually, such as a hotfix.
+- 迁移失败，要么是因为错误，要么是因为迁移在运行中被打断（例如，意外关机）。
+- 数据库需要被 baseline，以跳过某些在这个数据库模式上不必要的迁移--当数据库模式的改变是手工完成的，比如热修复，就可能是这种情况。

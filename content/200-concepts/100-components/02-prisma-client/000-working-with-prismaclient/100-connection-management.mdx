@@ -1,7 +1,7 @@
 ---
 title: '连接和断开'
 metaTitle: '连接和断开 (概念)'
-metaDescription: '本页介绍如何使用 Prisma Client 处理数据库连接，以及如何手动连接和断开数据库连接。'
+metaDescription: '本页介绍如何使用 Prisma Client 处理数据库连接，以及如何手动连接数据库和断开数据库连接。'
 tocDepth: 2
 ---
 
@@ -12,17 +12,17 @@ tocDepth: 2
 - [`$connect()`](../../../../reference/api-reference/prisma-client-reference#connect-1) <span class="api"></span>
 - [`$disconnect()`](../../../../reference/api-reference/prisma-client-reference#disconnect-1) <span class="api"></span>
 
-在大多数情况下，你 **不需要显式调用这些方法**。`PrismaClient` 在你运行第一个查询时会自动连接，创建一个 [连接池](connection-pool)，并在 Node.js 进程结束时断开连接。
+在大多数情况下，你 **不需要显式调用这些方法**。`PrismaClient` 会在你运行第一条查询时自动连接数据库，并创建一个 [连接池](connection-pool)，然后在 Node.js 进程结束时断开连接。
 
-请参阅 [连接管理指南](../../../../guides/performance-and-optimization/connection-management) <span class="guide"></span> 有关管理不同部署范例（长时间运行的进程和函数计算）连接的信息。
+请参阅 [连接管理指南](../../../../guides/performance-and-optimization/connection-management) <span class="guide"></span> 以获取有关为不同部署范例（长时间运行的进程和函数计算）管理连接的信息。
 
 </TopBlock>
 
 ## <inlinecode>$connect()</inlinecode>
 
-[`$connect()`](../../../../reference/api-reference/prisma-client-reference#connect-1) <span class="api"></span> 是非必要调用的，这要感谢 _延迟连接_ 行为：当第一个请求被发送到 API 时，`PrismaClient` 实例会延迟连接（`$connect()` 在后台为你调用）。
+多亏了 _延迟连接_ 功能，使得你不必调用 [`$connect()`](../../../../reference/api-reference/prisma-client-reference#connect-1) <span class="api"></span> 方法。当首次调用 API 时，`PrismaClient` 实例会延迟连接（`$connect()` 在后台为你调用）。
 
-### 显式调用 <inlinecode>$connect()</inlinecode> 
+### 显式调用 <inlinecode>$connect()</inlinecode>
 
 如果你需要第一个请求立即响应并且不能等待建立延迟连接，则可以显式调用 `prisma.$connect()` 以建立到数据源的连接：
 
@@ -38,24 +38,24 @@ await prisma.$connect()
 当你调用 [`$disconnect()`](../../../../reference/api-reference/prisma-client-reference#disconnect-1) <span class="api"></span>时, Prisma Client 会:
 
 1. 运行 [`beforeExit` hook](#exit-hooks)
-2. 结束掉查询引擎子进程和关闭所有连接
+2. 结束掉查询引擎子进程并关闭所有连接
 
-在诸如 GraphQL API 之类的长期运行的应用程序中，它会始终为服务于请求，在每个请求之后都 `$disconnect()` 变得没有意义 - 因为建立连接需要时间，并且在每个请求中这样做会减慢你的应用程序的速度。
+在诸如 GraphQL API 之类的长期运行的应用程序中，会持续处理请求，在每个请求结束之后调用 `$disconnect()` 变得没有意义 - 因为建立连接需要时间，并且在每个请求中都这样做会降低你应用程序的响应速度。
 
 <Tip>
 
-为了避免过于 _许多_ 的连接在 长时间运行的应用程序 中，我们建议在 [你的应用程序中使用的单个实例 `PrismaClient`](instantiate-prisma-client)。
+为了避免在持续运行的应用程序中出现 _过多_ 连接，我们建议你 [在应用程序中只使用的单个 `PrismaClient` 实例](instantiate-prisma-client)。
 
 </Tip>
 
 ### 显式调用 <inlinecode>$disconnect()</inlinecode>
 
-在脚本中有一种情况你应该 显式调用 `$disconnect()` ：
+在代码中有一种情况你应该 显式调用 `$disconnect()` ：
 
-1. **不经常** 运行（例如，每晚发送电子邮件的 job），这意味着它不会从长时间运行的数据库连接中受益，_并且_
-2. 存在于 **长时间运行的应用程序** 的 context 中，例如后台服务。如果应用程序永远不会关闭，Prisma Client 永远不会断开连接。
+1. **不经常** 运行（例如，每晚发送电子邮件的定时任务），这意味着持续的数据库连接不会带来性能上的提升，_并且_
+2. 始终存在于 **持续运行的应用程序** 的上下文中，例如一个后台服务。如果应用程序永远不会关闭，Prisma Client 永远不会断开连接。
 
-以下脚本创建 的新实例 `PrismaClient`，执行任务，然后断开连接 - 这会关闭连接池：
+以下脚本创建一个新的 `PrismaClient` 实例，并执行一个任务，然后断开连接 - 这会关闭连接池：
 
 ```ts highlight=19;normal
 import { PrismaClient } from '@prisma/client'
@@ -79,11 +79,11 @@ main()
   })
 ```
 
-如果上述脚本在长时间运行的应用程序的上下文中多次运行而 _没有_ 调用 `$disconnect()`，每个新实例为 `PrismaClient` 则会创建一个新的连接池。
+如果上述脚本在持续运行的应用程序的上下文中多次执行而 _没有_ 调用 `$disconnect()`，那么每个新的 `PrismaClient` 实例会创建一个新的连接池。
 
 ## 退出 hooks
 
-`beforeExit` hook 会在 Prisma 外部触发（例如，通过 `SIGINT` 信号）时运行来关闭，并允许你在客户端断开连接 _之前_ 运行代码 - 例如，发出 message 作为服务的正常关机的一部分：
+`beforeExit` hook 会在 Prisma 接收到外部触发（例如，通过 `SIGINT` 信号）关闭时运行，并允许你在 Client 断开连接 _之前_ 运行代码 - 例如，执行一条查询语句作为服务优雅停机的一部分：
 
 ```ts
 const prisma = new PrismaClient()
