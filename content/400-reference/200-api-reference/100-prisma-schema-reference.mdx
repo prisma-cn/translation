@@ -1,43 +1,43 @@
 ---
-title: 'Prisma schema reference'
-metaTitle: 'Prisma schema API (Reference)'
-metaDescription: 'API reference documentation for the Prisma Schema Language (PSL).'
+title: 'Prisma schema'
+metaTitle: 'Prisma schema API (参考)'
+metaDescription: 'Prisma Schema Language (PSL) API 参考'
 tocDepth: 2
 toc: true
 ---
 
-## <inlinecode>datasource</inlinecode>
+## <inlinecode>数据源（datasource）</inlinecode>
 
-Defines a [data source](../../concepts/components/prisma-schema/data-sources) <span class="concept"></span> in the Prisma schema.
+在 Prisma schema 中定义 [数据源](../../concepts/components/prisma-schema/data-sources) <span class="concept"></span>。
 
-### Fields
+### 字段
 
-A `datasource` block accepts the following fields:
+`datasource` 接受以下字段:
 
-| Name                | Required | Type                                                             | Description                                                                                                                                            |
-| ------------------- | -------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `provider`          | **Yes**  | String (`postgresql`, `mysql`, `sqlite`, `sqlserver`, `mongodb`) | Describes which data source connectors to use.                                                                                                         |
-| `url`               | **Yes**  | String (URL)                                                     | Connection URL including authentication info. Most connectors use [the syntax provided by the database](../database-reference/connection-urls#format). |
-| `shadowDatabaseUrl` | No       | String (URL)                                                     | Connection URL to the shadow database used by Prisma Migrate. Allows you to use a cloud-hosted database as the shadow database.                        |
+| 字段名              | 必选   | 类型                                                             | 描述                                                                                                           |
+| ------------------- | ------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `provider`          | **是** | String (`postgresql`, `mysql`, `sqlite`, `sqlserver`, `mongodb`) | 要使用的数据源连接器。                                                                                         |
+| `url`               | **是** | String (URL)                                                     | 包括身份验证信息的连接串。 大多数连接器使用 [数据库提供的语法](../database-reference/connection-urls#format)。 |
+| `shadowDatabaseUrl` | 否     | String (URL)                                                     | Prisma Migrate 使用的影子数据库的连接 URL。允许您使用云托管数据库作为影子数据库。                              |
 
-The following providers are available:
+现有以下提供者（provider）可供选择：
 
 - `sqlite`
 - `postgresql`
 - `mysql`
-- [`sqlserver` (Preview)](../../../concepts/components/preview-features/sql-server#enable-sql-server-preview-feature)
-- `mongodb` (Preview)
+- [`sqlserver` (预览)](../../../concepts/components/preview-features/sql-server#enable-sql-server-preview-feature)
+- `mongodb` (预览)
 
-### Remarks
+### 注意
 
-- You can only have **one** `datasource` block in a schema.
-- `datasource db` is convention - however, you can give your data source any name - for example, `datasource mysql` or `datasource data`.
+- 一个 schema 只能有一个 `datasource` 字段。
+- `datasource db` 只是习惯用法，您可以为数据源指定任何名称 — 例如，`datasource mysql` 或 `datasource data`。
 
-### Examples
+### 示例
 
-#### Specify a PostgreSQL data source
+#### 定义 PostgreSQL 数据源
 
-In this example, the target database is available with the following credentials:
+数据库连接凭据：
 
 - User: `johndoe`
 - Password: `mypassword`
@@ -53,11 +53,11 @@ datasource db {
 }
 ```
 
-Learn more about PostgreSQL connection strings [here](../../../concepts/database-connectors/postgresql).
+查看更多关于 PostgreSQL 连接串的用法，参见 [此处](../../../concepts/database-connectors/postgresql) 。
 
-#### Specify a MySQL data source
+#### 定义 MySQL 数据源
 
-In this example, the target database is available with the following credentials:
+数据库连接凭据：
 
 - User: `johndoe`
 - Password: `mypassword`
@@ -72,9 +72,9 @@ datasource db {
 }
 ```
 
-Learn more about MySQL connection strings [here](../../../concepts/database-connectors/mysql).
+查看更多关于 MySQL 连接串的用法，参见 [此处](../../../concepts/database-connectors/mysql).
 
-#### Specify a MongoDB data source
+#### 定义 MongoDB 数据源
 
 - User: `root`
 - Password: `password`
@@ -89,11 +89,11 @@ datasource db {
 }
 ```
 
-Learn more about MongoDB connection strings [here](../../../concepts/database-connectors/mongodb).
+查看更多关于 MongoDB 连接串的用法，参见 [此处](../../../concepts/database-connectors/mongodb).
 
-#### Specify a SQLite data source
+#### 定义 SQLite 数据源
 
-In this example, the target database is located in a file called `dev.db`:
+数据库文件为 `dev.db`:
 
 ```prisma
 datasource db {
@@ -102,11 +102,11 @@ datasource db {
 }
 ```
 
-Learn more about SQLite connection strings [here](../../../concepts/database-connectors/sqlite).
+查看更多关于 SQLite 连接串的用法，参见 [此处](../../../concepts/database-connectors/sqlite).
 
-#### Specify a PostgreSQL data source via an environment variable
+#### 通过环境变量定义 PostgreSQL 数据源
 
-In this example, the target database is available with the following credentials:
+连接凭据：
 
 - User: `johndoe`
 - Password: `mypassword`
@@ -122,110 +122,110 @@ datasource db {
 }
 ```
 
-When running a Prisma CLI command that needs the database connection URL (e.g. `prisma generate`), you need to make sure that the `DATABASE_URL` environment variable is set.
+运行需要数据库连接串 的 Prisma CLI 命令时（例如 `prisma generate`），请确保设置了 `DATABASE_URL` 环境变量。
 
-One way to do so is by creating a [`.env`](https://github.com/motdotla/dotenv) file with the following contents. Note that the file must be in the same directory as your `schema.prisma` file to automatically picked up the Prisma CLI.
+可以创建包含以下内容的 [`.env`](https://github.com/motdotla/dotenv) 文件。该文件必须与 `schema.prisma` 文件位于同一目录下，才能被 Prisma CLI 引用。
 
 ```
 DATABASE_URL=postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public
 ```
 
-## <inlinecode>generator</inlinecode>
+## <inlinecode>生成器（generator）</inlinecode>
 
 <AlgoliaTerm name="apiReference" value="generator" />
 
-Defines a [generator](../../concepts/components/prisma-schema/generators) <span class="concept"></span> in the Prisma schema.
+在 Prisma schema 中定义 [生成器](../../concepts/components/prisma-schema/generators) <span class="concept"></span>。
 
-### Fields
+### 字段
 
-A `generator` block accepts the following fields:
+`generator` 接受以下字段:
 
-| Name              | Required | Type                                            | Description                                                                                                                      |
-| ----------------- | -------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`        | **Yes**  | String (file path) or Enum (`prisma-client-js`) | Describes which generator to use. This can point to a file that implements a generator or specify a built-in generator directly. |
-| `output`          | No       | String (file path)                              | Determines the location for the generated client, [learn more](). **Default**: `node_modules/.prisma/client`                     |
-| `binaryTargets`   | No       | List of Enums (see below)                       | Specify the OS on which the Prisma Client will run to ensure binary compatibility of the [query engine](). **Default**: `native` |
-| `previewFeatures` | No       | List of Enums                                   | Use intellisense to see list of currently available Preview features (`Ctrl+Space` in Visual Studio Code)                        |
+| 字段名            | 必选   | 类型                                            | 描述                                                                                      |
+| ----------------- | ------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `provider`        | **是** | String (file path) or Enum (`prisma-client-js`) | 要使用的 generator。这可以指向实现 generator 的文件，也可以直接指定内置 generator。       |
+| `output`          | 否     | String (file path)                              | 生成 client 文件的保存路径, [详见](). **默认值**: `node_modules/.prisma/client`           |
+| `binaryTargets`   | 否     | List of Enums (see below)                       | 指定运行 Prisma 客户端的操作系统，以确保[查询引擎]()的二进制兼容性。 **默认值**: `native` |
+| `previewFeatures` | 否     | List of Enums                                   | 使用智能提示查看当前可用的预览功能（Visual Studio Code 快捷键 `Ctrl+Space`）。            |
 
-#### <inlinecode>binaryTargets</inlinecode> options
+#### <inlinecode>binaryTargets</inlinecode> 选项
 
-The following tables list all supported operating systems with the name of the binary file to specify in `binaryTargets`.
+下表列出了所有支持的操作系统以及需要在 `binaryTargets` 中指定的对应二进制文件名称。
 
 ##### Mac OS
 
-| Build OS | Prisma engine build name |
-| :------- | :----------------------- |
-| Mac OS   | `darwin`                 |
+| Build OS | Prisma 引擎 build 名 |
+| :------- | :------------------- |
+| Mac OS   | `darwin`             |
 
 ##### Windows
 
-| Build OS | Prisma engine build name |
-| :------- | :----------------------- |
-| Windows  | `windows`                |
+| Build OS | Prisma 引擎 build 名 |
+| :------- | :------------------- |
+| Windows  | `windows`            |
 
 ##### Linux (Alpine)
 
-| Build OS | Prisma engine build name |
-| :------- | :----------------------- |
-| Alpine   | `linux-musl`             |
+| Build OS | Prisma 引擎 build 名 |
+| :------- | :------------------- |
+| Alpine   | `linux-musl`         |
 
 ##### Linux (Debian)
 
-| Build OS             | Prisma engine build name | OpenSSL |
-| :------------------- | :----------------------- | :-----: |
-| Debian 8 (Jessie)    | `debian-openssl-1.0.x`   |  1.0.x  |
-| Debian 9 (Stretch)   | `debian-openssl-1.1.x`   |  1.1.x  |
-| Debian 10 (Buster)   | `debian-openssl-1.1.x`   |  1.1.x  |
-| Debian 11 (Bullseye) | `debian-openssl-1.1.x`   |  1.1.x  |
+| Build OS             | Prisma 引擎 build 名   | OpenSSL |
+| :------------------- | :--------------------- | :-----: |
+| Debian 8 (Jessie)    | `debian-openssl-1.0.x` |  1.0.x  |
+| Debian 9 (Stretch)   | `debian-openssl-1.1.x` |  1.1.x  |
+| Debian 10 (Buster)   | `debian-openssl-1.1.x` |  1.1.x  |
+| Debian 11 (Bullseye) | `debian-openssl-1.1.x` |  1.1.x  |
 
 ##### Linux (Ubuntu)
 
-| Build OS              | Prisma engine build name | OpenSSL |
-| :-------------------- | :----------------------- | :-----: |
-| Ubuntu 14.04 (trusty) | `debian-openssl-1.0.x`   |  1.0.x  |
-| Ubuntu 16.04 (xenial) | `debian-openssl-1.0.x`   |  1.0.x  |
-| Ubuntu 18.04 (bionic) | `debian-openssl-1.1.x`   |  1.1.x  |
-| Ubuntu 19.04 (disco)  | `debian-openssl-1.1.x`   |  1.1.x  |
-| Ubuntu 20.04 (focal)  | `debian-openssl-1.1.x`   |  1.1.x  |
+| Build OS              | Prisma 引擎 build 名   | OpenSSL |
+| :-------------------- | :--------------------- | :-----: |
+| Ubuntu 14.04 (trusty) | `debian-openssl-1.0.x` |  1.0.x  |
+| Ubuntu 16.04 (xenial) | `debian-openssl-1.0.x` |  1.0.x  |
+| Ubuntu 18.04 (bionic) | `debian-openssl-1.1.x` |  1.1.x  |
+| Ubuntu 19.04 (disco)  | `debian-openssl-1.1.x` |  1.1.x  |
+| Ubuntu 20.04 (focal)  | `debian-openssl-1.1.x` |  1.1.x  |
 
 ##### Linux (CentOS)
 
-| Build OS | Prisma engine build name | OpenSSL |
-| :------- | :----------------------- | :-----: |
-| CentOS 7 | `rhel-openssl-1.0.x`     |  1.0.x  |
-| CentOS   | `rhel-openssl-1.0.x`     |  1.0.x  |
+| Build OS | Prisma 引擎 build 名 | OpenSSL |
+| :------- | :------------------- | :-----: |
+| CentOS 7 | `rhel-openssl-1.0.x` |  1.0.x  |
+| CentOS   | `rhel-openssl-1.0.x` |  1.0.x  |
 
 ##### Linux (Fedora)
 
-| Build OS  | Prisma engine build name | OpenSSL |
-| :-------- | :----------------------- | :-----: |
-| Fedora 28 | `rhel-openssl-1.1.x`     |  1.1.x  |
-| Fedora 29 | `rhel-openssl-1.1.x`     |  1.1.x  |
-| Fedora 30 | `rhel-openssl-1.1.x`     |  1.1.x  |
+| Build OS  | Prisma 引擎 build 名 | OpenSSL |
+| :-------- | :------------------- | :-----: |
+| Fedora 28 | `rhel-openssl-1.1.x` |  1.1.x  |
+| Fedora 29 | `rhel-openssl-1.1.x` |  1.1.x  |
+| Fedora 30 | `rhel-openssl-1.1.x` |  1.1.x  |
 
 ##### Linux (Linux Mint)
 
-| Build OS      | Prisma engine build name | OpenSSL |
-| :------------ | :----------------------- | :-----: |
-| Linux Mint 18 | `debian-openssl-1.0.x`   |  1.0.x  |
-| Linux Mint 19 | `debian-openssl-1.1.x`   |  1.1.x  |
+| Build OS      | Prisma 引擎 build 名   | OpenSSL |
+| :------------ | :--------------------- | :-----: |
+| Linux Mint 18 | `debian-openssl-1.0.x` |  1.0.x  |
+| Linux Mint 19 | `debian-openssl-1.1.x` |  1.1.x  |
 
 ##### Linux (Arch Linux)
 
-| Build OS              | Prisma engine build name | OpenSSL |
-| :-------------------- | :----------------------- | :-----: |
-| Arch Linux 2019.09.01 | `debian-openssl-1.1.x`   |  1.1.x  |
+| Build OS              | Prisma 引擎 build 名   | OpenSSL |
+| :-------------------- | :--------------------- | :-----: |
+| Arch Linux 2019.09.01 | `debian-openssl-1.1.x` |  1.1.x  |
 
 ##### Linux ARM64
 
-| Build OS                 | Prisma engine build name  | OpenSSL |
+| Build OS                 | Prisma 引擎 build 名      | OpenSSL |
 | :----------------------- | :------------------------ | :-----: |
 | Linux ARM64-based distro | `linux-arm-openssl-1.0.x` |  1.0.x  |
 | Linux ARM64-based distro | `linux-arm-openssl-1.1.x` |  1.1.x  |
 
-### Examples
+### 示例
 
-#### Specify the `prisma-client-js` generator with the default `output` and `binaryTargets`
+#### 使用 `prisma-client-js` 生成器默认的 `output` 和 `binaryTargets`
 
 ```prisma
 generator client {
@@ -233,7 +233,7 @@ generator client {
 }
 ```
 
-Note that the above `generator` definition is **equivalent** to the following because it uses the default values for `output` and `binaryTargets`:
+注意，上面的 `generator` 定义使用默认的 `output` 和 `binaryTargets`， 和以下定义**等价**：
 
 ```prisma
 generator client {
@@ -243,9 +243,9 @@ generator client {
 }
 ```
 
-#### Specify a custom `output` location for Prisma Client
+#### 自定义 Prisma Client 文件的保存路径
 
-<details><summary>Example</summary>
+<details><summary>示例</summary>
 
 ```prisma
 generator client {
@@ -256,9 +256,9 @@ generator client {
 
 </details>
 
-#### Specify custom `binaryTargets` to ensure compatibility with the OS
+#### 指定 `binaryTargets` 以确保系统兼容性
 
-This example shows how to configure Prisma Client to run on `Ubuntu 19.04 (disco)` based on the table [above](#linux-ubuntu).
+下面是在 `Ubuntu 19.04 (disco)` 系统配置 Prisma Client 的示例，参照[以上](#linux-ubuntu)。
 
 ```prisma
 generator client {
@@ -267,9 +267,9 @@ generator client {
 }
 ```
 
-#### Specify a `provider` pointing to some custom generator implementation
+#### 为 `provider` 配置自定义 generator 实现
 
-This example shows how to use a custom generator that's located in a directory called `my-generator`.
+以下示例指定 `my-generator` 文件夹作为自定义 generator 的存储路径
 
 ```prisma
 generator client {
@@ -277,41 +277,41 @@ generator client {
 }
 ```
 
-## <inlinecode>model</inlinecode>
+## <inlinecode>模型（model）</inlinecode>
 
-Defines a Prisma [model](../../concepts/components/prisma-schema/data-model#defining-models) <span class="concept"></span>.
+定义一个 Prisma [模型](../../concepts/components/prisma-schema/data-model#defining-models) <span class="concept"></span>.
 
-### Remarks
+### 注意
 
-- Every record of a model must be _uniquely_ identifiable. You must define _at least_ one of the following attributes per model:
+- Model 的每个记录都必须是唯一可识别的。每个 Model 必须至少定义以下一个属性：:
   - [`@unique`](#unique)
   - [`@@unique`](#unique-1)
   - [`@id`](#id)
   - [`@@id`](#id-1)
 
-#### Naming conventions
+#### 命名规范
 
-- Model names must adhere to the following regular expression: `[A-Za-z][A-Za-z0-9_]*`
-- Model names must start with a letter and are typically spelled in [PascalCase](https://wiki.c2.com/?PascalCase)
-- Model names should use the singular form (for example, `User` instead of `user`, `users` or `Users`)
-- Prisma has a number of **reserved words** that are being used by Prisma internally and therefore cannot be used as a model name. You can find the reserved words <a href="https://github.com/prisma/prisma/blob/master/src/packages/client/src/generation/generateClient.ts#L362">here</a> and [here](https://github.com/prisma/prisma-engines/blob/master/libs/datamodel/core/src/transform/ast_to_dml/reserved_model_names.rs#L10).
+- Model 名称必须满足以下正则表达式: `[A-Za-z][A-Za-z0-9_]*`
+- Model 名称必须以字母开头，通常采用 [PascalCase](https://wiki.c2.com/?PascalCase) 命名方式。
+- Model 名称应使用单数形式 (例如，使用 `User` 而不是 `user`、`users` 或者 `Users`)
+- Prisma 有一些**保留字**仅供 Prisma 内部使用，因此不能用作模型名称。您可以在 <a href="https://github.com/prisma/prisma/blob/master/src/packages/client/src/generation/generateClient.ts#L362">这里</a> 和 [这里](https://github.com/prisma/prisma-engines/blob/master/libs/datamodel/core/src/transform/ast_to_dml/reserved_model_names.rs#L10)查看这些保留字。
 
-> **Note**: You can use the [`@@map` attribute](#map-1) to map a model (for example, `User`) to a table with a different name that does not match model naming conventions (for example, `users`).
+> **提示**: 您可以使用 [`@@map`属性](#map-1) 将模型（例如，`User`）映射到具有与模型命名约定不匹配的其他名称的表（例如，`users`）。
 
-#### Order of fields
+#### 字段顺序
 
-- In version 2.3.0 and later, introspection lists model fields same order as the corresponding columns in the database. Relation fields are listed after scalar fields.
+- 在版本 2.3.0 及更高版本中，内省产生的模型字段的顺序与数据库中列的顺序相同。关系字段在标量字段之后。
 
-### Examples
+### 示例
 
-#### A model named `User` with two scalar fields
+#### 带有两个标量字段的名为 `User` 的模型
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
 model User {
-  email String  @unique // `email` can not be optional because it's the only unique field on the model
+  email String  @unique // `email` 不能为定义为可选类型，因为它是模型里仅有的唯一约束字段
   name  String?
 }
 ```
@@ -330,33 +330,33 @@ model User {
 </tab>
 </TabbedContent>
 
-## <inlinecode>model</inlinecode> fields
+## <inlinecode>model</inlinecode> 字段
 
-[Fields](../../../concepts/components/prisma-schema/data-model#defining-fields) <span class="concept"></span> are properties of models.
+[字段](../../../concepts/components/prisma-schema/data-model#defining-fields) <span class="concept"></span> 为模型的属性。
 
-### Remarks
+### 注意
 
-#### Naming conventions
+#### 命名规范
 
-- Must start with a letter
-- Typically spelled in camelCase
-- Must adhere to the following regular expression: `[A-Za-z][A-Za-z0-9_]*`
+- 必须以字母开头
+- 通常采用 小驼峰（camelCase）规范命名
+- 必须满足以下正则表达式: `[A-Za-z][A-Za-z0-9_]*`
 
-> **Note**: You can use the [`@map` attribute](#map) to map a field name (for example, `MyField`) to a column with a different name that does not match field naming conventions (for example, `myField`).
+> **提示**: 您可以使用[`@map`属性]（#map）将字段名（例如，`MyField`）映射到具有与字段命名约定不匹配的其他名称（例如，`MyField`）的列。
 
-## <inlinecode>model</inlinecode> field scalar types
+## <inlinecode>model</inlinecode> 字段标量类型
 
-The _data source connector_ determines what _native database type_ each of Prisma scalar type maps to. Similarly, the _generator_ determines what _type in the target programming language_ each of these types map to.
+*数据源连接器*决定每个 Prisma 标量类型映射到的*数据库原生类型*。*generator*决定这些类型映射到*目标编程语言中的什么类型*。
 
-Prisma models also have [model field types](../../../../concepts/components/prisma-schema/relations) <span class="concept"></span> that define relations between models.
+Prisma models 也可以通过 [model field types](../../../../concepts/components/prisma-schema/relations) <span class="concept"></span> 来指定 model 之间的关系。
 
 ### <inlinecode>String</inlinecode>
 
-Variable length text.
+可变长度文本。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping  |
+| Connector     | 默认映射         |
 | ------------- | ---------------- |
 | PostgreSQL    | `text`           |
 | Microsoft SQL | `nvarchar(1000)` |
@@ -366,30 +366,30 @@ Variable length text.
 
 #### PostgreSQL
 
-| Native database type | Native database type attribute | Notes                                                                                                                                                                        |
-| :------------------- | :----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`               | `@db.Text`                     |                                                                                                                                                                              |
-| `char`               | `@db.Char(x)`                  |
-| `varchar`            | `@db.VarChar(n)`               |
-| `bit`                | `@db.Bit(x)`                   |
-| `varbit`             | `@db.VarBit`                   |
-| `uuid`               | `@db.Uuid`                     |
-| `xml`                | `@db.Xml`                      |
-| `inet`               | `@db.Inet`                     |
-| `citext`             | `@db.Citext`                   | Only available if [Citext extension is enabled](../../../concepts/components/prisma-schema/features-without-psl-equivalent#enable-extensions-for-native-database-functions). |
+| 数据库原生类型 | 数据库原生类型属性 | 备注                                                                                                                                                 |
+| :------------- | :----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`         | `@db.Text`         |                                                                                                                                                      |
+| `char`         | `@db.Char(x)`      |
+| `varchar`      | `@db.VarChar(n)`   |
+| `bit`          | `@db.Bit(x)`       |
+| `varbit`       | `@db.VarBit`       |
+| `uuid`         | `@db.Uuid`         |
+| `xml`          | `@db.Xml`          |
+| `inet`         | `@db.Inet`         |
+| `citext`       | `@db.Citext`       | 需要启用 [Citext 扩展](../../../concepts/components/prisma-schema/features-without-psl-equivalent#enable-extensions-for-native-database-functions)。 |
 
 #### MySQL
 
-| Native database type | Native database type attribute | Notes |
-| :------------------- | :----------------------------- | ----- |
-| `VARCHAR`            | `@db.VarChar(X)`               |       |
-| `TEXT`               | `@db.Text`                     |
-| `CHAR`               | `@db.Char(X)`                  |
-| `TINYTEXT`           | `@db.TinyText`                 |
-| `MEDIUMTEXT`         | `@db.MediumText`               |
-| `LONGTEXT`           | `@db.LongText`                 |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| :------------- | :----------------- | ---- |
+| `VARCHAR`      | `@db.VarChar(X)`   |      |
+| `TEXT`         | `@db.Text`         |
+| `CHAR`         | `@db.Char(X)`      |
+| `TINYTEXT`     | `@db.TinyText`     |
+| `MEDIUMTEXT`   | `@db.MediumText`   |
+| `LONGTEXT`     | `@db.LongText`     |
 
-You can use Prisma Migrate to map `@db.Bit(1)` to `String`:
+可以使用 Prisma Migrate 将 `@db.Bit(1)` 映射为 `String`:
 
 ```prisma
 model Model {
@@ -398,27 +398,27 @@ model Model {
 }
 ```
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `String`
 
-| Native database type attribute | Notes                                                                             |
-| :----------------------------- | :-------------------------------------------------------------------------------- |
-| `@db.String`                   |                                                                                   |
-| `@db.ObjectId`                 | Required if the underlying BSON type is `OBJECT_ID` (ID fields, relation scalars) |
+| 数据库原生类型属性 | 备注                                                         |
+| :----------------- | :----------------------------------------------------------- |
+| `@db.String`       |                                                              |
+| `@db.ObjectId`     | 如果 BSON 类型为“OBJECT_ID”（ID 字段、关系标量），则为必填项 |
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database type | Native database type attribute | Notes |
-| :------------------- | :----------------------------- | ----- |
-| `char`               | `@db.Char(X)`                  |
-| `nchar`              | `@db.NChar(X)`                 |
-| `varchar`            | `@db.VarChar(X)`               |
-| `nvarchar`           | `@db.NVarChar(X)`              |       |
-| `text`               | `@db.Text`                     |
-| `ntext`              | `@db.NText`                    |
-| `xml`                | `@db.Xml`                      |
-| `uniqueidentifier`   | `@db.UniqueIdentifier`         |
+| 数据库原生类型     | 数据库原生类型属性     | Notes |
+| :----------------- | :--------------------- | ----- |
+| `char`             | `@db.Char(X)`          |
+| `nchar`            | `@db.NChar(X)`         |
+| `varchar`          | `@db.VarChar(X)`       |
+| `nvarchar`         | `@db.NVarChar(X)`      |       |
+| `text`             | `@db.Text`             |
+| `ntext`            | `@db.NText`            |
+| `xml`              | `@db.Xml`              |
+| `uniqueidentifier` | `@db.UniqueIdentifier` |
 
 #### SQLite
 
@@ -432,40 +432,40 @@ model Model {
 
 ### <inlinecode>Boolean</inlinecode>
 
-True or false value.
+布尔类型。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping |
-| ------------- | --------------- |
-| PostgreSQL    | `boolean`       |
-| Microsoft SQL | `tinyint`       |
-| MySQL         | `TINYINT(1)`    |
-| MongoDB       | `Bool`          |
-| SQLite        | `INTEGER`       |
+| Connector     | 默认映射     |
+| ------------- | ------------ |
+| PostgreSQL    | `boolean`    |
+| Microsoft SQL | `tinyint`    |
+| MySQL         | `TINYINT(1)` |
+| MongoDB       | `Bool`       |
+| SQLite        | `INTEGER`    |
 
 #### PostgreSQL
 
-| Native database types | Native database type attribute | Notes |
-| :-------------------- | :----------------------------- | ----- |
-| `boolean`             | `@db.Boolean`                  |       |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| :------------- | :----------------- | ---- |
+| `boolean`      | `@db.Boolean`      |      |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes                                                                                                                                                     |
-| --------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TINYINT(1)`          | `@db.TinyInt(1)`               | `TINYINT` maps to `Int` if the max length is greater than 1 (for example, `TINYINT(2)`) _or_ the default value is anything other than `1`, `0`, or `NULL` |
-| `BIT(1)`              | `@db.Bit`                      |
+| 数据库原生类型 | 数据库原生类型属性 | 备注                                                                                                  |
+| -------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `TINYINT(1)`   | `@db.TinyInt(1)`   | 如果最大长度大于 1（例如，`TINYINT（2）`） _或_ 默认值不是`1`、`0`或`NULL`，则 `TINYINT` 映射为 `Int` |
+| `BIT(1)`       | `@db.Bit`          |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Bool`
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute | Notes |
-| :-------------------- | :----------------------------- | ----- |
-| `tinyint`             | `@db.TinyInt`                  |       |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| :------------- | :----------------- | ---- |
+| `tinyint`      | `@db.TinyInt`      |      |
 
 #### SQLite
 
@@ -479,56 +479,56 @@ True or false value.
 
 ### <inlinecode>Int</inlinecode>
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping |
-| ------------- | --------------- |
-| PostgreSQL    | `integer`       |
-| Microsoft SQL | `int`           |
-| MySQL         | `INT`           |
-| MongoDB       | `Int`           |
-| SQLite        | `INTEGER`       |
+| Connector     | 默认映射  |
+| ------------- | --------- |
+| PostgreSQL    | `integer` |
+| Microsoft SQL | `int`     |
+| MySQL         | `INT`     |
+| MongoDB       | `Int`     |
+| SQLite        | `INTEGER` |
 
 #### PostgreSQL
 
-| Native database types      | Native database type attribute           | Notes |
-| -------------------------- | ---------------------------------------- | ----- |
-| `integer` \| `int`, `int4` | `@db.Integer`                            |       |
-| `smallint` \| `int2`       | `@db.SmallInt`                           |       |
+| 数据库原生类型             | 数据库原生类型属性                       | 备注 |
+| -------------------------- | ---------------------------------------- | ---- |
+| `integer` \| `int`, `int4` | `@db.Integer`                            |      |
+| `smallint` \| `int2`       | `@db.SmallInt`                           |      |
 | `smallserial` \| `serial2` | `@db.SmallInt @default(autoincrement())` |
 | `serial` \| `serial4`      | `@db.Int @default(autoincrement())`      |
 | `oid`                      | `@db.Oid`                                |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes                                                                                                                                                                                      |
-| :-------------------- | :----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `INT`                 | `@db.Int`                      |                                                                                                                                                                                            |
-| `INT UNSIGNED`        | `@db.UnsignedInt`              |                                                                                                                                                                                            |
-| `SMALLINT`            | `@db.SmallInt`                 |
-| `SMALLINT UNSIGNED`   | `@db.UnsignedSmallInt`         |
-| `MEDIUMINT`           | `@db.MediumInt`                |
-| `MEDIUMINT UNSIGNED`  | `@db.UnsignedMediumInt`        |
-| `TINYINT`             | `@db.TinyInt`                  | `TINYINT` maps to `Int` if the max length is greater than 1 (for example, `TINYINT(2)`) _or_ the default value is anything other than `1`, `0`, or `NULL`. `TINYINT(1)` maps to `Boolean`. |
-| `TINYINT UNSIGNED`    | `@db.UnsignedTinyInt`          | `TINYINT(1) UNSIGNED` maps to `Int`, not `Boolean`                                                                                                                                         |
-| `YEAR`                | `@db.Year`                     |
+| 数据库原生类型       | 数据库原生类型属性      | 备注                                                                                                                                    |
+| :------------------- | :---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `INT`                | `@db.Int`               |                                                                                                                                         |
+| `INT UNSIGNED`       | `@db.UnsignedInt`       |                                                                                                                                         |
+| `SMALLINT`           | `@db.SmallInt`          |
+| `SMALLINT UNSIGNED`  | `@db.UnsignedSmallInt`  |
+| `MEDIUMINT`          | `@db.MediumInt`         |
+| `MEDIUMINT UNSIGNED` | `@db.UnsignedMediumInt` |
+| `TINYINT`            | `@db.TinyInt`           | 如果最大长度大于 1（例如，`TINYINT（2）`） _或_ 默认值不是`1`、`0`或`NULL`，则 `TINYINT` 映射为 `Int`。 `TINYINT(1)` 映射为 `Boolean`。 |
+| `TINYINT UNSIGNED`   | `@db.UnsignedTinyInt`   | `TINYINT(1) UNSIGNED` 将映射为 `Int` 而不是 `Boolean`                                                                                   |
+| `YEAR`               | `@db.Year`              |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Int`
 
-| Native database type attribute | Notes |
-| :----------------------------- | :---- |
-| `@db.Int`                      |       |
-| `@db.Long`                     |       |
+| 数据库原生类型属性 | 备注 |
+| :----------------- | :--- |
+| `@db.Int`          |      |
+| `@db.Long`         |      |
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `int`                 | `@db.Int`                      |       |
-| `smallint`            | `@db.SmallInt`                 |       |
-| `tinyint`             | `@db.TinyInt`                  |       |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `int`          | `@db.Int`          |      |
+| `smallint`     | `@db.SmallInt`     |      |
+| `tinyint`      | `@db.TinyInt`      |      |
 
 #### SQLite
 
@@ -542,41 +542,41 @@ True or false value.
 
 ### <inlinecode>BigInt</inlinecode>
 
-`BigInt` is available in version [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later.
+自版本 [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) 开始支持 `BigInt`。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping |
-| ------------- | --------------- |
-| PostgreSQL    | `integer`       |
-| Microsoft SQL | `int`           |
-| MySQL         | `INT`           |
-| MongoDB       | `Long`          |
-| SQLite        | `INTEGER`       |
+| Connector     | 默认映射  |
+| ------------- | --------- |
+| PostgreSQL    | `integer` |
+| Microsoft SQL | `int`     |
+| MySQL         | `INT`     |
+| MongoDB       | `Long`    |
+| SQLite        | `INTEGER` |
 
 #### PostgreSQL
 
-| Native database types    | Native database type attribute         | Notes |
-| ------------------------ | -------------------------------------- | ----- |
-| `bigint` \| `int8`       | `@db.BigInt`                           |       |
-| `bigserial` \| `serial8` | `@db.BigInt @default(autoincrement())` |       |
+| 数据库原生类型           | 数据库原生类型属性                     | 备注 |
+| ------------------------ | -------------------------------------- | ---- |
+| `bigint` \| `int8`       | `@db.BigInt`                           |      |
+| `bigserial` \| `serial8` | `@db.BigInt @default(autoincrement())` |      |
 
 #### MySQL
 
-| Native database types | Native database type attribute                 | Notes |
-| --------------------- | ---------------------------------------------- | ----- |
-| `BIGINT`              | `@db.BigInt`                                   |       |
-| `SERIAL`              | `@db.UnsignedBigInt @default(autoincrement())` |       |
+| 数据库原生类型 | 数据库原生类型属性                             | 备注 |
+| -------------- | ---------------------------------------------- | ---- |
+| `BIGINT`       | `@db.BigInt`                                   |      |
+| `SERIAL`       | `@db.UnsignedBigInt @default(autoincrement())` |      |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Long`
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `bigint`              | `@db.BigInt`                   |       |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `bigint`       | `@db.BigInt`       |      |
 
 #### SQLite
 
@@ -584,19 +584,19 @@ True or false value.
 
 #### Clients
 
-| Client           | Type                                                                                                | Description                                                                                                              |
-| :--------------- | :-------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| Prisma Client JS | [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) | See [examples of working with `BigInt`](../../concepts/components/prisma-client/working-with-fields#working-with-bigint) |
+| Client           | 类型                                                                                                | 描述                                                                                                     |
+| :--------------- | :-------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
+| Prisma Client JS | [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) | 查看 [`BigInt`使用示例](../../concepts/components/prisma-client/working-with-fields#working-with-bigint) |
 
 ### <inlinecode>Float</inlinecode>
 
-Floating point number.
+浮点数。
 
-> `Float` maps to `Double` in [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later - see [release notes](https://github.com/prisma/prisma/releases/tag/2.17.0) and [Video: Changes to the default mapping of Float in Prisma 2.17.0](https://www.youtube.com/watch?v=OsuGP_xNHco&amp%3Bab_channel=Prisma) for more information about this change.
+> 自版本 [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) `Float` 映射为 `Double` - 查看 [release notes](https://github.com/prisma/prisma/releases/tag/2.17.0) 和 [视频: Changes to the default mapping of Float in Prisma 2.17.0](https://www.youtube.com/watch?v=OsuGP_xNHco&amp%3Bab_channel=Prisma) 了解更多.
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping    |
+| Connector     | 默认映射           |
 | ------------- | ------------------ |
 | PostgreSQL    | `double precision` |
 | Microsoft SQL | `float(53)`        |
@@ -606,30 +606,30 @@ Floating point number.
 
 #### PostgreSQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `double precision`    | `@db.DoublePrecision`          |
-| `real`                | `@db.Real`                     |
+| 数据库原生类型     | 数据库原生类型属性    | 备注 |
+| ------------------ | --------------------- | ---- |
+| `double precision` | `@db.DoublePrecision` |
+| `real`             | `@db.Real`            |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `FLOAT`               | `@db.Float`                    |
-| `DOUBLE`              | `@db.Double`                   |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `FLOAT`        | `@db.Float`        |
+| `DOUBLE`       | `@db.Double`       |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Double`
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute |
-| --------------------- | ------------------------------ |
-| `float`               | `@db.Float`                    |
-| `money`               | `@db.Money`                    |
-| `smallmoney`          | `@db.SmallMoney`               |
-| `real`                | `@db.Real`                     |
+| 数据库原生类型 | 数据库原生类型属性 |
+| -------------- | ------------------ |
+| `float`        | `@db.Float`        |
+| `money`        | `@db.Money`        |
+| `smallmoney`   | `@db.SmallMoney`   |
+| `real`         | `@db.Real`         |
 
 #### SQLite connector
 
@@ -643,9 +643,9 @@ Floating point number.
 
 ### <inlinecode>Decimal</inlinecode>
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping  |
+| Connector     | 默认映射         |
 | ------------- | ---------------- |
 | PostgreSQL    | `decimal(65,30)` |
 | Microsoft SQL | `decimal(32,16)` |
@@ -655,96 +655,96 @@ Floating point number.
 
 #### PostgreSQL
 
-| Native database types  | Native database type attribute | Notes |
-| ---------------------- | ------------------------------ | ----- |
-| `decimal` \| `numeric` | `@db.Decimal(X, Y)`            |       |
-| `money`                | `@db.Money`                    |
+| 数据库原生类型         | 数据库原生类型属性  | Notes |
+| ---------------------- | ------------------- | ----- |
+| `decimal` \| `numeric` | `@db.Decimal(X, Y)` |       |
+| `money`                | `@db.Money`         |
 
 #### MySQL
 
-| Native database types  | Native database type attribute | Notes |
-| ---------------------- | ------------------------------ | ----- |
-| `DECIMAL` \| `NUMERIC` | `@db.Decimal(X, Y)`            |       |
+| 数据库原生类型         | 数据库原生类型属性  | Notes |
+| ---------------------- | ------------------- | ----- |
+| `DECIMAL` \| `NUMERIC` | `@db.Decimal(X, Y)` |       |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Decimal`
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types  | Native database type attribute | Notes |
-| ---------------------- | ------------------------------ | ----- |
-| `decimal` \| `numeric` | `@db.Decimal(X, Y)`            |       |
+| 数据库原生类型         | 数据库原生类型属性  | 备注 |
+| ---------------------- | ------------------- | ---- |
+| `decimal` \| `numeric` | `@db.Decimal(X, Y)` |      |
 
 #### SQLite
 
-`DECIMAL` (changed from `REAL` in 2.17.0)
+`DECIMAL` (2.17.0 及以前为`REAL`)
 
 #### Clients
 
-| Client           | Type                                               | Description                                                                                                                |
-| :--------------- | :------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| Prisma Client JS | [`Decimal`](https://mikemcl.github.io/decimal.js/) | See [examples of working with `Decimal`](../../concepts/components/prisma-client/working-with-fields#working-with-decimal) |
+| Client           | Type                                               | Description                                                                                                |
+| :--------------- | :------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| Prisma Client JS | [`Decimal`](https://mikemcl.github.io/decimal.js/) | 查看 [`Decimal`使用示例](../../concepts/components/prisma-client/working-with-fields#working-with-decimal) |
 
 ### <inlinecode>DateTime</inlinecode>
 
-#### Remarks
+#### 提示
 
-- Prisma Client returns all `DateTime` as ISO 8601-formatted strings.
+- Prisma Client 以 ISO 8601 格式字符串的形式返回所有 `DateTime`。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping |
-| ------------- | --------------- |
-| PostgreSQL    | `timestamp(3)`  |
-| Microsoft SQL | `datetime2`     |
-| MySQL         | `DATETIME(3)`   |
-| MongoDB       | `Timestamp`     |
-| SQLite        | `NUMERIC`       |
+| Connector     | 默认映射       |
+| ------------- | -------------- |
+| PostgreSQL    | `timestamp(3)` |
+| Microsoft SQL | `datetime2`    |
+| MySQL         | `DATETIME(3)`  |
+| MongoDB       | `Timestamp`    |
+| SQLite        | `NUMERIC`      |
 
 #### PostgreSQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `timestamp`           | `@db.Timestamp(x)`             |       |
-| `timestamptz`         | `@db.Timestamptz(x)`           |
-| `date`                | `@db.Date`                     |
-| `time`                | `@db.Time(x)`                  |
-| `timetz`              | `@db.Timetz(x)`                |
+| 数据库原生类型 | 数据库原生类型属性   | 备注 |
+| -------------- | -------------------- | ---- |
+| `timestamp`    | `@db.Timestamp(x)`   |      |
+| `timestamptz`  | `@db.Timestamptz(x)` |
+| `date`         | `@db.Date`           |
+| `time`         | `@db.Time(x)`        |
+| `timetz`       | `@db.Timetz(x)`      |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `DATETIME(x)`         | `@db.DateTime(x)`              |       |
-| `DATE(x)`             | `@db.Date(x)`                  |
-| `TIME(x)`             | `@db.Time(x)`                  |
-| `TIMESTAMP(x)`        | `@db.Timestamp(x)`             |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `DATETIME(x)`  | `@db.DateTime(x)`  |      |
+| `DATE(x)`      | `@db.Date(x)`      |
+| `TIME(x)`      | `@db.Time(x)`      |
+| `TIMESTAMP(x)` | `@db.Timestamp(x)` |
 
-You can also use MySQL's `YEAR` type with `Int`:
+您还可以将 MySQL 的 `YEAR` 类型与 `Int` 一起使用：
 
 ```prisma
 yearField     Int    @db.Year
 ```
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `Timestamp`
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `date`                | `@db.Date`                     |
-| `time`                | `@db.Time`                     |
-| `datetime`            | `@db.DateTime`                 |
-| `datetime2`           | `@db.DateTime2`                |       |
-| `smalldatetime`       | `@db.SmallDateTime`            |
-| `datetimeoffset`      | `@db.DateTimeOffset`           |
+| 数据库原生类型   | 数据库原生类型属性   | 备注 |
+| ---------------- | -------------------- | ---- |
+| `date`           | `@db.Date`           |
+| `time`           | `@db.Time`           |
+| `datetime`       | `@db.DateTime`       |
+| `datetime2`      | `@db.DateTime2`      |      |
+| `smalldatetime`  | `@db.SmallDateTime`  |
+| `datetimeoffset` | `@db.DateTimeOffset` |
 
 #### SQLite
 
-`NUMERIC` or `STRING`. If the underlying data type is `STRING`, you must use one of the following formats:
+`NUMERIC` 或 `STRING`。 如果底层数据类型是 `STRING`，必须符合以下任意一种格式:
 
 - [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) (`1996-12-19T16:39:57-08:00`)
 - [RFC 2822](https://tools.ietf.org/html/rfc2822#section-3.3) (`Tue, 1 Jul 2003 10:52:37 +0200`)
@@ -757,46 +757,46 @@ yearField     Int    @db.Year
 
 ### <inlinecode>Json</inlinecode>
 
-A JSON object.
+JSON 对象。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping                                                                                          |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
-| PostgreSQL    | `jsonb`                                                                                                  |
-| Microsoft SQL | `nvarchar(1000)`                                                                                         |
-| MySQL         | `JSON`                                                                                                   |
-| MongoDB       | [A valid `BSON` object (Relaxed mode)](https://docs.mongodb.com/manual/reference/mongodb-extended-json/) |
-| SQLite        | Not supported                                                                                            |
+| Connector     | 默认映射                                                                                           |
+| ------------- | -------------------------------------------------------------------------------------------------- |
+| PostgreSQL    | `jsonb`                                                                                            |
+| Microsoft SQL | `nvarchar(1000)`                                                                                   |
+| MySQL         | `JSON`                                                                                             |
+| MongoDB       | [有效的 `BSON` 对象（松散模式）](https://docs.mongodb.com/manual/reference/mongodb-extended-json/) |
+| SQLite        | Not supported                                                                                      |
 
 #### PostgreSQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `json`                | `@db.Json`                     |
-| `jsonb`               | `@db.JsonB`                    |       |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `json`         | `@db.Json`         |
+| `jsonb`        | `@db.JsonB`        |      |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `JSON`                | `@db.Json`                     |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `JSON`         | `@db.Json`         |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
-[A valid `BSON` object (Relaxed mode)](https://docs.mongodb.com/manual/reference/mongodb-extended-json/)
+[有效的 `BSON` 对象 (松散模式)](https://docs.mongodb.com/manual/reference/mongodb-extended-json/)
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-SQL Server does not have a specific data type for JSON - however, there are a number of [built-in functions for reading and modifying JSON](https://docs.microsoft.com/en-us/sql/relational-databases/json/json-data-sql-server?view=sql-server-ver15#extract-values-from-json-text-and-use-them-in-queries).
+SQL Server 没有内置 JSON 数据类型 - 但是，有许多[用于读取和修改 JSON 的内置函数](https://docs.microsoft.com/en-us/sql/relational-databases/json/json-data-sql-server?view=sql-server-ver15#extract-values-from-json-text-and-use-them-in-queries)
 
-| Native database types | Native database type attribute |
-| --------------------- | ------------------------------ |
-| `JSON`                | `@db.NVarChar(1000)`           |
+| 数据库原生类型 | 数据库原生类型属性   |
+| -------------- | -------------------- |
+| `JSON`         | `@db.NVarChar(1000)` |
 
 #### SQLite
 
-Not supported
+暂不支持。
 
 #### Clients
 
@@ -806,91 +806,91 @@ Not supported
 
 ### <inlinecode>Bytes</inlinecode>
 
-`Bytes` is available in version [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later.
+自 [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) 开始支持 `Bytes`。
 
-#### Default type mappings
+#### 默认类型映射
 
-| Connector     | Default mapping |
-| ------------- | --------------- |
-| PostgreSQL    | `bytea`         |
-| Microsoft SQL | `varbinary`     |
-| MySQL         | `LONGBLOB`      |
-| MongoDB       | `BinData`       |
-| SQLite        | Not supported   |
+| Connector     | 默认映射      |
+| ------------- | ------------- |
+| PostgreSQL    | `bytea`       |
+| Microsoft SQL | `varbinary`   |
+| MySQL         | `LONGBLOB`    |
+| MongoDB       | `BinData`     |
+| SQLite        | Not supported |
 
 #### PostgreSQL
 
-| Native database types | Native database type attribute |
-| --------------------- | ------------------------------ |
-| `bytea`               | `@db.ByteA`                    |
+| 数据库原生类型 | 数据库原生类型属性 |
+| -------------- | ------------------ |
+| `bytea`        | `@db.ByteA`        |
 
 #### MySQL
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `LONGBLOB`            | `@db.LongBlob`                 |       |
-| `BINARY`              | `@db.Binary`                   |
-| `VARBINARY`           | `@db.VarBinary`                |
-| `TINYBLOB`            | `@db.TinyBlob`                 |
-| `BLOB`                | `@db.Blob`                     |
-| `MEDIUMBLOB`          | `@db.MediumBlob`               |
-| `BIT`                 | `@db.Bit`                      |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `LONGBLOB`     | `@db.LongBlob`     |      |
+| `BINARY`       | `@db.Binary`       |
+| `VARBINARY`    | `@db.VarBinary`    |
+| `TINYBLOB`     | `@db.TinyBlob`     |
+| `BLOB`         | `@db.Blob`         |
+| `MEDIUMBLOB`   | `@db.MediumBlob`   |
+| `BIT`          | `@db.Bit`          |
 
-#### MongoDB (Preview)
+#### MongoDB (预览)
 
 `BinData`
 
-| Native database type attribute | Notes                                                                             |
-| :----------------------------- | :-------------------------------------------------------------------------------- |
-| `@db.ObjectId`                 | Required if the underlying BSON type is `OBJECT_ID` (ID fields, relation scalars) |
-| `@db.BinData`                  |                                                                                   |
+| 数据库原生类型属性 | 备注                                                                              |
+| :----------------- | :-------------------------------------------------------------------------------- |
+| `@db.ObjectId`     | Required if the underlying BSON type is `OBJECT_ID` (ID fields, relation scalars) |
+| `@db.BinData`      |                                                                                   |
 
-#### SQL Server (Preview)
+#### SQL Server (预览)
 
-| Native database types | Native database type attribute | Notes |
-| --------------------- | ------------------------------ | ----- |
-| `binary`              | `@db.Binary`                   |
-| `varbinary`           | `@db.VarBinary`                |       |
-| `image`               | `@db.Image`                    |
-| `bit`                 | `@db.Bit`                      |
+| 数据库原生类型 | 数据库原生类型属性 | 备注 |
+| -------------- | ------------------ | ---- |
+| `binary`       | `@db.Binary`       |
+| `varbinary`    | `@db.VarBinary`    |      |
+| `image`        | `@db.Image`        |
+| `bit`          | `@db.Bit`          |
 
 #### SQLite
 
-Not supported
+暂不支持。
 
 #### Clients
 
-| Client           | Type                                           | Description                                                                                                             |
-| :--------------- | :--------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
-| Prisma Client JS | [`Buffer`](https://nodejs.org/api/buffer.html) | See [examples of working with `Buffer`](../../concepts/components/prisma-client/working-with-fields#working-with-bytes) |
+| Client           | Type                                           | Description                                                                                             |
+| :--------------- | :--------------------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| Prisma Client JS | [`Buffer`](https://nodejs.org/api/buffer.html) | 查看 [`Buffer`使用示例](../../concepts/components/prisma-client/working-with-fields#working-with-bytes) |
 
 ### <inlinecode>Unsupported</inlinecode>
 
 <Admonition type="warning">
 
-**Not supported by MongoDB** <br />
-The [MongoDB connector](../../concepts/database-connectors/mongodb) does not currently support the `Unsupported` type.
+**不支持 MongoDB** <br />
+[MongoDB connector](../../concepts/database-connectors/mongodb) 暂不支持 `Unsupported` 类型。
 
 </Admonition>
 
-The `Unsupported` type was introduced in [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and allows you to represent data types in the Prisma schema that are not supported by the Prisma Client. `Unsupported` fields can be introspected with `prisma db pull` or created with Prisma Migrate or `db push`.
+[2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) 中引入了 `Unsupported` 类型。 允许您在 Prisma 模式中表示 Prisma Client 不支持的数据类型。 `Unsupported` 字段可以使用 `prisma db pull` 进行内省，也可以使用 Prisma Migrate 或 `db push` 创建。
 
-#### Remarks
+#### 注意
 
-- Fields with `Unsupported` types are not available in the generated client.
-- If a model contains a **mandatory** `Unsupported` type, `prisma.model.create(..)` and `prisma.model.update(...)` are not available in the client.
-- Prisma will always warn that your schema contains unsupported types when you `introspect`:
+- 生成的 Client 中没有 `Unsupported` 类型的字段
+- 如果模型包含 **强制** `Unsupported` 类型，则 Client 中不能使用 `prisma.model.create（..）` 和 `prisma.model.update（…）`。
+- Prisma 将在 `内省` 时始终警告您的架构包含不支持的类型：
 
   ```
-  *** WARNING ***
+  *** 警告 ***
 
-  These fields are not supported by the Prisma Client, because Prisma does not currently support their types.
-  * Model "Post", field: "circle", original data type: "circle"
+  Prisma Client 不支持这些字段，因为Prisma当前不支持其类型。
+  * 模型 "Post", 字段: "circle", 原始数据类型: "circle"
   ```
 
-#### Examples
+#### 示例
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -908,27 +908,27 @@ model Star {
 
 </TabbedContent>
 
-## <inlinecode>model</inlinecode> field type modifiers
+## <inlinecode>model</inlinecode> 字段修饰符
 
-### <inlinecode>[]</inlinecode> modifier
+### <inlinecode>[]</inlinecode> 修饰符
 
-Makes a field a list.
+使字段成为列表。
 
-#### Remarks
+#### 注意
 
-- Cannot be optional (for example `Post[]?`).
+- 不支持可选类型 (例如 `Post[]?`).
 
-##### Relational databases
+##### 关系数据库
 
-- Scalar lists (arrays) are only supported in the data model if your database natively supports them. Currently, scalar lists are therefore only supported when using PostgreSQL (since MySQL and SQLite don't natively support scalar lists).
+- 仅当数据库原生支持标量列表（数组）时，数据模型中才支持标量列表（数组）。因此，目前只有在使用 PostgreSQL 时才支持标量列表（因为 MySQL 和 SQLite 不支持原生标量列表）。
 
 ##### MongoDB
 
-- Scalar lists require `@db.Array(String)`, where the parameter matches the scalar type (for example, `String[]`)
+- 标量列表需要 `@db.Array(String)`，其中参数与标量类型匹配（例如，`String[]`）
 
-#### Examples
+#### 示例
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma highlight=3;normal
@@ -953,17 +953,17 @@ model User {
 </tab>
 </TabbedContent>
 
-### <inlinecode>?</inlinecode> modifier
+### <inlinecode>?</inlinecode> 修饰符
 
-Makes a field optional.
+使字段成为可选字段。
 
-#### Remarks
+#### 注意
 
-- Cannot be used with a list field (for example, `Posts[]`)
+- 不能用在列表类型 (例如, `Posts[]`)
 
-#### Examples
+#### 示例
 
-##### Optional `name` field
+##### 可选的 `name` 字段
 
 ```prisma highlight=3;normal
 model User {
@@ -972,82 +972,84 @@ model User {
 }
 ```
 
-## Attributes
+## 属性
 
-Attributes modify the behavior of a [field](#model-fields) or block (e.g. [models](#model)). There are two ways to add attributes to your data model:
+属性修改[字段](#model-fields)或块（例如 [models](#model)）的行为。有两种方法可以向数据模型添加属性：
 
-- _Field_ attributes are prefixed with `@`
-- _Block_ attributes are prefixed with `@@`
+- _字段_ 使用前缀 `@`
+- _块_ 使用前缀 `@@`
 
-Some attributes take arguments. Arguments in attributes are always named, but in most cases the argument _name_ can be omitted.
+有些属性可以带参数并且参数必须有参数名，但在大多数情况下，可以忽略*参数名*。
 
-> **Note**: The leading underscore in a signature means the _argument name_ can be omitted.
+> **提示**: 签名中的前导下划线（*）表示可以省略*参数名\_。
 
 ### <inlinecode>@id</inlinecode>
 
 <AlgoliaTerm name="apiReference" value="@id" />
 
-Defines a single-field ID on the model.
+在模型上定义单个字段 ID。
 
-#### Remarks
+#### 注意
 
-##### General
+##### 通常情况下
 
-- Cannot be defined on a relation field
-- Cannot be optional
+- 不能定义在关系字段上
+- 不能是可选的
 
-##### Relational databases
+##### 关系数据库
 
-- Corresponding database type: `PRIMARY KEY`
-- Can be annotated with a [`@default()`](#default) value that uses [functions](#attribute-functions) to auto-generate an ID:
+- 对应的数据库类型： `PRIMARY KEY`
+- Can be annotated with a [`@default()`](#default) value that uses [函数](#attribute-functions) to auto-generate an ID:
+  可以使用 [`@default()`](#default) 进行注解，该值使用 [函数](#attribute-functions) 自动生成 ID：
 
   - [`autoincrement()`](#autoincrement)
   - [`cuid()`](#cuid)
   - [`uuid()`](#uuid)
 
-- Can be defined on any scalar field (`String`, `Int`, `enum`)
+- 可以在任何标量字段上定义 (`String`, `Int`, `enum`)
 
 ##### MongoDB
 
-- Corresponding database type: [Any valid BSON type, except arrays](https://docs.mongodb.com/manual/core/document/#the-_id-field)
-- Every model must define an `@id` field
-- The [underlying ID field name is always `_id`](https://docs.mongodb.com/manual/core/document/#the-_id-field), and must be mapped with `@map(_id)`
-- Can be defined on any scalar field (`String`, `Int`, `enum`) unless you want to use `ObjectId` in your database
-- To use an [`ObjectId`](https://docs.mongodb.com/manual/reference/method/ObjectId/) as your ID, you must:
+- 对应的数据库类型： [除数组外的任意有效的 BSON 类型](https://docs.mongodb.com/manual/core/document/#the-_id-field)
+- 每个模型必须定义一个 `@id` 字段
+- [底层 ID 字段名始终是 `_id`](https://docs.mongodb.com/manual/core/document/#the-_id-field)，并且必须使用 `@map(_id)` 映射。
+- 可以在任何标量字段（`String`、`Int`、`enum`）上定义，除非要在数据库中使用 `ObjectId`
+- 使用 [`ObjectId`](https://docs.mongodb.com/manual/reference/method/ObjectId/) 作为 ID，必须满足：
 
-  - Use the `String` or `Bytes` field type
-  - Annotate your field with `@db.ObjectId`:
+  - 使用 `String` 或者 `Bytes` 字段类型。
+  - 使用 `@db.ObjectId` 对字段修饰:
 
     ```prisma
     id   String  @db.ObjectId  @map("_id")
     ```
 
-  - Optionally, annotate your field with a [`@default()`](#default) value that uses [the `dbgenerated()` function](#dbgenerated) to auto-generate an `ObjectId`
+  - （可选），使用 [`@default()`](#default) 值对字段进行注释，该值使用 [`dbgenerated()` 函数](#dbgenerated) 自动生成 `ObjectId`
 
     ```prisma
     id   String  @db.ObjectId  @map("_id") @default(dbgenerated())
     ```
 
-- [`cuid()`](#cuid) and [`uuid()`](#uuid) are supported but do not generate a valid `ObjectId` - use `dbgenerated()` instead for `@id`
-- `autoincrement()` is **not supported**
+- 支持 [`cuid()`](#cuid) 和 [`uuid()`](#uuid)，但不生成有效的 `ObjectId` - 请使用 `dbgenerated（）` 代替 `id`
+- **暂不支持** `autoincrement()`
 
-#### Arguments
+#### 参数
 
 N/A
 
-#### Signature
+#### 签名
 
 ```prisma no-lines
 @id
 ```
 
-#### Examples
+#### 示例
 
-In most cases, you want your database to create the ID. To do this, annotate the ID field with the `@default` attribute and initialize the field with a [function](#attribute-functions).
+In most cases, you want your database to create the ID. To do this, annotate the ID field with the `@default` attribute and initialize the field with a [函数](#attribute-functions).
+在大多数情况下，您希望数据库创建 ID。为此，请使用 `@default` 属性装饰 ID 字段，并使用 [函数](#attribute-functions) 初始化该字段。
 
-##### Generate auto-incrementing integers as IDs
+##### 使用整数自增 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1063,9 +1065,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Generate `ObjectId` as IDs (MongoDB only)
+##### 生成 `ObjectId` 作为 ID（仅限 MongoDB）
 
-<TabbedContent tabs={[<FileWithIcon text="MongoDB only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1081,9 +1083,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Generate `cuid()` values as IDs
+##### 生成 `cuid()` 作为 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1105,7 +1107,7 @@ model User {
 
 <Admonition type="warning">
 
-You cannot use `cuid()` to generate a default value if your `id` field is of type `ObjectId`. Use the following syntax to generate a valid `ObjectId`:
+如果 `id` 字段的类型为 `ObjectId`，则不能使用 `cuid()` 生成默认值。使用以下语法生成有效的 `ObjectId`：
 
 ```prisma
 id    String  @id @default(dbgenerated()) @db.ObjectId @map("_id")
@@ -1116,9 +1118,9 @@ id    String  @id @default(dbgenerated()) @db.ObjectId @map("_id")
 </tab>
 </TabbedContent>
 
-##### Generate `uuid()` values as IDs
+##### 生成 `uuid()` 作为 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 
 <tab>
 
@@ -1142,7 +1144,7 @@ model User {
 
 <Admonition type="warning">
 
-You cannot use `uuid()` to generate a default value if your `id` field is of type `ObjectId`. Use the following syntax to generate a valid `ObjectId`:
+如果 `id` 字段的类型为 `ObjectId`，则不能使用 `uuid()` 生成默认值。使用以下语法生成有效的 `ObjectId`：
 
 ```prisma
 id    String  @id @default(dbgenerated()) @db.ObjectId @map("_id")
@@ -1153,11 +1155,11 @@ id    String  @id @default(dbgenerated()) @db.ObjectId @map("_id")
 
 </TabbedContent>
 
-##### Single-field IDs _without_ default values
+##### *无默认值的*单字段 ID
 
-In the following example, `id` does not have a default value:
+在以下示例中，`id` 没有默认值：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="display"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="display"/>]}>
 <tab>
 
 ```prisma
@@ -1185,7 +1187,7 @@ name  String
 </tab>
 </TabbedContent>
 
-Note that in the above case, you _must_ provide your own ID values when creating new records for the `User` model using Prisma Client, e.g.:
+注意，在上述情况下，在使用 Prisma Client 为 `User` 模型创建新记录时，您*必须*提供自己的 ID 值，例如：
 
 ```ts
 const newUser = await prisma.user.create({
@@ -1196,11 +1198,11 @@ const newUser = await prisma.user.create({
 })
 ```
 
-###### Specify an ID on relation scalar field without a default value
+###### 在不带默认值的关系标量字段上指定 ID
 
-In the following example, `authorId` is a both a relation scalar and the ID of `Profile`:
+在下面的示例中，`authorId` 既是关系标量又是 `Profile` 的 ID：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1240,8 +1242,9 @@ model User {
 </TabbedContent>
 
 In this scenario, you cannot create a `Profile` only - you must use Prisma Client's [nested writes](../../concepts/components/prisma-client/relation-queries#nested-writes) create a `User` **or** connect the profile to an existing user.
+在此场景中，您不能仅创建 `Profile` - 必须使用 Prisma Client 的[嵌套写入](../../concepts/components/prisma-client/relation-queries#nested-writes)创建`User` **或** 将 profile 连接到现有 user。
 
-The following example creates a user and a profile:
+以下示例创建 user 和 profile：
 
 ```ts
 const userWithProfile = await prisma.user.create({
@@ -1258,7 +1261,7 @@ const userWithProfile = await prisma.user.create({
 })
 ```
 
-The following example connects a new profile to a user:
+以下示例将新创建 profile 连接到 user：
 
 ```ts
 const profileWithUser = await prisma.profile.create({
@@ -1277,29 +1280,29 @@ const profileWithUser = await prisma.profile.create({
 
 <Admonition type="warning">
 
-**Not supported by MongoDB** <br />
-The [MongoDB connector](../../concepts/database-connectors/mongodb) does not support composite IDs.
+**MongoDB 不支持** <br />
+[MongoDB connector](../../concepts/database-connectors/mongodb) 不支持复合 ID.
 
 </Admonition>
 
-Defines a multi-field ID (composite ID) on the model.
+在模型上定义多字段 ID（复合 ID）。
 
-#### Remarks
+#### 注意
 
-- Corresponding database type: `PRIMARY KEY`
-- Can be annotated with a [`@default()`](#default) value that uses [functions](#attribute-functions) to auto-generate an ID
-- Cannot be optional
-- Can be defined on any scalar field (`String`, `Int`, `enum`)
-- Cannot be defined on a relation field
-- The name of the composite ID field in Prisma Client has the following pattern: `field1_field2_field3`
+- 对应数据库类型: `PRIMARY KEY`
+- 可以使用 [`@default()`](#default) 值进行注释，该值使用 [函数](#attribute-functions) 自动生成 ID
+- 不能是可选的
+- 可以在任何标量字段上定义 (`String`, `Int`, `enum`)
+- 无法在关系字段上定义
+- Prisma Client 中复合 ID 字段的名称具有以下模式: `field1_field2_field3`
 
-#### Arguments
+#### 参数
 
-| Name     | Required | Type               | Description                                                      |
-| -------- | -------- | ------------------ | ---------------------------------------------------------------- |
-| `fields` | **Yes**  | `FieldReference[]` | A list of field names - for example, `["firstname", "lastname"]` |
+| 名称     | 必需   | 类型               | 描述                                            |
+| -------- | ------ | ------------------ | ----------------------------------------------- |
+| `fields` | **是** | `FieldReference[]` | 字段名数组 - 例如： `["firstname", "lastname"]` |
 
-The name of the `fields` argument on the `@@id` attribute can be omitted:
+`@@id` 属性上的 `fields` 参数的名称可以省略：
 
 ```prisma no-lines
 @@id(fields: [title, author])
@@ -1314,7 +1317,7 @@ The name of the `fields` argument on the `@@id` attribute can be omitted:
 
 ##### Specify a multi-field ID on two `String` fields
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1333,9 +1336,9 @@ model User {
 </tab>
 </TabbedContent>
 
-When you create a user, you must provide a unique combination of `firstName` and `lastName`:
+创建用户时，必须提供 `firstName` 和 `lastName` 的唯一组合：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```ts
@@ -1352,9 +1355,9 @@ const user = await prisma.user.create({
 </tab>
 </TabbedContent>
 
-To retrieve a user, use the generated composite ID field (`firstName_lastName`):
+要检索用户，请使用生成的复合 ID 字段（`firstName_lastName`）：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```ts
@@ -1373,9 +1376,9 @@ const user = await prisma.user.findUnique({
 </tab>
 </TabbedContent>
 
-##### Specify a multi-field ID on two `String` fields and one `Boolean` field
+##### 在两个 `String` 字段和一个 `Boolean` 字段上指定多字段 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1394,9 +1397,9 @@ model User {
 </tab>
 </TabbedContent>
 
-When creating new `User` records, you now must provide a unique combination of values for `firstName`, `lastName` and `isAdmin`:
+创建新的 `User` 记录时，现在必须为 `firstName`、`lastName` 和 `isAdmin` 提供唯一的值组合：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```ts
@@ -1414,9 +1417,9 @@ const user = await prisma.user.create({
 </tab>
 </TabbedContent>
 
-##### Specify a multi-field ID that includes a relation field
+##### 定义包含关系字段的多字段 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1442,9 +1445,9 @@ model User {
 </tab>
 </TabbedContent>
 
-When creating new `Post` records, you now must provide a unique combination of values for `authorId` (foreign key) and `title`:
+创建新的 `Post` 记录时，现在必须为 `authorId`（外键）和 `title` 提供唯一的值组合：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```ts
@@ -1469,14 +1472,14 @@ const post = await prisma.post.create({
 
 <AlgoliaTerm name="apiReference" value="@default, default" />
 
-Defines a [default value for a field](../../../concepts/components/prisma-schema/data-model#defining-a-default-value) <span class="concept"></span>.
+创建 [字段默认值](../../../concepts/components/prisma-schema/data-model#defining-a-default-value) <span class="concept"></span>.
 
-#### Remarks
+#### 注意
 
-##### Relational databases
+##### 关系数据库
 
-- Corresponding database type: `DEFAULT`
-- Default values can be a static value (`4`, `"hello"`) or one of the following [functions](#attribute-functions):
+- 对应数据类型: `DEFAULT`
+- 默认值可以是静态值（`4`、`"hello"`）或以下 [函数](#attribute-functions) 之一
 
   - [`autoincrement()`](#autoincrement)
   - [`dbgenerated()`](#dbgenerated)
@@ -1484,27 +1487,27 @@ Defines a [default value for a field](../../../concepts/components/prisma-schema
   - [`uuid()`](#uuid)
   - [`now()`](#now)
 
-- Default values that cannot yet be represented in the Prisma schema are represented by the `dbgenerated()` function when you use [introspection](../../concepts/components/introspection).
-- Default values are currently not allowed on relation fields in the Prisma schema. Note however that you can still define default values _manually_ in the underlying database using plain SQL. These will not be represented in the Prisma schema though, this is a temporary limitation which you can [track on GitHub](https://github.com/prisma/prisma/issues/1111).
+- 当您使用 [内省](../../concepts/components/introspection) 时，Prisma schema 中尚无法表示的默认值由 `dbgenerated（）` 函数表示。
+- Prisma schema 中的关系字段不允许使用默认值。但是请注意，您仍然可以使用纯 SQL 在底层数据库中*手动定义*默认值。但是，这些将不会在 Prisma schema 中表示，这是一个临时限制，您可以[在 GitHub 上跟踪](https://github.com/prisma/prisma/issues/1111).
 
 ##### MongoDB
 
-- Default values can be a static value (`4`, `"hello"`) or one of the following [functions](#attribute-functions):
+- 默认值可以是一个静态值（`4`, `"hello"`）或者以下任意一个 [函数](#attribute-functions) ：
 
-  - [`dbgenerated()`](#dbgenerated) (can only be used with `@db.ObjectId` to generate an `ObjectId` in MongoDB)
+  - [`dbgenerated()`](#dbgenerated) (只能与 `@db.ObjectId` 一起使用，在 MongoDB 中生成一个 `ObjectId`)
   - [`cuid()`](#cuid)
   - [`uuid()`](#uuid)
   - [`now()`](#now)
 
-- Default values are currently not allowed on relation fields in the Prisma schema.
+- 当前版本，默认值不能应用在关系字段上。
 
-#### Arguments
+#### 参数
 
-| Name         | Required | Type                                      | Description |
-| ------------ | -------- | ----------------------------------------- | ----------- |
-| `expression` | **Yes**  | An expression (e.g. `5`, `true`, `now()`) |             |
+| 名称         | 必需   | 类型                                 | 描述 |
+| ------------ | ------ | ------------------------------------ | ---- |
+| `expression` | **是** | 表达式 (例如： `5`, `true`, `now()`) |      |
 
-The name of the `value` argument on the `@default` attribute can be omitted:
+`@default` 属性的 `value` 参数名称可以省略：
 
 ```prisma no-lines
 id Int @id @default(value: autoincrement())
@@ -1517,11 +1520,11 @@ id Int @id @default(autoincrement())
 @default(_ value: Expression)
 ```
 
-#### Examples
+#### 示例
 
-##### Default value for an `Int`
+##### `Int` 类型的默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1544,9 +1547,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for a `Float`
+##### `Float` 类型的默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1571,7 +1574,7 @@ model User {
 
 ##### Default value for `Decimal`
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1594,9 +1597,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for `BigInt`
+##### `BigInt` 类型的默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1619,9 +1622,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for a `String`
+##### `String` 类型的默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1644,9 +1647,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for a `Boolean`
+##### `Boolean` 类型的默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1669,11 +1672,11 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for a `DateTime`
+##### `DateTime` 类型的默认值
 
-Note that static default values for `DateTime` are based on the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+注意 `DateTime` 的默认值基于 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 标准.
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1696,9 +1699,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for a `Bytes`
+##### `Bytes` 类型默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1721,9 +1724,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Default value for an `enum`
+##### `enum` 类型默认值
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1770,21 +1773,22 @@ model User {
 
 ### <inlinecode>@unique</inlinecode>
 
-Defines a unique constraint for this field.
+定义唯一约束。
 
-#### Remarks
+#### 注意
 
 ##### General
 
-- A field annotated with `@unique` can be optional or required
-- A field annotated with `@unique` _must_ be required if it represents the only unique constraint on a model without an `@id` / `@@id`
-- A model can have any number of unique constraints
-- Can be defined on any scalar field
-- **Cannot** be defined on a relation field
+- 声明了 `@unique` 的字段可以为可选的，也可以是必需的。
+- 如果一个 model 上不存在 `@id` 或者 `@@id`，那么*必需*有一个使用 `@unique` 修饰的字段
 
-##### Relational databases
+- 一个模型可以有任意多个唯一约束
+- 可以在任何标量字段上定义
+- **不能** 应用在关系字段
 
-- Corresponding database type: `UNIQUE`
+##### 关系数据库
+
+- 对应数据库类型: `UNIQUE`
 - `NULL` values are considered to be distinct (multiple rows with `NULL` values in the same column are allowed)
 - Adding a unique constraint automatically adds a corresponding _unique index_ to the specified column(s).
 
@@ -1802,11 +1806,11 @@ N/A
 @unique
 ```
 
-#### Examples
+#### 示例
 
 ##### Specify a unique attribute on a required `String` field
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1831,7 +1835,7 @@ model User {
 
 ##### Specify a unique attribute on an optional `String` field
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1858,7 +1862,7 @@ model User {
 
 ##### Specify a unique attribute on relation scalar field `authorId`
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1901,7 +1905,7 @@ model User {
 
 ##### Specify a unique attribute with `cuid()` values as default values
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -1927,13 +1931,13 @@ model User {
 
 ### <inlinecode>@@unique</inlinecode>
 
-Defines a compound [unique constraint](../../../concepts/components/prisma-schema/data-model#defining-a-unique-field) <span class="concept"></span> for the specified fields.
+为字段定义复合 [唯一约束](../../../concepts/components/prisma-schema/data-model#defining-a-unique-field) <span class="concept"></span>。
 
-#### Remarks
+#### 注意
 
 ##### General
 
-- All fields that make up the unique constraint **must** be mandatory fields. The following model is **not** valid because `id` could be `null`:
+- 构成唯一约束**的所有字段必须**为必填字段。以下模型**无效**，因为 `id` 可能为 `null`：
 
   ```prisma
   model User {
@@ -1945,7 +1949,7 @@ Defines a compound [unique constraint](../../../concepts/components/prisma-schem
   }
   ```
 
-  The reason for this behavior is that all connectors consider `null` values to be distinct, which means that two rows that _look_ identical are considered unique:
+  造成这种表现的原因是，所有连接器都认为 `null` 值是不同的，这意味着两个相同的行被认为是唯一的：
 
   ```
    firstname  | lastname | id
@@ -1954,27 +1958,27 @@ Defines a compound [unique constraint](../../../concepts/components/prisma-schem
    John       | Smith    | null
   ```
 
-- A model can have any number of `@@unique` blocks
+- 一个 model 可以使用任意多个 `@@unique`
 
-##### Relational databases
+##### 关系数据库
 
-- Corresponding database type: `UNIQUE`
-- A `@@unique` block is required if it represents the only unique constraint on a model without an `@id` / `@@id`
-- Adding a unique constraint automatically adds a corresponding _unique index_ to the specified column(s)
+- 对应数据库类型: `UNIQUE`
+- 如果 model 上没有 `@id` 或 `@@id` 的唯一约束，则必需有 `@@unique`
+- 添加唯一约束会自动向指定列添加相应的*唯一索引*）
 
 ##### MongoDB
 
-- Enforced by a [compound index in MongoDB](https://docs.mongodb.com/manual/core/index-compound/) - you must create this index yourself
-- A `@@unique` block cannot be used as the only unique identifier for a model - MongoDB requires an `@id` field
+- 由 [MongoDB 中的复合索引](https://docs.mongodb.com/manual/core/index-compound/) 创建 - 您必须自己创建此索引
+- `@@unique` 块不能用作模型的唯一唯一标识符 - MongoDB 需要一个 `@id` 字段
 
 #### Arguments
 
-| Name     | Required | Type               | Description                                                                                               |
-| -------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `fields` | **Yes**  | `FieldReference[]` | A list of field names - for example, `["firstname", "lastname"]`. Fields must be mandatory - see remarks. |
-| `name`   | **No**   | `String`           | The name of the unique combination of fields - defaults to `fieldName1_fieldName2_fieldName3`             |
+| 名称     | 必需   | 类型               | 描述                                                                                  |
+| -------- | ------ | ------------------ | ------------------------------------------------------------------------------------- |
+| `fields` | **是** | `FieldReference[]` | 字段列表 - 例如, `["firstname", "lastname"]`. Fields must be mandatory - see remarks. |
+| `name`   | **否** | `String`           | 复合字段名称 - 默认 `fieldName1_fieldName2_fieldName3`                                |
 
-The name of the `fields` argument on the `@@unique` attribute can be omitted:
+`@@unique` 属性上的 `fields` 参数的名称可以省略：
 
 ```prisma no-lines
 @@unique(fields: [title, author])
@@ -1988,11 +1992,11 @@ The name of the `fields` argument on the `@@unique` attribute can be omitted:
 @@unique(_ fields: FieldReference[], name: String?)
 ```
 
-#### Examples
+#### 示例
 
-##### Specify a multi-field unique attribute on two `String` fields
+##### 在两个 `String` 类型字段上指定多字段唯一属性
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2023,7 +2027,7 @@ model User {
 </tab>
 </TabbedContent>
 
-To retrieve a user, use the generated field name (`firstname_lastname`):
+使用生成的字段名 (`firstname_lastname`) 来查询数据：
 
 ```ts highlight=3;normal
 const user = await prisma.user.findUnique({
@@ -2037,9 +2041,9 @@ const user = await prisma.user.findUnique({
 })
 ```
 
-##### Specify a multi-field unique attribute on two `String` fields and one `Boolean` field
+##### 在两个 `String` 字段和一个 `Boolean` 字段上建议复合唯一属性
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2070,9 +2074,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Specify a multi-field unique attribute that includes a relation field
+##### 包含关系字段的多字段复合唯一属性
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2117,9 +2121,9 @@ model User {
 </tab>
 </TabbedContent>
 
-##### Specify a custom `name` for a multi-field unique attribute
+##### 自定义名称 `name` 的多字段复合唯一属性
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2150,7 +2154,7 @@ model User {
 </tab>
 </TabbedContent>
 
-To retrieve a user, use the custom field name (`admin_identifier`):
+使用自定义的 (`admin_identifier`) 查询数据：
 
 ```ts highlight=3;normal
 const user = await prisma.user.findUnique({
@@ -2166,25 +2170,25 @@ const user = await prisma.user.findUnique({
 
 ### <inlinecode>@@index</inlinecode>
 
-Defines an index in the database.
+创建数据库索引。
 
-#### Remarks
+#### 注意
 
-##### Relational databases
+##### 关系数据库
 
-- Corresponding database type: `INDEX`
-- It is currently not possible to provide more configuration options to the index:
+- 对应数据库类型: `INDEX`
+- 目前无法为索引提供更多配置选项：
   - PostgreSQL
-    - Define index fields as expressions (e.g. `CREATE INDEX title ON public."Post"((lower(title)) text_ops);`)
-    - Specify index methods with `USING`; PostgreSQL supports these index methods: B-tree, hash, GiST, and GIN; Prisma uses B-Tree by default
-    - Define partial indexes with `WHERE`
-    - Create indexes concurrently with `CONCURRENTLY`
+    - 将索引字段定义为表达式 (例如 `CREATE INDEX title ON public."Post"((lower(title)) text_ops);`)
+    - 使用 `USING` 指定索引类型; PostgreSQL 支持以下索引类型: B-tree, hash, GiST, and GIN; Prisma 默认为 B-Tree
+    - 定义局部索引 `WHERE`
+    - 并发创建索引 `CONCURRENTLY`
   - MySQL
-    - Specify index methods with `USING`; MySQL supports these index methods: B-tree, hash; Prisma uses B-Tree by default
+    - 使用 `USING` 指定索引算法 ; MySQL 支持以下索引类型: B-tree, hash; Prisma 默认为 B-Tree
 
 <Admonition type="info">
- 
-While you cannot configure these option in your Prisma schema, you can still configure them on the database-level directly.
+
+虽然不能在 Prisma 模式中配置这些选项，但仍然可以直接在数据库层配置它们。
 
 </Admonition>
 
@@ -2192,19 +2196,19 @@ While you cannot configure these option in your Prisma schema, you can still con
 
 <Admonition type="warning">
 
-**Not currently used by MongoDB** <br />
-Introspection and Prisma Migrate do not currently support MongoDB, which means Prisma Migrate will never use the `@@index` attribute to create an index in the database, and Introspection will never add an `@@index` attribute to the Prisma schema
+**MongoDB 当前未使用** <br />
+内省和 Prisma Migrate 当前不支持 MongoDB，这意味着 Prisma Migrate 永远不会使用 `@@index` 属性在数据库中创建索引，而内省也永远不会将 `@@index` 属性添加到 Prisma schema 中
 
 </Admonition>
 
 #### Arguments
 
-| Name     | Required | Type               | Description                                                                                                                                                                                                                                 |
-| -------- | -------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fields` | **Yes**  | `FieldReference[]` | A list of field names - for example, `["firstname", "lastname"]`                                                                                                                                                                            |
-| `name`   | **No**   | `name`             | The name of the index in the underlying database (Prisma generates an index name that respects identifier length limits if you do not specify a name. Prisma uses the following naming convention: `tablename.field1_field2_field3_unique`) |
+| 名称     | 必需   | 类型               | 描述                                                                                                                                                                                                                                        |
+| -------- | ------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields` | **是** | `FieldReference[]` | A list of field names - for example, `["firstname", "lastname"]`                                                                                                                                                                            |
+| `name`   | **否** | `name`             | The name of the index in the underlying database (Prisma generates an index name that respects identifier length limits if you do not specify a name. Prisma uses the following naming convention: `tablename.field1_field2_field3_unique`) |
 
-The _name_ of the `fields` argument on the `@@index` attribute can be omitted:
+`@@index` 属性的 `fields` *参数名*可以省略：
 
 ```prisma no-lines
 @@index(fields: [title, author])
@@ -2217,13 +2221,13 @@ The _name_ of the `fields` argument on the `@@index` attribute can be omitted:
 @@index(_ fields: FieldReference[], name: String?)
 ```
 
-#### Examples
+#### 示例
 
-Assume you want to add an index for the `title` field of the `Post` model
+为 `Post` 模型的 `title` 字段添加索引
 
-##### Define a single-column index
+##### 创建单列索引
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2241,9 +2245,9 @@ model Post {
 </tab>
 </TabbedContent>
 
-##### Define a multi-column index
+##### 创建多列索引
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2261,9 +2265,9 @@ model Post {
 </tab>
 </TabbedContent>
 
-##### Define an index with a name
+##### 创建命名索引
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2283,27 +2287,27 @@ model Post {
 
 ### <inlinecode>@relation</inlinecode>
 
-Defines meta information about the relation. [Learn more](../../concepts/components/prisma-schema/relations#the-relation-attribute).
+定义关系的元信息[了解更多信息](../../concepts/components/prisma-schema/relations#the-relation-attribute)。
 
-#### Remarks
+#### 注意
 
-##### Relational databases
+##### 关系数据库
 
-- Corresponding database types: `FOREIGN KEY` / `REFERENCES`
+- 对应数据库类型: `FOREIGN KEY` / `REFERENCES`
 
 ##### MongoDB
 
-- If your model's primary key is of type `ObjectId` in the underlying database, both the primary key _and_ the foreign key must be have the `@db.ObjectId` attribute
+如果模型的主键在底层数据库中为 `ObjectId` 类型，则主键和外键都必须具有 `@db.ObjectId` 属性
 
-#### Arguments
+#### 参数
 
-| Name         | Type               | Required                                                                                                                                           | Description                                                                                                                               | Example                                               |
-| :----------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| `name`       | `String`           | Sometimes (e.g. to disambiguate a relation)                                                                                                        | Defines the name of the relationship. In an m-n-relation, it also determines the name of the underlying relation table.                   | `"CategoryOnPost"`, `"MyRelation"`                    |
+| 名称         | 类型               | 必需                                                                                                                                               | Description                                                                                                                                | Example                                               |
+| :----------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
+| `name`       | `String`           | Sometimes (e.g. to disambiguate a relation)                                                                                                        | Defines the name of the relationship. In an m-n-relation, it also determines the name of the underlying relation table.                    | `"CategoryOnPost"`, `"MyRelation"`                    |
 | `fields`     | `FieldReference[]` | On [annotated](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) relation fields | A list of [fields](../../../concepts/components/prisma-schema/data-model#defining-fields) of the _current_ model                           | `["authorId"]`, `["authorFirstName, authorLastName"]` |
 | `references` | `FieldReference[]` | On [annotated](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) relation fields | A list of [fields](../../../concepts/components/prisma-schema/data-model#defining-fields) of the model on _the other side of the relation_ | `["id"]`, `["firstName, lastName"]`                   |
 
-The name of the `name` argument on the `@relation` attribute can be omitted (`references` is required):
+`@relation` 属性上的 `name` 参数的名称可以省略（`references`是必需的）：
 
 <!-- prettier-ignore-start -->
 ```prisma
@@ -2323,26 +2327,26 @@ The name of the `name` argument on the `@relation` attribute can be omitted (`re
 @relation(_ name: String?, fields: FieldReference[]?, references: FieldReference[]?)
 ```
 
-#### Examples
+#### 示例
 
-See: [The `@relation` attribute](../../concepts/components/prisma-schema/relations#the-relation-attribute).
+查看更多 [`@relation` 属性](../../concepts/components/prisma-schema/relations#the-relation-attribute).
 
 ### <inlinecode>@map</inlinecode>
 
-Maps a field name or enum value from the Prisma schema to a column or document field with a different name in the database. If you do not use `@map`, the Prisma field name matches the column name or document field name exactly.
+将 Prisma 架构中的字段名或枚举值映射到数据库中具有不同名称的列或文档字段。如果不使用 `@map` ，则 Prisma 字段名与列名或文档字段名完全匹配。
 
-> See [Using custom model and field names](../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) to see how `@map` and `@@map` changes the generated Prisma Client.
+> 查看 [使用自定义模型和字段名](../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) 了解 `@map` 和 `@@map` 怎么生成 Prisma Client。
 
-#### Remarks
+#### 注意
 
 ##### General
 
-- `@map` **does not** rename the columns / fields in the database
-- `@map` **does** [change the field names in the generated client](#map-the-firstname-field-to-a-column-called-first_name)
+- `@map` **不会** 改变 数据库中的列/字段名
+- `@map` **会** [改变生成的 client 中的字段名](#map-the-firstname-field-to-a-column-called-first_name)
 
 ##### MongoDB
 
-Your `@id` field must include `@map("_id")`. For example:
+您的 `@id` 字段必须包含 `@map("_id")`。例如：
 
 ```prisma
 model User {
@@ -2350,13 +2354,13 @@ model User {
 }
 ```
 
-#### Arguments
+#### 参数
 
-| Name   | Type     | Required | Description                                                                  | Example                         |
-| :----- | :------- | :------- | :--------------------------------------------------------------------------- | :------------------------------ |
-| `name` | `String` | **Yes**  | The database column (relational databases) or document field (MongoDB) name. | `"comments"`, `"someFieldName"` |
+| 名称   | 类型     | 必需   | 描述                                            | 示例                            |
+| :----- | :------- | :----- | :---------------------------------------------- | :------------------------------ |
+| `name` | `String` | **是** | 数据库列（关系数据库）或文档字段（MongoDB）名称 | `"comments"`, `"someFieldName"` |
 
-The name of the `name` argument on the `@map` attribute can be omitted:
+`@map` 属性上的 `name` 参数的名称可以省略：
 
 ```prisma
 @map(name: "is_admin")
@@ -2369,11 +2373,11 @@ The name of the `name` argument on the `@map` attribute can be omitted:
 @map(_ name: String)
 ```
 
-#### Examples
+#### 示例
 
-##### Map the `firstName` field to a column called `first_name`
+##### 将 `firstName` 字段映射到名为 `first_name` 的列`
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2406,7 +2410,7 @@ await prisma.user.create({
 })
 ```
 
-##### Map an enum named `ADMIN` to a database enum named `admin`
+##### 将名为 `ADMIN` 的枚举映射到名为 `admin` 的数据库枚举
 
 ```prisma
 enum Role {
@@ -2417,22 +2421,22 @@ enum Role {
 
 ### <inlinecode>@@map</inlinecode>
 
-Maps the Prisma schema model name to a table (relational databases) or collection (MongoDB) with a different name, or an enum name to a different underlying enum in the database. If you do not use `@@map`, the model name matches the table (relational databases) or collection (MongoDB) name exactly.
+将 Prisma schema 模型名称映射到具有不同名称的表（关系数据库）或集合（MongoDB），或将枚举名称映射到数据库中的不同基础枚举。如果不使用 `@@map`，则模型名称与表（关系数据库）或集合（MongoDB）名称完全匹配。
 
-> See [Using custom model and field names](../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) to see how `@map` and `@@map` changes the generated Prisma Client.
+> 查看 [使用自定义模型和字段名](../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) 了解 `@map` 和 `@@map` 如何影响生成的 Prisma Client。
 
-#### Remarks
+#### 注意
 
-- `@@map` **does not** rename the table/collection in the database
-- `@@map` **does** [change the model names in the generated client](#map-the-user-model-to-a-database-tablecollection-named-users)
+- `@@map` **不会** 改变表/集合名称
+- `@@map` **会** [改变生成的 client 的模型名称](#map-the-user-model-to-a-database-tablecollection-named-users)
 
-#### Arguments
+#### 参数
 
-| Name   | Type     | Required | Description                                                             | Example                                     |
-| :----- | :------- | :------- | :---------------------------------------------------------------------- | :------------------------------------------ |
-| `name` | `String` | **Yes**  | The database table (relational databases) or collection (MongoDB) name. | `"comments"`, `"someTableOrCollectionName"` |
+| 名称   | 类型     | 必需   | 描述                                          | 示例                                        |
+| :----- | :------- | :----- | :-------------------------------------------- | :------------------------------------------ |
+| `name` | `String` | **是** | 数据库表（关系数据库）或集合（MongoDB）名称。 | `"comments"`, `"someTableOrCollectionName"` |
 
-The name of the `name` argument on the `@@map` attribute can be omitted
+`@@map` 属性上的 `name` 参数的名称可以省略
 
 ```prisma
 @@map(name: "users")
@@ -2445,11 +2449,11 @@ The name of the `name` argument on the `@@map` attribute can be omitted
 @@map(_ name: String)
 ```
 
-#### Examples
+#### 示例
 
-##### Map the `User` model to a database table/collection named `users`
+##### 将 `User` 模型映射到名为 `users` 的数据库表/集合`
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2476,7 +2480,7 @@ model User {
 </tab>
 </TabbedContent>
 
-The generated client:
+生成的 client:
 
 ```ts highlight=1;normal
 await prisma.user.create({
@@ -2487,7 +2491,7 @@ await prisma.user.create({
 })
 ```
 
-##### Map the `Role` enum to a native enum in the database named `_Role` its values to lowercase values in the database
+##### 将 `Role` 枚举映射到名为 `_Role` 的数据库中的原生枚举，并将其值映射到数据库中的小写值
 
 ```prisma
 enum Role {
@@ -2500,14 +2504,14 @@ enum Role {
 
 ### <inlinecode>@updatedAt</inlinecode>
 
-Automatically stores the time when a record was last updated. If you do not supply a time yourself, the Prisma Client will automatically set the value for fields with this attribute.
+自动存储记录上次更新的时间。如果您自己不提供时间，Prisma 客户端将自动为具有此属性的字段设置值。
 
-#### Remarks
+#### 注意
 
-- Compatible with [`DateTime`](#datetime) fields
-- Implemented at Prisma level
+- 和 [`DateTime`](#datetime) 字段兼容
+- Prisma 原生实现
 
-#### Arguments
+#### 参数
 
 N/A
 
@@ -2517,9 +2521,9 @@ N/A
 @updatedAt
 ```
 
-#### Examples
+#### 示例
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma line-number
@@ -2546,19 +2550,19 @@ model Post {
 
 <AlgoliaTerm name="apiReference" value="@ignore" />
 
-In [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later, Prisma adds `@ignore` to fields that _refer to_ invalid models when you introspect.
+在 [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) 及更高版本中, Prisma 将 `@ignore` 添加到内省时*引用*无效模型的字段中。
 
-#### Remarks
+#### 注意
 
-- Ignored fields are excluded from the generated Prisma Client
-- You can manually add `@ignore` to a field that you want to exclude from the Prisma Client (for example, a field that you do not want Prisma users to update)
+- 生成的 Prisma Client 不存在被忽略的字段
+- 您可以手动将 `@ignore` 添加到要从 Prisma 客户端排除的字段（例如，不希望 Prisma 用户更新的字段）
 
-#### Examples
+#### 示例
 
-In the following example, `tags` is ignored because it refers to an invalid model (no `@id` on `Product):
+在下面的示例中，`tags` 被忽略，因为它引用了无效的模型（ `Product` 上没有 `id`）：
 
 ```prisma highlight=5,10;normal
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// 底层表不包含有效的唯一标识符，因此当前无法由 Prisma Client 处理。
 model Tag {
   id String? @db.VarChar
 
@@ -2575,19 +2579,20 @@ model Product {
 
 <AlgoliaTerm name="apiReference" value="@@ignore" />
 
-In [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later, Prisma adds `@@ignore` to an invalid model instead of commenting it out.
+在[2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0)以及更高版本中，Prisma 将 `@@ignore` 添加到无效模型中，而不是注释出来。
 
-#### Remarks
+#### 注意
 
-- Ignored models are excluded from the generated Prisma Client
-- You can manually add `@@ignore` to a model that you want to exclude from the Prisma Client (for example, a model that you do not want Prisma users to update)
+- 已忽略的模型将从生成的 Prisma Client 中排除。
+- 您可以手动将 `@@ignore` 添加到要从 Prisma Client 排除的模型中（例如，您不希望 Prisma 用户更新的模型）
 
-#### Examples
+#### 示例
 
-In the following example, `Tag` is ignored because it does not have a valid unique identifier:
+在以下示例中，`Tag` 将被忽略，因为它没有有效的唯一标识：
 
 ```prisma highlight=5;normal
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// 底层表不包含有效的唯一标识，因此当前无法由Prisma客户端处理
+
 model Tag {
   id String? @db.VarChar
 
@@ -2595,33 +2600,33 @@ model Tag {
 }
 ```
 
-## Attribute functions
+## 属性函数
 
 ### <inlinecode>autoincrement()</inlinecode>
 
 <Admonition type="warning">
 
-**Not supported by MongoDB** <br />
-The [MongoDB connector](../../concepts/database-connectors/mongodb) does not support the `autoincrement()` function.
+**MongoDB 不支持** <br />
+[MongoDB 连接器](../../concepts/database-connectors/mongodb) 不支持 `autoincrement()` 函数。
 
 </Admonition>
 
-Create a sequence of integers in the underlying database and assign the incremented values to the ID values of the created records based on the sequence.
+在底层数据库中创建一个整数序列，并根据该序列将递增的值分配给已创建记录的 ID 值。
 
-#### Remarks
+#### 注意
 
-- Compatible with `Int`
-- Implemented on the database-level, meaning that it manifests in the database schema and can be recognized through introspection. Database implementations:
+- 和 `Int` 类型兼容
+- 在数据库层实现，这意味着它体现在数据库模式中，可以通过内省进行识别。数据库支持：
 
   | PostgreSQL                                                                                 | MySQL                                                                                             | SQLite                                                         |
   | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
   | [`SERIAL`](https://www.postgresql.org/docs/9.1/datatype-numeric.html#DATATYPE-SERIAL) type | [`AUTO_INCREMENT`](https://dev.mysql.com/doc/refman/8.0/en/example-auto-increment.html) attribute | [`AUTOINCREMENT`](https://www.sqlite.org/autoinc.html) keyword |
 
-#### Examples
+#### 示例
 
-##### Generate auto-incrementing integers as IDs
+##### 生成自增整数作为 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2638,22 +2643,22 @@ model User {
 
 ### <inlinecode>cuid()</inlinecode>
 
-Generate a globally unique identifier based on the [`cuid`](https://github.com/ericelliott/cuid) spec.
+基于 [`cuid`](https://github.com/ericelliott/cuid) 规范生成全局唯一标识符。
 
-#### Remarks
+#### 注意
 
-- Compatible with `String`
-- Implemented by Prisma and therefore not "visible" in the underlying database schema. You can still use `cuid()` when using [introspection](../../concepts/components/introspection) by [manually changing your Prisma schema](../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) and [generating Prisma Client](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client), in that case the values will be generated by Prisma's [query engine](../../concepts/components/prisma-engines/query-engine).
+- 和 `String` 类型兼容
+- 由 Prisma 实现，因此在底层数据库模式中不“可见”。通过 [手动更改 Prisma schema](../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) 和 [生成 Prisma Client](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client) 使用[内省](../../concepts/components/introspection) 时，您仍然可以使用 `cuid()`，在这种情况下，其值将由 prisma 的 [查询引擎](../../concepts/components/prisma-engines/query-engine) 生成。
 
 ##### MongoDB
 
-- `cuid()` does not generate a valid `ObjectId` - [use the `@db.ObjectId` syntax](#generate-objectid-as-ids-mongodb-only) if you want to use `ObjectId` in the underlying database. However, you can still use `cuid()` if your `_id` field is not of type `ObjectId`.
+- `cuid()` 不能生成有效的 `ObjectId` - 如果 `_id` 字段不是 `ObjectId` 类型，则仍然可以通过 [使用`db.ObjectId`语法](#generate-objectid-as-ids-mongodb-only) 使用 `cuid()`。
 
-#### Examples
+#### 示例
 
-##### Generate `cuid()` values as IDs
+##### 生成 `cuid()` 作为 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2678,28 +2683,28 @@ model User {
 
 ### <inlinecode>uuid()</inlinecode>
 
-Generate a globally unique identifier based on the [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) spec.
+基于 [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) 规范生成全局唯一标识符。
 
-#### Remarks
+#### 注意
 
-- Compatible with `String`
-- Implemented by Prisma and therefore not "visible" in the underlying database schema. You can still use `uuid()` when using [introspection](../../concepts/components/introspection) by [manually changing your Prisma schema](../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) and [generating Prisma Client](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client), in that case the values will be generated by Prisma's [query engine](../../concepts/components/prisma-engines/query-engine).
+- 和 `String` 类型兼容
+- 由 Prisma 实现，因此在底层数据库模式中不“可见”。通过 [手动更改 Prisma schema](../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) 和 [生成 Prisma Client](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client) 使用[内省](../../concepts/components/introspection) 时，您仍然可以使用 `cuid()`，在这种情况下，值将由 prisma 的 [查询引擎](../../concepts/components/prisma-engines/query-engine) 生成。
 
 <Admonition type='info'>
 
-**Note (Relational databases)**: If you do not want to use Prisma's `uuid()` function, you can use [the native database function with `dbgenerated`](#override-default-value-behavior-for-supported-types).
+**注意 (关系数据库)**: 如果不想使用 Prisma 的 `uuid()` '函数，可以使用 [原生数据库函数 'dbgenerated`](#override-default-value-behavior-for-supported-types)。
 
 </Admonition>
 
 ##### MongoDB
 
-- `uuid()` does not generate a valid `ObjectId` - [use the `@db.ObjectId` syntax](#generate-objectid-as-ids-mongodb-only) if you want to use `ObjectId` in the underlying database. However, you can still use `uuid()` if your `_id` field is not of type `ObjectId`.
+- `uuid()` 不能生成有效的 `ObjectId` - 如果 `_id` 字段不是 `ObjectId` 类型，则仍然可以通过 [使用`db.ObjectId`语法](#generate-objectid-as-ids-mongodb-only) 使用 `cuid()`。
 
-#### Examples
+#### 示例
 
-##### Generate `uuid()` values as IDs
+##### 生成 `uuid()` 作为 ID
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2724,56 +2729,56 @@ model User {
 
 ### <inlinecode>now()</inlinecode>
 
-Set a timestamp of the time when a record is created.
+设置创建记录的时间戳。
 
-#### Remarks
+#### 注意
 
 ##### General
 
-- Compatible with [`DateTime`](#datetime)
+- 和 [`DateTime`](#datetime) 类型兼容。
 
-##### Relational databases
+##### 关系数据库
 
-- Implemented on the database-level, meaning that it manifests in the database schema and can be recognized through introspection. Database implementations:
+- 在数据库层实现，这意味着它体现在数据库 schema 中，可以通过内省进行识别。数据库支持：
 
-  | PostgreSQL                                                                                                                                 | MySQL                                                                                                                                           | SQLite                                             |
-  | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-  | [`CURRENT_TIMESTAMP`](https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT) and aliases like `now()` | [`CURRENT_TIMESTAMP`](https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_current-timestamp) and aliases like `now()` | `CURRENT_TIMESTAMP` and aliases like `date('now')` |
+  | PostgreSQL                                                                                                                     | MySQL                                                                                                                               | SQLite                                 |
+  | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+  | [`CURRENT_TIMESTAMP`](https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT) 别名 `now()` | [`CURRENT_TIMESTAMP`](https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_current-timestamp) 别名 `now()` | `CURRENT_TIMESTAMP` 别名 `date('now')` |
 
 ##### MongoDB
 
-- Implemented at Prisma level
+- 在 Prisma 层实现。
 
 ### <inlinecode>dbgenerated()</inlinecode>
 
-Represents **default values** that cannot be expressed in the Prisma schema (such as `random()`).
+表示无法在 Prisma schema 中表示的 **默认值**（如 `random()`）
 
-#### Remarks
+#### 注意
 
-##### Relational databases
+##### 关系数据库
 
-- Compatible with any type
-- If a value is present, it cannot be empty (for example, `dbgenerated("")`) - [2.21.0](https://github.com/prisma/prisma/releases/tag/2.21.0) and later
-- Accepts a `String` value in [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later, which allows you to:
+- 兼容任意类型
+- 如果存在值，则该值不能为空 (例如， `dbgenerated("")`) - [2.21.0](https://github.com/prisma/prisma/releases/tag/2.21.0) 以及更高版本
+- [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) 以后支持 `String`类型，将允许:
 
-  - [Set default values for `Unsupported` types](#set-default-value-for-unsupported-type)
-  - [Override default value behavior for supported types](#override-default-value-behavior-for-supported-types)
+  - [为 `Unsupported` 类型设置默认值](#set-default-value-for-unsupported-type)
+  - [覆盖支持的数据类型的默认值](#override-default-value-behavior-for-supported-types)
 
 ##### MongoDB
 
-- Can only be used to generate `ObjectId` for `@id` fields:
+- 只能用于为 `@id` 字段生成 `ObjectId`：
 
   ```prisma
   id  String  @map("_id") @db.ObjectId @default(dbgenerated())
   ```
 
-- Must be empty: `dbgenerated()`
+- 必须为空： `dbgenerated()`
 
-#### Examples
+#### 示例
 
-##### Set default value for `Unsupported` type
+##### 为 `Unsupported` 类型设置默认值。
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2785,12 +2790,12 @@ circle     Unsupported("circle")?   @default(dbgenerated("'<(10,4),11>'::circle"
 </tab>
 </TabbedContent>
 
-##### Override default value behavior for supported types
+##### 覆盖支持类型的默认值表现
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系数据库" icon="database"/>]}>
 <tab>
 
-You can also use `dbgenerated()` to set the default value for supported types. For example, you can generate UUIDs at database level rather than rely on Prisma's `uuid()`:
+你还可以使用 `dbgenerated()` 为支持的类型设置默认值。例如，您可以在数据库层生成 uuid，而不是依赖 Prisma 的 `uuid()`：
 
 ```prisma highlight=2;add|3;delete
 model User {
@@ -2807,13 +2812,13 @@ model User {
 
 <Admonition type="info">
 
-**Note**: [`gen_random_uuid()` is a PostgreSQL function](https://www.postgresql.org/docs/13/functions-uuid.html). To use it, you must enable the `pgcrypto` extension.
+**注意**: [`gen_random_uuid()` 是一个 PostgreSQL 函数](https://www.postgresql.org/docs/13/functions-uuid.html)。 必须启用 `pgcrypto` 扩展才可以使用.
 
 </Admonition>
 
-##### Generate <inlinecode>ObjectId</inlinecode> (MongoDB only)
+##### 生成 <inlinecode>ObjectId</inlinecode> (仅限 MongoDB)
 
-<TabbedContent tabs={[<FileWithIcon text="MongoDB only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2828,47 +2833,47 @@ model User {
 </tab>
 </TabbedContent>
 
-## Attribute argument types
+## 属性参数类型
 
 ### <inlinecode>FieldReference[]</inlinecode>
 
-An array of [field](#model-fields) names: `[id]`, `[firstName, lastName]`
+[字段](#model-fields) 名称的数组: `[id]`, `[firstName, lastName]`
 
 ### <inlinecode>String</inlinecode>
 
-A variable length text in double quotes: `""`, `"Hello World"`, `"Alice"`
+双引号中的可变长度文本: `""`, `"Hello World"`, `"Alice"`
 
 ### <inlinecode>Expression</inlinecode>
 
-An expression that can be evaluated by Prisma: `42.0`, `""`, `Bob`, `now()`, `cuid()`
+可由 Prisma 计算的表达式: `42.0`, `""`, `Bob`, `now()`, `cuid()`
 
 ## <inlinecode>enum</inlinecode>
 
 <Admonition type="warning">
 
-**Not supported by SQLite and SQL Server** <br />
-The [SQLite connector](../../concepts/database-connectors/sqlite) and the The [SQL Server connector](../../concepts/database-connectors/microsoft-sql-server) do not support the `enum` type.
+**SQLite 和 SQL Server 不支持** <br />
+[SQLite 连接器](../../concepts/database-connectors/sqlite) 和 [SQL Server 连接器](../../concepts/database-connectors/microsoft-sql-server) 不支持 `enum` 类型.
 
 </Admonition>
 
-Defines an [enum](../../../concepts/components/prisma-schema/data-model#defining-enums) <span class="concept"></span>.
+定义一个 [enum](../../../concepts/components/prisma-schema/data-model#defining-enums) <span class="concept"></span>.
 
-### Remarks
+### 注意
 
-- Enums are natively supported by [PostgreSQL](https://www.postgresql.org/docs/current/datatype-enum.html) and [MySQL](https://dev.mysql.com/doc/refman/8.0/en/enum.html)
-- Enums are implemented and enforced at Prisma level in MongoDB
+- [PostgreSQL](https://www.postgresql.org/docs/current/datatype-enum.html) 和 [MySQL](https://dev.mysql.com/doc/refman/8.0/en/enum.html) 原生支持枚举。
+- Prisma 层对 MongoDB 进行了枚举实现支持。
 
-### Naming conventions
+### 命名规范
 
-- Enum names must start with a letter (they are typically spelled in [PascalCase](http://wiki.c2.com/?PascalCase))
-- Enums must use the singular form (e.g. `Role` instead of `role`, `roles` or `Roles`).
-- Must adhere to the following regular expression: `[A-Za-z][A-Za-z0-9_]*`
+- 枚举名称必须以字母开头（通常采用 [PascalCase](http://wiki.c2.com/?PascalCase) 拼写格式）
+- 枚举必须使用单数 (例如：使用 `Role` 而不是 of `role`，`roles` 或者 `Roles`).
+- 必须满足以下正则表达式: `[A-Za-z][A-Za-z0-9_]*`
 
-### Examples
+### 示例
 
-#### Specify an `enum` with two possible values
+#### 定义一个有两个选项的 `enum`。
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -2901,9 +2906,9 @@ model User {
 </tab>
 </TabbedContent>
 
-#### Specify an `enum` with two possible values and set a default value
+#### 定义一个有两个选项的 `enum` 并且设定默认值。
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
