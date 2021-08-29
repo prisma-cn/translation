@@ -1,6 +1,6 @@
 ---
-title: 用Prisma Migrate进行团队开发
-metaDescription: 当团队在一个项目上合作时，如何使用Prisma Migrate。
+title: 用Prisma Migrate进行团队协作开发
+metaDescription: 多人开发一个项目，如何使用Prisma Migrate。
 ---
 
 <TopBlock>
@@ -12,9 +12,9 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 </Admonition>
 
-如何合并组员的变更：
+如何合并成员的变更：
 
-1. 拉取变更的 Prisma schema 和 `./prisma/migrations` 文件夹
+1. 拉取变更：包含 Prisma schema 和 `./prisma/migrations` 文件夹
 1. 运行 `migrate dev` 命令执行新迁移:
 
    ```terminal
@@ -27,7 +27,7 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 ## Example: Incorporating your team's changes 例子： 合并团队的变更
 
-下面的示例场景展示了三名开发人员的团队如何分享和合并对 Prisma schema 和迁移历史的更改。
+下面的示例场景展示了三名开发人员如何共享和合并对 Prisma schema 和迁移历史(the migration history)的更改。
 
 下面的标签显示了团队在一轮修改前后的 Prisma schema：
 
@@ -140,7 +140,7 @@ model Tag {
 
 ### 整合变更
 
-**你**想把组员的变更合并。如何做呢：
+**你**想把成员的变更合并。如何做呢：
 
 1. 拉取团队中所有最新的变更，包括：
 
@@ -176,24 +176,24 @@ npx prisma migrate dev
     - `./prisma/migrations/20210316081837-new-field/migration.sql`
     - `./prisma/migrations/20210316091837-new-model/migration.sql`
 
-1.  用你的改动创建一个新的迁移，提示你给它命名（`pacman-field`），并将新的迁移应用到你的本地数据库：
+1.  用你的改动创建一个新的迁移，提示你给它命名（例如命名为`pacman-field`），并将新的迁移应用到你的本地数据库：
 
     - `./prisma/migrations/20210322081837-pacman-field/migration.sql`
 
 1.  提交合并后的`schema.prisma`和你的新迁移：`./prisma/migrations/20210322081837-pacman-field/migration.sql`
 
-你的 "schema.prisma "和本地数据库现在包括你的团队的变化，迁移历史包括你的迁移：
+你的 "schema.prisma "和本地数据库现在包括你的团队的变化，其中迁移历史包括你的迁移：
 
 ![A migration history with 5 migrations.](migration-history.png)
 
 ## 源码控制
 
-你应该提交以下文件到源码控制：
+你应该提交以下文件：
 
 - `.prisma/migrations`文件夹中的内容，包括`migration_lock.toml`文件
 - Prisma schema 文件 (`schema.prisma`)
 
-仅仅从源头上控制`schema.prisma`文件是不够的，必须包括你的迁移历史。这是因为：
+仅使用源码(版本)控制schema.prisma文件是不够的，必须包括你的迁移历史。这是因为：
 
-- 当你开始[自定义迁移](customizing-migrations)时，你的迁移历史包含了**不能在 Prisma schema 中表示的信息**。例如，你可以定制一个迁移，以减轻由破坏性变化引起的数据损失。
-- `prisma migrate deploy`命令用于将更改部署到暂存、测试和生产环境，\_只运行迁移文件。Prisma Migrate 只使用 schema 文件来读取`url'和`provider'字段，而不是模型和字段。
+- 当你使用[自定义迁移](customizing-migrations)时，自定义迁移中包含了**不能在 Prisma schema 中表示的信息**。例如，定制一个迁移，用于减少因为破坏性变化引起的数据损失问题。
+- `prisma migrate deploy`命令用于将更改部署到预发布环境、测试和生产环境，命令*只会*运行迁移文件(migration files)。Prisma Migrate 只使用 schema 文件来读取`url'和`provider'字段，而不是模型和字段。
