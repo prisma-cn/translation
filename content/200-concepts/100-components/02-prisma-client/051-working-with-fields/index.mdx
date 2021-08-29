@@ -1,19 +1,19 @@
 ---
-title: 'Working with fields'
-metaTitle: 'Working with fields (Concepts)'
-metaDescription: 'How to read, write, and filter by complex fields.'
+title: '使用字段'
+metaTitle: '使用字段 (概念)'
+metaDescription: '如何按复杂字段读取、写入和筛选。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-This section describes how to perform CRUD operations on more advanced field types.
+本节介绍如何对更高级的字段类型执行 CRUD 操作。
 
 </TopBlock>
 
-## Working with <inlinecode>Decimal</inlinecode>
+## 使用 <inlinecode>Decimal</inlinecode>
 
-`Decimal` fields are represented by the [`Decimal.js` library](https://mikemcl.github.io/decimal.js/). The following example demonstrates how to import and use `Prisma.Decimal`:
+`Decimal` 字段由 [`Decimal.js` library](https://mikemcl.github.io/decimal.js/) 表示。以下示例演示了如何导入和使用 `Prisma.Decimal`：
 
 ```ts
 import { PrismaClient, Prisma } from '@prisma/client'
@@ -25,9 +25,9 @@ const newTypes = await prisma.sample.create({
 })
 ```
 
-## Working with <inlinecode>BigInt</inlinecode>
+## 使用 <inlinecode>BigInt</inlinecode>
 
-`BigInt` fields are represented by the [`BigInt` type](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) (Node.js 10.4.0+ required). The following example demonstrates how to use the `BigInt` type:
+`BigInt` 字段由 [`BigInt` type](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) 类型表示（需要 Node.js 10.4.0+）。以下示例演示了如何使用该 `BigInt` 类型：
 
 ```ts
 import { PrismaClient, Prisma } from '@prisma/client'
@@ -39,15 +39,15 @@ const newTypes = await prisma.sample.create({
 })
 ```
 
-### Serializing BigInt
+### 序列化 BigInt
 
-Prisma returns records as plain JavaScript objects. If you attempt to use `JSON.stringify` on an object that includes a `BigInt` field, you will see the following error:
+Prisma 将记录作为纯 JavaScript 对象返回。如果你尝试把 `JSON.stringify` 在包含 `BigInt` 字段的对象上使用，你将看到以下错误：
 
 ```
-Do not know how to serialize a BigInt
+Do not know how to serialize a BigInt // 不知道如何将 BigInt 序列化
 ```
 
-To work around this issue, use a customized implementation of `JSON.stringify`:
+要解决此问题，请使用以下自定义实现 `JSON.stringify`：
 
 ```js
 JSON.stringify(
@@ -56,9 +56,9 @@ JSON.stringify(
 )
 ```
 
-## Working with <inlinecode>Bytes</inlinecode>
+## 使用 <inlinecode>Bytes</inlinecode>
 
-`Bytes` fields are represented by the [`Buffer`](https://nodejs.org/api/buffer.html) type. The following example demonstrates how to use the `Buffer` type:
+`Bytes` 字段由 [`Buffer`](https://nodejs.org/api/buffer.html) 类型表示。以下示例演示了如何使用该 `Buffer` 类型：
 
 ```ts
 import { PrismaClient, Prisma } from '@prisma/client'
@@ -70,10 +70,10 @@ const newTypes = await prisma.sample.create({
 })
 ```
 
-## Working with <inlinecode>Json</inlinecode>
+## 使用 <inlinecode>Json</inlinecode>
 
-See: [Working with `Json` fields](working-with-json-fields)
+See: [使用 `Json` 字段](working-with-json-fields)
 
-## Working with scalar lists / scalar arrays
+## 使用 scalar 列表 / scalar 数组
 
-See: [Working with scalar lists / arrays](working-with-scalar-lists-arrays)
+See: [使用 scalar 列表 / 数组](working-with-scalar-lists-arrays)
