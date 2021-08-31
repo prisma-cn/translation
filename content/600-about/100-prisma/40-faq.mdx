@@ -1,29 +1,30 @@
 ---
-title: 'FAQ'
-metaTitle: 'Prisma FAQs'
-metaDescription: 'Frequently asked questions (FAQ) about the Prisma tools and their ecosystem.'
+title: '常见问题解答'
+metaTitle: 'Prisma 常见问题解答'
+metaDescription: 'Prisma工具和生态的常见问题解答'
 tocDepth: 2
 ---
 
-## Can I still access my database directly (e.g. using raw SQL)?
+## 我还能直接访问我的数据库吗？ (例如使用原始 SQL)
 
-Yes, Prisma Client provides two methods called `$queryRaw` and `$executeRaw` which you can use to send raw SQL to the database. Learn more about these in the docs [here](../concepts/components/prisma-client/raw-database-access).
+当然， Prisma 客户端提供你能使用 `$queryRaw` 和 `$executeRaw`两种原始 SQL 方式直接访问数据库。 了解更多相关信息查看[这里](../concepts/components/prisma-client/raw-database-access)。
 
-## Is Prisma Client an ORM?
+## Prisma 客户端是不是 ORM?
 
-ORMs are typically object-oriented mapping layers that map classes to tables. A record is represented as an object that not only carries data but also implements various behaviors for storage, retrieval, serialization and deserialization of its own data, sometimes it also implements business/domain logic. Prisma Client acts more like a _query builder_ returning plain JavaScript objects with a focus on structural typing rather than rich object behavior.
+ORM 通常是将对象映射到表的映射层。记录被表示为一个对象，它不仅承载数据，而且实现自身数据的存储、检索、序列化和反序列化的各种行为，有时还实现业务/逻辑域。
+Prisma 客户端的行为更像是一个*query builder*返回纯 JavaScript 对象，关注的是结构类型而不是丰富的对象。
 
-Learn more on the [Is Prisma an ORM?](../../concepts/overview/prisma-in-your-stack/is-prisma-an-orm) page in the docs.
+了解文档中的更多信息 [Prisma 是否 ORM?](../../concepts/overview/prisma-in-your-stack/is-prisma-an-orm) 。
 
-## Will Prisma Client support more databases (and other data sources) in the future?
+## 未来，Prisma 客户端是否会支持更多数据库(和其他数据源）?
 
-Yes. Prisma Client is based on Prisma's [query engine](../concepts/components/prisma-engines/query-engine) that can connect to any data source that provides a proper _connector implementation_. There will be built-in connectors such as the current ones for [PostgreSQL](../concepts/database-connectors/postgresql), [MySQL](../concepts/database-connectors/mysql) and [SQLite](../concepts/database-connectors/sqlite).
+是的。 Prisma 客户端基于 Prisma 的[查询引擎](../concepts/components/prisma-engines/query-engine) ，可以提供*连接器实现*连接到任何数据源。将有内置连接器，如 [PostgreSQL](../concepts/database-connectors/postgresql), [MySQL](../concepts/database-connectors/mysql) 和 [SQLite](../concepts/database-connectors/sqlite)。
 
-However, it's also possible to build your own connectors, more documentation on that topic will follow soon.
+不经如此，也可以构建自己的连接器，有关该主题的更多文档将很快跟进。
 
-## How can I see the generated queries that Prisma Client sends to my database?
+## 如何查看 Prisma 客户端发送到数据库生成的查询?
 
-You can view generated SQL queries by providing the `log` option to the `PrismaClient` constructor like so:
+你能通过`日志`选项到`Prisma客户端`构造器查看 SQL 查询。
 
 ```ts
 const prisma = new PrismaClient({
@@ -31,48 +32,48 @@ const prisma = new PrismaClient({
 })
 ```
 
-Learn more on the [Debugging](../concepts/components/prisma-client/debugging) page in the docs.
+在文档中了解更多[调试](../concepts/components/prisma-client/debugging)内容 。
 
-## How do schema migrations work with Prisma Client?
+## Prisma 客户端怎么实现架构数据库迁移？
 
-Prisma Client is not opinionated on how exactly you migrate your database schema (e.g. create new tables, alter columns, ...). You can keep your existing migration system and re-[introspect](../concepts/components/introspection) your database schema after each schema migration. You can also use Prisma Migrate to run your migrations based on Prisma's declarative [data model definition](../concepts/components/prisma-schema/data-model).
+Prisma 客户端对如何准确的迁移数据库模式（例如，创建新表、更改列等）并不固执己见。你可以保留现有的系统迁移，并在每次模式迁移以后对数据库执行重复[自查](../concepts/components/introspection)。你还可以 Prisma Migrate 基于 Prisma 的声明性 [数据模型定义](../concepts/components/prisma-schema/data-model)。
 
-## Does Prisma Client support GraphQL schema delegation and GraphQL binding?
+## Prisma 客户端是否支持 GraphQL 架构委托和 GraphQL 绑定?
 
-GraphQL [schema delegation](https://www.prisma.io/blog/graphql-schema-stitching-explained-schema-delegation-4c6caf468405/) connects two GraphQL schemas by passing the [`info`](https://www.prisma.io/blog/graphql-server-basics-demystifying-the-info-argument-in-graphql-resolvers-6f26249f613a/) object from a resolver of the first GraphQL schema to a resolver of the second GraphQL schema. Schema delegation also is the foundation for [GraphQL binding](https://github.com/graphql-binding/graphql-binding).
+GraphQL [架构委托](https://www.prisma.io/blog/graphql-schema-stitching-explained-schema-delegation-4c6caf468405/)通过将[`信息`](https://www.prisma.io/blog/graphql-server-basics-demystifying-the-info-argument-in-graphql-resolvers-6f26249f613a/) 对象从第一个 GraphQL schema 的解析器传递到第二个 GraphQL schema 的解析器来连接两个 GraphQL 模式。委托模式也是[GraphQL 绑定](https://github.com/graphql-binding/graphql-binding)的基础。
 
-Prisma 1 officially supports both schema delegation and GraphQL binding as it exposes a GraphQL CRUD API through the [Prisma server](https://www.prisma.io/docs/prisma-server/). This API can be used to as the foundation for an application-layer GraphQL API created with GraphQL binding.
+PRISMA 1 正式支持模式委托和 GraphQL 绑定，因为它通过[PRISMA server](https://www.prisma.io/docs/prisma-server/).]公开了 GraphQL CRUD API。此 API 可用作使用 GraphQL 绑定创建的应用层 GraphQL API 的基础。
 
-With Prisma 2.0, Prisma's [query engine](../concepts/components/prisma-engines/query-engine) doesn't expose a [spec](https://graphql.github.io/graphql-spec/June2018/)-compliant GraphQL endpoint any more, so usage of schema delegation and GraphQL binding with Prisma 2.0 is not supported. To build GraphQL servers with Prisma 2.0, be sure to check out [GraphQL Nexus](https://nexusjs.org/). GraphQL Nexus provides a code-first and type-safe way to build GraphQL servers in a scalable way.
+在 PRISMA2.0 中，PRISMA 的[Query engine](../concepts/components/prisma-engines/query-engine)]不再公开[spec](https://graphql.github.io/graphql-spec/June2018/)-compliant GraphQL 端点，因此不支持在 PRISMA2.0 中使用模式委托和 GraphQL 绑定。要使用 Prisma2.0 构建 GraphQL 服务器，请务必查看[GraphQL Nexus](https://nexusjs.org/)。GraphQL Nexus 提供了一种代码优先且类型安全的方式来以可扩展的方式构建 GraphQL 服务器。
 
-Learn more about how Prisma can be used to build GraphQL servers on the [GraphQL](../../concepts/overview/prisma-in-your-stack/graphql) page in the docs.
+了解有关如何使用 Prisma 构建 GraphQL 服务的更多信息，请查看[GraphQL](../../concepts/overview/prisma-in-your-stack/graphql)文档.
 
-## Am I locked-in when using Prisma Migrate? Is it easy to migrate off it?
+## 使用 Prisma Migrate 时我是否被锁定？ 是否容易迁移掉它?
 
-There's no lock-in when using Prisma Migrate. To stop using Prisma for your migrations, you need to:
+使用 Prisma Migrate 时没有锁定。要停止使用 Prisma 进行迁移，你需要：
 
-- delete your [Prisma schema file](../concepts/components/prisma-schema)
-- delete the `migrations` directory on your file system
-- drop the `_prisma_migrations` table in your database/schema
+- 删除 [Prisma schema 文件](../concepts/components/prisma-schema)
+- 删除 `migrations` 目录
+- 删除数据库/架构中的 `_prisma_migrations` 表
 
-## How do I see details about how Prisma migrates my database schema?
+## 如何查看有关 Prisma 如何迁移我的数据库架构的详细信息？
 
-Each migration is represented via its own directory on your file system inside a directory called `migrations`. The name of each directory contains a timestamp so that the order of all migrations in the project history can be maintained.
+每次迁移都是通过你的文件系统上名为`Migrations`的目录中的自己的目录来表示的。每个目录的名称都包含一个时间戳，以便保持项目历史记录中所有迁移的顺序。
 
-Each of these migration directories contain a `migration.sql` file about the respective migration. The status of the migrations is tracked in the `_prisma_migrations` table in your database/schema. See [migrate status](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-status).
+每个迁移目录都包含一个关于各自迁移的`Migration.sql`文件。迁移状态在您的数据库/模式的`_PRISMA_Migrations`表中进行跟踪。请参阅[迁移状态] [migrate status](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-status)。
 
-## Since Prisma 2.0 is released, will Prisma 1 still be maintained?
+## 自从 Prisma 2.0 发布后，Prisma 1 还会被维护吗？
 
-Yes, Prisma 1 will continue to be maintained. However, most Prisma engineering and support resources will go into the development of [Prisma 2.0](https://github.com/prisma/prisma).
+是的，Prisma 1 将继续维护。然而，大多数 PRISMA 工程师和支持资源将用于[PRISMA 2.0](https://github.com/prisma/prisma)的开发。
 
-There will be no new features developed for Prisma 1.
+不会为 Prisma 1 开发新的功能。
 
-Note that there will be dedicated tooling and detailed migration guides to help you with the setup.
+请注意，将提供专用工具和详细的迁移指南来帮助您进行设置。
 
-## Where can I get more information about the plans for Prisma?
+## 我在哪里可以得到更多关于 Prisma 计划的信息？
 
-Check out the [Prisma road map for an overview of our priorities](roadmap). Get involved by [creating issues](https://github.com/prisma/prisma/issues) and [sharing feedback](https://github.com/prisma/prisma)!
+查看 [概述优先事项的 Prisma 路线图](roadmap). 参与 [创建 issues](https://github.com/prisma/prisma/issues) 和 [分享反馈](https://github.com/prisma/prisma)!
 
-## How much does Prisma cost? What is the pricing model for Prisma?
+## Prisma 要多少钱？Prisma 的定价模式是什么？
 
-Prisma is open source and using it is free of any charge! In the future, Prisma will offer additional cloud services to facilitate various database- and Prisma-related workflows. Note that these will be optional, Prisma can continue to be used without consuming any commercial services.
+Prisma 是开源的，使用它是免费的！未来，Prisma 将提供额外的云服务，以促进各种与数据库和 Prisma 相关的工作流程。请注意，这些将是可选的，Prisma 可以继续使用，而无需使用任何商业服务。

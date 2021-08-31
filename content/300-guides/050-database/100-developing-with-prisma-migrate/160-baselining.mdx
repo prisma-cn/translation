@@ -1,33 +1,33 @@
 ---
-title: Baselining a database
-metaDescription: How to initialize a migration history for an existing database that contains important data.
+title: Baselining 数据库
+metaDescription: 如何为一个包含重要数据的现有数据库初始化迁移历史。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-Baselining is the process of initializing a migration history for a database that:
+Baselining 是对数据库进行迁移历史初始化的过程:
 
-- ✔ Existed before you started using Prisma Migrate
-- ✔ Contains data that must be maintained (like production), which means that the database cannot be reset
+- ✔ 在开始使用 Prisma Migrate 之前就已经存在
+- ✔ 包含必须维护的数据（如生产环境），这意味着数据库不能被重置
 
-Baselining tells Prisma Migrate to assume that one or more migrations have **already been applied**. This prevents generated migrations from failing when they try to create tables and fields that already exist.
+Baselining 通知 Prisma Migrate 一个或多个迁移**已经被执行**. 避免了迁移执行时试图重复创建已经存在的表和字段时的报错。
 
-> **Note**: We assume it is acceptable to reset and seed development databases.
+> **注意**: 假定重置和 seed 开发环境的数据库是被允许的。
 
-Baselining is part of [adding Prisma Migrate to a project with an existing database](add-prisma-migrate-to-a-project).
+Baselining 是项目中 [对现有数据库添加 Prisma Migrate ](add-prisma-migrate-to-a-project) 的一部分。
 
 </TopBlock>
 
-## Why you need to baseline
+## 为什么需要 baseline
 
-When you add Prisma Migrate to an existing project, your initial migration contains all the SQL required to recreate the state of the database **before you started using Prisma Migrate**:
+当给项目添加 Prisma Migrate, **在开始使用 Prisma Migrate 之前**，初始迁移包含了重新创建数据库状态所需的所有 SQL:
 
 ![The image shows a database labelled 'Existing database', and a list of existing database features next to it - 24 tables, 13 relationships, 92 fields, 3 indexes. An arrow labelled 'represented by' connects the database features list to a box that represents a migration. The existing databases's features are represented by a single migration.](existing-database.png)
 
@@ -35,37 +35,37 @@ When you add Prisma Migrate to an existing project, your initial migration conta
 
 <Tip>
 
-You can edit the initial migration to include schema elements that cannot be represented in the Prisma schema - such as stored procedures or triggers.
+你可以编辑初始迁移，来兼容 Prisma schema 不能支持的 schema elements--如存储过程或触发器。
 
 </Tip>
 
 </Admonition>
 
-You need this initial migration to create and reset **development environments**:
+你需要初始迁移来创建和重置**开发环境**:
 
 ![The image shows a migration history with three migrations. Each migration is represented by a file icon and a name, and all migrations are surrounded by a box labelled 'migration history'. The first migration has an additional label: "State of database before Prisma Migrate", and the two remaining migrations are labelled "Generated as part of the Prisma Migrate workflow". An arrow labelled "prisma migrate dev" connects the migration history box to a database labelled "new development database", signifiying that all three migrations are applied to the development database - none are skipped.](new-dev-db.png)
 
-However, when you `prisma migrate deploy` your migrations to databases that already exist and _cannot_ be reset - such as production - you **do not want to include the initial migrations**.
+然而，当应用`prisma migrate deploy`至已有且*不能*被重置的数据库的时候 - 例如生产环境数据库 - 你**不希望包含初始迁移**.
 
-The target database already contains the tables and columns created by the initial migration, and attempting to create these elements again will most likely result in an error.
+目标数据库已经包含了初始迁移所创建的表和列，如果试图再次创建这些元素，很可能会导致错误。
 
 ![A migration history represented by three migration files (file icon and name), surrounded by a a box labelled 'migration history'. The first migration is marked 'do not apply', and the second two migrations are marked 'apply'. An arrow labelled with the command 'prisma migrate deploy' points from the migration history to a database labelled 'production'.](deploy-db.png)
 
-Baselining solves this problem by telling Prisma Migrate to pretend that the initial migration(s) **have already been applied**.
+Baselining 解决了这个问题， 它告诉 Prisma Migrate 假定这些迁移 **已经被执行**.
 
-## Baselining a database
+## Baselining 数据库
 
-To baseline a database:
+如何 baseline 数据库:
 
-1. Ensure that you have [updated your development environment and generated initial migrations](add-prisma-migrate-to-a-project#update-the-development-environment). Note the names of the migrations that should be skipped - for example: `20210426141759_initial-migration-for-db`
+1. 确保[开发环境已经更新和产生了初始迁移](add-prisma-migrate-to-a-project#update-the-development-environment). 注意那些应该被跳过的迁移的名称 - 例如： `20210426141759_initial-migration-for-db`
 
-1. Run the `prisma migrate resolve` command for each migration that should be ignored:
+1. 对每一个应该被忽略的迁移，运行`prisma migrate resolve`命令：
 
    ```terminal
    npx prisma migrate resolve --applied 20210426141759_initial-migration-for-db
    ```
 
-This command adds the target migration to the `_prisma_migrations` table and marks it as applied. When you run `prisma migrate deploy` to apply new migrations, Prisma Migrate:
+该命令将目标迁移添加到`_prisma_migrations`表中，并将其标记为已应用。当你运行`prisma migrate deploy`来应用新的迁移时，Prisma Migrate 会：
 
-1. Skips all migrations marked as 'applied', including the baseline migration
-1. Applies any new migrations that come _after_ the baseline migration
+1. 跳过所有标记为 "应用 "的迁移，包括 baseline 迁移。
+1. 应用所有 baseline 迁移 _后面_ 的新迁移。
