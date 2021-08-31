@@ -1,19 +1,19 @@
 ---
-title: 'Advanced type safety'
-metaTitle: 'Advanced type safety (Reference)'
-metaDescription: 'Prisma Client provides full type safety for queries, even for partial queries or included relations. This page explains how to leverage the generated types and utilities.'
+title: '高级安全型'
+metaTitle: '高级安全型 (参考)'
+metaDescription: 'Prisma Client 为查询提供全类型安全，即使是部分查询或包含的关系。本页说明如何利用生成的类型和实用程序。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-The generated code for Prisma Client contains several helpful types and utilities that you can use to make your application more type-safe. This page describes patterns for leveraging them.
+Prisma Client 生成的代码包含几个有用的类型和实用程序，你可以使用这些类型和实用程序使你的应用程序更加安全。此页面描述了利用它们的模式。
 
 </TopBlock>
 
-## Importing generated types
+## 导入生成类型
 
-You can import the `Prisma` namespace and use dot notation to access types and utilities. The following example shows how to import the `Prisma` namespace and use it to access and use the `Prisma.UserSelect` [generated type](#what-are-generated-types):
+你可以导入 `Prisma` 命名空间，并使用点符号访问类型和实用程序。下列示例显示了如何导入 `Prisma` 命名空间并将其用于访问和使用  `Prisma.UserSelect` [generated type](#what-are-generated-types) 生成的类型：
 
 ```ts
 import { Prisma } from '@prisma/client'
@@ -32,15 +32,15 @@ const createUser = await prisma.user.create({
 })
 ```
 
-See also: [Using the `Prisma.UserCreateInput` generated type](../crud#create-a-single-record-using-generated-types)
+另请参阅: [使用 `Prisma.UserCreateInput` 生成类型](../crud#create-a-single-record-using-generated-types)
 
-## What are generated types?
+## 生成的类型是什么?
 
-Generated types are TypeScript types that are derived from your models. You can use them to created typed objects that you pass into top-level methods like `prisma.user.create(...)` or `prisma.user.update(...)`, or options such as `select` or `include`.
+生成的类型是源自模型的类型脚本类型。你可以使用它们创建键入对象，你传递到顶级方法，如 `prisma.user.create(...)` 或  `prisma.user.update(...)`，或选项，如 `select` 或 `include`。
 
-For example, `select` accepts an object of type `UserSelect`. Its object properties match those that are supported by `select` statements according to the model.
+例如， `select` 接受 `UserSelect` 类型的对象。根据模型，其对象属性与 `select` 语句支持的对象属性相匹配。
 
-The first tab below shows the `UserSelect` generated type and how each property on the object has a type annotation. The second tab shows the resulting schema model.
+下面的第一个选项卡显示了 `UserSelect` 生成的类型以及对象上的每个属性如何具有类型注释。第二个选项卡显示生成的 schema 模型。
 
 <TabbedContent tabs={[<FileWithIcon text="Generated type" icon="code"/>, <FileWithIcon text="Model" icon="prisma"/>]}>
 
@@ -74,16 +74,16 @@ model User {
 
 </TabbedContent>
 
-In TypeScript the concept of [type annotations](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-annotations-on-variables) is when you declare a variable and add a type annotation to describe the type of the variable. See the below example.
+在类型脚本中，当你声明一个变量并添加类型注释来描述变量的类型时 [类型注释](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-annotations-on-variables) 的概念。请参阅下示例。
 
 ```ts
 const myAge: number = 37
 const myName: string = 'Rich'
 ```
 
-Both of these variable declarations have been given a type annotation to specify what primitive type they are, `number` and `string` respectively. Most of the time this kind of annotation is not needed as TypeScript will infer the type of the variable based on how its initialized. In the above example `myAge` was initialized with a number so TypeScript guesses that it should be typed as a number.
+这两个变量声明都有一个类型注释，分别指定它们是什么原始类型，`number` 和 `string`。大多数情况下不需要这种注释，因为 TypeScript 将根据变量的初始化方式推断变量的类型。在上面的示例中， `myAge`  是用一个数字初始化的，因此 TypeScript 猜测它应该是一个数字。
 
-Going back to the `UserSelect` type, if you were to use dot notation on the created object `userEmail`, you would have access to all of the fields on the `User` model that can be interacted with using a `select` statement.
+回到 `UserSelect` 类型，如果要在创建的对象 `userEmail` 上使用 `.` 表示法，则可以访问 `User` 模型上的所有字段，这些字段可以使用 `select` 语句进行交互。
 
 ```prisma
 model User {
@@ -110,7 +110,7 @@ userEmail.posts
 userEmail.profile
 ```
 
-In the same mould, you can type an object with an `include` generated type then your object would have access to those properties on which you can use an `include` statement.
+在同一模块中，这样在你使用 `include` 语句之后 的对象就可以访问到那些属性  。
 
 ```ts
 import { Prisma } from '@prisma/client'
@@ -119,9 +119,9 @@ const userPosts: Prisma.UserInclude = {
   posts: true,
 }
 
-// properties available on the typed object
+// 类型化对象上可用的属性
 userPosts.posts
 userPosts.profile
 ```
 
-> See the [model query options](../../../../reference/api-reference/prisma-client-reference#model-query-options) reference for more information about the different types available.
+> 有关可用不同类型的更多信息，请参阅 [模型查询选项](../../../../reference/api-reference/prisma-client-reference#model-query-options) 。

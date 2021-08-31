@@ -1,35 +1,35 @@
 ---
-title: Team development with Prisma Migrate
-metaDescription: How to use Prisma Migrate when collaborating on a project as a team.
+title: 用Prisma Migrate进行团队协作开发
+metaDescription: 多人开发一个项目，如何使用Prisma Migrate。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-To incorporate changes from collaborators:
+如何合并成员的变更：
 
-1. Pull the changed Prisma schema and `./prisma/migrations` folder
-1. Run the `migrate dev` command to apply new migrations:
+1. 拉取变更：包含 Prisma schema 和 `./prisma/migrations` 文件夹
+1. 运行 `migrate dev` 命令执行新迁移:
 
    ```terminal
    npx prisma migrate dev
    ```
 
-Migrations are **applied in the same order as they were created**. The creation date is part of the migration subfolder name - for example, `20210316081837-updated-fields` was created on `2021-03-16-08:08:37`.
+迁移的**执行顺序与创建顺序相同**。创建日期是迁移子文件夹名称的一部分 - 例如，`20210316081837-updated-fields`是在`2021-03-16-08:08:37`创建的。
 
 </TopBlock>
 
-## Example: Incorporating your team's changes
+## Example: Incorporating your team's changes 例子： 合并团队的变更
 
-The following sample scenario demonstrates how a team of three developers share and incorporate changes to the Prisma schema and the migration history.
+下面的示例场景展示了三名开发人员如何共享和合并对 Prisma schema 和迁移历史(the migration history)的更改。
 
-The following tabs show the team's Prisma schema before and after a round of changes:
+下面的标签显示了团队在一轮修改前后的 Prisma schema：
 
 <TabbedContent tabs={[<FileWithIcon text="schema.prisma before" icon="prisma"/>, <FileWithIcon text="schema.prisma after" icon="prisma"/>]}>
 
@@ -86,13 +86,13 @@ model Tag {
 </tab>
 </TabbedContent>
 
-### The team's changes
+### 团队做的更改
 
-Your team members Ania and Javier make additive changes to the schema in their local environment and generate migrations.
+你的团队成员 Ania 和 Javier 在他们的本地环境中对 schema 进行了补充性的修改，并产生了迁移。
 
-**Ania** makes the following changes:
+**Ania** 做了以下修改:
 
-1. Adds a model field:
+1. 在 model 里添加一个字段：
 
    ```prisma highlight=3;add
    model User {
@@ -101,20 +101,20 @@ Your team members Ania and Javier make additive changes to the schema in their l
    }
    ```
 
-1. Generates a migration:
+1. 产生一个迁移：
 
    ```terminal
    npx prisma migrate dev --name new-field
    ```
 
-1. Commits the changed schema and the new migration:
+1.提交变更后的 schema 和迁移文件：
 
-   - `./prisma/schema.prisma`
-   - `./prisma/migrations/20210316081837-new-field/migration.sql`
+- `./prisma/schema.prisma`
+- `./prisma/migrations/20210316081837-new-field/migration.sql`
 
-**Javier** makes the following changes:
+**Javier** 做了以下修改：
 
-1. Adds a new model to the schema:
+1. 添加一个新的 model ：
 
    ```prisma highlight=1-4;add
    model Tag {
@@ -123,33 +123,33 @@ Your team members Ania and Javier make additive changes to the schema in their l
    }
    ```
 
-1. Generates a migration:
+1. 产生一个迁移：
 
    ```terminal
    npx prisma migrate dev --name new-model
    ```
 
-1. Commits the changed schema and the new migration:
+1. 提交变更后的 schema 和迁移文件：
 
    - `./prisma/schema.prisma`
    - `./prisma/migrations/20210316091837-new-model/migration.sql`
 
-The migration history now has **two** new migrations:
+迁移历史中现在有**两个**新的迁移：
 
 ![A diagram showing changes by two separate developers converging in a single migration history.](migrate-team-dev.png)
 
-### Integrating changes
+### 整合变更
 
-**You** want to incorporate your team's changes. To do that, you:
+**你**想把成员的变更合并。如何做呢：
 
-1. Pull the most recent changes from your team, including:
+1. 拉取团队中所有最新的变更，包括：
 
-   - Two new migrations:
+   - 两个新的迁移文件：
 
      - `./prisma/migrations/20210316081837-new-field/migration.sql`
      - `./prisma/migrations/20210316091837-new-model/migration.sql`
 
-   - An updated schema file. Git automatically merges the updated schema with _your_ local schema changes (a new `bestPacmanScore` field):
+   - 一个更新的 schema 文件。Git 会自动合并新的 schema 与你本地的 schema（一个新的`bestPacmanScore'字段）：
 
      ```prisma highlight=3,7-11;add
      model User {
@@ -165,35 +165,35 @@ The migration history now has **two** new migrations:
      }
      ```
 
-1. Run the `migrate dev` command:
+1. 运行`migrate dev`命令：
 
-   ```terminal
-   npx prisma migrate dev
-   ```
+```terminal
+npx prisma migrate dev
+```
 
-   1. Applies Ania and Javier's migrations to your local database.
+1.  将 Ania 和 Javier 的迁移应用到你的本地数据库
 
-      - `./prisma/migrations/20210316081837-new-field/migration.sql`
-      - `./prisma/migrations/20210316091837-new-model/migration.sql`
+    - `./prisma/migrations/20210316081837-new-field/migration.sql`
+    - `./prisma/migrations/20210316091837-new-model/migration.sql`
 
-   1. Creates a new migration with your changes, prompts you to name it (`pacman-field`), and applies the new migration to your local database:
+1.  用你的改动创建一个新的迁移，提示你给它命名（例如命名为`pacman-field`），并将新的迁移应用到你的本地数据库：
 
-      - `./prisma/migrations/20210322081837-pacman-field/migration.sql`
+    - `./prisma/migrations/20210322081837-pacman-field/migration.sql`
 
-1. Commit the merged `schema.prisma` and your new migration: `./prisma/migrations/20210322081837-pacman-field/migration.sql`
+1.  提交合并后的`schema.prisma`和你的新迁移：`./prisma/migrations/20210322081837-pacman-field/migration.sql`
 
-Your `schema.prisma` and local database now include your team's changes, and the migration history includes your migration:
+你的 "schema.prisma "和本地数据库现在包括你的团队的变化，其中迁移历史包括你的迁移：
 
 ![A migration history with 5 migrations.](migration-history.png)
 
-## Source control
+## 源码控制
 
-You should commit the following files to source control:
+你应该提交以下文件：
 
-- The contents of the `.prisma/migrations` folder, including the `migration_lock.toml` file
-- The Prisma schema file (`schema.prisma`)
+- `.prisma/migrations`文件夹中的内容，包括`migration_lock.toml`文件
+- Prisma schema 文件 (`schema.prisma`)
 
-Source-controlling the `schema.prisma` file is not enough - you must include your migration history. This is because:
+仅使用源码(版本)控制schema.prisma文件是不够的，必须包括你的迁移历史。这是因为：
 
-- As you start to [customize migrations](customizing-migrations), your migration history contains **information that cannot be represented in the Prisma schema**. For example, you can customize a migration to mitigate data loss that would be caused by a breaking change.
-- The `prisma migrate deploy` command, which is used to deploy changes to staging, testing, and production environments, _only_ runs migration files. Prisma Migrate only uses the schema file to read the `url` and `provider` fields, not models and fields.
+- 当你使用[自定义迁移](customizing-migrations)时，自定义迁移中包含了**不能在 Prisma schema 中表示的信息**。例如，定制一个迁移，用于减少因为破坏性变化引起的数据损失问题。
+- `prisma migrate deploy`命令用于将更改部署到预发布环境、测试和生产环境，命令*只会*运行迁移文件(migration files)。Prisma Migrate 只使用 schema 文件来读取`url'和`provider'字段，而不是模型和字段。

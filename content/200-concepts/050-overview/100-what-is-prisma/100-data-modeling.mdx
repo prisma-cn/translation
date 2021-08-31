@@ -1,41 +1,41 @@
 ---
-title: 'Data modeling'
-metaTitle: 'Data modeling with Prisma'
-metaDescription: 'Learn how data modeling with Prisma differs from data modeling with SQL or ORMs. Prisma uses a declarative data modeling language to describe a database schema.'
+title: '数据建模'
+metaTitle: '使用 Prisma 建立数据模型'
+metaDescription: '了解用 Prisma 进行数据建模与用 SQL 或其他 ORM 进行数据建模有何不同。 Prisma 使用一种声明式的数据建模语言来描述数据库模式。'
 ---
 
-## What is data modeling?
+## 数据建模（data modeling）是什么?
 
-The term _data modeling_ refers to the **process of defining the shape and structure of the objects in an application**, these objects are often called "application models". In relational databases (like PostgreSQL), they are stored in _tables_ . When using document databases (like MongoDB), they are stored in _collections_.
+术语 _数据建模（data modeling）_ 是指 **定义应用程序中对象的形状和结构的过程**，这些对象通常被称为 "应用模型（application models）"。在关系型数据库中（例如 PostgreSQL），它们被存储在 _表（tables）_ 中。当使用文档数据库（如 MongoDB）时，它们被存储在 _集合（collections）_ 中。
 
-Depending on the domain of your application, the models will be different. For example, if you're writing a blogging application, you might have models such as _blog_, _author_, _article_. When writing a carsharing app, you probably have models like _driver_, _car_, _route_. Application models enable you to represent these different entities in your code by creating respective _data structures_.
+根据你的应用程序所在的领域，这些模型会有所不同。例如，如果你在编写一个博客应用程序，你可能会有 _blog_，_author_，_article_ 这样的模型。当写一个共享汽车应用时，你可能会有像 _driver_、_car_、_route_ 这样的模型。应用模型使你能够通过在代码中，创建不同的 _数据结构（data structure）_ ，来表示这些不同的实体。
 
-When modeling data, you typically ask questions like:
+在建立数据模型时，你通常会问下面这些问题：
 
-- What are the main entities/concepts in my application?
-- How do they relate to each other?
-- What are their main characteristics/properties?
-- How can they be represented with my technology stack?
+- 我的应用程序中，主要实体（entities）/概念（concepts） 是什么？
+- 它们之间是如何相互关联的？
+- 它们的主要 特征（characteristics）/属性（properties） 是什么？
+- 如何用我的技术栈来表示它们？
 
-## Data modeling without Prisma
+## 使用 Prisma 建立数据模型
 
-Data modeling typically needs to happen on (at least) two levels:
+数据建模通常需要针对（至少）两个层面：
 
-- On the **database** level
-- On the **application** level (i.e., in your programming language)
+- **数据库（database）** 层面
+- **应用程序（application）** 层面（在你的编程语言中）
 
-The way how the application models are represented on both levels might differ due to a few reasons:
+基于某些原因，应用模型在两个层面上的表现方式可能有所不同：
 
-- Databases and programming languages use different data types
-- Relations are represented differently in a database than in a programming language
-- Databases typically have more powerful data modeling capabilities, like indexes, cascading deletes, or a variety of additional constraints (e.g. unique, not null, ...)
-- Databases and programming languages have different technical constraints
+- 数据库和编程语言使用不同的数据类型
+- 关联关系在数据库和编程语言中的表现方式不同
+- 数据库通常具有更强大的数据建模能力，例如索引、级联删除以及各种额外的约束（如唯一、非空等等）
+- 数据库和编程语言具有不同的技术限制
 
-### Data modeling on the database level
+### 数据库层面的数据建模
 
-#### Relational databases
+#### 关系型数据库
 
-In relational databases, models are represented by _tables_. For example, you might define a `users` table to store information about the users of your application. Using PostgreSQL, you'd define it as follows:
+在关系型数据库中，模型（models）由 _表（tables）_ 来表示。例如，你可以定义一张 `users` 表来存储你的应用程序中用户相关的信息。如果使用 PostgreSQL，你可以像下面这样定义它：
 
 ```sql
 CREATE TABLE users (
@@ -46,7 +46,7 @@ CREATE TABLE users (
 );
 ```
 
-A visual representation of the `users` table with some random data might look as follows:
+有一些随机数据的 `users` 表可视化表示如下：
 
 | `user_id` | `name`  | `email`           | `isAdmin` |
 | :-------- | :------ | :---------------- | :-------- |
@@ -54,16 +54,16 @@ A visual representation of the `users` table with some random data might look as
 | `2`       | `Bob`   | `bob@prisma.io`   | `false`   |
 | `3`       | `Sarah` | `sarah@prisma.io` | `true`    |
 
-It has the following columns:
+它有以下几列：
 
-- `user_id`: An integer that increments with every new record in the `users` table. It also represents the [primary key](https://en.wikipedia.org/wiki/Primary_key) for each record.
-- `name`: A string with at most 255 characters.
-- `email`: A string with at most 255 characters. Additionally, the added constraints express that no two records can have duplicate values for the `email` column, and that _every_ record needs to have a value for it.
-- `isAdmin`: A boolean that indicates whether the user has admin rights (default value: `false`)
+- `user_id`：一个整数，随着 `users` 表中记录的增加而自增。它同时也代表着每条记录的 [主键](https://en.wikipedia.org/wiki/Primary_key)。
+- `name`：一个最多有 255 个字符的字符串
+- `email`：一个最多有 255 个字符的字符串。此外，额外的约束条件表明，没有两条记录的 `email` 值是重复的，同时 _每条_ 记录都需要有一个值。
+- `isAdmin`：一个布尔值，表示用户是否有管理员权限（默认值为：`false`）
 
 #### MongoDB
 
-In MongoDB databases, models are represented by _collections_ and contain _documents_ that can have any structure:
+在 MongoDB 数据库中，模型通过 _集合（collections）_ 来表示，并包含可以是任何结构的 _文档（documents）_。
 
 ```js
 {
@@ -74,16 +74,16 @@ In MongoDB databases, models are represented by _collections_ and contain _docum
 }
 ```
 
-Prisma Client currently expects a consistent model and [normalized model design](https://docs.mongodb.com/manual/core/data-model-design/#normalized-data-models). This means that:
+Prisma Client 目前期望一个一致的模型和 [normalized 模型设计](https://docs.mongodb.com/manual/core/data-model-design/#normalized-data-models)。这意味着：
 
-- If a model or field is not present in the Prisma schema, it is ignored
-- If a field is mandatory but not present in the MongoDB dataset, you will get an error
+- 如果一个模型（model）或字段（filed）不存在于 Prisma schema 中，它将被忽略
+- 如果一个字段是强制性的，但是在 MongoDB 数据集中不存在，你会得到一个错误
 
-### Data modeling on the application level
+### 应用程序层面的数据建模
 
-In addition to creating the tables that represent the entities from your application domain, you also need to create application models in your programming language. In object-oriented languages, this is often done by creating _classes_ to represent your models. Depending on the programming language, this might also be done with _interfaces_ or _structs_.
+除了创建代表你应用程序中实体的数据表之外，你还需要在你的编程语言中创建应用模型。在面向对象的语言中，通常是通过创建 _类（classes）_ 来表示你的模型。根据不同的编程语言，也可以通过 _接口（interfaces）_ 或者 _结构体（structs）_。
 
-There often is a strong correlation between the tables in your database and the models you define in your code. For example, to represent records from the aforementioned `users` table in your application, you might define a JavaScript (ES6) class looking similar to this:
+通常情况下，在你的数据库中的数据表和代码中定义的模型之间，具有很强的关联性。例如，为了表示上面提到的 `users` 表中的数据，你可能会定义一个类似下面这样的 `JavaScript(ES6)` 类：
 
 ```js
 class User {
@@ -96,7 +96,7 @@ class User {
 }
 ```
 
-When using TypeScript, you might define an interface instead:
+当使用 TypeScript 时，你可能会定义一个接口（interface）来替代：
 
 ```js
 interface User {
@@ -107,9 +107,9 @@ interface User {
 }
 ```
 
-Notice how the `User` model in both cases has the same properties as the `users` table in the previous example. While it's often the case that there's a 1:1 mapping between database tables and application models, it can also happen that models are represented completely differently in the database and your application.
+注意在这两种情况下，`User` 模型具有的属性都与前面例子中的 `users` 表相同。虽然数据库表和应用程序模型之间通常可以 1：1 进行映射，但也可能发生模型在数据库和应用程序中表现完全不同的情况。
 
-With this setup, you can retrieve records from the `users` table and store them instances of your `User` type. The following example code snippet uses [`pg`](https://node-postgres.com/) as the driver for PostgreSQL and creates a `User` instance based on the above defined JavaScript class:
+通过这样的设置，你可以从 `users` 表中获取数据，并将它们存储为 `User` 类型的实例。下面的代码片段使用 [`pg`](https://node-postgres.com/) 作为 PostgreSQL 的驱动，并基于上面定义的 Javascript 类创建一个 `User` 实例。
 
 ```js
 const resultRows = await client.query('SELECT * FROM users WHERE user_id = 1')
@@ -128,17 +128,17 @@ const user = new User(
 // }
 ```
 
-Notice that in these examples, the application models are "dumb", meaning they don't implement any logic but their sole purpose is to carry data as _plain old JavaScript objects_.
+注意在这些例子中，应用程序模型是 "dumb" 的，这意味着它们没有实现任何逻辑，唯一的目的就是作为 _普通 JavaScript 对象（plain old JavaScript objects）_ 来承载数据。
 
-### Data modeling with ORMs
+### 使用 ORM 建立数据模型
 
-ORMs are commonly used in object-oriented languages to make it easier for developers to work with a database. The key characteristic of an ORM is that it lets you model your application data in terms of _classes_ which are mapped to _tables_ in the underlying database.
+ORM 通常用在面向对象语言中，使开发者能够更为简单的操作数据库。ORM 的关键特征是，它让你用 _类（classes）_ 的方式对应用程序数据进行建模，然后将这些类映射到底层数据库中的 _表（tables）_。
 
-The main difference compared to the approaches explained above is these classes not only carry data but also implement a substantial amount of logic. Mostly for storage, retrieval, serialization, and deserialization, but sometimes they also implement business logic that's specific to your application.
+与之前所述的方法相比，不同之处在于这些类不仅仅携带数据，还实现了大量的逻辑。主要是用于存储、检索、序列化和反序列化等，有时也会实现你应用程序中的业务逻辑。
 
-This means, you don't write SQL statements to read and write data in the database, but instead the instances of your model classes provide an API to store and retrieve data.
+这意味着，你不需要编写 SQL 语句来对数据库中的数据进行读写，而且由你的数据模型类的实例，提供一个 API 来存储和检索数据。
 
-[Sequelize](https://sequelize.org/) is a popular ORM in the Node.js ecosystem, this is how you'd define the same `User` model from the sections before using Sequelize's modeling approach:
+[Sequelize](https://sequelize.org/) 是 Node.js 生态中流行的一个 ORM 库，下面是如何使用 Sequelize 的建模方法来定义一个与上文中相同的 `User` 模型。
 
 ```js
 class User extends Model {}
@@ -160,31 +160,31 @@ User.init(
 )
 ```
 
-To get an example with this `User` class to work, you still need to create the corresponding table in the database. With Sequelize, you have two ways of doing this:
+为了让这个带有 `User` 类的例子起作用，你还需要在数据库中建立相应的表。使用 Sequelize，你有两种方式来做到这一点：
 
-- Run `User.sync()` (typically not recommended for production)
-- Use [Sequelize migrations](https://sequelize.org/v5/manual/migrations.html) to change your database schema
+- 运行 `User.sync()` （通常不建议用在生产环境）
+- 使用 [Sequelize 迁移工具] (https://sequelize.org/v5/manual/migrations.html) 来修改数据库 schema。
 
-Note that you'll never instantiate the `User` class manually (using `new User(...)`) as was shown in the previous section, but rather call _static_ methods on the `User` class which then return the `User` model instances:
+请注意，你永远不会像上面那样手动实例化 `User` 类（使用 `new User(...)`），而是在 `User` 类上调用 _静态（static）_ 方法，然后返回 `User` 模式实例：
 
 ```js
 const user = await User.findByPk(42)
 ```
 
-The call to `findByPk` creates a SQL statement to retrieve the `User` record that's identified by the ID value `42`.
+调用 `findByPk` 函数创建了一条 SQL 语句来检索 ID 为 `42` 的 `User` 记录。
 
-The resulting `user` object is an instance of Sequelize's `Model` class (because `User` inherits from `Model`). It's not a POJO, but an object that implements additional behavior from Sequelize.
+产生的 `user` 对象是 Sequelize 的 `Model` 类的一个实例（因为 `User` 继承自 `Model`）。它不是一个 POJO，而是一个实现了 Sequelize 额外行为的对象。
 
-## Data modeling with Prisma
+## 使用 Prisma 进行数据建模
 
-Depending on which parts of Prisma you want to use in your application, the data modeling flow looks slightly different. The following two sections explain the workflows for using [**only Prisma Client**](#using-only-prisma-client) and using [**Prisma Client and Prisma Migrate**](#using-prisma-client-and-prisma-migrate).
+根据你想在应用程序中使用 Prisma 的哪一部分，数据建模的流程会有所不同。接下来的两小节将解释 [**仅使用 Prisma Client**](#using-only-prisma-client) 和  [**使用 Prisma Client + Prisma Migrate**](#using-prisma-client-and-prisma-migrate) 的工作流程。
 
-No matter which approach though, with Prisma you never create application models in your programming language by manually defining classes, interfaces, or structs. Instead, the application models are defined in your [Prisma schema](../../components/prisma-schema):
+不过无论采用哪种方法，在使用 Prisma 时，你都不需要通过手动定义类、接口或结构体的方式来在编程语言中创建应用程序模型。相反，应用模型定义在你的 [Prisma schema](../../components/prisma-schema) 中：
 
-- **Only Prisma Client**: Application models in the Prisma schema are _generated based on the introspection of your database schema_. Data modeling happens primarily on the database-level.
-- **Prisma Client and Prisma Migrate**: Data modeling happens in the Prisma schema by _manually adding application models_ to it. Prisma Migrate maps these application models to tables in the underlying database (currently only supported for relational databases).
+- **仅使用 Prisma Client**：Prisma schema 中的应用模型是通过对你的数据库 schema 进行内省（introspection）来生成的。数据建模主要发生在数据库层面。
+- **使用 Prisma Client 和 Prisma Migrate**：数据建模发生在 Prisma schema 中，通过 _手动添加应用模型_ 来实现。Prisma Migrate 映射这些应用模型到底层数据库的数据表（目前仅支持关系型数据库）
 
-As an example, the `User` model from the previous example would be represented as follows in the Prisma schema:
+前面例子中的 `User` 模型在 Prisma schema 中表示如下：
 
 ```prisma
 model User {
@@ -195,9 +195,9 @@ model User {
 }
 ```
 
-Once the application models are in your Prisma schema (whether they were added through introspection or manually by you), the next step typically is to generate Prisma Client which provides a programmatic and type-safe API to read and write data in the shape of your application models.
+一旦应用模型存在于你的 Prisma schema 中了（不管是通过内省添加的还是手动添加的），下一步通常是生成 Prisma Client，它提供了一个程序化和类型安全的 API 来使用你的应用模型进行数据读写。
 
-Prisma Client uses TypeScript [type aliases](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-aliases) to represent your application models in your code. For example, the `User` model would be represented as follows in the generated Prisma Client library:
+Prisma Client 使用 TypeScript [类型别名（type aliases）](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-aliases) 来表示你代码中的应用模型。例如，`User` 模型在生成的 Prisma Client 中将被表示成如下：
 
 ```ts
 export declare type User = {
@@ -208,7 +208,7 @@ export declare type User = {
 }
 ```
 
-In addition to the generated types, Prisma Client also provides a data access API that you can use once you've installed the `@prisma/client` package:
+除了生成的类型，Prisma Client 还提供了数据访问的 API，安装 `@prisma/client` 包后就可以使用了：
 
 ```js
 import { PrismaClient } from '@prisma/client'
@@ -226,28 +226,28 @@ await prisma.user.delete(...)
 await prisma.user.upsert(...)
 ```
 
-### Using only Prisma Client
+### 仅使用 Prisma Client
 
-When using only Prisma Client and _not_ using Prisma Migrate in your application, data modeling needs to happen on the database level via SQL. Once your SQL schema is ready, you use Prisma's introspection feature to add the application models to your Prisma schema. Finally, you generate Prisma Client which creates the types as well as the programmatic API for you to read and write data in your database.
+当仅使用 Prisma Client，而不是在你的应用程序中使用 Prisma Migrate 时，数据建模需要在数据库层面上通过 SQL 语句来进行。一旦你的 SQL schema 准备就绪，你可以使用 Prisma 内省功能来将应用模型添加到 Prisma schema 中。最后，你将生成 Prisma Client，它会提供类型和程序化的 API 供你读写数据库中的数据。
 
-Here is an overview of the main workflow:
+以下是主要流程的概述：
 
-1. Change your database schema using SQL (e.g. `CREATE TABLE`, `ALTER TABLE`, ...)
-1. Run `prisma db pull` to introspect the database and add application models to the Prisma schema
-1. Run `prisma generate` to update your Prisma Client API
+1. 使用 SQL 语句修改数据库 schema（例如：`CREATE TABLE`, `ALTER TABLE` 等）
+2. 执行 `prisma db pull` 命令来内省数据库，同时添加应用模型到 Prisma schema 中
+3. 执行 `prisma generate` 命令来更新 Prisma Client API
 
-### Using Prisma Client and Prisma Migrate
+### 使用 Prisma Client 和 Prisma Migrate
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 暂未支持 [MongoDB 连接](../../database-connectors/mongodb)
 
 </Admonition>
 
-When using [Prisma Migrate](../../components/prisma-migrate), you define your application in the Prisma schema and use the `prisma migrate` subcommand to generate plain SQL migration files, which you can edit before applying.
+当使用 [Prisma Migrate](../../components/prisma-migrate) 时，你需要在 Prisma schema 中定义应用模型，然后使用 `prisma migrate` 命令生成 SQL 迁移文件，你可以在应用这些 SQL 文件之前修改它们。
 
-Here is an overview of the main workflow:
+以下是主要流程的概述：
 
-1. Manually change your application models in the Prisma schema (e.g. add a new model, remove an existing one, ...)
-1. Run `prisma migrate dev` to create and apply a migration (the Prisma Client is automatically generated)
+1. 手动修改 Prisma schema 中的应用模型（例如：添加新的 model，移除已经存在的 model 等）
+2. 执行 `prisma migrate dev` 命令来创建和应用迁移（Prisma Client 会自动生成）

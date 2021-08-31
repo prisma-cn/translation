@@ -1,27 +1,27 @@
 ---
-title: 'Query optimization'
-metaTitle: 'Query optimization'
-metaDescription: 'How Prisma optimizes queries under the hood'
+title: '查询优化'
+metaTitle: '查询优化'
+metaDescription: '如何从引擎方面优化查询'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-This guide describes ways to optimize query performance, debug performance issues, and how to tackle common performance issues such as the [n+1 problem](#solving-the-n1-problem).
+本指南介绍了如何优化查询性能、如何调试性能问题以及如何解决常见性能问题，例如 n+1 问题的方法。
 
 </TopBlock>
 
-## Debugging performance issues
+## 调试性能问题
 
-To help you debug and diagnose performance issues, you can [log query events at client level](../../../concepts/components/prisma-client/working-with-prismaclient/logging#event-based-logging), which allows you to see the generated queries, parameters, and durations.
+为了帮助调试和诊断性能问题，你可以在[客户端(Prisma Client)打印查询事件日志](../../../concepts/components/prisma-client/working-with-prismaclient/logging#event-based-logging)，这样就可以查看生成的查询、参数和运行时间。
 
-Alternatively, if you are only interested in the time taken to run a query, you can implement [logging middleware](../../../concepts/components/prisma-client/middleware/logging-middleware).
+另外，如果想知道查询过程的耗时，可以实现[日志中间件](../../../concepts/components/prisma-client/working-with-prismaclient/logging#event-based-logging)来分析。
 
-## Solving the n+1 problem
+## 解决 n+1 问题
 
-The n+1 problem occurs when you loop through the results of a query and perform one additional query **per result**, resulting in `n` number of queries plus the original (n+1). This is a common problem with ORMs, particularly in combination with GraphQL, because it is not always immediately obvious that your code is generating inefficient queries.
+当你执行 1 次查询操作拿到数据，接着对查询结果循环执行 n 次查询，最终执行了 n+1 次查询，这就是 n+1 问题。n+1 是 ORM 的一个常见问题，尤其是在与 GraphQL 结合时问题更明显，原因是因为 ORM 很少生成低效率的查询代码。
 
-### Solving n+1 in GraphQL with <inlinecode>findUnique</inlinecode> and Prisma's dataloader
+### 通过 <inlinecode>findUnique</inlinecode> 和 Prisma's dataloader 解决 GraphQL 的 n+1 问题
 
 <div class="videoWrapper">
 
@@ -36,11 +36,11 @@ The n+1 problem occurs when you loop through the results of a query and perform 
 
 </div>
 
-The Prisma Client dataloader automatically **batches** `findUnique` queries that ✔ occur in the same tick and ✔ have the same `where` and `include` parameters.
+对于`findUnique`查询，如果查询有相同的标记、`where`、`include`参数时，Prisma Client dataloader 会自动**批量**处理。
 
-Automatic batching of `findUnique` is particularly useful in a **GraphQL context**. GraphQL runs a separate resolver function for every field, which can make it difficult to optimize a nested query.
+`findUnique`的自动批量处理在`GraphQL上下文`中特别有用。要知道 GraphQL 为每个字段运行一个单独的 resolver function，这可能会使嵌套查询难以优化。
 
-For example - the following GraphQL runs the `allUsers` resolver to get all users, and the `posts` resolver **once per user** to get each user's posts (n+1):
+例如下面例子， GraphQL 运行 allUsers 的 resolver function 获取所有用户，而 posts resolver function 对每个用户运行一次以获得每个用户的帖子（n+1 次查询）。
 
 ```js
 query {
@@ -53,7 +53,7 @@ query {
 }
 ```
 
-The all `allUsers` query uses `user.findMany(..)` to return all users:
+获取`allUsers` 通过 `user.findMany(..)` 来查询:
 
 ```ts highlight=7;normal
 const Query = objectType({
@@ -69,7 +69,7 @@ const Query = objectType({
 })
 ```
 
-This results in a single SQL query:
+则生成如下 SQL 查询语句：
 
 ```js
 {
@@ -81,7 +81,7 @@ This results in a single SQL query:
 }
 ```
 
-However, the resolver function for `posts` is then invoked **once per user**. This results in a `findMany` query **✘ per user** rather than a single `findMany` to return all posts by all users (expand CLI output to see queries).
+然而`post`的 resolver function 会被**每个用户**调用一次。这导致每个用户执行一次 findMany 查询 ✘，而不是一次 findMany 查询拿到返回所有用户的所有帖子（点击代码下面的 Show CLI results 查看查询结果）。
 
 <CodeWithResult>
 <cmd>
@@ -152,6 +152,8 @@ const User = objectType({
 
 Instead, use `findUnique` in combination with [the fluent API](../../../concepts/components/prisma-client/relation-queries#fluent-api) (`.posts()`) as shown to return a user's posts. Even though the resolver is called once per user, the Prisma dataloader **✔ batches the `findUnique` queries**.
 
+其实可以结合`findUnique`与[the fluent API](../../../concepts/components/prisma-client/relation-queries#fluent-api) (`.posts()`)来返回一个用户的帖子来优化。尽管每个用户都调用了一次 resolver，但 Prisma dataloader ✔ 对`findUnique`查询进行了批量处理优化。点击代码下方的 Show CLI results 查看生成的优化语句。
+
 <CodeWithResult>
 <cmd>
 
@@ -209,21 +211,17 @@ const User = objectType({
 </cmdResult>
 </CodeWithResult>
 
-If the `posts` resolver is invoked once per user, Prisma's dataloader groups `findUnique` queries with the same parameters and selection set. Each group is optimized into a single `findMany`.
+如果`posts` resolver 被每个用户调用一次，Prisma's dataloader 会把有相同参数和选择集的`findUnique`查询进行分组，每个组被优化为一个单一的 `findMany`查询。
 
-#### Do I have to use the fluent API to enable batching of queries?
+#### 是否必须使用 fluent API 才能启用查询批量处理优化能力？
 
-It may seem counterintitive to use a `prisma.user.findUnique(...).posts()` query to return posts instead of `prisma.posts.findMany()` - particularly as the former results in two queries rather than one.
+使用`prisma.user.findUnique(...).post()`查询来返回帖子，而不是使用`prisma.post.findMany()`查询，似乎有点奇怪，尤其是前者会导致两次查询而不是一次。使用 fluent API， 究其原因是因为 Prisma's dataloader 批量处理优化目前只支持`findUnique`查询，不支持`findMany`查询。当 dataloader 能支持`findMany`批量查询时，就不再需要以这种方式使用 fluent API 的`findUnique`。
 
-The **only** reason you need to use the fluent API (`user.findUnique(...).posts()`) to return posts is that Prisma's dataloader batches `findUnique` queries and does not currently [batch `findMany` queries](https://github.com/prisma/prisma/issues/1477).
+### 其他情况下的 n+1 问题
 
-When the dataloader batches `findMany` queries, you no longer need to use `findUnique` with the fluent API in this way.
+n+1 问题在 GraphQL 上下文中最常见，因为您必须找到一种方法来优化跨多个 resolvers 的单个查询。另外， `forEach` 循环结果也很容易引入 n+1 问题。
 
-### n+1 in other contexts
-
-The n+1 problem is most commonly seen in a GraphQL context because you have to find a way to optimize a single query across multiple resolvers. However, you can just as easily introduce the n+1 problem by looping through results with `forEach` in your own code.
-
-The following code results in n+1 queries - one `findMany` to get all users, and one `findMany` **per user** to get each user's posts:
+以下代码导致 n+1 个查询，即`findMany`一次查询获取所有用户，循环每个用户调用一次 `findMany` 获取每个用户的帖子：
 
  <CodeWithResult expanded="{true}">
  <cmd>
@@ -259,14 +257,14 @@ SELECT "public"."Post"."id", "public"."Post"."title" FROM "public"."Post" WHERE 
 </cmdResult>
 </CodeWithResult>
 
-This is not an efficient way to query. Instead, you can:
+这样查询效率很低，你可以：
 
-- Use nested reads ([`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span>) to return users and related posts
-- Use the [`in`](../../../reference/api-reference/prisma-client-reference#in) <span class="api"></span> filter
+- 使用嵌套读 ([`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span>) 获取 user 和关联的 posts
+- 使用 [`in`](../../../reference/api-reference/prisma-client-reference#in) <span class="api"></span> 过滤
 
-#### Solving n+1 with <inlinecode>include</inlinecode>
+#### 使用<inlinecode>include</inlinecode>解决 n+1 问题
 
-You can use `include` to return each user's posts and and only results in **two** SQL queries - one to get users, and one to get posts. This is known a [nested read](../../../concepts/components/prisma-client/relation-queries#nested-reads).
+你可以使用`include`来查询每个用户的帖子，并且只需要两个 SQL 查询的结果--一个是获取用户，一个是获取帖子。这就是所谓的[嵌套读取](../../../concepts/components/prisma-client/relation-queries#nested-reads)。
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -290,9 +288,9 @@ SELECT "public"."Post"."id", "public"."Post"."title", "public"."Post"."authorId"
 </cmdResult>
 </CodeWithResult>
 
-#### Solving n+1 with <inlinecode>in</inlinecode>
+#### 使用<inlinecode>in</inlinecode>解决 n+1 问题
 
-If you have a list of user IDs, you can use the `in` filter to return all posts where the `authorId` is `in` that list of IDs:
+如果你有一个用户 ID 列表，你可以使用`in`过滤查询所有`authorId`在该`in` 列表中的帖子。
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -322,22 +320,22 @@ SELECT "public"."Post"."id", "public"."Post"."createdAt", "public"."Post"."updat
 </cmdResult>
 </CodeWithResult>
 
-## Using bulk queries
+## 使用批量查询
 
-It is generally more performant to read and write large amounts of data in bulk - for example, inserting 50,000 records in batches of 1000 rather than as 50,000 separate inserts. Prisma Client supports the following bulk queries:
+一般来说，批量读写大量数据的性能更高。例如，每次 1000 条批量插入 50,000 条记录，而不是 50,000 条都单独插入。Prisma Client 支持以下批量查询：
 
 - [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany) <span class="api"></span>
 - [`deleteMany`](../../../reference/api-reference/prisma-client-reference#deletemany) <span class="api"></span>
 - [`updateMany`](../../../reference/api-reference/prisma-client-reference#updatemany) <span class="api"></span>
 - [`findMany`](../../../reference/api-reference/prisma-client-reference#findmany) <span class="api"></span>
 
-## Using <inlinecode>select</inlinecode> to limit number of columns returned
+## 使用 <inlinecode>select</inlinecode> 限制查询返回的数量
 
-Using `select` to limit the number of columns that are returned is **unlikely to have an effect on performance** unless you have identified this as a performance bottleneck through testing. For example, reading all fields may negatively affect performance if you have:
+使用`select`来限制返回的列数`不太可能对性能`产生影响，除非你通过测试发现这是一个性能瓶颈。例如，读取所有字段可能会对性能产生负面影响。
 
-- Tables with a large number of columns
-- Large columns that are stored in a separate location on disk rather than a row, which results in an additional disk read
+- 表有大量的列
+- 大的列被存储在磁盘上的一个单独的位置，而不是一个行，这导致额外的磁盘读取
 
-Furthermore, if you have a mature product with well established query patterns and finely tuned indexes, selecting a specific subset of fields may be beneficial as it avoids reading data from disk. However, in most cases, this level of performance tuning is only necessary at a certain scale.
+此外，如果你有一个成熟的产品，有完善的查询模式和精细调整的索引，选择一个特定的字段子集可能是有益的，因为它避免了从磁盘读取数据。然而，在大多数情况下，这种水平的性能调整只有在一定规模下才是必要的。
 
 <!-- Pagination -->

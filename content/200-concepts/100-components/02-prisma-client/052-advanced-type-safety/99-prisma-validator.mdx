@@ -1,22 +1,22 @@
 ---
-title: 'Prisma validator'
-metaTitle: 'Prisma validator'
-metaDescription: 'The Prisma validator is a utility function that takes a generated type and returns a type-safe object which adheres to the generated types model fields.'
+title: 'Prisma 验证器'
+metaTitle: 'Prisma 验证器'
+metaDescription: 'The Prisma 验证器 是一个实用函数，它接受生成的类型并返回一个类型安全对象，该对象遵循生成的类型模型字段。'
 ---
 
 <TopBlock>
 
-The [`Prisma.validator`](../../../../reference/api-reference/prisma-client-reference#prismavalidator) <span class="api"></span> is a utility function that takes a generated type and returns a type-safe object which adheres to the generated types model fields.
+[`Prisma.验证器`](../../../../reference/api-reference/prisma-client-reference#prismavalidator) <span class="api"></span> 是一个实用函数，它接受生成的类型并返回一个类型安全对象，该对象遵循生成的类型模型字段。
 
-This page introduces the `Prisma.validator` and offers some motivations behind why you might choose to use it.
+本页介绍了 `Prisma.validator`，并提供了一些你选择使用它的场景。
 
 </TopBlock>
 
-## Creating a typed query statement
+## 创建类型化查询语句
 
-Let's imagine that you created a new `userEmail` object that you wanted to re-use in different queries throughout your application. It's typed and can be safely used in queries.
+假设你创建了一个新的 `userEmail` 对象，希望在整个应用程序的不同查询中重复使用该对象。它是类型化的，可以安全地用于查询。
 
-The below example asks `Prisma` to return the `email` of the user whose `id` is 3, if no user exists it will return `null`.
+下面的示例要求 `Prisma` 返回 `id` 为 3 的用户的 `email`，如果不存在任何用户，它将返回 `null`。
 
 ```ts
 import { Prisma } from '@prisma/client'
@@ -25,7 +25,7 @@ const userEmail: Prisma.UserSelect = {
   email: true,
 }
 
-// Run inside async function
+// 在异步函数中运行
 const user = await prisma.user.findUnique({
   where: {
     id: 3,
@@ -34,21 +34,21 @@ const user = await prisma.user.findUnique({
 })
 ```
 
-This works well but there is a caveat to extracting query statements this way.
+这很有效，但以这种方式执行查询语句有一个需要注意的地方。
 
-You'll notice that if you hover your mouse over `userEmail` TypeScript won't infer the object's key or value (that is, `email: true`).
+你会注意到，如果将鼠标悬停在 `userEmail` TypeScript 上，则无法推断对象的键或值（即 `email:true`）。
 
-The same applies if you use dot notation on `userEmail` within the `prisma.user.findUnique(...)` query, you will be able to access all of the properties available to a `select` object.
+如果在 `prisma.user.findUnique(...)` 查询中对 `userEmail` 使用 '.' 符号，则同样适用，你将能够访问 `select` 对象可用的所有属性。
 
-If you are using this in one file that may be fine, but if you are going to export this object and use it in other queries, or if you are compiling an external library where you want to control how the user uses this object within their queries then this won't be type-safe.
+如果你在一个文件中使用此对象，这可能没问题，但是如果你要导出此对象并在其他查询中使用它，或者如果你正在编译一个外部库，希望在其中控制用户在其查询中使用此对象的方式，则这将不是类型安全的。
 
-The object `userEmail` has been created to select only the user's `email`, and yet it still gives access to all the other properties available. **It is typed, but not type-safe**.
+已创建对象 `userEmail` 以仅选择用户的 `email`，但它仍然允许访问所有其他可用属性 **它是类型化的，但不是类型安全的**。
 
-`Prisma` has a way to validate generated types to make sure they are type-safe, a utility function available on the namespace called `validator`.
+`Prisma` 有一种方法可以验证生成的类型，以确保它们是类型安全的，这是一个在名称空间中名为 `validator` 的实用函数。
 
-## Using the <inlinecode>Prisma.validator</inlinecode>
+## 使用 <inlinecode>Prisma.validator</inlinecode>
 
-The following example passes the `UserSelect` generated type into the `Prisma.validator` utility function and defines the expected return type in much the same way as the previous example.
+下面的示例将 `UserSelect` 生成的类型传递到 `Prisma.validator` 实用程序函数中，并以与前面示例大致相同的方式定义预期的返回类型。
 
 ```ts highlight=3,4,5;delete|7-9;add
 import { Prisma } from '@prisma/client'
@@ -61,7 +61,7 @@ const userEmail = Prisma.validator<Prisma.UserSelect>()({
   email: true,
 })
 
-// Run inside async function
+// 在异步函数中运行
 const user = await prisma.user.findUnique({
   where: {
     id: 3,
@@ -70,22 +70,22 @@ const user = await prisma.user.findUnique({
 })
 ```
 
-The big difference is that the `userEmail` object is now type-safe. If you hover your mouse over it TypeScript will tell you the object's key/value pair. If you use dot notation to access the object's properties you will only be able to access the `email` property of the object.
+最大的区别是 `userEmail` 对象现在是类型安全的。如果将鼠标悬停在该对象上，TypeScript 将告诉你该对象的键/值对。如果使用 '.' 符号访问对象的属性，则只能访问对象的 `email` 属性。
 
-This functionality is handy when combined with user defined input, like form data.
+当与用户定义的输入（如表单数据）结合使用时，此功能非常方便。
 
-## Combining <inlinecode>Prisma.validator</inlinecode> with form input
+## 将 <inlinecode>Prisma.validator</inlinecode> 与表单输入相结合
 
-The following example creates a type-safe function from the `Prisma.validator` which can be used when interacting with user created data, such as form inputs.
+下面的示例从 `Prisma.validator` 创建一个类型安全函数，该函数可在与用户创建的数据（如表单输入）交互时使用。
 
-> **Note**: Form input is determined at runtime so can't be verified by only using TypeScript. Be sure to validate your form input through other means too (such as an external validation library) before passing that data through to your database.
+> **注意**：表单输入是在运行时确定的，因此不能仅使用 TypeScript 进行验证。在将数据传递到数据库之前，请确保也通过其他方式（如外部验证库）验证表单输入。
 
 ```ts
 import { Prisma, PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-// Create a new function and pass the parameters onto the validator
+// 创建一个新函数并将参数传递给验证器
 const createUserAndPost = (
   name: string,
   email: string,
@@ -114,8 +114,8 @@ const findSpecificUser = (email: string) => {
   })
 }
 
-// Create the user in the database based on form input
-// Run inside async function
+// 基于表单输入在数据库中创建用户
+// 在异步函数中运行
 await prisma.user.create({
   data: createUserAndPost(
     'Rich',
@@ -125,11 +125,11 @@ await prisma.user.create({
   ),
 })
 
-// Find the specific user based on form input
-// Run inside async function
+// 根据表单输入查找特定用户
+// 在异步函数中运行
 const oneUser = await prisma.user.findUnique({
   where: findSpecificUser('rich@boop.com'),
 })
 ```
 
-The `createUserAndPost` custom function is created using the `Prisma.validator` and passed a generated type, `UserCreateInput`. The `Prisma.validator` validates the functions input because the types assigned to the parameters must match those the generated type expects.
+`createUserAndPost` 自定义函数是使用 `Prisma.validator` 创建的，并传递了生成的类型 `UserCreateInput`。`Prisma.validator` 验证函数输入，因为分配给参数的类型必须与生成的类型所期望的类型相匹配。
