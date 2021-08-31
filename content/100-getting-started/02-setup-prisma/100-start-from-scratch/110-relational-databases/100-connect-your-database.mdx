@@ -9,7 +9,6 @@ toc: false
 
 ## 连接你的数据库
 
-To connect your database, you need to set the `url` field of the `datasource` block in your Prisma schema to your database [connection URL](../../../../reference/database-reference/connection-urls):
 为了连接你的数据库，你需要在你的Prisma模式中设置`datasource`块的`url`字段到你的数据库[连接URL](../../../../reference/database-reference/connection-urls):
 
 <SwitchTech technologies={['*', 'postgresql']}>
@@ -21,7 +20,7 @@ datasource db {
 }
 ```
 
-在本例中， `url`是[通过环境变量设置](../../../../guides/development-environment/environment-variables)，它在`.env`中定义:
+在本例中，`url`是[通过环境变量设置](../../../../guides/development-environment/environment-variables)，它在`.env`中定义:
 
 ```bash file=.env
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
