@@ -1,89 +1,89 @@
 ---
-title: 'Releases and maturity levels'
-metaTitle: 'Releases and maturity levels'
-metaDescription: 'Learn about the release process, versioning, and maturity of Prisma components and how to deal with breaking changes that might happen throughout releases.'
+title: '发布管理和成熟度级别'
+metaTitle: '发布管理和成熟度级别'
+metaDescription: '了解发布进程、版本控制、Prisma组件成熟度，以及如何处理在整个版本中可能发生的破坏性更改。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-This page explains the release process of Prisma, how it's versioned and how to deal with breaking changes that might happen throughout releases.
+本页解释了 Prisma 的发布进程，它是如何版本控制以及如何处理在整个发布过程中可能发生的破坏性更改。
 
 </TopBlock>
 
-## Releases
+## 发布管理
 
-Prisma releases typically happen every two weeks. Note that this is _not_ a hard rule – releases might be postponed for internal reasons.
+Prisma 每两周发布一次。请注意，这不是一个硬性规则-发布可能会因内部原因推迟。
 
-[Check out all the releases notes in GitHub](https://github.com/prisma/prisma/releases).
+[查看 GitHub 中的所有版本说明](https://github.com/prisma/prisma/releases).
 
-## Product maturity levels
+## 产品成熟度级别
 
-A release can include products or features at different maturity levels. Maturity level describes a product or feature's completeness and what users can expect in terms of breaking changes.
+一次发行可以包括很多不同成熟界别的产品或者功能。成熟度级别描述了产品或功能的完整性以及用户在更改方面的期望。
 
-> **Note**: As of version [2.13.0](https://github.com/prisma/prisma/releases/2.13.0), 'Experimental' is no longer part of the product maturity scale.
+> **注意**: 版本[2.13.0](https://github.com/prisma/prisma/releases/2.13.0), '实验' 不再是产品成熟度量表的一部分。
 
-### Early Access
+### 早期版
 
-If a feature or product is **Early Access**:
+如果一项产品或者功能是**早期版**：
 
-- We have validated a problem and are considering a solution to it but are not certain whether that solution is complete or a perfect fit.
-- We want to gather more feedback and adjust the solution as necessary, knowing that users are prepared for significant breaking changes
+- 我们已经验证了一个问题并正在考虑解决方案，但不确定该解决方案是完整的还是完美的。
+- 我们希望收集更多反馈并根据需要调整解决方案，因为我们知道用户已经为重大突破性变化做好了准备。
 
-We don't recommend using Early Access features or products in production.
+我们不建议在生产环境中使用早期版的产品或者功能。
 
-### Preview
+### 预览版
 
-If a feature or product is a **Preview**:
+如果一项产品或者功能是**预览版**:
 
-- We have validated the feature or product in terms of direction and surface.
-- Users can count on the feature or product and associated API to be mostly stable unless stated otherwise in the release notes and documentation.
-- There are no significant known issues, although minor bugs may exist.
-- We welcome feedback on these to make the solution stable as quickly as possible.
+- 我们已经在方向和表层上验证了产品或者功能。
+- 除非版本说明和文档中另有说明，否则用户能使用功能或者产品以及关联的 API。
+- 没有重大的已知问题，尽管可能存在小错误。
+- 我们欢迎对这些问题的反馈，以使解决方案尽快稳定。
 
-Previews are typically available behind a feature flag or require some form of opt-in (for example, by providing a `--preview-feature` flag in the CLI or [adding them to a `previewFeatures` property in the `generator` block](../../concepts/components/preview-features/cli-preview-features/) for Prisma Client in your Prisma schema).
+预览通常在功能标志后面使用或者需要某种形式的选择加入 (例如, cli 命令 `--preview-feature` 或者 [添加到 Prisma schema 的 Prisma 客户端中`generator`区块中的`previewFeatures`属性](../../concepts/components/preview-features/cli-preview-features/) )。
 
-We don't recommend using Preview features or products in production.
+我们不建议在生产环境中使用预览的产品或者功能。
 
-See also: [All currently available Preview features](../../concepts/components/preview-features).
+另请参阅: [所有当前预览功能](../../concepts/components/preview-features).
 
-### Generally Available (GA)
+### 正式版 (GA)
 
-If a feature or product is **Generally Available**:
+如果一项产品或者功能是**正式版**:
 
-- The solution has been tested for some time and we received enough feedback to consider it stable and ready for production use.
-- There should be no bugs in 99% of cases (completely bug-free software cannot be guaranteed)
+- 该解决方案已经测试了一段时间，我们收到了足够的反馈，认为它很稳定，可以投入生产使用。
+- 99%的情况下应该没有 bug(不能保证完全没有 bug 的软件).
 
-## Versioning
+## 版本控制
 
-Prisma's release scheme adheres to Semantic Versioning ([SemVer](https://semver.org/)) starting with version `3.x.x`.
+在`3.x.x`中 Prisma 的发布方案将遵循语义版本控制 ([SemVer](https://semver.org/)).
 
-### Prisma and Semantic Versioning (SemVer)
+### Prisma 和语义版本控制 (SemVer)
 
-#### How does SemVer versioning work?
+#### SemVer 怎么控制?
 
-Semantic Versioning (SemVer) uses the following rules for version upgrade (quoted from the [SemVer](https://semver.org/) spec):
+语义版本 (SemVer) 使用以下版本升级规则 (引用 [SemVer](https://semver.org/) 说明):
 
-_Given a version number `MAJOR.MINOR.PATCH`, increment the:_
+_给定版本号 `MAJOR.MINOR.PATCH`, 递增:_
 
-1. _`MAJOR` version when you make incompatible API changes,_
-1. _`MINOR` version when you add functionality in a backward compatible manner, and_
-1. _`PATCH` version when you make backward compatible bug fixes._
+1. _`MAJOR` 版本：不兼容 API 变化时,_
+1. _`MINOR` 版本：向后兼容方式添加功能时，_
+1. _`PATCH` 版本：向后兼容的错误修复时_
 
-#### How does Prisma versioning follow SemVer?
+#### 怎么使用 SemVer 对 Prisma 进行版本控制？
 
-Beginning with version `3.x.x`, Prisma adheres strictly to the [SemVer](https://semver.org/) versioning scheme.
+`3.x.x`版本开始, Prisma 严格遵守 [SemVer](https://semver.org/) 控制计划.
 
-Here is a brief overview of how Prisma's follows SemVer:
+以下是 Prisma 如何使用 SemVer 控制的简要描述：
 
-- Breaking changes in stable surface (i.e. [General Availability](https://www.prisma.io/docs/about/releases#generally-available-ga)) will only be introduced in new `MAJOR` releases.
-- Breaking changes can still be rolled out in `MINOR` but only for opt-in Preview and Early Access features that are not active by default (e.g. via a Preview feature flag or a specific opt-in option or new CLI command).
-- Opt-in breaking changes, i.e. Preview and Early Access, released in `MINOR`, will only be promoted to General Availability (no requirement for opt-in) in new `MAJOR` releases.
+- 稳定表面的突破性变化 (即[正式发布](https://www.prisma.io/docs/about/releases#generally-available-ga)) 只有在新的 `MAJOR` 才会引入.
+- 仍可在 `MINOR`推出破坏性更改，但是仅限于默认处于非活动状态的选择加入预览和早期功能 (例如， 通过预览功能标志或特定的选择选项或者新的 CLI 命令)。
+- `MINOR`中发布的选择性加入的突破性更改, 例如预览版和早期版，只有正式版才有新的`MAJOR`发布 (不在要求选择加入) .
 
-Given a version number `MAJOR.MINOR.PATCH`, Prisma's version number is incremented as follows:
+给定版本号 `MAJOR.MINOR.PATCH`, Prisma 版本数字递增如下:
 
-1. `MAJOR` version is incremented when major product updates **with breaking changes** are released to General Availability.
-1. `MINOR` version is incremented when product updates adding backward compatible new functionality are released. Features with breaking changes may only be introduced if they are **opt-in**, i.e. Early Access and Preview.
-1. `PATCH` version is incremented when functionality bugs are fixed and are always **backward compatible**.
+1. `MAJOR` 版本：当重大产品更新**有突破性变化**正式发布时，`MAJOR`版本递增。
+1. `MINOR` 版本：当发布后向兼容新功能的产品更新时，`MINOR`版本递增。有突破性变化的功能只有在**选择加入**的情况下才能引入，即早期和预览。
+1. `PATCH` 版本：当功能 bug 修复后，`PATCH`版本递增。且始终**向后兼容**。
 
-> **Note:** Up until version version `2.28.0`, Prisma did not follow SemVer versioning strictly. This means that releases in the `2.MINOR.PATCH` range, `MINOR` versions may have included breaking changes. To learn more about Prisma's adoption of SemVer, check out the [blog post](https://www.prisma.io/blog/prisma-adopts-semver-strictly).
+> **注意:** 在版本`2.28.0`之前，Prisma 没有严格遵循 SemVer 版本控制。这意味着在`2.MINOR.PATCH`范围内发布的`MINOR`版本可能包含突破性更改。了解有关 Prisma 采用 SemVer 更多信息, 查看[博客文章](https://www.prisma.io/blog/prisma-adopts-semver-strictly)。

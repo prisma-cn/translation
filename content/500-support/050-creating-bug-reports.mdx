@@ -1,71 +1,71 @@
 ---
-title: 'Creating bug reports'
-metaTitle: 'Creating bug reports for Prisma'
-metaDescription: 'This page explains best practices for creating bug reports for Prisma, including sharing additional debugging output and other recommendations.'
+title: '创建错误报告'
+metaTitle: '为Prisma创建错误报告'
+metaDescription: '本页介绍了为Prisma创建错误报告的最佳实践，包括共享其他调试输出和其他建议。'
 ---
 
-## Overview
+## 概述
 
-You can help us improve Prisma by creating **bug reports**. When creating a bug report, it's important that you include as much information as possible about your issue. That way, it's easier to reproduce.
+你可以通过创建 **错误报告** 来帮助我们改进 Prisma。在创建错误报告时，在 issue 中请尽可能的包含更多信息. 那样的话，就更加容易复现错误.
 
-Note that you can also create **feature requests** or ask a **question** via the issue templates on GitHub.
+请注意，你还可以通过 GitHub 的问题模板创建**功能请求**或者提出**问题**。
 
-## Where to open the bug report on GitHub?
+## 在 GitHub 上如何打开错误报告?
 
-Prisma's tools are spread across different repositories in the [`prisma`](https://github.com/prisma/) organization on GitHub. You can open a new issue in the repo of the respective tool.
+Prisma 的工具分布在 [`prisma`](https://github.com/prisma/) 组织中的不同库中.你可以在各自对应的工具库中打开新的 issue。
 
-If you're unsure where to open the GitHub issue, you can use the main [`prisma/prisma`](https://github.com/prisma/prisma) repo as a default. Our engineering team is regularly triaging new issues and will move the issue to another repo if necessary.
+如果你不确定在哪里打开 GitHub issue，你可以使用主库 [`prisma/prisma`](https://github.com/prisma/prisma) 作为默认设置。我们的工程师团队会对 issue 进行分类，必要时会把 issue 归类到对应库中。
 
-## Ideal scenario: Share standalone repository with reproduction
+## 理想场景: 复现分享独立存储库
 
-In an ideal scenario, you're able to reproduce the bug in an isolated environment and put it into a GitHub repository that you can share in your report. That way, we already have a reproduction and the problem can be tackled without further triaging.
+在理想情况下，你可以在独立的环境中重现错误并将其放入。你可以在报告中分享这个漏洞。这样，我们就可以有一个复现品，方便解决，而无需进一步的审查。
 
-This [Stackoverflow guide](https://stackoverflow.com/help/minimal-reproducible-example) has a lot of helpful information for creating minimal, reproducible examples.
+这个 [网站指南](https://stackoverflow.com/help/minimal-reproducible-example) 中有很多有用的信息，用于创建最小的、可复用的示例。
 
-## Best practices for writing a bug report
+## 编写错误报告的最佳实践
 
-If you don't have the time to create a full reproduction of the issue, please include as much information as possible about the problem. The [bug report template](https://github.com/prisma/prisma/issues/new?assignees=&labels=&template=bug_report.md&title=) helps you with that.
+如果你没有时间创建 issue 的完整复现，请包含尽可能多的相关信息。这个 [错误报告模板](https://github.com/prisma/prisma/issues/new?assignees=&labels=&template=bug_report.md&title=) 能帮助你。
 
-### Include logging and debugging output
+### 包含日志和调试输出
 
-Please make sure to include _any_ [logging](../concepts/components/prisma-client/working-with-prismaclient/logging) and [debugging](../concepts/components/prisma-client/debugging) output in the issue that may help to identify the problem.
+在 issue 中请务必包含任何有助于识别问题的[日志](../concepts/components/prisma-client/working-with-prismaclient/logging) 和 [调试](../concepts/components/prisma-client/debugging) 输出。
 
-**Setting the `DEBUG` env var**
+**设置 `调试` 环境**
 
-To get additional output from Prisma, you can set `DEBUG` to `*`:
+要从 Prisma 获得额外的输出，请设置 `调试` 为 `*`:
 
 ```terminal
 export DEBUG="*"
 ```
 
-**Print logs of Prisma Client**
+**在 Prisma 客户端打印日志**
 
-You can enable additional logs in Prisma Client by instantiating it with the `log` option:
+你可以通过`日志`选项对 Prisma 客户端举例从而获取更多的日志信息:
 
 ```ts
 const prisma = new PrismaClient({ log: ['query', 'info', 'warn'] })
 ```
 
-### Include a bug description, reproduction and expected behavior
+### 包括错误描述、复现和预期行为
 
-When describing the bug, it's helpful to include the following information:
+在描述错误信息的时候，请包含以下等有用的信息:
 
-- A clear and concise description of what the bug is
-- Steps to reproduce the bug
-- A clear and concise description of what you expected to happen
-- Screenshots (if applicable)
+- 清晰简单地描述错误是什么
+- 错误复现的步骤
+- 清晰简单地描述期望发生什么
+- 截图 (如适用)
 
-<details><summary>Expand for an example for a hypothetical bug report</summary>
+<details><summary>详述假设的错误报告示例</summary>
 
-**Example**
+**举例**
 
-**Describe the bug**
+**描述错误**
 
-`@unique` attribute on `email` field doesn't work on my model. I can create duplicate records with the same `email`.
+`@unique` 属性在 `email` 字段不适用我的模型。 我可以用同样的`email`创建重复的记录。
 
-**To reproduce**:
+**复现**:
 
-I have this Prisma schema (removed all unnecessary models and fields):
+我有个 Prisma schema (删除所有不必要的模型和字段):
 
 ```prisma
 model User {
@@ -74,9 +74,9 @@ model User {
 }
 ```
 
-I then run `prisma generate` to generate Prisma Client.
+然后运行 `prisma generate` 生成 Prisma 客户端.
 
-I then have a Node.js script that creates two `User` records with the same `email`:
+我用 Node.js 脚本使用相同的 `email`创建了两个 `User` 记录:
 
 ```ts
 import { PrismaClient } from '@prisma/client'
@@ -103,22 +103,22 @@ main()
   })
 ```
 
-**Expected behavior**
+---
 
-I expected an exception when trying to create `user2` with the same `email` as `user1` because this violates the `@unique` constraint defined in the Prisma schema.
+我预计在尝试用相同的`email`创建`user2`时会有一个例外,因为这违反了 Prisma schema 中定义的`@unique`限制。
 
 </details>
 
-### Include environment and setup information
+### 包括环境和设置信息
 
-Please include any information about your environment and setup. Specifically it's important to include:
+请包含任何环境和设置信息。重要的是要包括：
 
-- Which **operating system** you use (e.g. macOS, Windows, Debian, CentOS, ...)
-- Which **database** you use with Prisma (PostgreSQL, MySQL, MariaDB, SQLite or SQL Server)
-- Which **version of Prisma** you use (run `prisma -v` to see your Prisma version)
-- Which **version of Node.js** you use (run `node -v` to see your Node.js version)
+- 使用的 **操作系统** (e.g. macOS, Windows, Debian, CentOS, ...)
+- 使用的 **数据库** (PostgreSQL, MySQL, MariaDB, SQLite or SQL Server)
+- 使用的 **Prisma 版本** (运行 `prisma -v` 查看 Prisma 版本)
+- 使用的 **Node.js 版本** (运行 `node -v` 查看 Node.js 版本)
 
-Here's an example of what this could look like in your bug report:
+下面是一个错误报告的示例：
 
 - OS: macOS Catalina 10.15.7
 - Database: PostgreSQL v11
@@ -137,8 +137,8 @@ Default Engines Hash : 60cc71d884972ab4e897f0277c4b84383dddaf6c
 Studio               : 0.379.0
 ```
 
-### Include relevant Prisma info (e.g. the Prisma schema, Prisma Client queries, ...)
+### 包括目的明确的 Prisma 信息 (e.g. the Prisma schema, Prisma Client queries, ...)
 
-To help us reproduce your problem, it is helpful to include your Prisma schema in the bug report. **Please remove any database credentials before sharing your Prisma schema in a bug report**. If you're sure about which parts of the schema is causing the issue, please strip out the irrelevant parts of it and only show the parts that are related to the problem. If you're not sure, please include your entire schema.
+为了帮助你复现你的问题，在错误报告中包含 Prisma schema 是有用的。 **请删除任何数据库凭证之前分享你的 Prisma schema**. 如果你确定哪部分 schema 导致的，请将不相关的部分分离出来，仅显示与问题相关的部分。如果你不确定，请包含整个 schema。
 
-If you have an issue with Prisma Client, please also include which Prisma Client query is causing the issue.
+如果你对 Prisma 客户端有疑问，请同样包含 Prisma 客户端查询导致的问题。
