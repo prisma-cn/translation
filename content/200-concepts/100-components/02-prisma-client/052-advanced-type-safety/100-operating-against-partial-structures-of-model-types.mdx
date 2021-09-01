@@ -92,17 +92,6 @@ const userPersonalData = Prisma.validator<Prisma.UserArgs>()({
 type UserWithPosts = Prisma.UserGetPayload<typeof userWithPosts>
 ```
 
-The main benefits of the latter approach are:
-
-- Cleaner approach as it leverages Prisma Client's generated types
-- Reduced maintenance burden and improved type safety when the schema changes
-
-## Problem: Getting access to the return type of a function
-
-### Description
-
-When doing [`select`](../../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> or [`include`](../../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> operations on your models and returning these variants from a function, it can be difficult to gain access to the return type, e.g:
-
 后一种方法的主要好处是：
 
 - 更干净的方法，因为它利用了 Prisma Client 生成的类型
