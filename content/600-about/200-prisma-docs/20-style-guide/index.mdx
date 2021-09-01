@@ -1,166 +1,166 @@
 ---
-title: 'Prisma Docs style guide'
-metaTitle: 'Prisma documentation style guide'
-metaDescription: 'The Prisma style guide contains a number of rules and conventions for the content in the Prisma documentation.'
+title: 'Prisma文档风格指南'
+metaTitle: 'Prisma文档风格指南'
+metaDescription: 'Prisma文档风格指南包含Prisma文档中内容的许多规则和约定。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Welcome! This guide contains information for writing and maintaining technical documentation for the Prisma tools. One major goal of this style guide is to ensure consistency in the Prisma documentation with respect to things like word choice, writing style, formatting and more.
+欢迎!本指南包含编写和维护 Prisma 工具技术文档的信息。本风格指南的一个主要目标是确保 Prisma 文档在选词、写作风格、格式等方面的一致性。
 
-> **This style guide is heavily inspired by the [Gatsby Style Guide](https://www.gatsbyjs.org/contributing/gatsby-style-guide/).** Many sections have been bluntly copied, some others have been slightly edited and some are new and specific to the Prisma docs.
+> **本风格指南很大程度上来自于 [Gatsby 风格指南](https://www.gatsbyjs.org/contributing/gatsby-style-guide/).** 许多章节都被直接复制了，有些章节经过了轻微的编辑，还有一些是新的，是 Prisma 文档所特有的。
 
 </TopBlock>
 
-## Word choice
+## 选词
 
-### Use "you" as the pronoun
+### 用“你”作代词
 
-Any content should use the second person ("you") to provide a conversational tone. This way, the text and instructions seem to speak directly to the person reading it. Try to avoid using the first person ("I", "we", "let's", and "us").
+任何内容都应该使用第二人称(“你”)来提供对话基调。这样，文本和说明似乎直接与阅读它的人对话。尽量避免使用第一人称(“我”、“我们”、“让我们”和“我们”)。
 
-Using "you" in English is also more accurate than saying "we because typically only one person is reading the tutorial or guide at a time and the person who wrote the tutorial is not actually going through it with them, so "we" would be inaccurate. You might notice that some technical documentation uses third person pronouns and nouns like "they" and "the user", which add more distance and feel colder than the conversational and warm "you" and "your".
+使用英语中的“你”也比说“我”更准确，因为通常一次只有一个人在阅读教程或指南，而编写教程的人实际上并没有和他们一起阅读，所以“我”是不准确的。你可能会注意到，一些技术文档使用了第三人称代词和名词，比如“他们”和“用户”，它们比对话中温暖的“你”和“你的”增加了更多的距离，让人感觉更冷。
 
-#### When to use "we"
+#### 什么时候使用"我们"
 
-You can use "we" when specifically referring to Prisma. For example:
+当你特别提到 Prisma 时，你可以用“我们”。例如：
 
-> "We recommend that you share a single instance of `PrismaClient` across your application.
+> "我们建议你在你的应用程序中共享一个`PrismaClient`实例。
 
-### Avoid words like "easy" and "just"
+### 避免使用像“容易”和“公正”这样的字眼。
 
-Avoid using words like "easy", "just" "simple" and "basic" because if users have a hard time completing the task that is supposedly "easy," they will question their abilities. Consider using more specific descriptors; for example, when you say the phrase "deployment is easy," what do you really mean? Is it easy because it takes fewer steps than another option? If so, use the most specific descriptor possible, which in that case would be "this deployment method involves fewer steps than other options."
+避免使用“容易”、“只是”、“简单”和“基本”这样的词，因为如果用户很难完成本应“容易”的任务，他们就会质疑自己的能力。考虑使用更具体的描述符；例如，当你说“部署很容易”这句话时，你的真正意思是什么？这是不是因为它比另一种选择需要更少的步骤而容易呢？如果是，请尽可能使用最具体的描述符，在这种情况下应该是“此部署方法比其他选项涉及的步骤更少”。
 
-For even more inclusive docs, avoid phrases that assume a reader’s experience or skill level, like "just deploy it and you’re done" or "for a refresher (referring to a completely different doc that someone may not have read)". Often, rephrasing results in stronger sentences that appeal to a wider range of contexts.
+对于更具包容性的文档，避免使用假定读者的经验或技能水平的短语，如“只需部署它，你就完成了”或“为一个复习人员(指的是一个完全不同的文档，某人可能还没有读过)”。通常情况下，重新措辞会产生更强烈的句子，从而吸引更广泛的上下文。
 
-### Use inclusive language
+### 使用包容性语言
 
-When you need to refer to one or more people in third-person, be sure to use inclusive, gender-neutral language if the gender of the person is not explicitly known. Use "they/them/their" instead of "he/him/his" or "she/her/her". Avoid words like "guys"
+当你需要用第三人称来指代一个或多个人时，如果这个人的性别不明确，一定要使用包容的、中性的语言。用“他们/他们/他们的”代替“他/他/他的”或“她/她/她”。避免使用像“伙计们”这样的字眼。
 
-### Avoid emojis, slang, and metaphors
+### 避免使用表情符号、粗话和隐喻
 
-Avoid using emojis or emotions in the docs and idiomatic expressions / slang, or metaphors. Prisma has a global community, and the cultural meaning of an emoji, emoticon, or slang may be different around the world. Use your best judgment! Also, emojis can render differently on different systems.
+避免在文档和习惯用语/粗语或隐喻中使用表情符号或情绪。Prisma 有一个全球社区，表情符号、表情符号或粗语的文化含义可能在世界各地有所不同。用你最好的判断力！此外，表情符号在不同的系统上可以呈现不同的效果。
 
-### Avoid Latin terms
+### 避免使用拉丁语术语
 
-For example:
+举例:
 
 - et al
 - etc
 - i.e.
 - e.g.
 
-### Avoid contractions
+### 避免缩写
 
-For example:
+举例:
 
 - You're (use "You are")
 - It'll (use "It will")
 
-### Define jargon
+### 定义行话
 
-Articles should be written with short, clear sentences, and use as little jargon as necessary.
+文章应该用简短、清晰的句子写，必要时尽量少用行话。
 
-> Jargon: (n.) special words or expressions that are used by a particular profession or group and are difficult for others to understand: legal jargon.
+> 行话：(名词)某一特定职业或群体使用的、其他人难以理解的特殊词语或表达：法律术语。
 
-All jargon should be defined immediately in plain English. In other words, pretend like your readers have basic coding experience but not necessarily experience with PWAs and the JAMstack (see what happened there? I just used two jargon words that need to be defined); you need to define words that newcomers might have a hard time understanding.
+所有行话都应该立即用通俗易懂的英语来定义。换句话说，假装你的读者有基本的编码经验，但不一定有使用 PWAS 和 JAMstack 的经验(请看那里发生了什么？我只用了两个需要定义的行话)；你需要定义新手可能很难理解的单词。
 
-### Referring to other parts of the docs
+### 参考文档的其他部分
 
 - Page
 - Section
 
-### Technical word choice
+### 技术用词选择
 
-#### Record
+#### 记录
 
-Refer to rows in the database as **records**. For example:
+将数据库中的行称为**记录**。例如：:
 
-"The following `create` query creates a single `User` **record**."
+"下面的 `create` 查询创建一个 `User` **记录**."
 
-Do not use:
+不用:
 
 - Entry
 - Row
 - Object
 
-#### Model property
+#### 模型特性
 
-Model property refers to the top-level `PrismaClient` properties that refer to models:
+模型属性是指引用模型的顶级`PrismaClient`属性：:
 
 ```
 const result = await prisma.user.findMany(...) // user model property
 const result = await prisma.post.findMany(...) // post model property
 ```
 
-## Writing style
+## 写作风格
 
-### Write concisely and avoid long blocks of text
+### 写得简明扼要，避免长篇大论
 
-Concise writing communicates the bare minimum without redundancy. Strive to make your writing as short as possible; this practice will often lead to more accurate and specific writing. To avoid large blocks of text:
+简洁明了的写作传达了最低限度的信息，没有冗余。努力使你的写作尽可能简短；这样的练习通常会让你的写作更准确、更具体。要避免大块文本，请执行以下操作：
 
-- Use shorter paragraphs
-- Use lists
-- Use examples
-- Use bold and emphasis
-- Use tables
-- Use diagrams
+- 使用较短的段落
+- 使用列表
+- 使用示例
+- 使用粗体和强调
+- 使用表格
+- 使用图表
 
-### Use active voice
+### 使用主动语态
 
-Use active voice instead of passive voice. Generally, it’s a more concise and straightforward way to communicate a subject. For example:
+用主动语态代替被动语态。一般来说，这是一种更简洁、更直截了当的交流方式。例如：
 
-- (passive) The for loop in JavaScript is used by programmers to…
-- (active) Programmers use the for loop in JavaScript to…
+- (被动)程序员使用 javascript 中的 for 循环来…
+- (主动)程序员在 javascript 中使用 for 循环…
 
-### Be assertive
+### 要有主见
 
-Use assertive language.
+使用肯定的语言。
 
-Good:
+推荐:
 
-- Use the `createMany` method to create multiple records in a single transaction
-- You can use nested writes to create a user and that user's posts at the same time
+- 使用`createMany`方法在单个事务中创建多条记录
+- 你可以使用嵌套写入同时创建 user 和该用户的 posts
 
-Avoid:
+避免:
 
-- This example tries to..
-- You might be able to..
-- You could use..
+- 例子中尝试..
+- 你可能..
+- 你应该使用..
 
-### Use clear hyperlinks
+### 使用清晰的超链接
 
-Hyperlinks should contain the clearest words to indicate where the link will lead you.
+超链接应该包含最清晰的文字，以表明链接将把你带到哪里。
 
 ```md
 <!-- Good -->
 
-Read more in the [Prisma docs](https://www.prisma.io/docs/)
+获得更多 [Prisma 文档](https://www.prisma.io/docs/)
 
 <!-- Bad -->
 
-Read more in the Prisma docs [here](https://www.prisma.io/docs/)
+在 Prisma 文档获得更多 [这里](https://www.prisma.io/docs/)
 ```
 
-### Indicate when something is optional
+### 指示何时某些内容是可选的
 
-When a paragraph or sentence offers an optional path, the beginning of the first sentence should indicate that it’s optional. For example, "if you’d like to learn more about xyz, see our reference guide" is clearer than "Go to the reference guide if you’d like to learn more about xyz."
+当一个段落或句子提供可选路径时，第一句话的开头应该表明它是可选的。例如，“如果你想了解更多关于 xyz 的信息，请参阅我们的参考指南”比“如果你想了解更多关于 xyz 的信息，请转到参考指南”更清楚。
 
-This method allows people who would not like to learn more about xyz to stop reading the sentence as early as possible. This method also allows people who would like to learn more about xyz to recognize the opportunity to learn quicker instead of accidentally skipping over the paragraph.
+这种方法可以让不想更多了解 xyz 的人尽早停止阅读句子。这种方法还可以让想要了解更多 xyz 的人认识到更快学习的机会，而不是不小心跳过段落。
 
-### Abbreviate terms
+### 缩写术语
 
-If you want to abbreviate a term in your article, write it out fully first, then put the abbreviation in parentheses. After that, you may use the abbreviation going for the rest of the article. For example, "In computer science, an abstract syntax tree (AST) is …".
+如果你想在你的文章中缩写一个术语，先把它完整地写出来，然后把缩写放在括号里。在此之后，您可以在文章的其余部分使用缩写。例如，“在计算机科学中，抽象语法树(AST)是…”。
 
-### Embrace redundancy
+### 拥抱冗余
 
-Meet the user where they are.
+在用户所在的地方与他们见面。
 
-## Grammar and formatting
+## 语法和格式
 
-### Capitalize and spell out proper nouns
+### 专有名词大写拼写
 
-Although it can be tempting to use abbreviations like "Postgres" (instead of the official proper noun "PostgreSQL") or not worry about casing when writing "Javascript" (instead of "JavaScript"), we're committed to using the preferred notions of proper nouns. A few common examples are:
+尽管在编写“Javascript”(而不是“JavaScript”)时使用诸如“Postgres”(而不是官方专有名词“PostgreSQL”)之类的缩写很有诱惑力，或者不必担心大小写问题，但我们致力于使用专有名词的首选概念。以下是几个常见的示例：
 
 - Node.js (instead of Node or Node.JS)
 - JavaScript and TypeScript (instead of JavaScript and Typescript or JS and TS)
@@ -169,64 +169,64 @@ Although it can be tempting to use abbreviations like "Postgres" (instead of the
 - GitHub (instead of Github)
 - ...
 
-If you're not sure about the spelling of a certain noun, the official homepage of it typically contains the proper spelling for you to look up.
+如果你不确定某个名词的拼写，它的官方主页通常包含正确的拼写供你查阅。
 
-### Titles and headers
+### 标题和页眉
 
-- Use sentence casing for titles and headings: only the initial word is uppercase
-- Use the present participle form of verbs (add **-ing** - for example: "Configuring the database")
-- Do not use punctuation at the end of the phrase unless a question mark is required
-- Use `<inlinecode>code</inlinecode>` for code in headings - this is required by navigation elements
+- 标题和页眉使用句子大小写：只有首个单词是大写的
+- 使用动词的现在分词形式(添加**-ing**-例如：“配置数据库”)
+- 除非需要问号，否则不要在短语末尾使用标点符号
+- 标题中的代码使用`<inlinecode>code</inlinecode>`-这是导航元素所必需的
 
-### Use tables, bullet lists and numbered lists
+### 使用表格、项目符号列表和编号列表
 
-Tables and lists are often the most concise way of presenting information. Use the elements whenever they feel appropriate. Here are few guidelines to help decide when to use which:
+表格和列表通常是表示信息的最简明的方式。只要它们觉得合适，就可以使用这些元素。以下是一些指导原则，可帮助你决定何时使用以下哪种方法：
 
-- Use bullet lists only when the order of the lists doesn't matter (e.g. an enumeration of the features of a database which don't have an inherent order)
-- Use numbered lists only when the order of the list matters (e.g. when providing step-by-step instructions where one step builds on the previous)
-- Use tables when you're enumerating things that share a number of similar properties/characteristics (e.g. the parameters for an API call which all have a "name", a "type", are required or optional and need a description)
+- 仅在列表的顺序无关紧要时才使用项目符号列表(例如，没有固有顺序的数据库功能的枚举)。
+- 仅当列表的顺序很重要时才使用编号列表(例如，在提供一个步骤建立在前一个步骤基础上的分步说明时)。
+- 当你枚举具有许多相似属性/特征的事物时(例如，API 调用的参数都有一个“名称”、一个“类型”，是必需的或可选的，并且需要一个描述)，请使用表格。
 
-### Use italics and bold font
+### 使用斜体和粗体
 
-Italics and bold fonts can be a great way to emphasize certain parts of your sentence to the reader. Use bold font more sparsely and only when you want this part to stand out from the entire paragraph (so that it's visible when a reader only "scans" the page instead of properly reading it). Use italics for words that introduce new concepts for the first time.
+斜体和粗体可以很好地向读者强调句子的某些部分。只有当你想让这一部分从整个段落中突出时，才能使用更稀疏的粗体(这样，当读者只“浏览”页面而不是正确阅读时，它才是可见的)。首次引入新概念的单词使用斜体。
 
-### Use inline code format for paths and file names
+### 对路径和文件名使用内联代码格式
 
-For example:
+举例:
 
-- "The generated Prisma Client is located in the `./node_modules/.prisma` folder by default."
-- "The `schema.prisma` file is located in..."
-- "To use multiple `.env` files..."
+- “生成的 Prisma 客户端默认位于`./node_module/.prisma`文件夹中。”
+- “`schema.prisma`文件位于...”
+- “要使用多个`.env`文件...”
 
-### Use inline code format when referring to strings in text
+### 引用文本中的字符串时使用内联代码格式
 
-For example:
+举例:
 
-"The following query returns all records where the `email` field is equal to `Sarah`."
+“下面的查询返回`email`字段等于`Sarah`的所有记录。”
 
-### Make lists clear with the Oxford Comma
+### 用牛津逗号清楚地列出清单
 
-Use the Oxford Comma except in titles. It is a comma used after the penultimate item in a list of three or more items, before "and" or "or" e.g. an Italian painter, sculptor, and architect. It makes things clearer.
+除标题外，请使用牛津逗号。它是一个逗号，用在三个或更多项目列表中倒数第二个项目之后，在“and”或“or”之前，例如意大利画家、雕塑家和建筑师。这让事情变得更清晰了。
 
-[Confusion can happen when you don’t use the Oxford comma.](https://img.buzzfeed.com/buzzfeed-static/static/2015-02/22/18/enhanced/webdr11/enhanced-buzz-32156-1424646300-12.jpg?downsize=715:*&output-format=auto&output-quality=auto)
+[如果不使用牛津逗号，可能会发生混淆。](https://img.buzzfeed.com/buzzfeed-static/static/2015-02/22/18/enhanced/webdr11/enhanced-buzz-32156-1424646300-12.jpg?downsize=715:*&output-format=auto&output-quality=auto)
 
-### Prefer US English
+### 首选美式英语
 
-For words that have multiple spellings, prefer the US English word over British or Canadian English. For example:
+对于有多个拼写的单词，首选美国英语单词，而不是英国英语或加拿大英语。例如：
 
-- "color" over "colour"
-- "behavior" over "behaviour"
+- "color" 代替 "colour"
+- "behavior" 代替 "behaviour"
 
-## Writing code snippets
+## 编写代码片段
 
-### Introduce all code snippets
+### 介绍所有代码片段
 
-Write a short introductory sentence that:
+写一句简短的开场白：
 
-- Explains what the code snippet is doing
-- Links to reference documentation if applicable
+- 解释代码段正在执行的操作。
+- 指向参考文档的链接(如果适用)
 
-For example:
+举例:
 
 ```md
 The following [`createMany`](..) query creates several new `User` records:
@@ -240,13 +240,13 @@ The following [`createMany`](..) query:
 - Creates several nested `Category` records
 ```
 
-### Show the result of a query wherever possible
+### 尽可能显示查询结果
 
-Use the [`<CodeWithResult>`](mdx-examples#code-with-output) component to show a query and the results of that query.
+使用[`<CodeWithResult>`](mdx-examples#code-with-output)组件显示查询和该查询的结果。
 
-### Use the `highlight` property to highlight
+### 使用 `highlight` 属性突出显示
 
-Use the [`highlight` property](mdx-examples#code-block-with-highlighted-code) if you need to highlight your code samples. For example:
+使用 [`highlight` 属性](mdx-examples#code-block-with-highlighted-code) 如果你需要高亮显示代码。举例:
 
 ````
 ```prisma highlight=3;normal
@@ -257,23 +257,23 @@ generator client {
 ```
 ````
 
-### Use inline code only when referring to "code concepts"
+### 只有在引用“代码概念”时才使用内联代码。
 
-TBD
+待定
 
-### Format code blocks and inline code
+### 格式化代码块和内联代码
 
-Use the following as reference when creating and editing docs: [formatting inline code and code blocks](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code).
+创建和编辑文档时，请使用以下内容作为参考：[格式化内联代码和代码块](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code)。
 
-### Emphasize placeholders
+### 强调占位符
 
-Placeholders are a tricky topic in technical documentation and are one of the most common sources of confusion, especially for beginners. To strive for consistency, placeholders in the Prisma docs are:
+占位符在技术文档中是一个棘手的主题，也是最常见的混淆来源之一，尤其是对初学者而言。为了保持一致性，Prisma 文档中的占位符为：
 
-- spelled in all-uppercase letters
-- prefixed and suffixed with two underscores
-- using descriptive terms
+- 全部用大写字母拼写
+- 前缀和后缀分别为两个下划线
+- 使用描述性术语
 
-As an example, consider the following code block where `__DATABASE_CONNECTION_URL__` is a placeholder for the PostgreSQL connection URL:
+例如，考虑以下代码块，其中`__DATABASE_CONNECTION_URL__`是 PostgreSQL 连接 URL 的占位符：
 
 ```prisma
 datasource db {
@@ -282,7 +282,7 @@ datasource db {
 }
 ```
 
-Whenever you're using a placeholder, you should make sure that you directly explain or at least link out to another resource that explains how to obtain a value for the placeholder. You should also explicitly call out that this is a placeholder that needs to get replaced with a "real value" including an example of what that real value might look like:
+无论何时使用占位符，都应该确保直接解释或至少链接到另一个解释如何获取占位符的值的资源。您还应该明确指出，这是一个占位符，需要替换为“实际值”，包括该实际值可能是什么样子的示例：
 
 ```prisma
 datasource db {
@@ -291,46 +291,46 @@ datasource db {
 }
 ```
 
-### Use prettier code formatting
+### 使用更美观的代码格式
 
-TBD
+待定
 
-### Use expressive variable names
+### 使用富有表现力的变量名称
 
-Good:
+推荐:
 
 ```ts
 const getUsers = (...)
 const deleteUsers = (...)
 ```
 
-Bad:
+避免:
 
 ```ts
 const results = (...) // Too generic
 const foo = (...) // Too vague
 ```
 
-### Strive for code snippets to be "valid"
+### 争取代码片段是“有效的”
 
-TBD
+待定
 
-### Avoid too many inline comments
+### 避免过多的内联注释
 
-TBD
+待定
 
-### Lists of shell commands
+### Shell 命令列表
 
-When you need to provide a series of CLI commands as instructions to the reader, don't use a list unless you're providing context for each step:
+当你需要向读者提供一系列 CLI 命令作为说明时，除非您为每个步骤提供上下文，否则不要使用列表：
 
-#### Bad
+#### 避免
 
 - `cd path/to/server`
 - `docker-compose up -d --build`
 - `./node_modules/.bin/sequelize db:migrate` or `npx sequelize db:migrate`
 - `./node_modules/.bin/sequelize db:seed:all` or `npx sequelize db:seed:all`
 
-#### Better
+#### 推荐
 
 ```shell
 cd path/to/server
@@ -339,16 +339,16 @@ docker-compose up -d --build
 ./node_modules/.bin/sequelize db:seed:all # or `npx sequelize db:seed:all`
 ```
 
-or
+或者
 
-1. Navigate into the project directory: `cd path/to/server`
-1. Start Docker containers: `docker-compose up -d --build`
-1. Migrate your database schema: `./node_modules/.bin/sequelize db:migrate` or `npx sequelize db:migrate`
-1. Seed the database: `./node_modules/.bin/sequelize db:seed:all` or `npx sequelize db:seed:all`
+1. 切换目录: `cd path/to/server`
+1. 启动容器: `docker-compose up -d --build`
+1. 迁移数据库结构: `./node_modules/.bin/sequelize db:migrate` or `npx sequelize db:migrate`
+1. 数据库种子数据: `./node_modules/.bin/sequelize db:seed:all` or `npx sequelize db:seed:all`
 
-### Don't prepend CLI commands with `$`
+### 不要在 CLI 命令前面加上 `$`
 
-Use `terminal` for CLI commands - this type of code block includes a `$`:
+在 CLI 中使用 `terminal` - 这个代码块包含一个 `$`符合:
 
 ````
 ```terminal
@@ -362,48 +362,48 @@ For example:
 npm install prisma
 ```
 
-### npm vs Yarn
+### npm 对比 Yarn
 
-Always use `npm` commands instead of `yarn`.
+推荐使用 `npm` 而不是 `yarn`。
 
-## Spelling
+## 拼写
 
-### Hyphens
+### 连字符
 
-Hyphens are used according to these [rules](https://www.grammarbook.com/punctuation/hyphens.asp).
+根据这些 [规则](https://www.grammarbook.com/punctuation/hyphens.asp)使用连字符。
 
-Sometimes there are some terms where it's not clear whether to use a hyphen or not. In order to strive for consistency, we list those terms here as a rule for using them throughout the Prisma documentation.
+有时有些术语不清楚是否使用连字符。为了保持一致性，我们在这里列出了这些术语，作为在整个 Prisma 文档中使用它们的规则。
 
-#### Spell without hyphen
+#### 不带连字符的拼写
 
-- Use case
-- Command line
-- Auto format
-- Type safety
+- 使用案例
+- 命令行
+- 自动套用格式
+- 类型安全
 
-#### Spell with hyphen
+#### 带连字符的拼写
 
-- Compile-time
+- 编译时间
 
-#### Spell as one word
+#### 拼写为一个单词
 
-- Autocomplete
+- 自动完成
 
-#### Type-safe and type safe
+#### 类型安全和安全类型
 
-- "The code is type safe."
-- "This is type-safe code."
+- "这个代码是安全类型"
+- "这个是类型安全代码"
 
-#### Data source and `datasource`
+#### 数据源和 `datasource`
 
-- The `datasource` block
-- "You must regenerate the client when you introduce a new data source"
+- `datasource` 区块
+- “引入新数据源时必须重新生成客户端”
 
-## Boilerplate
+## 样板文件
 
-The following section contains frequently used phrases or blocks of content that you can re-use:
+以下部分包含你可以重复使用的常用短语或内容块：
 
-### Introducing a preview feature
+### 引入预览功能
 
 ````md
 To enable this feature, add `orderByRelations` to `previewFeatures` in your schema:
@@ -416,12 +416,12 @@ generator client {
 ```
 ````
 
-### Making recommendations
+### 提出建议
 
-If it is a Prisma recommendation, use:
+如果是 Prisma 建议，请使用：
 
-> "**We recommend that** you share a single instance of `PrismaClient` across your application."
+> "**我们建议** 你跨应用程序共享 `PrismaClient` 的单个实例"
 
-If it is an industry standard, use:
+如果是行业标准，请使用：
 
-> "**It is recommended practice to** limit he number of database connections to X."
+> "**建议** 限制数据库连接数至 X。"
