@@ -1,5 +1,5 @@
 ---
-title: Baselining 数据库
+title: 数据库设置基线版本(Baselining)
 metaDescription: 如何为一个包含重要数据的现有数据库初始化迁移历史。
 ---
 
@@ -12,20 +12,20 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 </Admonition>
 
-Baselining 是对数据库进行迁移历史初始化的过程:
+基线版本(Baselining) 是对数据库进行迁移历史初始化的过程:
 
 - ✔ 在开始使用 Prisma Migrate 之前就已经存在
 - ✔ 包含必须维护的数据（如生产环境），这意味着数据库不能被重置
 
-Baselining 通知 Prisma Migrate 一个或多个迁移**已经被执行**. 避免了迁移执行时试图重复创建已经存在的表和字段时的报错。
+基线版本(Baselining) 通知 Prisma Migrate 一个或多个迁移**已经被执行**. 避免了迁移执行时试图重复创建已经存在的表和字段时的报错。
 
 > **注意**: 假定重置和 seed 开发环境的数据库是被允许的。
 
-Baselining 是项目中 [对现有数据库添加 Prisma Migrate ](add-prisma-migrate-to-a-project) 的一部分。
+基线版本(Baselining) 是项目中 [对现有数据库添加 Prisma Migrate ](add-prisma-migrate-to-a-project) 的一部分。
 
 </TopBlock>
 
-## 为什么需要 baseline
+## 为什么需要 基线版本(baseline)
 
 当给项目添加 Prisma Migrate, **在开始使用 Prisma Migrate 之前**，初始迁移包含了重新创建数据库状态所需的所有 SQL:
 
@@ -51,11 +51,11 @@ Baselining 是项目中 [对现有数据库添加 Prisma Migrate ](add-prisma-mi
 
 ![A migration history represented by three migration files (file icon and name), surrounded by a a box labelled 'migration history'. The first migration is marked 'do not apply', and the second two migrations are marked 'apply'. An arrow labelled with the command 'prisma migrate deploy' points from the migration history to a database labelled 'production'.](deploy-db.png)
 
-Baselining 解决了这个问题， 它告诉 Prisma Migrate 假定这些迁移 **已经被执行**.
+基线版本(Baselining) 解决了这个问题， 它告诉 Prisma Migrate 假定这些迁移 **已经被执行**.
 
-## Baselining 数据库
+## 基线版本(Baselining) 数据库
 
-如何 baseline 数据库:
+如何创建数据库的基线版本（Baselining）:
 
 1. 确保[开发环境已经更新和产生了初始迁移](add-prisma-migrate-to-a-project#update-the-development-environment). 注意那些应该被跳过的迁移的名称 - 例如： `20210426141759_initial-migration-for-db`
 
@@ -67,5 +67,5 @@ Baselining 解决了这个问题， 它告诉 Prisma Migrate 假定这些迁移 
 
 该命令将目标迁移添加到`_prisma_migrations`表中，并将其标记为已应用。当你运行`prisma migrate deploy`来应用新的迁移时，Prisma Migrate 会：
 
-1. 跳过所有标记为 "应用 "的迁移，包括 baseline 迁移。
-1. 应用所有 baseline 迁移 _后面_ 的新迁移。
+1. 跳过所有标记为 "应用 "的迁移，包括 基线版本(baseline) 迁移。
+1. 应用所有 基线版本(baseline) 迁移 _后面_ 的新迁移。
