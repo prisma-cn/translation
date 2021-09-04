@@ -1,27 +1,26 @@
 ---
-title: 'Transactions and batch queries'
-metaTitle: 'Transactions and batch queries (Reference)'
-metaDescription: 'This page explains the current transactions API of Prisma Client.'
+title: '事务和批处理查询'
+metaTitle: '事务和批处理查询 (参考)'
+metaDescription: '此页面解释 Prisma Client 的当前事务 API。'
 ---
 
 <TopBlock>
 
-A database transaction refers to a sequence of read/write operations that are _guaranteed_ to either succeed or fail as a whole. This section describes the ways in which the Prisma Client API supports transactions.
+数据库事务是指一系列读/写操作，这些操作作为一个整体 _保证_ 成功或失败。本节介绍 Prisma Client API 支持事务的方式。
 
-- For more in-depth examples and use cases, refer to the 📖 [transactions guide](../../../guides/performance-and-optimization/prisma-client-transactions-guide).
-- For information about transactions in general and the reasoning behind Prisma's current solutions, see ✍ [Blog: How Prisma supports transactions](https://www.prisma.io/blog/how-prisma-supports-transactions-x45s1d5l0ww1/).
+- 有关更深入的示例和用例，请参阅📖 [事务指南](../../../guides/performance-and-optimization/prisma-client-transactions-guide)。
+- 有关一般事务以及 Prisma 当前解决方案背后的原因的信息，请参阅✍ [博客：Prisma 如何支持事务](https://www.prisma.io/blog/how-prisma-supports-transactions-x45s1d5l0ww1/).
 
 </TopBlock>
 
-## Nested writes
+## 嵌套写入
 
-A [nested write](relation-queries#nested-writes) lets you perform a single Prisma Client API call with multiple _operations_ that touch multiple [_related_](../prisma-schema/relations) records. For example, creating a _user_ together with a _post_ or updating an _order_ together with an _invoice_. Prisma Client ensures that all operations succeed or fail as a whole.
+[嵌套写入](relation-queries#nested-writes) 允许你使用多个 _操作_ 执行单个 Prisma Client API 调用，这些操作涉及多个 [_相关的_](../prisma-schema/relations) 记录。例如，创建 _用户_ 和 _post_ 或更新 _订单_ 和 _发票_。Prisma Client 确保所有操作作为一个整体成功或失败。
 
-The following example demonstrates a nested write with `create`:
+下面的示例演示了带有 `create` 的嵌套写入：
 
 ```ts
-// Create a new user with two posts in a
-// single transaction
+// 在一个事务中创建一个具有两个帖子的新用户
 const newUser: User = await prisma.user.create({
   data: {
     email: 'alice@prisma.io',
@@ -35,10 +34,10 @@ const newUser: User = await prisma.user.create({
 })
 ```
 
-The following example demonstrates a nested write with `update`:
+以下示例演示了带有 `update` 的嵌套写入：
 
 ```ts
-// Change the author of a post in a single transaction
+// 在单个事务中更改帖子的作者
 const updatedPost: Post = await prisma.post.update({
   where: { id: 42 },
   data: {
@@ -49,21 +48,21 @@ const updatedPost: Post = await prisma.post.update({
 })
 ```
 
-> Refer to the 📖 [transactions guide](../../../guides/performance-and-optimization/prisma-client-transactions-guide#nested-writes) for more examples.
+> 更多示例请参考 📖 [事务指南](../../../guides/performance-and-optimization/prisma-client-transactions-guide#nested-writes)。
 
-## Batch/bulk operations
+## 批处理/批量操作
 
-The following bulk operations run as transactions:
+以下批量操作作为事务运行：
 
 - `deleteMany`
 - `updateMany`
 - `createMany`
 
-> Refer to the 📖 [transactions guide](../../../guides/performance-and-optimization/prisma-client-transactions-guide#bulk-operations) for more examples.
+> 更多示例请参考 📖 [事务指南](../../../guides/performance-and-optimization/prisma-client-transactions-guide#bulk-operations)。
 
 ## The <inlinecode>$transaction</inlinecode> API
 
-The following query returns all posts that match the provided filter as well as a count of all posts:
+以下查询返回与提供的过滤器匹配的所有帖子以及所有帖子的计数：
 
 ```ts
 const [posts, totalPosts] = await prisma.$transaction([
@@ -72,7 +71,7 @@ const [posts, totalPosts] = await prisma.$transaction([
 ])
 ```
 
-You can also use `$queryRaw` and `$executeRaw` inside a `$transaction`:
+你可以在 `$transaction` 中使用 `$queryRaw` 和 `$executeRaw` ：
 
 ```ts
 const [userList, updateUser] = await prisma.$transaction([
@@ -81,19 +80,20 @@ const [userList, updateUser] = await prisma.$transaction([
 ])
 ```
 
-Instead of immediately awaiting the result of each operation when it's performed, the operation itself is stored in a variable first which later is submitted to the database via a method called `$transaction`. Prisma Client will ensure that either all three `create`-operations or none of them succeed.
+操作本身不是在执行时立即等待每个操作的结果，而是先存储在变量中，然后通过名为 `$transaction` 的方法提交给数据库。Prisma Client 将确保所有三个 `create` 操作都成功，或者没有一个成功。
 
-> **Note**: Operations are executed according to the order they are placed in the transaction. Using a query in a transaction does not influence the order of operations in the query itself.
->
-> Refer to the 📖 [transactions guide](../../../guides/performance-and-optimization/prisma-client-transactions-guide#transaction-api) for more examples.
+> **注意**：操作根据其在事务中的顺序执行。在事务中使用查询不会影响查询本身的操作顺序。
 
-### Interactive Transactions (in Preview)
+> 
+> 参考📖 [事务指南](../../../guides/performance-and-optimization/prisma-client-transactions-guide#transaction-api) 了解更多示例。
 
-Sometimes you need more control over what queries execute within a transaction.
+### 交互式事务（在预览版）
 
-Interactive transactions are commonly used when the result of one query depends on another query and you want to run both queries within a single transaction.
+有时，你需要更多地控制事务中执行的查询。
 
-To support this use case and more, you can enable interactive transactions by adding `interactiveTransactions` in the generator of your Prisma Schema:
+当一个查询的结果依赖于另一个查询，并且希望在单个事务中运行两个查询时，通常使用交互式事务。
+
+为了支持此用例及更多，你可以通过在 Prisma Schema 的生成器中添加 `interactiveTransactions` 来启用交互式事务：
 
 ```prisma
 generator client {
@@ -102,9 +102,9 @@ generator client {
 }
 ```
 
-Then you can pass an async function into [`$transaction`](../../../guides/performance-and-optimization/prisma-client-transactions-guide#transaction-api).
+然后你可以将异步函数传递到 [`$transaction`](../../../guides/performance-and-optimization/prisma-client-transactions-guide#transaction-api)。
 
-The following is an example of purchasing a movie ticket online. In this example, we really don't want to sell the same ticket twice:
+以下是在线购买电影票的示例。在这个例子中，我们真的不想把同一张票卖两次：
 
 ```tsx
 import { Ticket } from 'prisma'
@@ -112,9 +112,9 @@ import { Ticket } from 'prisma'
 const userEmail = 'alice@prisma.io'
 const movieName = 'October Sky'
 
-// Start a transaction
+// 开始一个事务
 const ticket: Ticket = await prisma.$transaction(async (prisma) => {
-  // Find an available ticket
+  // 找到一个可用的电影票
   const availableTicket = await prisma.ticket.findFirst({
     where: {
       claimedBy: null,
@@ -124,14 +124,13 @@ const ticket: Ticket = await prisma.$transaction(async (prisma) => {
     },
   })
 
-  // Throw an error if no tickets are available
+  // 如果没有可用的电影票抛出一个异常
   if (!availableTicket) {
-    // This will rollback the transaction
+    // 事务将被回滚
     throw new Error(`Oh no! ${movieName} is all booked.`)
   }
 
-  // Claim the ticket, commit the transaction, and return
-  // the result
+  // 索取票据、提交事务并返回结果
   return prisma.ticket.update({
     data: {
       claimedBy: userEmail,
@@ -143,33 +142,34 @@ const ticket: Ticket = await prisma.$transaction(async (prisma) => {
 })
 ```
 
-In the example above, both the `findFirst` and `update` queries run within a database transaction. When your application reaches the end of the function, the transaction is **committed** to the database.
+在上面的示例中，`findFirst` 和 `update` 查询都在数据库事务中运行。当应用程序到达函数末尾时，事务将 **提交** 到数据库。
 
-If your application encounters an error along the way, the async function will throw an exception and automatically **rollback** the transaction.
+如果应用程序在此过程中遇到错误，异步函数将抛出异常并自动 **回滚** 事务。
 
-To catch the exception, you can wrap `$transaction` in a try-catch block:
+要捕获异常，可以在 try-catch 块中包含 `$transaction`：
 
 ```js
 try {
   await prisma.$transaction(async (prisma) => {
-    // Code running in a transaction...
+    // 代码运行了一个事务...
   })
 } catch (err) {
-  // Handle the rollback...
+  // 处理回滚...
 }
 ```
 
-Additionally, the transaction API supports a 2nd parameter with the following configuration options:
+此外，事务 API 支持具有以下配置选项的第二个参数：
 
-- `maxWait`: The maximum amount of time the Prisma Client will wait to acquire a transaction from the database. The default is 2 seconds.
-- `timeout`: The maximum amount of time the interactive transaction can run before being canceled and rolled back. The default value is 5 seconds.
+- `maxWait`:Prisma Client 等待从数据库获取事务的最长时间。默认值为 2 秒。
 
-For example:
+- `timeout`：在取消和回滚交互事务之前，可以运行的最长时间。默认值为 5 秒。
+
+例如：
 
 ```jsx
 await prisma.$transaction(
   async (prisma) => {
-    // Code running in a transaction...
+    // 代码运行了一个事务...
   },
   {
     maxWait: 5000, // default: 2000
@@ -180,21 +180,21 @@ await prisma.$transaction(
 
 <Admonition type="warning">
 
-**Use interactive transactions with caution**. Keeping transactions
-open for a long time hurts database performance and can even cause deadlocks.
-Try to avoid performing network requests and executing slow queries inside your
-transaction functions. We recommend you get in and out as quick as possible!
+**谨慎使用交互式事务**。
+保持事务长时间打开会有损数据库性能，甚至可能导致死锁。
+尽量避免执行网络请求和在内部执行缓慢的查询事务功能。
+我们建议你尽可能的快进快出！
 
 </Admonition>
 
-## Transaction isolation level
+## 事务隔离级别
 
-Transaction isolation level is not currently configurable at a Prisma level and is not explicitly set by Prisma.
+当前无法在 Prisma 级别配置事务隔离级别，Prisma 也未显式设置事务隔离级别。
 
-- [Default transaction isolation level in PostgreSQL](https://www.postgresql.org/docs/9.3/runtime-config-client.html#GUC-DEFAULT-TRANSACTION-ISOLATION)
-- [Default transaction isolation level in SQL Server](https://docs.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-ver15)
-- [Default transaction isolation level in MySQL](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html)
+- [PostgreSQL 中的默认事务隔离级别](https://www.postgresql.org/docs/9.3/runtime-config-client.html#GUC-DEFAULT-TRANSACTION-ISOLATION)
+- [SQL Server 中的默认事务隔离级别](https://docs.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-ver15)
+- [MySQL 中的默认事务隔离级别](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html)
 
-## Join the conversation on GitHub
+## 加入 GitHub 上的对话
 
-If you'd like to see transactions supported in the future, [please join the discussion on GitHub](https://github.com/prisma/prisma-client-js/issues/349).
+如果你希望看到将来支持的事务，[请加入关于 GitHub 的讨论](https://github.com/prisma/prisma-client-js/issues/349)。
