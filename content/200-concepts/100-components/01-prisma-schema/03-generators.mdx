@@ -1,12 +1,12 @@
 ---
-title: 'Generators'
-metaTitle: 'Generators (Reference)'
-metaDescription: 'Generators in your Prisma schema specify what assets are generated when the `prisma generate` command is invoked. This page explains how to configure generators.'
+title: '生成器（Generators）'
+metaTitle: 'Generators (参考))'
+metaDescription: 'Prisma schema 中的生成器指明了当调用 `prisma generate` 命令时生成哪些构件。本页解释了如何配置生成器。'
 ---
 
 <TopBlock>
 
-A Prisma schema can have one or more generators, represented by the [`generator`](../../../reference/api-reference/prisma-schema-reference#generator) <span class="api"></span> block:
+一个 Prisma schema 可以拥有不止一个生成器，它们被定义在 [`generator`](../../../reference/api-reference/prisma-schema-reference#generator) <span class="api"></span> 代码块中：
 
 ```prisma
 generator client {
@@ -15,16 +15,16 @@ generator client {
 }
 ```
 
-A generator determines which assets are created when you run the `prisma generate` command. The main property `provider` defines which **Prisma Client (language specific)** is created - currently, only `prisma-client-js` is available. Alternatively you can define any Npm package that follows our generator specification. Additionally and optionally you can define a custom output folder for the generated assets with `output`.
+生成器决定了当你执行 `prisma generate` 命令时会生成哪些构件。 主要属性 `provider` 定义了创建何种 **Prisma Client (特定语言的)** - 目前仅支持 `prisma-client-js`。或者，你也可以定义任何满足生成器规范要求的 Npm 包。 此外你可以选择通过 `output` 属性指定生成构件所在的目录。
 
 </TopBlock>
 
 ## Prisma Client: `prisma-client-js`
 
-The generator for Prisma's Javascript Client accepts multiple additional properties:
+Prisma 的 Javascript Client 接受多个额外属性：
 
-- `binaryTargets`: Target **engine binaries** for `prisma-client-js` (for example, `debian-openssl-1.0.x` if you are deploying to Ubuntu 14.04, or `native` if you are working locally)
-- `previewFeatures`: [Preview features](../preview-features) to include
+- `binaryTargets`： `prisma-client-js` 的目标 **引擎二进制文件**（例如，`debian-openssl-1.0.x` 适配 Ubuntu 14.04，或 `native` 适配本地开发）
+- `previewFeatures`：需要使用的 [预览特性](../preview-features)
 
 ```prisma
 generator client {
@@ -34,17 +34,17 @@ generator client {
 }
 ```
 
-### Binary targets
+### 二进制目标（Binary targets）
 
-Prisma Client JS (`prisma-client-js`) uses several [engine binaries](https://github.com/prisma/prisma-engines). Engines are implemented in Rust and are used by Prisma in the form of executable _binary files_. Depending on which platform you are executing your code on, you need the correct binary.
+Prisma Client JS (`prisma-client-js`) 可使用多个 [引擎二进制文件](https://github.com/prisma/prisma-engines) 。引擎采用 Rust 编写且被 Prisma 以可执行的 _二进制文件_ 使用。你需要根据你执行代码的平台选择正确的二进制文件。
 
-The correct binary file is particularly important when [deploying](../../../guides/deployment/deployment) your application to production.
+当你在生产环境 [部署](../../../guides/deployment/deployment) 应用时，选择正确的二进制文件尤其重要。
 
-#### The `native` binary target
+#### `native` 二进制目标
 
-The `native` binary target is special. It doesn't map to a concrete operating system. Instead, when `native` is specified in `binaryTargets`, Prisma detects the _current_ operating system and automatically specifies the correct binary target for it.
+`native` 二进制目标有些特殊。它不映射到固定的操作系统。相反，当 `binaryTargets` 被定为 `native` 时，Prisma 检测 _当前_ 操作系统并自动为其指定正确的二进制目标。
 
-As an example, assume you're running **Mac OS** and you specify the following generator:
+例如，假设你运行的是 **Mac OS** 且你指定了以下生成器：
 
 ```prisma
 generator client {
@@ -53,22 +53,22 @@ generator client {
 }
 ```
 
-In that case, Prisma detects your operating system and finds the right binary file for it based on the [list of supported operating systems](../../../reference/api-reference/prisma-schema-reference#binarytargets-options) <span class="api"></span>. As you're running Mac OS, the binary file that was compiled for `darwin` will be selected.
+这种情况下，Prisma 会检测你的操作系统并基于 [支持的操作系统列表](../../../reference/api-reference/prisma-schema-reference#binarytargets-options) <span class="api"></span> 为其找到正确的二进制文件。基于你运行的是 Mac OS, Prisma 会选择为 `darwin` 编译的二进制文件。
 
-> **Note**: The `native` binary target is the default. You can set it explicitly if you wish to [include additional binary targets for deployment to different environments](../../../guides/deployment/deployment-guides/deploying-to-aws-lambda#binary-targets-in-schemaprisma).
+> **注**：`native` 是默认二进制目标。你可以明确指定它，如果你希望 [在不同环境部署时包含额外的二进制目标](../../../guides/deployment/deployment-guides/deploying-to-aws-lambda#binary-targets-in-schemaprisma).
 
-## Community generators
+## 社区生成器（Community generators）
 
-The following is a list of community created generators.
+以下列出了社区维护的生成器。
 
-> **Note**: Community projects are not maintained or officially supported by Prisma and some features may be out of sync. Use at your own discretion.
+> **注**：Prisma 不负责维护社区项目，也不提供官方支持，且个别特性可能已经过时。请酌情使用。
 
-- [`prisma-dbml-generator`](https://notiz.dev/blog/prisma-dbml-generator): Transforms the Prisma schema into [Database Markup Language](https://www.dbml.org/home/) (DBML) which allows for an easy visual representation
-- [`prisma-docs-generator`](https://github.com/pantharshit00/prisma-docs-generator): Generates an individual API reference for Prisma Client
-- [`prisma-json-schema-generator`](https://github.com/valentinpalkovic/prisma-json-schema-generator): Transforms the Prisma schema in [JSON schema](https://json-schema.org/)
-- [`typegraphql-prisma`](https://github.com/MichalLytek/typegraphql-prisma#readme): Generates [TypeGraphQL](https://typegraphql.com/) CRUD resolvers for Prisma models
-- [`nexus-prisma`](https://github.com/prisma/nexus-prisma/): Allows to project Prisma models to GraphQL via [GraphQL Nexus](https://nexusjs.org/docs/)
-- [`prisma-nestjs-graphql`](https://github.com/unlight/prisma-nestjs-graphql): Generates object types, inputs, args, etc. from the Prisma schema file for usage with `@nestjs/graphql` module
-- [`prisma-appsync`](https://github.com/maoosi/prisma-appsync): Generates a full-blown GraphQL API for [AWS AppSync](https://aws.amazon.com/appsync/)
-- [`prisma-generator-nestjs-dto`](https://github.com/vegardit/prisma-generator-nestjs-dto): Generates DTO and Entity classes with relation `connect` and `create` options for use with [NestJS Resources](https://docs.nestjs.com/recipes/crud-generator) and [@nestjs/swagger](https://www.npmjs.com/package/@nestjs/swagger)
-- [`prisma-erd-generator`](https://github.com/keonik/prisma-erd-generator): Generates an entity relationship diagram
+- [`prisma-dbml-generator`](https://notiz.dev/blog/prisma-dbml-generator)：将 Prisma schema 转换成 [Database Markup Language](https://www.dbml.org/home/) (DBML) 以方便生成可视化表达
+- [`prisma-docs-generator`](https://github.com/pantharshit00/prisma-docs-generator)：为 Prisma Client 生成独立的 API 参考
+- [`prisma-json-schema-generator`](https://github.com/valentinpalkovic/prisma-json-schema-generator)：将 Prisma schema 转换成 [JSON schema](https://json-schema.org/)
+- [`typegraphql-prisma`](https://github.com/MichalLytek/typegraphql-prisma#readme)：为 Prisma 模型生成 [TypeGraphQL](https://typegraphql.com/) CRUD 解析器
+- [`nexus-prisma`](https://github.com/prisma/nexus-prisma/)：使 Prisma 模型可以通过 [GraphQL Nexus](https://nexusjs.org/docs/) 投射至 GraphQL
+- [`prisma-nestjs-graphql`](https://github.com/unlight/prisma-nestjs-graphql)：从 Prisma schema 文件生成使用 `@nestjs/graphql` 模块所需的对象类型，输入，参数等
+- [`prisma-appsync`](https://github.com/maoosi/prisma-appsync)：为 [AWS AppSync](https://aws.amazon.com/appsync/) 生成一个成熟的 GraphQL API
+- [`prisma-generator-nestjs-dto`](https://github.com/vegardit/prisma-generator-nestjs-dto)：生成带有关系 `connect` 和 `create` 选项的 DTO 和 Entity 类以使用 [NestJS Resources](https://docs.nestjs.com/recipes/crud-generator) 和 [@nestjs/swagger](https://www.npmjs.com/package/@nestjs/swagger)
+- [`prisma-erd-generator`](https://github.com/keonik/prisma-erd-generator)：生成实体关系图

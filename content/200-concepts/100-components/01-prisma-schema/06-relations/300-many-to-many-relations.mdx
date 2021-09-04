@@ -1,29 +1,29 @@
 ---
-title: Many-to-many relations
-metaDescription: How to define and work with many-to-many relations in Prisma.
+title: 多对多关系
+metaDescription: Prisma 中如何定义和处理多对多关系。
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Many-to-many (m-n) relations refer to relations where zero or more records on one side of the relation can be connected to zero or more records on the other side.
+多对多 (m-n) 关系指，其中一侧的零或多条记录可以关联另一侧的零或多条记录的关系。
 
-Prisma schema syntax and the implementation in the underlying database differs between [relational databases](#relational-databases) and [MongoDB](#mongodb).
+Prisma schema 语法和底层数据库实现在 [关系型数据库](#relational-databases) 和 [MongoDB](#mongodb) 间存在差异。
 
 </TopBlock>
 
-## Relational databases
+## 关系型数据库
 
-In relational databases, m-n-relations are typically modelled via [relation tables](../relations/many-to-many-relations#relation-tables). m-n-relations can be either [explicit](#explicit-many-to-many-relations) or [implicit](#implicit-many-to-many-relations) in the Prisma schema.
+关系型数据库中，多对多关系一般通过 [关系表](../relations/many-to-many-relations#relation-tables) 实现。Prisma schema 中多对多关系既可以是 [显式的](#explicit-many-to-many-relations) 也可以是 [隐式的](#implicit-many-to-many-relations)。
 
-### Explicit many-to-many relations
+### 显式多对多关系
 
-In an explicit many-to-many relation, the **relation table is represented as a model in the Prisma schema** and can be used in queries. Explicit many-to-many relations define three models:
+显式多对多关系中，**关系表是 Prisma schema 中的一个模型** 且可以在查询中使用。显式多对多关系定义如下三个模型：
 
-- Two models that have a many-to-many relation, such as `Category` and `Post`
-- One model that represents the relation table, such as `CategoriesOnPosts` (also sometimes called _JOIN_, _link_ or _pivot_ table) in the underlying database
+- 两个具有多对多关系的模型，例如 `Category` 和 `Post`
+- 一个模型作为关系表，例如底层数据库的 `CategoriesOnPosts` (有时也称为 _JOIN_、_链接(link)_ 或 _中间(pivot)_ 表)
 
-In this example, the model representing the relation table **defines additional fields** that describe the `Post`/`Category` relationship - who assigned the category (`assignedBy`), and when the category was assigned (`assignedAt`):
+此例中，关系表模型 **定义了额外的字段** 来描述 `Post`/`Category` 关系 - 谁指定了此类别 (`assignedBy`)，以及何时指定 (`assignedAt`)：
 
 ```prisma
 model Post {
@@ -40,9 +40,9 @@ model Category {
 
 model CategoriesOnPosts {
   post       Post     @relation(fields: [postId], references: [id])
-  postId     Int // relation scalar field (used in the `@relation` attribute above)
+  postId     Int // 关系标量字段 (在上述 `@relation` 属性中使用)
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int // relation scalar field (used in the `@relation` attribute above)
+  categoryId Int // 关系标量字段 (在上述 `@relation` 属性中使用)
   assignedAt DateTime @default(now())
   assignedBy String
 
@@ -50,7 +50,7 @@ model CategoriesOnPosts {
 }
 ```
 
-The underlying SQL looks like this:
+底层 SQL 如下所示：
 
 ```sql
 CREATE TABLE "Category" (
@@ -71,15 +71,15 @@ CREATE TABLE "CategoryToPost" (
 CREATE UNIQUE INDEX "CategoryToPost_category_post_unique" ON "CategoryToPost"("categoryId" int4_ops,"postId" int4_ops);
 ```
 
-#### Querying an explicit many-to-many
+#### 查询显式多对多关系
 
-The following section demonstrates how to query an explicit many-to-many relation. You can query the relation model directly (`prisma.categoryOnPost(...)`), or use nested queries to go from `Post` -> `CategoryOnPost` -> `Category` or the other way.
+以下部分展示了如何查询显式多对多关系。你可以直接查询关系模型 (`prisma.categoryOnPost(...)`)，或按 `Post` -> `CategoryOnPost` -> `Category` 路径使用嵌套查询，反向路径亦可。
 
-The following query:
+以下查询：
 
-1. Creates a `Post`
-2. Creates a category assigment, or `CategoryToPost` (assigned by Bob, assigned today)
-3. Creates a new `Category`
+1. 创建一个 `Post`
+2. 创建类别指定，或 `CategoryOnPost` (由 Bob 于今日指定)
+3. 创建一个新的 `Category`
 
 ```ts
 const createCategory = await prisma.post.create({
@@ -102,11 +102,11 @@ const createCategory = await prisma.post.create({
 })
 ```
 
-The following query:
+以下查询：
 
-- Creates a new `Post`
-- Creates a new category assignment, or `CategoryToPost`
-- Connects the category assignment to existing categories (with IDs `9` and `22`)
+- 创建一个新的 `Post`
+- 创建一个新的类别指定，或 `CategoryOnPost`
+- 将此类别指定与现有类别关联 (ID 为 `9` 和 `22` 的类别)
 
 ```ts
 const assignCategories = await prisma.post.create({
@@ -138,7 +138,7 @@ const assignCategories = await prisma.post.create({
 })
 ```
 
-The following query returns all `Post` records where at least one (`some`) category assignment (`categories`) refers to a category named `"New category"`:
+以下查询返回所有满足条件的 `Post` 记录，这些 `Post` 至少 (`some`) 有一个类别指定 (`categories`) 指向一个名为 `"New category"` 的类别：
 
 ```ts
 const getPosts = await prisma.post.findMany({
@@ -154,7 +154,7 @@ const getPosts = await prisma.post.findMany({
 })
 ```
 
-The following query returns all categories where at last one (`some`) related `Post` record titles contain the words `"Cool stuff"` _and_ the category was assigned by Bob.
+以下查询返回所有满足条件的类别，这些类别至少 (`some`) 关联一个标题中含有 `"Cool stuff"` 的 `Post` _且_ 类别由 Bob 指定。
 
 ```ts
 const getAssignments = await prisma.category.findMany({
@@ -173,7 +173,7 @@ const getAssignments = await prisma.category.findMany({
 })
 ```
 
-The following query gets all category assignments (`CategoryOnPost`) records that were assigned by `"Bob"` to one of 5 posts:
+以下查询返回所有满足条件的类别指定 (`CategoryOnPost`)，这些类别指定由 `"Bob"` 完成且被指定的博文在给定的 5 篇博文范围中：
 
 ```ts
 const getAssignments = await prisma.categoriesOnPosts.findMany({
@@ -188,13 +188,13 @@ const getAssignments = await prisma.categoriesOnPosts.findMany({
 })
 ```
 
-### Implicit many-to-many relations
+### 隐式多对多关系
 
-Implicit many-to-many relations define relation fields as lists on both sides of the relation. Although the relation table exists in the underlying database, **it is managed by Prisma and does not manifest in the Prisma schema**. Implicit relation tables follow a [specific convention](#conventions-for-relation-tables-in-implicit-m-n-relations).
+隐式多对多关系在关系两侧定义类型为列表的关系字段。尽管关系表存在于底层数据库中，但 **它由 Prisma 管理且不体现在 Prisma schema 中**。隐式关系表遵循 [特定规范](#conventions-for-relation-tables-in-implicit-m-n-relations).
 
-Implicit m-n relations makes the [Prisma Client API](../../prisma-client/) for many-to-many relations a bit simpler (since you have one fewer level of nesting inside of [nested writes](../../prisma-client/relation-queries#nested-writes)).
+隐式多对多关系使得 [Prisma Client API](../../prisma-client/) 更简单 (因为 [嵌套写入](../../prisma-client/relation-queries#nested-writes) 时会少一层嵌套)。
 
-In the example below, there's one _implicit_ m-n-relation between `Post` and `Category`:
+以下示例中，`Post` 和 `Category` 间有 _隐式_ 多对多关系：
 
 <TabbedContent tabs={[<FileWithIcon text="Prisma schema" icon="prisma"/>, <FileWithIcon text="SQL" icon="database"/>]}>
 <tab>
@@ -233,11 +233,11 @@ CREATE INDEX "_CategoryToPost_B_index" ON "_CategoryToPost"("B" int4_ops);
 </tab>
 </TabbedContent>
 
-#### Querying an implicit many-to-many
+#### 查询隐式多对多关系
 
-The following section demonstrates how to query an implicit many-to-many relation. The queries require less nesting than [explicit many-to-many queries](#querying-an-explicit-many-to-many).
+以下部分展示了如何查询隐式多对多关系。这些查询需要的嵌套层数少于 [显式多对多查询](#querying-an-explicit-many-to-many)。
 
-The following query creates a single `Post` and multiple `Category` records:
+以下查询创建了一个 `Post` 和多个 `Category` 记录：
 
 ```ts
 const createPostAndCategory = await prisma.post.create({
@@ -250,7 +250,7 @@ const createPostAndCategory = await prisma.post.create({
 })
 ```
 
-The following query creates a single `Category` and multiple `Post` records:
+以下查询创建了一个 `Category` 和多个 `Post` 记录：
 
 ```ts
 const createCategoryAndPosts = await prisma.category.create({
@@ -266,7 +266,7 @@ const createCategoryAndPosts = await prisma.category.create({
 })
 ```
 
-The following query returns all `Post` records with a list of that post's assigned categories:
+以下查询返回所有 `Post` 以及相关联的类别列表：
 
 ```ts
 const getPostsAndCategories = await prisma.post.findMany({
@@ -276,63 +276,63 @@ const getPostsAndCategories = await prisma.post.findMany({
 })
 ```
 
-#### Rules for defining an implicit m-n relation
+#### 隐式多对多关系定义规则
 
-Implicit m-n relations:
+隐式多对多关系：
 
-- Use a specific [convention for relation tables](#conventions-for-relation-tables-in-implicit-m-n-relations)
-- Do **not** require the `@relation` attribute unless you need to [disambiguate relations](../relations#disambiguating-relations) (this is not specific to implicit n-m relations).
-- Require both models to have a single `@id`. Be aware that:
+- 采用特定的 [关系表规范](#conventions-for-relation-tables-in-implicit-m-n-relations)
+- **不** 要求 `@relation` 属性，除非你需要 [消除关系歧义](../relations#disambiguating-relations) (this is not specific to implicit n-m relations).
+- 要求两侧的模型都有单一字段 `@id`。注意：
 
-  - You cannot use a [multi-field ID](../../../../reference/api-reference/prisma-schema-reference#id-1)
-  - You cannot use a `@unique` in place of an `@id`
+  - 你不能使用 [多字段 ID](../../../../reference/api-reference/prisma-schema-reference#id-1)
+  - 你不能使用 `@unique` 代替 `@id`
 
   <Admonition type="info">
 
-  To use either of these features, you must use an [explicit many-to-many instead](#explicit-many-to-many-relations).
+  若要使用以上任一特性，你必须使用 [显式多对多关系](#explicit-many-to-many-relations).
 
   </Admonition>
 
-#### Conventions for relation tables in implicit m-n-relations
+#### 隐式多对多关系表规范
 
-If you obtain your data model from [introspection](../../introspection), you can still use implicit many-to-many relations by following Prisma's [conventions for relation tables](#conventions-for-relation-tables-in-implicit-m-n-relations).
-The following example assumes you want to create a relation table to get an implicit many-to-many relation for two models called `Post` and `Category`.
+如果你使用 [内省](../../introspection) 获取数据模型，你仍然可以通过遵循 Prisma 的 [关系表规范](#conventions-for-relation-tables-in-implicit-m-n-relations) 来使用隐式多对多关系。
+以下示例假设你想要为模型 `Post` 和 `Category` 间的隐式多对多关系创建一个关系表。
 
-##### Table name
+##### 表名
 
-The name of the relation table must be prefixed with an underscore:
+关系表名必须以下划线作前缀：
 
-- **Valid**: `_CategoryToPost`, `_MyRelation`
-- **Invalid**: `CategoryToPost`, `MyRelation`
+- **有效**: `_CategoryToPost`, `_MyRelation`
+- **无效**: `CategoryToPost`, `MyRelation`
 
-##### Columns
+##### 列
 
-A relation table for an implicit-many-to-many relation must have exactly two columns:
+隐式多对多关系表必须有且仅有以下两列：
 
-- A foreign key column that points to `Category` called `A`
-- A foreign key column that points to `Post` called `B`
+- 一个外键列 `A` 指向 `Category`
+- 一个外键列 `B` 指向 `Post`
 
-The columns must be called `A` and `B` where `A` points to the model that comes first in the alphabet and `B` points to the model which comes last in the alphabet.
+列名必须为 `A` 和 `B`，`A` 指向字母顺序靠前的模型，`B` 指向字母顺序靠后的模型。
 
-##### Indexes
+##### 索引
 
-There further must be:
+因此必须有：
 
-- A unique index defined on both foreign key columns:
+- 一个定义在两个外键列上的唯一索引：
 
 ```sql
 CREATE UNIQUE INDEX "_CategoryToPost_AB_unique" ON "_CategoryToPost"("A" int4_ops,"B" int4_ops);
 ```
 
-- A non-unique index defined on B:
+- 一个定义在 B 上的非唯一索引：
 
 ```sql
 CREATE INDEX "_CategoryToPost_B_index" ON "_CategoryToPost"("B" int4_ops);
 ```
 
-##### Example
+##### 示例
 
-This is a sample SQL statement that would create the three tables including indexes (in PostgreSQL dialect):
+此示例 SQL 语句会创建包括索引在内的三个表 (使用 PostgreSQL 方言)：
 
 ```sql
 CREATE TABLE "_CategoryToPost" (
@@ -351,9 +351,9 @@ CREATE TABLE "Post" (
 );
 ```
 
-#### Configuring the name of the relation table in implicit many-to-many relations
+#### 配置隐式多对多关系表名
 
-When using Prisma Migrate, you can configure the name of the relation table that's managed by Prisma using the `@relation` attribute. The only requirement is that it starts with an underscore. For example, if you want the relation table to be called `_MyRelationTable` instead of the default name `_CategoryToPost`, you can specify it as follows:
+使用 Prisma Migrate 时，你可以使用 `@relation` 属性配置 Prisma 管理的关系表的名字。唯一的要求是名字必须以下划线作前缀。例如，如果你想将关系表命名为 `_MyRelationTable` 而不是默认名 `_CategoryToPost`，你可以按以下方法指定：
 
 ```prisma
 model Post {
@@ -367,15 +367,15 @@ model Category {
 }
 ```
 
-### Relation tables
+### 关系表
 
-A relation table (also sometimes called _JOIN_, _link_ or _pivot_ table) connects two or more other tables and therefore creates a _relation_ between them. Creating relation tables is a common data modeling practice in SQL to represent relationships between different entities. In essence it means that "one m-n relation is modeled as two 1-n relations in the database".
+关系表 (有时也称为 _JOIN_、_链接(link)_ 或 _中间(pivot)_ 表) 关联两个及以上的表且创建它们之间的 _关系_。创建关系表是 SQL 中常见的表示不同实体间关系的数据建模常规做法。其本质含义是“用两个一对多关系建立一个多对多关系”。
 
-When using Prisma, you can create relation tables by defining [models](../data-model#defining-models) similar to how you would model them as tables. The main difference is that the fields of the relation table are both annotated relation fields with a corresponding relation scalar field.
+使用 Prisma 时，你可以通过定义 [模型](../data-model#defining-models) 创建关系表，类似按表建模的方式。主要区别是关系表的两个字段是带标注的关系字段，且有相对应的关系标量字段。
 
-Relation tables are also often used to add "meta-information" to a relation. For example, to store _when_ the relation was created.
+关系表也常被用于向关系添加“元信息”。例如，储存关系的创建 _时间_。
 
-Here is an example for a relation table called `CategoriesOnPosts`:
+以下是一个名为 `CategoriesOnPosts` 的关系表示例：
 
 ```prisma
 model Post {
@@ -401,23 +401,23 @@ model CategoriesOnPosts {
 }
 ```
 
-In this example, the `assignedAt` field stores additional information about the relation between `Post` and `Category`:
+此例中，`assignedAt` 字段储存 `Post` 和 `Category` 间关系的附加信息：
 
-- `assignedAt` stores _when_ the post was added to the category
-- `assignedBy` store _who_ added the post to the category
+- `assignedAt` 储存 _何时_ 将此博文指定为此类别
+- `assignedBy` 储存 _谁_ 将此博文指定为此类别
 
-Note that the same rules as for [1-n-relations](one-to-many-relations) apply (because `Post`↔ `CategoriesOnPosts` and `Category` ↔ `CategoriesOnPosts` are both in fact 1-n-relations), which means one side of the relation needs to be annotated with the `@relation` attribute.
+注意相同的规则也适用于 [一对多关系](one-to-many-relations) (因为 `Post`↔ `CategoriesOnPosts` 和 `Category` ↔ `CategoriesOnPosts` 实际上都是一对多关系)，意味着关系的一侧需要用 `@relation` 属性标注。
 
-When you don't need to attach additional information to the relation, you can model m-n-relations as [implicit many-to-many relations](#implicit-many-to-many-relations). If you're not using Prisma Migrate but obtain your data model from [introspection](../../introspection), you can still make use of implicit many-to-many relations by following Prisma's [conventions for relation tables](#conventions-for-relation-tables-in-implicit-m-n-relations).
+当你不需要为关系附加额外信息时，你可以建立 [隐式多对多关系]](#implicit-many-to-many-relations)。如果你不使用 Prisma Migrate，而是通过 [内省](../../introspection) 得到数据模型，你仍然可以通过遵循 Prisma 的 [关系表规范](#conventions-for-relation-tables-in-implicit-m-n-relations) 来利用隐式多对多关系。
 
 ## MongoDB
 
-In MongoDB, m-n-relations are represented by:
+MongoDB 中，多对多关系由以下构成：
 
-- Relation fields on both sides, include a `@relation` attribute on _each side_
-- A scalar list of referenced IDs on each side, including the `@db.Array(X)` attribute, where `X` is the ID type (`ObjectId`, `String`)
+- 关系两侧的关系字段，_两侧_ 都有 `@relation` 属性
+- 两侧的引用 ID 标量列表，包括 `@db.Array(X)` 属性，其中 `X` 是 ID 类型 (`ObjectId`, `String`)
 
-The following example demonstrate an m-n relation between posts and categories:
+以下示例展示了博文和类别间的多对多关系：
 
 ```prisma
 model Post {
@@ -433,7 +433,7 @@ model Category {
 }
 ```
 
-### Querying MongoDB m-n relations
+### 查询 MongoDB 多对多关系
 
 ```ts
 const newId1 = new ObjectId()

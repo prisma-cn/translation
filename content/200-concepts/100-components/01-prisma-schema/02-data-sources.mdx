@@ -1,12 +1,12 @@
 ---
-title: 'Data sources'
-metaTitle: 'Data sources (Reference)'
-metaDescription: 'Data sources enable Prisma to connect to your database. This page explains how to configure data sources in your Prisma schema.'
+title: '数据源（Data sources）'
+metaTitle: 'Data sources (参考)'
+metaDescription: '数据源使 Prisma 可以连接到你的数据库。本页解释了如何在你的 Prisma schema 中配置数据源。'
 ---
 
 <TopBlock>
 
-A data source determines how Prisma connects your database, and is represented by the [`datasource`](../../../reference/api-reference/prisma-schema-reference#datasource) <span class="api"></span> block in the Prisma schema. The following data source uses the `postgresql` provider and includes a connection URL:
+一个数据源决定了 Prisma 如何连接你的数据库，它被定义在 Prisma schema 中的 [`datasource`](../../../reference/api-reference/prisma-schema-reference#datasource) <span class="api"></span> 代码块中。 以下数据源使用了 `postgresql` 作为 provider 同时包含了一个连接 URL：
 
 ```prisma
 datasource db {
@@ -15,23 +15,23 @@ datasource db {
 }
 ```
 
-A Prisma schema can only have _one_ data source. However, you can:
+一个 Prisma schema 只能有 _一个_ 数据源。然而，你可以：
 
-- [Programmatically override a data source `url` when creating your `PrismaClient`](../../../reference/api-reference/prisma-client-reference#programmatically-override-a-datasource-url)
-- [Specify a different URL for Prisma Migrate's shadow database if you are working with cloud-hosted development databases](../prisma-migrate#cloud-hosted-shadow-databases-must-be-created-manually)
+- [在创建 `PrismaClient` 时在程序代码中覆盖数据源 `url` ](../../../reference/api-reference/prisma-client-reference#programmatically-override-a-datasource-url)
+- [如果你的开发数据库部署在云端，为 Prisma Migrate 的影子数据库指明一个不同的 URL](../prisma-migrate#cloud-hosted-shadow-databases-must-be-created-manually)
 
-> **Note**: Multiple provider support was removed in 2.22.0. Please see [Deprecation of provider array notation](https://github.com/prisma/prisma/issues/3834) for more information.
+> **注**：多 provider 支持已在 2.22.0 版本移除。 详情请查阅 [Deprecation of provider array notation](https://github.com/prisma/prisma/issues/3834)。
 
 </TopBlock>
 
-## SSL certificates
+## SSL 证书（SSL certificates）
 
-Some data source `provider`s allow you to configure your connection with SSL, and provide parameters for the `url` to specificy the location of certificates.
+某些数据源 `provider` 允许你使用 SSL 配置连接，并且提供 `url` 参数以指明证书的位置。
 
-- [Configuring an SSL connection with PostgreSQL](../../database-connectors/postgresql#configuring-an-ssl-connection)
-- [Configuring an SSL connection with MySQL](../../database-connectors/mysql#configuring-an-ssl-connection)
+- [配置 PostgreSQL 的 SSL 连接](../../database-connectors/postgresql#configuring-an-ssl-connection)
+- [配置 MySQL 的 SSL 连接](../../database-connectors/mysql#configuring-an-ssl-connection)
 
-Prisma resolves SSL certificates relative to the `./prisma` directory. If your certificate files are located outside that directory, e.g. your project root directory, use relative paths for certificates:
+Prisma 以 `./prisma` 目录的相对路径解析 SSL 证书。如果你的证书位于该目录外，例如你的项目根目录，请使用证书的相对路径：
 
 ```prisma
 datasource db {

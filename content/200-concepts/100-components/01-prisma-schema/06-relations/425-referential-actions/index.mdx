@@ -1,22 +1,22 @@
 ---
-title: 'Referential actions'
-metaTitle: 'Referential actions (Preview)'
-metaDescription: 'Referential actions let you define the update and delete behavior of related models on the database level'
+title: '参照动作（Referential actions）'
+metaTitle: '参照动作 (预览)'
+metaDescription: '参照动作使你可以在数据库层定义关联模型的更新和删除行为'
 tocDepth: 2
 preview: true
 ---
 
 <TopBlock>
 
-In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later, you can define **referential actions** on your relation fields. Referential actions determine what should happen to a record when a related record is deleted or updated.
+在 [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) 及更高版本中，你可以在关系字段上定义 **参照动作**。参照动作决定了一条记录在删除或更新其关联记录时的行为。
 
 <Admonition type="warning">
 
-Referential actions are currently a **Preview feature**.
+参照动作目前是 **预览特性（Preview feature）**。
 
 </Admonition>
 
-In the following example, adding `onDelete: Cascade` to the `author` field on the `Post` model means that deleting the `User` record will also delete all related `Post` records.
+以下示例中，向 `Post` 模型的 `author` 字段加入 `onDelete: Cascade` 意味着删除 `User` 记录也会删除所有关联的 `Post` 记录。
 
 ```prisma highlight=4;normal
 model Post {
@@ -32,16 +32,16 @@ model User {
 }
 ```
 
-If you do not specify a referential action, Prisma [uses a default](#referential-action-defaults).
+如果你不指明参照动作，则 Prisma [采用默认动作](#referential-action-defaults)。
 
 </TopBlock>
 
-## Enable the <inlinecode>referentialActions</inlinecode> Preview feature
+## 启用 <inlinecode>referentialActions</inlinecode> 预览特性
 
-Referential actions are a preview feature. To enable the `referentialActions` preview feature:
+参照动作是预览特性。要开启 `referentialActions` 预览特性：
 
-1. [Upgrade to Prisma version 2.26.0](../../../../../guides/upgrade-guides/upgrading-to-latest).
-2. Add `referentialActions` to the `previewFeatures` field of the Prisma Client [`generator`](../../../../../reference/api-reference/prisma-schema-reference#generator) block in the `prisma.schema` file:
+1. [升级 Prisma 版本至 2.26.0](../../../../../guides/upgrade-guides/upgrading-to-latest)。
+2. 在 `prisma.schema` 文件的 Prisma Client [`generator`](../../../../../reference/api-reference/prisma-schema-reference#generator) 代码块的 `previewFeatures` 中加入 `referentialActions`：
 
    ```prisma file=schema.prisma
    generator client {
@@ -50,35 +50,35 @@ Referential actions are a preview feature. To enable the `referentialActions` pr
    }
    ```
 
-3. Follow the [upgrade paths for referential actions](#upgrade-paths).
+3. 遵循 [参照动作升级路线](#upgrade-paths).
 
 <Admonition type="alert">
 
-It is extremely important that you check the [upgrade paths for referential actions](#upgrade-paths) section before you continue. The `referentialActions` Preview feature **removes the safety net in Prisma Client that prevents cascading deletes at runtime**. If you enable the feature _without upgrading your database_, the [old default action](#the-2250-default-referential-actions) - `ON DELETE CASCADE` - becomes active. This may result in cascading deletes that you did not expect.
+在你继续之前，查看 [参照动作升级路线](#upgrade-paths) 非常重要。`referentialActions` 预览特性 **移除了 Prisma Client 中防止运行时级联删除的安全保障**。如果你启用该特性 _而不升级数据库_，[旧的默认动作](#the-2250-default-referential-actions) - `ON DELETE CASCADE` - 会被启用。这可能会造成非你所愿的级联删除。
 
 </Admonition>
 
-## What are referential actions?
+## 什么是参照动作？
 
-Referential actions are policies that define how a referenced record is handled by the database when you run an [`update`](../../../prisma-client/crud#update) or [`delete`](../../../prisma-client/crud#delete) query.
+参照动作定义了当你执行 [`update`](../../../prisma-client/crud#update) 或 [`delete`](../../../prisma-client/crud#delete) 查询时，数据库如何处理一条参照记录。
 
-<details><summary>Referential actions on the database level</summary>
+<details><summary>数据库层的参照动作</summary>
 
-Referential actions are features of foreign key constraints that exist to preserve referential integrity in your database.
+在数据库中，参照动作是为了保证参照完整性而存在的外键约束特性。
 
-When you define relationships between data models in your Prisma schema, you use [relation fields](../#relation-fields), **which do not exist on the database**, and [scalar fields](../../data-model/#scalar-fields), **which do exist on the database**. These foreign keys connect the models on the database level.
+当你在 Prisma schema 中定义模型间关系时，你使用 [关系字段](../#relation-fields)，**这些字段不存在于数据库中**，以及 [标量字段](../../data-model/#scalar-fields)，**这些字段存在于数据库中**。这些外键在数据库层将模型关联起来。
 
-Referential integrity states that these foreign keys must reference an existing primary key value in the related database table. In your Prisma schema, this is generally represented by the `id` field on the related model.
+参照完整性要求这些外键必须引用一个存在于关联数据库表中的主键值。在你的 Prisma schema 中，这通常是关联模型上的 `id` 字段。
 
-By default a database will reject any operation that violates the referential integrity, for example, by deleting referenced records.
+默认情况下，数据库会拒绝任何破坏参照完整性的操作，例如，删除被引用的记录。
 
 </details>
 
-### How to use referential actions
+### 如何使用参照动作
 
-Referential actions are defined in the [`@relation`](../../../../../reference/api-reference/prisma-schema-reference#relation) attribute and map to the actions on the **foreign key constraint** in the underlying database. If you do not specify a referential action, [Prisma falls back to a default](#referential-action-defaults).
+参照动作定义在 [`@relation`](../../../../../reference/api-reference/prisma-schema-reference#relation) 属性中且映射至底层数据库的 **外键约束** 动作。如果你不指明参照动作，[Prisma 会退回至默认动作](#referential-action-defaults).
 
-The following model defines a 1-m relation between `User` and `Post` and a n-m relation between `Post` and `Tag`, with explicitly defined referential actions:
+以下模型定义了 `User` 和 `Post` 间的一对多关系，以及 `Post` 和 `Tag` 间的多对多关系，且显式地定义了参照动作：
 
 ```prisma highlight=10,16-17;normal
 model User {
@@ -109,10 +109,10 @@ model Tag {
 }
 ```
 
-- If you delete a `Tag`, the corresponding tag assignment is also deleted `TagOnPost` (`Cascade`)
-- If you delete a `User`, the author is removed from all posts (`SetNull`) - `User` and `userId` must be optional
+- 如果你删除一个 `Tag`，相应的标签指定也会被删除 `TagOnPost` (`Cascade`)
+- 如果你删除一个 `User`，该作者会在所有博文中被移除 (`SetNull`) - `User` 和 `userId` 必须是选填的
 
-Prisma supports the following referential actions:
+Prisma 支持以下参照动作：
 
 - [`Cascade`](#cascade)
 - [`Restrict`](#restrict)
@@ -120,16 +120,16 @@ Prisma supports the following referential actions:
 - [`SetNull`](#setnull)
 - [`SetDefault`](#setdefault)
 
-### Referential action defaults
+### 默认参照动作
 
-If you do not specify a referential action, Prisma uses the following defaults:
+如果你不指明参照动作，Prisma 会采用以下默认设置：
 
 | Clause     | Optional relations | Mandatory relations |
 | :--------- | :----------------- | :------------------ |
 | `onDelete` | `SetNull`          | `Restrict`          |
 | `onUpdate` | `Cascade`          | `Cascade`           |
 
-For example - in the following schema, all `Post` records must be connected to an `author`. The schema **does not explicitly define referential actions** on the `author` field, which means that default referential actions apply (see SQL tab):
+例如 - 以下 schema 中，每条 `Post` 记录都必须关联一个 `author`。schema 在 `author` 字段上 **没有显式定义参照动作**，意味着采用默认参照动作 (查看 SQL 标签):
 
 <TabbedContent tabs={[<FileWithIcon text="schema.prisma" icon="prisma"/>, <FileWithIcon text="SQL" icon="database"/>]}>
 <tab>
@@ -167,20 +167,20 @@ CREATE TABLE "User" (
 </tab>
 </TabbedContent>
 
-## Caveats
+## 警告
 
-The following caveats apply:
+警告：
 
-- Referential actions are **not** supported on [implicit many-to-many relations](../many-to-many-relations#implicit-many-to-many-relations). To use referential actions, you must define an explicit many-to-many relation and define your referential actions on the [join table](../troubleshooting-relations#how-to-use-a-relation-table-with-a-many-to-many-relationship).
-- Certain combinations of referential actions and required/optional relations are incompatible. For example, using `SetNull` on a required relation will lead to database errors when deleting referenced records because the non-nullable constraint would be violated. See [this GitHub issue](https://github.com/prisma/prisma/issues/7909) for more information.
+- [implicit many-to-many relations](../many-to-many-relations#implicit-many-to-many-relations) **不** 支持参照动作。若要使用参照动作，你必须定义显式多对多关系且将参照动作定义在 [连接表](../troubleshooting-relations#how-to-use-a-relation-table-with-a-many-to-many-relationship) 上。
+- 某些参照动作不适用于选填或必填关系。例如，在必填关系上使用 `SetNull` 会导致数据库删除被参照记录时报错，因为这会违反非空约束。查阅 [this GitHub issue](https://github.com/prisma/prisma/issues/7909) 获取更多信息。
 
-## Types of referential actions
+## 参照动作类型
 
-The following table shows which referential action each database supports.
+下表展示了各数据库对参照动作的支持。
 
 <Admonition type="info">
 
-Note that [`NoAction`](#noaction) can be used in replace of [`Restrict`](#restrict) when working with an SQLServer database.
+注意在使用 SQLServer 数据库时，[`NoAction`](#noaction) 可以代替 [`Restrict`](#restrict)。
 
 </Admonition>
 
@@ -191,15 +191,15 @@ Note that [`NoAction`](#noaction) can be used in replace of [`Restrict`](#restri
 | SQLite     | **✔️**  | **✔️**   | **✔️**   | **✔️**  | **✔️**     |
 | SQLServer  | **✔️**  | **❌**   | **✔️**   | **✔️**  | **✔️**     |
 
-- † On [InnoDB](https://dev.mysql.com/doc/refman/5.6/en/innodb-introduction.html#:~:text=InnoDB%20is%20a%20general%2Dpurpose,clause%20creates%20an%20InnoDB%20table.), `SetDefault` will be ignored and silently use `NoAction`.
+- † [InnoDB](https://dev.mysql.com/doc/refman/5.6/en/innodb-introduction.html#:~:text=InnoDB%20is%20a%20general%2Dpurpose,clause%20creates%20an%20InnoDB%20table.) 上，`SetDefault` 会被忽略且替换为 `NoAction`。
 
 ### <inlinecode>Cascade</inlinecode>
 
-- `onDelete: Cascade` Deleting a referenced record will trigger the deletion of referencing record.
+- `onDelete: Cascade` 删除一条被参照记录会删除相应的参照记录。
 
-- `onUpdate: Cascade` Updates the relation scalar fields if the referenced scalar fields of the dependant record are updated.
+- `onUpdate: Cascade` 如果更新被参照记录的被参照标量字段，则更新参照记录的关系标量字段。
 
-#### Example usage
+#### 示例
 
 ```prisma file=schema.prisma highlight=4;add
 model Post {
@@ -215,11 +215,11 @@ model User {
 }
 ```
 
-##### Result of using `Cascade`
+##### 使用 `Cascade` 的结果
 
-If a `User` record is deleted, then their posts are deleted too. If the user's `id` is updated, then the corresponding `authorId` is also updated.
+如果一条 `User` 被删除，则其所有博文也被删除。如果更新该用户 `id`，则其所有博文中相应的 `authorId` 也被更新。
 
-##### How to use cascading deletes
+##### 如何使用级联删除
 
 <div class="videoWrapper">
   <iframe
@@ -235,11 +235,11 @@ If a `User` record is deleted, then their posts are deleted too. If the user's `
 
 ### <inlinecode>Restrict</inlinecode>
 
-- `onDelete: Restrict` Prevents the deletion if any referencing records exist.
+- `onDelete: Restrict` 如果存在参照记录，则阻止删除。
 
-- `onUpdate: Restrict` Prevents the identifier of a referenced record from being changed.
+- `onUpdate: Restrict` 阻止更新被参照记录的标识。
 
-#### Example usage
+#### 示例
 
 ```prisma file=schema.prisma highlight=4;add
 model Post {
@@ -255,26 +255,26 @@ model User {
 }
 ```
 
-##### Result of using `Restrict`
+##### 使用 `Restrict` 的结果
 
-`User`'s with posts **cannot** be deleted. The `Post`'s `id` **cannot** be changed.
+有博文的 `User` **不能** 被删除。这些 `User` 的 `id` **不能** 修改。
 
 <Admonition type="warning">
 
-The `Restrict` action is **not** available on [SQL Server](../../../../database-connectors/microsoft-sql-server) and will trigger a schema validation error. Instead, you can use [`NoAction`](#noaction), which produces the same result and is compatible with SQLServer.
+`Restrict` 动作在 [SQL Server](../../../../database-connectors/microsoft-sql-server) 上 **不** 可用且会导致 schema 验证错误。你可以使用 [`NoAction`](#noaction)，它有相同效果且与 SQLServer 兼容。
 
 </Admonition>
 
 ### <inlinecode>NoAction</inlinecode>
 
-The `NoAction` action is similar to `Restrict`, the difference between the two is dependant on the database being used:
+`NoAction` 动作类似 `Restrict`，二者的区别在不同数据库中有所不同：
 
-- **PostgreSQL**: `NoAction` allows the check (if a referenced row on the table exists) to be deferred until later in the transaction. See [the PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK) for more information.
-- **MySQL**: `NoAction` behaves exactly the same as `Restrict`. See [the MySQL docs](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html#foreign-key-referential-actions) for more information.
-- **SQLite**: When a related primary key is modified or deleted, no action is taken. See [the SQLite docs](https://www.sqlite.org/foreignkeys.html#fk_actions) for more information.
-- **SQLServer**: When a referenced record is deleted or modified, an error is raised. See [the SQLServer docs](https://docs.microsoft.com/en-us/sql/relational-databases/tables/graph-edge-constraints?view=sql-server-ver15#on-delete-referential-actions-on-edge-constraints) for more information.
+- **PostgreSQL**: `NoAction` 允许推迟参照完整性检查 (如果此表存在被参照的行) 至事务后期。查阅 [PostgreSQL 文档](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK) 获取更多信息。
+- **MySQL**: `NoAction` 与 `Restrict` 完全一致。查阅 [MySQL 文档](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html#foreign-key-referential-actions) 获取更多信息。
+- **SQLite**: 当被关联的主键被修改或删除时，不采取任何动作。查阅 [SQLite 文档](https://www.sqlite.org/foreignkeys.html#fk_actions) 获取更多信息。
+- **SQLServer**: 当被关联的记录被修改或删除时，数据库报错。查阅 [SQLServer 文档](https://docs.microsoft.com/en-us/sql/relational-databases/tables/graph-edge-constraints?view=sql-server-ver15#on-delete-referential-actions-on-edge-constraints) 获取更多信息。
 
-#### Example usage
+#### 示例
 
 ```prisma file=schema.prisma highlight=4;add
 model Post {
@@ -290,17 +290,17 @@ model User {
 }
 ```
 
-##### Result of using `NoAction`
+##### 使用 `NoAction` 的结果
 
-`User`'s with posts **cannot** be deleted. The `Post`'s `id` **cannot** be changed.
+有博文的 `User` **不能** 被删除。这些 `User` 的 `id` **不能** 修改。
 
 ### <inlinecode>SetNull</inlinecode>
 
-- `onDelete: SetNull` The scalar field of the referenced object will be set to `NULL`.
+- `onDelete: SetNull` 参照记录的标量字段会被设为 `NULL`。
 
-- `onUpdate: SetNull` When updating the identifier of a referenced object, the scalar fields of the referencing objects will be set to `NULL`.
+- `onUpdate: SetNull` 更新被参照记录的标识时，参照记录的标量字段会被设为 `NULL`。
 
-`SetNull` will only work on optional relations. On required relations, a runtime error will be thrown since the scalar fields cannot be null.
+`SetNull` 只在选填关系上生效。在必填关系上，因为标量字段不能为空，所以会在运行时报错。
 
 ```prisma file=schema.prisma highlight=4;add
 model Post {
@@ -316,19 +316,19 @@ model User {
 }
 ```
 
-##### Result of using `SetNull`
+##### 使用 `SetNull` 的结果
 
-When deleting a `User`, the `authorId` will be set to `NULL` for all its authored posts.
+删除一个 `User` 时，其所有博文的 `authorId` 都会被设为 `NULL`。
 
-When changing a `User`'s `id`, the `authorId` will be set to `NULL` for all its authored posts.
+修改 `User` 的 `id` 时，其所有博文的 `authorId` 都会被设为 `NULL`。
 
 ### <inlinecode>SetDefault</inlinecode>
 
-- `onDelete: SetDefault` The scalar field of the referencing object will be set to the fields default value.
+- `onDelete: SetDefault` 参照记录的标量字段会被设为默认值。
 
-- `onUpdate: SetDefault` The scalar field of the referencing object will be set to the fields default value.
+- `onUpdate: SetDefault` 参照记录的标量字段会被设为默认值。
 
-These require setting a default for the relation scalar field with [`@default`](../../../../../reference/api-reference/prisma-schema-reference#default). If no defaults are provided for any of the scalar fields, a runtime error will be thrown.
+这需要使用 [`@default`](../../../../../reference/api-reference/prisma-schema-reference#default) 为关系标量字段设置默认值。如果没有设置默认值，则会在运行时报错。
 
 ```prisma file=schema.prisma highlight=4,5;add
 model Post {
@@ -344,44 +344,44 @@ model User {
 }
 ```
 
-##### Result of using `SetDefault`
+##### 使用 `SetDefault` 的结果
 
-When deleting a `User`, its existing authored posts will now be authored by a `User` with `id` "anonymous".
+删除一个 `User` 时，其所有博文的作者都会变为一个 `username` 为 "anonymous" 的 `User`。
 
-When the `username` of a `User` changes, its existing authored posts will now be authored by `User` with `username` "anonymous".
+修改一个 `User` 的 `username` 时，其所有博文的作者都会变为一个 `username` 为 "anonymous" 的 `User`。
 
-## Upgrade paths
+## 升级路线
 
-There are a couple of paths you can take when upgrading which will give different results depending on the desired outcome.
+有多条升级路线供你选择，根据不同需求会产生不同效果。
 
-If you currently use the migration workflow, you can run an introspection to check how the defaults are reflected in your schema. You can then manually update your database if you need to.
+如果你目前使用迁移工作流，你可以执行内省来检查 schema 中如何反映默认设置。然后你可以根据需要手动更新数据库。
 
-You can also decide to skip checking the the defaults and run a migration to update your database with the [new default values](#referential-action-defaults).
+你还可以选择跳过默认设置检查并执行迁移以采用 [新默认值](#referential-action-defaults) 更新数据库。
 
-The following assumes you have upgraded to 2.26.0 and [enabled the preview feature flag](#enable-the-referentialactions-preview-feature).
+以下内容假定你已升级至 2.26.0 版本且 [启用了预览特性](#enable-the-referentialactions-preview-feature).
 
-### Using Introspection
+### 使用内省
 
-If you [Introspect](../../../introspection) your database, the referential actions configured at the database level will be reflected in your Prisma Schema. If you have been using Prisma Migrate or `prisma db push` to manage the database schema, these are likely to be the [<=2.25.0 default values](#the-2250-default-referential-actions).
+如果你 [内省](../../../introspection) 数据库，数据库层配置的参照动作会反映在 Prisma Schema 中。如果你已在使用 Prisma Migrate 或 `prisma db push` 来管理数据库 schema，则这些参照动作配置很可能为 [<=2.25.0 默认值](#the-2250-default-referential-actions)。
 
-When you run an Introspection, Prisma compares all the foreign keys in the database with the schema, if the SQL statements `ON DELETE` and `ON UPDATE` do **not** match the default values, they will be explicitly set in the schema file.
+当你执行内省时，Prisma 会比较 schema 和数据库中所有外键，如果 SQL 语句 `ON DELETE` 和 `ON UPDATE` **不是** 默认值，schema 文件中会显式地设置它们。
 
-After introspecting, you can review the non-default clauses in your schema. The most important clause to review is `onDelete`, which defaults to `Cascade` in 2.25.0 and earlier.
+内省后，你可以检查 schema 中的非默认语句。最需要检查的语句是 `onDelete`，在 2.25.0 或更早版本中，其默认值是 `Cascade`。
 
 <Admonition type="alert">
 
-If you are using either the [`delete()`](../../../../../guides/database/advanced-database-tasks/cascading-deletes/postgresql#91-validating-restrict) or [`deleteAll()`](../../../prisma-client/crud#delete-all-records) methods, **[cascading deletes](#how-to-use-cascading-deletes) will now be performed** as the `referentialActions` preview feature **removed the safety net in Prisma Client that previously prevented cascading deletes at runtime**. Be sure to check your code and make any adjustments accordingly.
+如果你使用 [`delete()`](../../../../../guides/database/advanced-database-tasks/cascading-deletes/postgresql#91-validating-restrict) 或 [`deleteAll()`](../../../prisma-client/crud#delete-all-records) 方法，**[级联删除](#how-to-use-cascading-deletes) 现在会生效**，因为 `referentialActions` 预览特性 **移除了 Prisma Client 之前防止运行时级联删除的安全保障**。请确保检查你的代码并根据情况做出调整。
 
 </Admonition>
 
-Make sure you are happy with every case of `onDelete: Cascade` in your schema. If not, either:
+请确保 schema 中每一条 `onDelete: Cascade` 都是你有意为之。否则，请：
 
-- Modify your Prisma schema and `db push` or `dev migrate` to change the database*or*
-- Manually update the underlying database if you use an introspection-only workflow
+- 修改 Prisma schema 并执行 `db push` 或 `dev migrate` 以修改数据库 _或_
+- 如果你的工作流只使用内省，请手动更新底层数据库
 
-The following example would result in a cascading delete, if the `User` is deleted then all of their `Post`'s will be deleted too.
+以下示例会导致级联删除，如果一个 `User` 被删除则其所有 `Post` 也会被删除。
 
-#### A blog schema example
+#### 一个博客 schema 示例
 
 ```prisma highlight=4;add
 model Post {
@@ -397,36 +397,36 @@ model User {
 }
 ```
 
-### Using Migration
+### 使用迁移
 
-When running a [Migration](../../../prisma-migrate) (or the [`prisma db push`](../../../prisma-migrate/db-push) command) the [new defaults](#referential-action-defaults) will be applied to your database.
+执行 [Migration](../../../prisma-migrate) (或 [`prisma db push`](../../../prisma-migrate/db-push) 命令) [新默认值](#referential-action-defaults) 会应用于你的数据库。
 
 <Admonition type="info">
 
-Unlike when you run an Introspect for the first time, the new referential actions clause and property, will **not** automatically be addded to your prisma schema by the Prisma VSCode extension.
-You will have to manually add them if you wish to use anything other than the new defaults.
+不同于你首次执行内省，Prisma VSCode 扩展 **不会** 自动将新的参照动作语句和属性添加到你的 prisma schema 中。
+如果希望使用非默认值，你必须手动添加它们。
 
 </Admonition>
 
-Explicitly defining referential actions in your Prisma schema is optional. If you do not explicitly define a referential action for a relation, Prisma uses the [new defaults](#referential-action-defaults).
+在 Prisma schema 中显式定义参照动作不是必需的。如果你没有为关系显式定义参照动作，Prisma 会采用 [新默认值](#referential-action-defaults).
 
-Note that referential actions can be added on a case by case basis. This means that you can add them to one single relation and leave the rest set to the defaults by not manually specifying anything.
+注意，参照动作是逐个添加的。这意味着你可以只向一个关系添加，而没有手动指定参照动作的关系将保持默认设置。
 
-### Checking for errors
+### 检查错误
 
-**Before** upgrading to 2.26.0 and enabling the referential actions **preview feature**, Prisma prevented the deletion of records while using `delete()` or `deleteMany()` to preserve referential integrity. A custom runtime error would be thrown by the Prisma Client with the error code `P2014`.
+升级至 2.26.0 且启用参照动作 **预览特性之前**，Prisma 阻止 `delete()` 或 `deleteMany()` 删除被参照记录以保证参照完整性。Prisma Client 会抛出一个错误代码为 `P2014` 的自定义运行时错误。
 
-**After** upgrading and enabling the referential actions **preview feature**, Prisma no longer performs runtime checks. You can instead specify a custom referential action to preserve the referential integrity between relations.
+升级且启用参照动作 **预览特性之后**，Prisma 不再执行运行时检查。你可以指定参照动作以保证参照完整性。
 
-When you use [`NoAction`](#noaction) or [`Restrict`](#restrict) to prevent the deletion of records, the error messages will be different post 2.26.0 compared to pre 2.26.0. This is because they are now triggered by the database and **not** the Prisma Client. The new error code that can be expected is `P2003`.
+当使用 [`NoAction`](#noaction) or [`Restrict`](#restrict) 阻止删除记录时 2.26.0 版本前后的错误信息会有所不同。这是因为现在这些错误由数据库抛出 **而不是** Prisma Client。新的错误代码应该是 `P2003`。
 
-To make sure you catch these new errors you can adjust your code accordingly.
+你可以据此修改代码以确保捕获这些新的错误。
 
-#### Example of catching errors
+#### 捕获错误示例
 
-The following example uses the below blog schema with a 1-m relationship between `Post` and `User` and sets a [`Restrict`](#restrict) referential actions on the `author` field.
+以下示例使用的博客 schema 含有 `Post` 和 `User` 间的一对多关系且在 `author` 字段设置了 [`Restrict`](#restrict) 参照动作。
 
-This means that if a user has a post, that user (and their posts) **cannot** be deleted.
+这意味着如果一个用户有一篇博文，则该用户 **不能** 被删除。
 
 ```prisma file=schema.prisma
 model Post {
@@ -442,7 +442,7 @@ model User {
 }
 ```
 
-Prior to upgrading and enabling the referential actions **preview feature**, the error code you would receive when trying to delete a user which has posts would be `P2014` and it's message:
+升级且启用参照动作 **预览特性** 之前，尝试删除拥有博文的用户会收到错误代码 `P2014` 及错误信息：
 
 > "The change you are trying to make would violate the required relation '{relation_name}' between the {model_a_name} and {model_b_name} models."
 
@@ -476,7 +476,7 @@ main()
   })
 ```
 
-To make sure you are checking for the correct errors in your code, modify your check to look for `P2003`, which will deliver the message:
+修改代码查找 `P2003` 以确保捕获该错误，错误信息为：
 
 > "Foreign key constraint failed on the field: {field_name}"
 
@@ -511,21 +511,21 @@ main()
   })
 ```
 
-## Behavior in <=2.25.0 or without preview flag <inlinecode>referentialActions</inlinecode>
+## 版本 <=2.25.0 或没有预览参数 <inlinecode>referentialActions</inlinecode> 时的行为
 
 <a id="current"></a>
 
-The following behavior applies in 2.25.0 and earlier, and since 2.26.0 _without_ the `referentialActions` preview flag.
+以下行为适用于 2.25.0 及更早版本，以及 _没有_ `referentialActions` 预览参数的 2.26.0 及更高版本。
 
-When invoking the [`delete()`](../../../../../guides/database/advanced-database-tasks/cascading-deletes/postgresql#91-validating-restrict) or [`deleteAll()`](../../../prisma-client/crud#delete-all-records) methods using the Prisma Client on required relations, a runtime check is performed and the deletion of records prevented if they are referencing related objects. **This prevents cascade behavior**.
+当在必填关系上调用 Prisma Client 的 [`delete()`](../../../../../guides/database/advanced-database-tasks/cascading-deletes/postgresql#91-validating-restrict) 或 [`deleteAll()`](../../../prisma-client/crud#delete-all-records) 方法时，Prisma 会执行一个运行时检查，阻止删除被参照记录。**这会防止级联行为**。
 
-The current behavior, without upgrading and enabling the feature flag, does not allow setting referential actions at all.
+如不升级及启用预览特性，则当前不允许设置任何参照动作。
 
-### The <=2.25.0 default referential actions
+### 版本 <=2.25.0 时默认参照动作
 
 | Clause     | Optional relations | Mandatory relations |
 | :--------- | :----------------- | :------------------ |
 | `onDelete` | `SetNull`          | `Cascade`           |
 | `onUpdate` | `Cascade`          | `Cascade`           |
 
-If you need to actually use the cascade behavior configured in the database, you _can_ use [`$raw`](../../../prisma-client/raw-database-access) SQL queries to [delete multiple referenced records](../../../prisma-client/crud#deleting-all-data-with-raw-sql--truncate) (such as users blog posts) and the deletion will be successful. This is because the Prisma Client will **not** perform runtime checks on raw queries.
+如果你需要使用数据库级联行为，_可以_ 使用 [`$raw`](../../../prisma-client/raw-database-access) SQL 查询来 [删除多条被参照记录](../../../prisma-client/crud#deleting-all-data-with-raw-sql--truncate) (例如拥有博文的用户)。这是因为 Prisma Client **不会** 对原始查询执行运行时检查。
