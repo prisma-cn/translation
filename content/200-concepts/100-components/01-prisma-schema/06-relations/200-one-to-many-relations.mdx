@@ -1,14 +1,14 @@
 ---
-title: One-to-many relations
-metaDescription: How to define and work with one-to-many relations in Prisma.
+title: 一对多关系
+metaDescription: Prisma 中如何定义和处理一对多关系。
 tocDepth: 2
 ---
 
 <TopBlock>
 
-One-to-many (1-n) relations refer to relations where one record on one side of the relation can be connected to zero or more records on the other side. In the following example, there is one 1-n-relation between `User` and `Post`:
+一对多 (1-n) 关系指其中一侧可以关联另一侧零或多条记录的关系。以下示例中，`User` 和 `Post` 间有一对多关系：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -43,20 +43,20 @@ model Post {
 </tab>
 </TabbedContent>
 
-> **Note** The `posts` field does not "manifest" in the underlying database schema. On the other side of the relation, the [annotated relation field](../relations#annotated-relation-fields-and-relation-scalar-fields) `author` and its relation scalar `authorId` represent the side of the relation that stores the foreign key in the underlying database.
+> **注** `posts` 字段在底层数据库 schema 中没有 "体现"。关系的另一侧，[带标注的关系字段](../relations#annotated-relation-fields-and-relation-scalar-fields) `author` 及其关系标量 `authorId` 构成了在底层数据库储存外键的关系侧。
 
-This 1-n-relation expresses the following:
+此一对多关系传达了如下内涵：
 
-- "a user can have zero or more posts"
-- "a post must always have an author"
+- "一个用户可以有零或多篇博文"
+- "一篇博文必须有一个作者"
 
 </TopBlock>
 
-## Multi-field relations in relational databases
+## 关系型数据库中的多字段关系
 
-In **relational databases only**, you can also define this relation using [multi-field IDs](../../../../reference/api-reference/prisma-schema-reference#id-1):
+**仅在关系型数据库中**，你还可以使用 [多字段 ID](../../../../../../reference/api-reference/prisma-schema-reference#id-1) 定义此关系：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系型数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -71,8 +71,8 @@ model User {
 model Post {
   id              Int    @id @default(autoincrement())
   author          User   @relation(fields: [authorFirstName, authorLastName], references: [firstName, lastName])
-  authorFirstName String // relation scalar field (used in the `@relation` attribute above)
-  authorLastName  String // relation scalar field (used in the `@relation` attribute above)
+  authorFirstName String // 关系标量字段 (在上述 `@relation` 属性中使用)
+  authorLastName  String // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 ```
 
@@ -81,11 +81,11 @@ model Post {
 </tab>
 </TabbedContent>
 
-## 1-n relations in the database
+## 数据库一对多关系
 
-### Relational databases
+### 关系型数据库
 
-The following example demonstrates how to create a 1-n relation in SQL:
+以下示例展示了如何通过 SQL 创建一对多关系：
 
 ```sql
 CREATE TABLE "User" (
@@ -98,9 +98,9 @@ CREATE TABLE "Post" (
 );
 ```
 
-Since there's no `UNIQUE` constraint on the `authorId` column (the foreign key), you can create **multiple `Post` records that point to the same `User` record**. This makes the relation a one-to-many rather than a one-to-one.
+因为 `authorId` 列 (外键) 上没有 `UNIQUE` 约束，你可以创建 **多条指向同一 `User` 的 `Post` 记录**。这使此关系成为一对多关系，而不是一对一。
 
-The following example demonstrates how to create a 1-n relation in SQL using a composite key (`firstName` and `lastName`):
+以下示例展示了如何在 SQL 中使用复合键 (`firstName` 和 `lastName`)创建一对多关系：
 
 ```sql
 CREATE TABLE "User" (
@@ -116,21 +116,21 @@ CREATE TABLE "Post" (
 );
 ```
 
-#### Comparing one-to-one and one-to-many relations
+#### 比较一对一和一对多关系
 
-In relational databases, the main difference between a 1-1 and a 1-n-relation is that in a 1-1-relation the foreign key must have a `UNIQUE` constraint defined on it.
+在关系型数据库中，一对一和一对多关系的主要区别是一对一关系中外键必须有 `UNIQUE` 约束。
 
 ### MongoDB
 
-For MongoDB, Prisma currently uses a [normalized data model design](https://docs.mongodb.com/manual/core/data-model-design/), which means that documents reference each other by ID in a similar way to relational databases.
+对于 MongoDB，Prisma 目前采用一种 [标准化的数据模型设计](https://docs.mongodb.com/manual/core/data-model-design/)，意味着文件之间通过 ID 互相引用，类似关系型数据库。
 
-The following MongoDB document represents a `User`:
+以下 MongoDB 文件代表一个 `User`：
 
 ```json
 { "_id": { "$oid": "60d5922d00581b8f0062e3a8" }, "name": "Ella" }
 ```
 
-The following list of `Post` MongoDB documents each have a `userId` field which reference the same user:
+以下列表中的每个 `Post` 文件都含有一个 `userId` 字段引用同一个 user：
 
 ```json
 [
@@ -147,22 +147,22 @@ The following list of `Post` MongoDB documents each have a `userId` field which 
 ]
 ```
 
-#### Comparing one-to-one and one-to-many relations
+#### 比较一对一和一对多关系
 
-In MongoDB, the only difference between a 1-1 and a 1-n is the number of documents referencing another doucment in the database - there are no constraints.
+在 MongoDB 中，一对一和一对多关系的唯一区别是单个文件被其他文件引用的数量 - 没有相关约束。
 
-## Required and optional relation fields in one-to-many relations
+## 必填和选填的一对多关系字段
 
-A 1-n-relation always has two relation fields:
+一对多关系始终有以下两个关系字段：
 
-- a [list](../data-model#type-modifiers) relation field which is _not_ annotated with `@relation`
-- the [annotated relation field](../relations#annotated-relation-fields-and-relation-scalar-fields) (including its relation scalar)
+- 一个 [列表](../data-model#type-modifiers) 字段，_不_ 标注 `@relation`
+- [带标注的关系字段](../relations#annotated-relation-fields-and-relation-scalar-fields) (包含其关系标量)
 
-The list side of a 1-n relation is **always mandatory**. On the other side of the relation, the annotated relation field and relation scalar can either _both_ be optional, or _both_ be mandatory.
+一对多关系的列表侧 **总是必需的**。关系另一侧，带标注的关系字段和关系标量要么 _都_ 是选填，要么 _都_ 是必填。
 
-In the following example, you can create a `Post` without assigning a `User`:
+以下示例中，你可以创建一个 `Post` 而不必关联 `User`：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -195,9 +195,9 @@ authorId  String?  @db.ObjectId
 </tab>
 </TabbedContent>
 
-In the following example, you must assign a `User` when you create a `Post`:
+以下示例中，你必须在创建 `Post` 时关联一个 `User`：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
