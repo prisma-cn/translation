@@ -1,6 +1,6 @@
 ---
-title: 包括不支持的数据库功能
-metaDecription: 如何为使用Prisma Migrate的项目包括不支持的数据库功能。
+title: Prisma Migrat 项目不支持的特性
+metaDecription: 如何为使用Prisma Migrate的项目添加不支持的数据库特性。
 ---
 
 <TopBlock>
@@ -12,26 +12,26 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 </Admonition>
 
-Prisma Migrate 使用 Prisma schema 来决定在数据库中创建哪些功能。然而，有一些功能不能用 schema 来表达[cannot be represented in the Prisma schema](../../../concepts/components/prisma-schema/features-without-psl-equivalent) <span class="concept"></span>, 包括但不限于:
+Prisma Migrate 使用 Prisma schema 来决定在数据库中创建哪些特性。然而，有一些特性不能用 schema 来表达[cannot be represented in the Prisma schema](../../../concepts/components/prisma-schema/features-without-psl-equivalent) <span class="concept"></span>, 包括但不限于:
 
 - 存储过程
 - 触发器
 - 视图
 - 部分索引
 
-要在数据库中添加一个不支持的功能, 必须执行迁移前在[自定义迁移](customizing-migrations)中包含该功能。
+要在数据库中添加一个不支持的特性, 必须执行迁移前在[自定义迁移](customizing-migrations)中包含该特性。
 
 <Admonition type="info">
 
 <Tip>
 
-Prisma schema 能表现 [不支持的字段类型](../../../concepts/components/prisma-schema/features-without-psl-equivalent#unsupported-field-types) <span class="concept"></span> 和[本地数据库函数](enable-native-database-functions).
+Prisma schema 能够表示的 [不支持的字段类型](../../../concepts/components/prisma-schema/features-without-psl-equivalent#unsupported-field-types) <span class="concept"></span> 和[本地数据库函数](enable-native-database-functions).
 
 </Tip>
 
 </Admonition>
 
-要定制一个包含不支持的功能一个迁移：
+定制一个**包含不支持的特性**的迁移：
 
 1. 使用`--create-only`标志来生成一个新的未执行的迁移::
 
@@ -39,7 +39,7 @@ Prisma schema 能表现 [不支持的字段类型](../../../concepts/components/
    npx prisma migrate dev --create-only
    ```
 
-1. 打开生成的`migration.sql`文件，添加不支持的功能 - 例如，部分索引:
+1. 打开生成的`migration.sql`文件，添加不支持的特性 - 例如，部分索引:
 
    ```sql
    CREATE UNIQUE INDEX tests_success_constraint ON posts (subject, target)
