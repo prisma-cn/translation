@@ -12,11 +12,11 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 </Admonition>
 
-有一些[本地数据库函数](/concepts/components/prisma-schema/features-without-psl-equivalent#native-database-functions) <span class="concept"></span> are part of optional extensions. You cannot use the function if the extension is not installed. If your project uses [Prisma Migrate](../../../concepts/components/prisma-migrate), 必须安装该扩展作为迁移的一部分。
+有一些[本地数据库函数](/concepts/components/prisma-schema/features-without-psl-equivalent#native-database-functions) <span class="concept"></span> 是可选扩展的一部分。如果未安装扩展，则无法使用该功能。 如果您的项目使用 [Prisma Migrate](../../../concepts/components/prisma-migrate), 必须安装该扩展作为迁移的一部分。
 
 <Admonition type="warning">
 
-**不要** 手动安装扩展 - [影子数据库](../../../concepts/components/prisma-migrate/shadow-database)需要同样的扩展，由于这个数据库是自动创建和删除的，所以安装扩展的唯一方法是使用迁移。
+**不要** 手动安装扩展 - [影子数据库(shadow database )](../../../concepts/components/prisma-migrate/shadow-database)需要同样的扩展，由于这个数据库是自动创建和删除的，所以安装扩展的唯一方法是使用迁移。
 
 </Admonition>
 
