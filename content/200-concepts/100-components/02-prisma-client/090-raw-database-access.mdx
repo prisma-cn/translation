@@ -1,39 +1,42 @@
 ---
-title: 'Raw database access'
-metaTitle: 'Raw database access (Reference)'
-metaDescription: 'Learn how you can send raw SQL queries to your database using the raw() method from the Prisma Client API.'
+title: '原始数据库访问'
+metaTitle: '原始数据库访问 (参考)'
+metaDescription: '了解如何使用 Prisma Client API 中的 raw() 方法将原始 SQL 查询发送到数据库。'
 ---
+
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Raw queries are currently not supported by the [MongoDB connector](../../database-connectors/mongodb).
+**MongoDB 不支持** <br />
+[MongoDB 连接器](../../database-connectors/mongodb)当前不支持原始查询。
 
 </Admonition>
 
-Prisma Client exposes two methods that allow you to send raw SQL queries to your database:
+Prisma Client 公开了两种方法，允许你向数据库发送原始 SQL 查询：
 
-- Use `$queryRaw` to return actual records (for example, using `SELECT`)
-- Use `$executeRaw` to return a count of affected rows (for example, after an `UPDATE` or `DELETE`)
+- 使用 `$queryRaw` 返回实际记录（例如，使用 `SELECT`）
+- 使用 `$executeRaw` 返回受影响行的计数（例如，在 `UPDATE` 或 `DELETE` 之后）
 
-Use cases for raw SQL include:
+原始 SQL 的用例包括：
 
-- You are a strong SQL user and want to run a heavily optimized query
-- Prisma Client does not yet support the feature that you require (please [consider raising an issue](https://github.com/prisma/prisma/issues/new/choose))
+- 你是一个强大的 SQL 用户，希望运行高度优化的查询
+- Prisma Client 尚不支持你所需的功能（请 [考虑提出问题](https://github.com/prisma/prisma/issues/new/choose))
 
 </TopBlock>
 
 ## <inlinecode>$queryRaw</inlinecode>
 
-`$queryRaw` returns actual database records. For example, the following `SELECT` query returns all fields for each record in the `User` table:
+`$queryRaw` 返回实际的数据库记录。例如，以下 `SELECT` 查询返回 `User` 表中每个记录的所有字段：
+
 
 ```ts no-lines
 const result = await prisma.$queryRaw('SELECT * FROM User;')
 ```
 
-The same method is implemented as a [tagged template](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates), which makes it easier to use [variables](#using-variables) by providing **placeholders**. The following example includes an `${email}` placeholder:
+相同的方法被实现为 [标记模板](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates)，通过提供 **占位符**，更容易使用 [变量](#using-variables)。以下示例包括 `${email}` 占位符：
+
 
 ```ts no-lines
 const email = 'edna@prisma.io'
@@ -41,9 +44,9 @@ const result =
   await prisma.$queryRaw`SELECT * FROM User WHERE email = ${email};`
 ```
 
-### Return type
+### 返回类型
 
-`$queryRaw` returns an array. Each object corresponds to a database record:
+`$queryRaw` 返回一个数组。每个对象对应一个数据库记录：
 
 ```json5
 [
@@ -52,43 +55,43 @@ const result =
 ]
 ```
 
-You can also [type the results of `$queryRaw`](#typing-queryraw-results).
+你也可以 [键入 `$queryRaw` 的结果](#typing-queryraw-results)。
 
-### Signature
+### 签名
 
 ```ts no-lines
 $queryRaw<T = any>(query: string | TemplateStringsArray, ...values: any[]): Promise<T>;
 ```
 
-### Typing `$queryRaw` results
+### 键入 `$queryRaw` 结果 {#typing-queryraw-results}
 
-You can adjust the return type of `$queryRaw` with a [TypeScript Generic](https://www.typescriptlang.org/docs/handbook/generics.html). `$queryRaw` has the following signature:
+你可以使用 [TypeScript Generic](https://www.typescriptlang.org/docs/handbook/generics.html) 调整 `$queryRaw` 的返回类型. `$queryRaw` 具有以下签名：
 
 ```ts no-lines
 $queryRaw<T = any>(query: string | TemplateStringsArray): Promise<T>;
 ```
 
-`Promise<T>` uses [generic type parameter `T`](https://www.typescriptlang.org/docs/handbook/generics.html). You can determine the type of `T` when you invoke the `$queryRaw` command. In the following example, `$queryRaw` returns `User[]`:
+`Promise<T>` 使用 [泛型类型参数 `T`](https://www.typescriptlang.org/docs/handbook/generics.html)。 你可以在调用 `$queryRaw` 命令时确定 `T` 的类型。在以下示例中，`$queryRaw` 返回 `User[]`：
 
 ```ts
-// import the generated `User` type from the `@prisma/client` module
+// 从 `@prisma/client` 模块导入生成的 `User` 类型 
 import { User } from '@prisma/client'
 
 const result = await prisma.$queryRaw<User[]>('SELECT * FROM User;')
-// result is of type: `User[]`
+// 结果是类型: `User[]`
 ```
 
-> **Note**: If you do not provide a type, `$queryRaw` defaults to `any`.
+> **注意**：如果不提供类型，`$queryRaw` 默认为 `any`。
 
-`result` is now `User[]` and intellisense is available:
+`result` 现在是 `User[]` 并且 intellisense 可用：
 
-![Typing $queryRaw results](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/H2TCRc5.png)
+![键入 $queryRaw 结果](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/H2TCRc5.png)
 
-If you are selecting **specific fields** of the model or want to include relations, refer to the documentation about [leveraging Prisma Client's generated types](advanced-type-safety) if you want to make sure that the results are properly typed.
+如果你正在选择模型的 **特定字段**，或者希望包含关系，请参阅有关 [利用 Prisma Client 生成的类型](advanced-type-safety) 的文档，以确保正确键入结果。
 
-#### Type caveats when using raw SQL
+#### 使用原始 SQL 时的类型警告
 
-When you type the results of `$queryRaw`, the raw data does not always match the suggested TypeScript type. For example, the following Prisma model includes a `Boolean` field named `published`:
+键入 `$queryRaw` 的结果时，原始数据并不总是与建议的 TypeScript 类型匹配。例如，以下 Prisma 模型包含一个名为 `published` 的 `Boolean` 字段：
 
 ```prisma highlight=3;normal
 model Post {
@@ -99,7 +102,7 @@ model Post {
 }
 ```
 
-The following query returns all posts and prints out the value of `published` field of each `Post`:
+以下查询返回所有 Post，并打印出每个 `Post` 的 `published` 字段的值：
 
 ```ts
 const result = await prisma.$queryRaw<Post[]>`SELECT * FROM Post`
@@ -109,13 +112,13 @@ result.forEach((x) => {
 })
 ```
 
-If the database provider is MySQL, the values are `1` or `0`. However, if the database provider is PostgreSQL, the values are `true`, `false`, or `NULL`.
+如果数据库提供程序是 MySQL，则值为 `1` 或 `1`。但是，如果数据库提供程序是 PostgreSQL，则值为`true`，`false`, 或 `NULL`。
 
-> **Note**: The Prisma Client query engine standardizes the return type for all databases. Using the raw queries does not.
+> **注意**：Prisma Client 查询引擎标准化了所有数据库的返回类型。使用原始查询不会导致错误。
 
 ## <inlinecode>$executeRaw</inlinecode>
 
-`$executeRaw` returns the _number of rows affected by a database operation_, such as `UPDATE` or `DELETE`. This function does **not** return database records. The following query updates records in the database and returns a count of the number of records that were updated:
+`$executeRaw` 返回 _受数据库操作影响的行数_，如 `UPDATE` 或 `DELETE`。此函数 **不** 返回数据库记录。以下查询更新数据库中的记录，并返回已更新记录数的计数：
 
 ```ts
 const result: number = await prisma.$executeRaw(
@@ -123,7 +126,7 @@ const result: number = await prisma.$executeRaw(
 )
 ```
 
-The same method is implemented as a [tagged template](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates), which makes it easier to use [variables](#using-variables) by providing placeholders. The following example includes `${emailValidated}` and `${active}` placeholders:
+相同的方法被实现为 [标记模板](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates)，通过提供占位符，更容易使用 [变量](#using-variables)。以下示例包括 `${emailValidated}` 和 `${active}` 占位符：
 
 ```ts
 const emailValidated = true
@@ -133,51 +136,49 @@ const result: number =
   await prisma.$executeRaw`UPDATE User SET active = ${active} WHERE emailValidated = ${emailValidated};`
 ```
 
-Be aware that:
+请注意：
+- `$executeRaw` 不支持单个字符串中的多个查询（例如，`ALTER TABLE` 和 `CREATE TABLE` 一起）。
+- Prisma Client 提交准备好的语句，准备好的语句只允许 SQL 语句的子集（不允许使用 `START TRANSACTION`）。例如，["准备好的语句中允许使用MySQL:SQL语法"](https://dev.mysql.com/doc/refman/8.0/en/sql-prepared-statements.html).
+- [`PREPARE` 不支持 `ALTER`](https://www.postgresql.org/docs/current/sql-prepare.html) - 请参阅 [解决方法](#alter-limitation-postgresql)。
 
-- `$executeRaw` does not support multiple queries in a single string (for example, `ALTER TABLE` and `CREATE TABLE` together).
-- Prisma Client submits prepared statements, and prepared statements only allow a subset of SQL statements (`START TRANSACTION`is not permitted). For example, ["MySQL: SQL Syntax Allowed in Prepared Statements"](https://dev.mysql.com/doc/refman/8.0/en/sql-prepared-statements.html).
-- [`PREPARE` does not support `ALTER`](https://www.postgresql.org/docs/current/sql-prepare.html) - see [workaround](#alter-limitation-postgresql).
+### 返回类型
 
-### Return type
+`$executeRaw` 返回一个 'number'。
 
-`$executeRaw` returns a `number`.
-
-### Signature
+### 签名
 
 ```ts
 $executeRaw<T = any>(query: string | TemplateStringsArray, ...values: any[]): Promise<number>;
 ```
 
-## Transactions
+## 事务
 
-In 2.10.0 and later, you can use `.$executeRaw()` and `.$queryRaw()` inside a [transaction](transactions).
+在 2.10.0 及更高版本中，你可以在 [事务](transactions) 中使用 `.$executeRaw()` 和 `.$queryRaw()`。
 
-## Using variables
+## 使用变量
 
-`$executeRaw` and `$queryRaw` are implemented as [**tagged templates**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates). Tagged templates are the recommended way to use variables with raw SQL in Prisma Client.
-
-The following example includes a placeholder named `${userId}`. Note the double backticks (` `` `) instead of `()`:
+`$executeRaw` 和 `$queryRaw` 实现为 [**标记模板**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates)。在 Prisma Client 中，建议使用带标记模板的原始 SQL 变量。
+下面的示例包括一个名为 `${userId}` 的占位符。请注意双反引号（` `` `）而不是 `()`：
 
 ```ts
 const userId = 42
 const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${userId};`
 ```
 
-> **Important**: You _must_ use double backticks - the same query using `$queryRaw()` is not secure because `${userId}` is not escaped.
+>**重要提示**：你 _必须_ 使用双反引号 - 使用 `$queryRaw()` 的同一查询不安全，因为 `${userId}` 未转义。
 
-✔ Benefits of using the tagged template versions of `$queryRaw` and `$executeRaw` include:
+✔ 使用 `$queryRaw` 和 `$executeRaw` 的标记模板版本的好处包括：
 
-- Prisma Client escapes all variables.
-- Tagged templates are database-agnostic - you do not need to remember if variables should be written as `$1` (PostgreSQL) or `?` (MySQL).
-- [SQL Template Tag](https://github.com/blakeembrey/sql-template-tag) give you access to [useful helpers](#tagged-template-helpers).
-- Embedded, named variables are easier to read.
+- Prisma Client 将转义所有变量。
+- 带标签的模板与数据库无关 - 你不需要记住变量是应写为 `$1` （PostgreSQL）还是 `?`（MySQL）。
+- [SQL 模板标记](https://github.com/blakeembrey/sql-template-tag) 允许你访问 [有用的帮助程序](#tagged-template-helpers)。
+- 嵌入的命名变量更易于读取。
 
-> **Note**: You cannot pass a table or column name into a tagged template placeholder. For example, you cannot `SELECT ?` and pass in `*` or `id, name` based on some condition.
+> **注意**：不能将表名或列名传递到标记的模板占位符中。例如，不能根据某些条件“选择”并传入“*”或“id，name”。
 
-### Tagged template helpers
+### 标记模板帮助程序 {#tagged-template-helpers}
 
-Prisma Client specifically uses [SQL Template Tag](https://github.com/blakeembrey/sql-template-tag), which exposes a number of helpers. For example, the following query uses `join()` to pass in a list of IDs:
+Prisma Client 专门使用 [SQL 模板标记](https://github.com/blakeembrey/sql-template-tag)，它公开了许多助手。例如，以下查询使用 `join()` 传入 ID 列表：
 
 ```ts
 import { Prisma } from '@prisma/client'
@@ -187,50 +188,50 @@ const result =
   await prisma.$queryRaw`SELECT * FROM User WHERE id IN (${Prisma.join(ids)})`
 ```
 
-The following example uses the `empty` and `sql` helpers to change the query depending on whether `userName` is empty:
+以下示例使用 `empty` 和 `sql` 帮助程序根据 `userName` 是否为空来更改查询：
 
 ```ts
 import { Prisma } from '@prisma/client'
 
 const userName = ''
 const result = await prisma.$queryRaw`SELECT * FROM User ${
-  userName ? Prisma.sql`WHERE name = ${userName}` : Prisma.empty // Cannot use "" or NULL here!
+  userName ? Prisma.sql`WHERE name = ${userName}` : Prisma.empty // 在这里不能使用 "" or NULL !
 }`
 ```
 
-### Parameterized queries
+### 参数化查询
 
-As an alternative to tagged templates, `$queryRaw()` and `$executeRaw()` support standard parameterized queries where each variable is represented by a symbol (`?` for mySQL, `$1`, `$2`, and so on for PostgreSQL). The following example uses a MySQL query:
-
-```ts
-const userName = 'Sarah'
-const email = 'alice@prisma.io'
-const result = await prisma.$queryRaw(
-  'SELECT * FROM User WHERE (name = ? OR email = ?)', // MySQL variables, represented by ?
-  userName,
-  email
-)
-```
-
-The following example uses a PostgreSQL query:
+作为标记模板的替代方案，`$queryRaw()` 和 `$executeRaw()` 支持标准的参数化查询，其中每个变量都由一个符号表示（ `?` 对于 mySQL，`$1`，`$2`，对于 PostgreSQL 等等）。以下示例使用 MySQL 查询：
 
 ```ts
 const userName = 'Sarah'
 const email = 'alice@prisma.io'
 const result = await prisma.$queryRaw(
-  'SELECT * FROM User WHERE (name = $1 OR email = $2)', // PostgreSQL variables, represented by $1 and $2
+  'SELECT * FROM User WHERE (name = ? OR email = ?)', // MySQL 变量, 表现为 ?
   userName,
   email
 )
 ```
 
-As with tagged templates, Prisma Client escapes all variables.
+以下示例使用 PostgreSQL 查询：
 
-> **Note**: You cannot pass a table or column name as a variable into a parameterized query. For example, you cannot `SELECT ?` and pass in `*` or `id, name` based on some condition.
+```ts
+const userName = 'Sarah'
+const email = 'alice@prisma.io'
+const result = await prisma.$queryRaw(
+  'SELECT * FROM User WHERE (name = $1 OR email = $2)', // PostgreSQL 变量, 表现为 by $1 and $2
+  userName,
+  email
+)
+```
 
-#### Parameterized PostgreSQL `ILIKE` query
+与标记模板一样，Prisma Client 将转义所有变量。
 
-When you use `ILIKE`, the `%` wildcard character(s) should be included in the variable itself, not the query (`string`):
+> **注意**：不能将表或列名作为变量传递到参数化查询中。例如，不能根据某些条件 `SELECT ?` 并传入 `*` 或 `id, name`。
+
+#### 参数化 PostgreSQL `ILIKE` 查询
+
+使用 `ILIKE` 时，变量本身中应包含 `%` 通配符，而不是查询（`string`）：
 
 ```ts
 const userName = 'Sarah'
@@ -242,48 +243,48 @@ const result = await prisma.$queryRaw(
 )
 ```
 
-#### <inlinecode>ALTER</inlinecode> limitation (PostgreSQL)
+#### <inlinecode>ALTER</inlinecode> 限制 (PostgreSQL) {#alter-limitation-postgresql}
 
-PostgreSQL [does not support using `ALTER` in a prepared statement](https://www.postgresql.org/docs/current/sql-prepare.html), which means that the following queries will not work:
+PostgreSQL [不支持在准备好的语句中使用 `ALTER` ](https://www.postgresql.org/docs/current/sql-prepare.html)，这意味着以下查询将不起作用：
 
 ```ts
-await prisma.$executeRaw`ALTER USER prisma WITH PASSWORD '${password}'` // Tagged template
-await prisma.$executeRaw(`ALTER USER prisma WITH PASSWORD $1`, newPassword) // Parameterized query
+await prisma.$executeRaw`ALTER USER prisma WITH PASSWORD '${password}'` // 标记模板
+await prisma.$executeRaw(`ALTER USER prisma WITH PASSWORD $1`, newPassword) // 参数化查询
 ```
 
-You can use the following query to [work around the issue](https://github.com/prisma/prisma-client-js/issues/940#issuecomment-748014175), but be aware that this is potentially **unsafe** as `${password}` is not escaped:
+你可以使用以下查询 [解决问题](https://github.com/prisma/prisma-client-js/issues/940#issuecomment-748014175），但请注意，这可能 **不安全**，因为 `${password}` 没有转义：
 
 ```ts
 await prisma.$executeRaw(`ALTER USER prisma WITH PASSWORD '${password}'`)
 ```
 
-## SQL injection
+## SQL 注入
 
-Prisma Client mitigates the risk of SQL injection in the following ways:
+Prisma Client 通过以下方式降低 SQL 注入的风险：
 
-- Prisma Client escapes all variables when you use tagged templates (` $queryRaw`` ` or ` $executeRaw`` ` ) or parameterized queries (`$queryRaw(query, variables)` or `$executeRaw(query, variables)`), and sends all queries as prepared statements.
-- Both versions of `$executeRaw` (standard and tagged template) can only run **one** query at a time. You cannot append a second query - for example, adding `DROP bobby_tables` to the end of an `ALTER`.
+- 当你使用带标签的模板（(` $queryRaw`` ` 或 ` $executeRaw`` `）或参数化查询（`$queryRaw(query, variables)` 或 `$executeRaw(query, variables)`）时，Prisma Client 将转义所有变量，并将所有查询作为准备好的语句发送。
+- `$executeRaw（标准和标记模板）` 的两个版本一次只能运行 **一个** 查询。你不能附加第二个查询 — 例如，将 `DROP bobby_tables` 添加到查询的末尾 `ALTER`。
 
-If you cannot use tagged templates or parameterized queries (for example, you need to pass in table or column names as variables), be aware that your code may be vulnerable to SQL injection.
+如果你不能使用标记模板或参数化查询（例如，你需要将表名或列名作为变量传入），请注意，你的代码可能容易受到 SQL 注入的攻击。
 
-### Warning: String concatenation
+### 警告：字符串连接
 
-The following example concatenates `query` and `inputString`. Prisma Client ❌ **cannot** escape `inputString` in this example, which makes it vulnerable to SQL injection:
+下面的示例将 `query` 和 `inputString` 连接起来。Prisma Client 在本例中，❌ **无法** 转义 `inputString`，这使其易受 SQL 注入的攻击：
 
 ```ts
-const inputString = '"Sarah" UNION SELECT id, title, content FROM Post' // SQL Injection
+const inputString = '"Sarah" UNION SELECT id, title, content FROM Post' // SQL 注入
 const query = 'SELECT id, name, email FROM User WHERE name = ' + inputString
 const result = await prisma.$queryRaw(query)
 
 console.log(result)
 ```
 
-### Warning: Template literals
+### 警告：模板文本
 
-The following example uses a template literal inside `$queryRaw()` and returns all users where `name` equals `${inputString}`. Prisma Client ❌ **cannot** escape `inputString` in this example, which makes it vulnerable to SQL injection:
+下面的示例在 `$queryRaw()` 中使用一个模板文本，并返回其中 `name` 等于 `${inputString}` 的所有用户。Prisma Client  在本例中，❌ **无法** 转义 `inputString`，这使其易受 SQL 注入的攻击：
 
 ```ts
-const inputString = '"Sarah" UNION SELECT id, title, content FROM Post' // SQL Injection
+const inputString = '"Sarah" UNION SELECT id, title, content FROM Post' // SQL 注入
 const result = await prisma.$queryRaw(
   `SELECT id, name, email FROM User WHERE name = ${inputString}`
 )
@@ -291,7 +292,7 @@ const result = await prisma.$queryRaw(
 console.log(result)
 ```
 
-By contrast, the same query using **tagged templates** escapes `inputString` and the query does not return results. The only difference between the two examples is that `()` have been replaced by ` `` `:
+相比之下，使用 **标记模板** 的同一查询会转义 `inputString`，并且该查询不会返回结果。这两个示例之间的唯一区别是， `()` 已被 ` `` ` 替换：
 
 ```ts
 const inputString = '"Sarah" UNION SELECT id, title, content FROM Post'
