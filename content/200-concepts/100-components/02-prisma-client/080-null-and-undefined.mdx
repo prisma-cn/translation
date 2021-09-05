@@ -1,44 +1,21 @@
 ---
-title: 'Null and undefined'
-metaTitle: 'Null and undefined (Reference)'
-metaDescription: 'How Prisma Client handles null and undefined, including a GraphQL use case.'
+title: '空且未定义'
+metaTitle: '空且未定义（引用）'
+metaDescription: 'Prisma Client 如何处理 null 和未定义，包括 GraphQL 用例。'
 preview: false
 ---
 
+
 <TopBlock>
 
-Prisma Client differentiates between `null` and `undefined`:
+Prisma Client 区分 `null` 和 `undefined`：
 
-- `null` is a **value**
-- `undefined` means **do nothing**
+- `null` 是一个 **value**
+- `undefined` 表示 **do nothing**
 
-> **Note**: This is particularly important to account for in [a **Prisma with GraphQL context**, where `null` and `undefined` are interchangeable](#use-case-null-and-undefined-in-a-graphql-resolver).
+> **注意**: 在 [一个 **具有 GraphQL 上下文的 Prisma**，其中 `null` 和 `undefined` 是可互换的](#use-case-null-and-undefined-in-a-graphql-resolver) 中，这一点尤其重要。
 
-In the following example, if `emailInput` is `null`, the query sets `email` (a **mandatory** field) to `undefined` - which means ✔ **do not include this in the update**:
-
-```ts
-const update = await prisma.user.update({
-  where: {
-    id: 1,
-  },
-  data: {
-    name: "Petunia",
-|    email: emailInput != null ? emailInput : undefined, // If null, don't include in update!
-  },
-});
-
-function getEmail() {
-  const random = Math.floor(Math.random() * 10);
-
-  if (random > 5) {
-    return "ariadne@prisma.io"; // Could be null!
-  }
-
-  return null;
-}
-```
-
-Setting a field value to `undefined` is the same as not including the `email` field in the `update` query **at all**:
+在下面的示例中，如果 `emailInput` 为 `null`，则查询将 `email`（一个 **必填** 字段）设置为 `undefined` - 这意味着 ✔ **不要在更新中包含此内容**：
 
 ```ts
 const update = await prisma.user.update({
@@ -47,7 +24,7 @@ const update = await prisma.user.update({
   },
   data: {
     name: "Petunia",
-|    // No email update here...
+|    email: emailInput != null ? emailInput : undefined, // 如果为空，则不包括在更新中！
   },
 });
 
@@ -55,20 +32,44 @@ function getEmail() {
   const random = Math.floor(Math.random() * 10);
 
   if (random > 5) {
-    return "ariadne@prisma.io"; // Could be null!
+    return "ariadne@prisma.io"; // 可能是空的！
   }
 
   return null;
 }
 ```
 
-By contrast, the following would ✘ **not work** as the mandatory `email` field cannot be `null`:
+将字段值设置为 `undefined` 与 **完全** 不在 `update` 查询 中包含 `email` 字段相同：
 
 ```ts
-email: isValid(emailInput) ? emailInput : null, // email is a mandatory field!
+const update = await prisma.user.update({
+  where: {
+    id: 1,
+  },
+  data: {
+    name: "Petunia",
+|    // 这里没有电子邮件更新。。。
+  },
+});
+
+function getEmail() {
+  const random = Math.floor(Math.random() * 10);
+
+  if (random > 5) {
+    return "ariadne@prisma.io"; // 可能是空的！
+  }
+
+  return null;
+}
 ```
 
-> **Note**: TypeScript will give you an error in this scenario: `Type 'null' is not assignable to type 'string'. ts(2322)`
+相比之下，以下情况可能会 ✘ **失灵**，因为必填的 `email` 字段不能为 `null`：
+
+```ts
+email: isValid(emailInput) ? emailInput : null, // 电子邮件是必填字段！
+```
+
+> **注意**：在这种情况下，TypeScript 会给你一个错误： `Type 'null' is not assignable to type 'string'. ts(2322)` (类型 'null' 不可分配给类型 '字符串')
 
 <details><summary>Expand for sample schema</summary>
 
@@ -93,35 +94,35 @@ model Post {
 
 </TopBlock>
 
-## Use case: <inlinecode>null</inlinecode> and <inlinecode>undefined</inlinecode> in a GraphQL resolver
+## 用例：<inlinecode>null</inlinecode> 和 <inlinecode>undefined<inlinecode> 在 GraphQL 解析器中 {#use-case-null-and-undefined-in-a-graphql-resolver}
 
-In the following example mutation that updates a user, both `authorEmail` and `name` accept `null` - from a GraphQL perspective, this means that fields are **optional**:
+在以下更新用户的示例中，`authorEmail` 和 `name` 都接受 `null` - 从 GraphQL 的角度来看，这意味着字段是 **可选** 的：
 
 ```ts
 type Mutation {
-  // Update author's email or name, or both - or neither!
+  // 更新作者的电子邮件或姓名，或两者都更新 - 或两者都不更新！
   updateUser(id: Int!, authorEmail: String, authorName: String): User!
 }
 ```
 
-However, if you pass `null` values for `authorEmail` or `authorName` on to Prisma, the following will happen:
+但是，如果将 `authorEmail` or `authorName` 的 `null` 值传递给 Prisma，则会发生以下情况：
 
-- If `args.authorEmail` is `null`, the query will **fail** - `email` does not accept `null` ✘
-- If `args.authorName` is `null`, Prisma changes the value of `name` to `null` - this is probably not how you want an update to work ✘
+- 如果 `args.authorEmail` 是 `null`, 查询将被 **fail** - `email` 不支持 `null` ✘
+- 如果 `args.authorName` 是 `null`, Prisma 更改 `name` 的值为 `null` - 这可能不是你希望更新的工作方式 ✘
 
 ```ts
 updateUser: (parent, args, ctx: Context) => {
   return ctx.prisma.user.update({
     where: { id: Number(args.id) },
     data: {
-|      email: args.authorEmail, // email cannot be null
-|      name: args.authorName // name set to null - potentially unwanted behavior
+|      email: args.authorEmail, // 电子邮件不能为空
+|      name: args.authorName // 名称设置为 null - 可能不需要的行为
     },
   })
 },
 ```
 
-Instead, set the value of `email` and `name` to `undefined` if the input value is `null`. Doing this is the same as not updating the field at all:
+如果输入值为 `null`，则将 `email` 和 `name` 的值设置为 `undefined`。执行此操作与完全不更新字段相同：
 
 ```ts
 updateUser: (parent, args, ctx: Context) => {
@@ -135,19 +136,19 @@ updateUser: (parent, args, ctx: Context) => {
 },
 ```
 
-## The effect of <inlinecode>null</inlinecode> and <inlinecode>undefined</inlinecode> on conditionals
+## <inlinecode>null</inlinecode> 和 <inlinecode>undefined</inlinecode> 对条件句的影响
 
-There are some caveats to filtering with conditionals which might produce unexpected results. When filtering with conditionals you might expect one result but receive another given how Prisma treats nullable values.
+使用条件筛选有一些注意事项，可能会产生意外的结果。当使用条件筛选时，你可能期望得到一个结果，但根据 Prisma 处理可空值的方式，你可能会收到另一个结果。
 
-The following table provides a high-level overview of how the different operators handle 0, 1 and `n` filters.
+下表提供了不同运算符如何处理 0、1 和  `n` 筛选器的高级概述。
 
-| Operator | 0 filters         | 1 filter               | n filters            |
+| 运算符 | 0 筛选         | 1 筛选               | n 筛选            |
 | -------- | ----------------- | ---------------------- | -------------------- |
-| `OR`     | return empty list | validate single filter | validate all filters |
-| `AND`    | return all items  | validate single filter | validate all filters |
-| `NOT`    | return all items  | validate single filter | validate all filters |
+| `OR`     | 返回空列表 | 验证单个筛选器 | 验证所有筛选器 |
+| `AND`    | 返回所有项目  | 验证单个筛选器 | 验证所有筛选器 |
+| `NOT`    | 返回所有项目  | 验证单个筛选器 | 验证所有筛选器 |
 
-This example shows how an `undefined` parameter impacts the results returned by a query that uses the [`OR`](../../../reference/api-reference/prisma-client-reference#or) <span class="api"></span> operator.
+此示例显示了 `undefined` 参数如何影响使用 [`OR`](../../../reference/api-reference/prisma-client-reference#or) <span class="api"></span> 运算符的查询返回的结果。
 
 ```ts
 interface FormData {
@@ -174,13 +175,12 @@ const users = await prisma.user.findMany({
 // returns: []
 ```
 
-The query receives filters from a formData object, which includes an optional email property. In this instance, the value of the email property is `undefined`. When this query is run no data is returned.
+查询从 formData 对象接收筛选器，该对象包括可选的电子邮件属性。在本例中，电子邮件属性的值为 `undefined`。运行此查询时，不会返回任何数据。
 
-This is in contrast to the [`AND`](../../../reference/api-reference/prisma-client-reference#and) <span class="api"></span> and [`NOT`](../../../reference/api-reference/prisma-client-reference#not) <span class="api"></span> operators, which will both return all the users
-if you pass in an `undefined` value.
+这与 [`AND`](../../../reference/api-reference/prisma-client-reference#and) <span class="api"></span> 和 [`NOT`](../../../reference/api-reference/prisma-client-reference#not) <span class="api"></span> 操作符形成对比，如果传入 `undefined` 值两者都将返回所有用户。
 
-> This is because passing an `undefined` value to an `AND` or `NOT` operator is the same
-> as passing nothing at all, meaning the `findMany` query in the example will run without any filters and return all the users.
+> 这是因为将 `undefined` 值传递给 `AND` 或 `NOT` 运算符是相同的
+> 因为根本不传递任何内容，这意味着示例中的 `findMany` 查询将在没有任何过滤器的情况下运行并返回所有用户。
 
 ```ts
 interface FormData {
@@ -204,7 +204,7 @@ const users = await prisma.user.findMany({
   },
 })
 
-// returns: { id: 1, email: 'ems@boop.com', name: 'Emelie' }
+// 返回: { id: 1, email: 'ems@boop.com', name: 'Emelie' }
 
 const users = await prisma.user.findMany({
   where: {
@@ -218,5 +218,5 @@ const users = await prisma.user.findMany({
   },
 })
 
-// returns: { id: 1, email: 'ems@boop.com', name: 'Emelie' }
+// 返回: { id: 1, email: 'ems@boop.com', name: 'Emelie' }
 ```
