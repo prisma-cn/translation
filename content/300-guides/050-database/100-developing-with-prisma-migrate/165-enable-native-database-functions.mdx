@@ -1,28 +1,28 @@
 ---
-title: Enable extensions for native database functions
-metaDecription: How to enable native database functions for projects that use Prisma Migrate.
+title: 启用本地数据库函数的扩展功能
+metaDecription: 如何为使用Prisma Migrate的项目启用本地数据库函数扩展功能。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-Some [native database functions](/concepts/components/prisma-schema/features-without-psl-equivalent#native-database-functions) <span class="concept"></span> are part of optional extensions. You cannot use the function if the extension is not installed. If your project uses [Prisma Migrate](../../../concepts/components/prisma-migrate), you must install the extension as part of a migration.
+有一些[本地数据库函数](/concepts/components/prisma-schema/features-without-psl-equivalent#native-database-functions) <span class="concept"></span> 是可选扩展的一部分。如果未安装扩展，则无法使用该功能。 如果您的项目使用 [Prisma Migrate](../../../concepts/components/prisma-migrate), 必须安装该扩展作为迁移的一部分。
 
 <Admonition type="warning">
 
-**Do not** manually install extensions - the [shadow database](../../../concepts/components/prisma-migrate/shadow-database) requires the same extensions, and since this database is created and deleted automatically, the only way to install extensions is to use migrations.
+**不要** 手动安装扩展 - [影子数据库(shadow database )](../../../concepts/components/prisma-migrate/shadow-database)需要同样的扩展，由于这个数据库是自动创建和删除的，所以安装扩展的唯一方法是使用迁移。
 
 </Admonition>
 
-The following example demonstrates how to install the `pgcrypto` extension as part of a migration:
+下面的例子演示了如何安装`pgcrypto`扩展作为迁移的一部分：
 
-1. Add the field with the native database function to your schema:
+1. 将具有本地数据库功能的字段添加到 schema 中：
 
    ```prisma
    model User {
@@ -30,19 +30,19 @@ The following example demonstrates how to install the `pgcrypto` extension as pa
    }
    ```
 
-   If you include a cast operator (such as `::TEXT`), you must surround the entire function with parentheses:
+   如果包含操作符(例如`::TEXT`)，必须把整个函数用括号包起来:
 
    ```prisma
    @default(dbgenerated("(gen_random_uuid()::TEXT)")
    ```
 
-1. Use the `--create-only` flag to generate a new migration without applying it:
+1. 使用`--create-only`标志来生成一个新的未执行的迁移:
 
    ```terminal
    npx prisma migrate dev --create-only
    ```
 
-1. Open the generated `migration.sql` file and enable the `pgcrypto` module:
+1. 打开生成的`migration.sql`文件，启用`pgcrypto`模块:
 
    ```sql
    CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -51,12 +51,12 @@ The following example demonstrates how to install the `pgcrypto` extension as pa
    ADD PRIMARY KEY ("id");
    ```
 
-1. Apply the migration:
+1. 应用迁移:
 
    ```terminal
    npx prisma migrate dev
    ```
 
-Each time you reset the database or add a new member to your team, all required functions are part of the migration history.
+每次你重置数据库或向你的团队添加新成员时，所有需要的函数都是迁移历史的一部分。
 
 </TopBlock>
