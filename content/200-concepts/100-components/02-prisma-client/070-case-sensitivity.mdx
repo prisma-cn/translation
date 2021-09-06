@@ -7,7 +7,7 @@ preview: false
 
 <TopBlock>
 
-区分大小写影响数据的 **筛选** 和 **排序**，并由你的 [数据库排序规则](#database-collation-and-case-sensitivity) 决定。根据你的设置，对数据进行排序和筛选会产生不同的结果：
+区分大小写影响数据的 **过滤** 和 **排序**，并由你的 [数据库排序规则](#database-collation-and-case-sensitivity) 决定。根据你的设置，对数据进行排序和过滤会产生不同的结果：
 
 | 动作          | 区分大小写                               | 不区分大小写                             |
 | --------------- | -------------------------------------------- | -------------------------------------------- |
@@ -16,7 +16,7 @@ preview: false
 
 如果使用 **关系数据库连接器**，[Prisma Client](../) 将遵循你的数据库排序规则。使用 Prisma Client 支持 **不区分大小写** 过滤和排序的选项和建议取决于 [数据库提供程序](#options-for-case-insensitive-filtering)。
 
-如果使用 MongoDB 连接器，[Prisma Client](.) 使用正则表达式规则来启用不区分大小写的筛选。连接器 _不_ 使用 [MongoDB 排序规则](https://docs.mongodb.com/manual/reference/collation/)。
+如果使用 MongoDB 连接器，[Prisma Client](.) 使用正则表达式规则来启用不区分大小写的过滤。连接器 _不_ 使用 [MongoDB 排序规则](https://docs.mongodb.com/manual/reference/collation/)。
 
 > **注意**：遵循 GitHub 上 [不区分大小写排序](https://github.com/prisma/prisma-client-js/issues/841) 的进度。
 
@@ -106,15 +106,15 @@ const users = await prisma.user.findMany({
 })
 ```
 
-## 不区分大小写筛选选项 {#options-for-case-insensitive-filtering}
+## 不区分大小写过滤选项 {#options-for-case-insensitive-filtering}
 
 使用 Prisma Client 支持不区分大小写过滤的推荐方法取决于你的基础提供程序。
 
 ### PostgreSQL 提供程序
 
-PostgreSQL 默认使用 [确定性排序](https://www.postgresql.org/docs/current/collation.html#COLLATION-NONDETERMINISTIC) ，这意味着筛选是 **区分大小写** 的。要支持不区分大小写的筛选，请在每个字段的基础上使用 `mode: 'insensitive'` 属性。
+PostgreSQL 默认使用 [确定性排序](https://www.postgresql.org/docs/current/collation.html#COLLATION-NONDETERMINISTIC) ，这意味着过滤是 **区分大小写** 的。要支持不区分大小写的过滤，请在每个字段的基础上使用 `mode: 'insensitive'` 属性。
 
-对筛选器使用 `mode` 属性，如下所示：
+对过滤器使用 `mode` 属性，如下所示：
 
 ```ts highlight=5;normal
 const users = await prisma.user.findMany({
@@ -127,16 +127,16 @@ const users = await prisma.user.findMany({
 })
 ```
 
-请参阅：[筛选 (不区分大小写的过滤)](filtering-and-sorting#case-insensitive-filtering)
+请参阅：[过滤 (不区分大小写的过滤)](filtering-and-sorting#case-insensitive-filtering)
 
 #### 附加说明
 
-- 不能将不区分大小写的筛选与 C 排序一起使用
+- 不能将不区分大小写的过滤与 C 排序一起使用
 - [`citext`](https://www.postgresql.org/docs/12/citext.html) 列始终不区分大小写，并且不受 `mode` 的影响
 
 #### 性能
 
-如果你严重依赖于不区分大小写的筛选，请考虑 [在 PostgreSQL 数据库中创建索引](https://www.postgresql.org/docs/current/indexes.html) 来提高性能：
+如果你严重依赖于不区分大小写的过滤，请考虑 [在 PostgreSQL 数据库中创建索引](https://www.postgresql.org/docs/current/indexes.html) 来提高性能：
 
 - 对于使用 `equals` 或 `not` 的 Prisma Client 查询 [创建表达式索引](https://www.postgresql.org/docs/current/indexes-expressional.html) 
 - 对于使用 `startsWith`，`endsWith`，`contains`（在 PostgreSQL 中映射为 `LIKE` / `ILIKE`）的 Prisma Client 查询使用 `pg_trgm` 模块 [创建基于三元图的索引](https://www.postgresql.org/docs/12/pgtrgm.html#id-1.11.7.40.7）
@@ -150,11 +150,11 @@ const users = await prisma.user.findMany({
 
 #### 附加说明
 
-- 为了支持不区分大小写的筛选，你必须使用不区分大小写的（`_ci`）排序规则。Prisma Client 不支持 MySQL 提供程序的 `mode` 筛选器属性。
+- 为了支持不区分大小写的过滤，你必须使用不区分大小写的（`_ci`）排序规则。Prisma Client 不支持 MySQL 提供程序的 `mode` 过滤器属性。
 
 ### MongoDB 提供程序
 
-若要支持不区分大小写的筛选，请在每个字段的基础上使用 `mode: 'insensitive'` 属性：
+若要支持不区分大小写的过滤，请在每个字段的基础上使用 `mode: 'insensitive'` 属性：
 
 ```ts highlight=5;normal
 const users = await prisma.user.findMany({
@@ -167,13 +167,13 @@ const users = await prisma.user.findMany({
 })
 ```
 
-MongoDB 使用正则表达式规则进行不区分大小写的筛选。
+MongoDB 使用正则表达式规则进行不区分大小写的过滤。
 
 ### SQLite 提供程序
 
 默认情况下，SQLite 本身 [支持 ASCII 字符的不区分大小写的比较](https://www.sqlite.org/faq.html#q18). 因此，Prisma Client 不支持使用 SQLite 进行不区分大小写的过滤。
 
-要在每列的基础上对不区分大小写的筛选启用有限支持（仅限ASCII），请在定义表列时使用 `COLLATE NOCASE`：
+要在每列的基础上对不区分大小写的过滤启用有限支持（仅限ASCII），请在定义表列时使用 `COLLATE NOCASE`：
 
 ```sql
 CREATE TABLE mytable (
