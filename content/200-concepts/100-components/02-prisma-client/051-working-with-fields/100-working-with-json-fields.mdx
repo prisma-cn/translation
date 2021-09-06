@@ -107,7 +107,7 @@ const createUser = await prisma.user.create({
 
 ## 过滤 <inlinecode>Json</inlinecode> 字段
 
-高级 `Json` 过滤在 [2.23.0 及更高版本](https://github.com/prisma/prisma/releases/tag/2.23.0) 中作为预览功能提供。在早期版本中，您可以[过滤精确的 `Json` 字段值](#filter-on-exact-field-value)。
+高级 `Json` 过滤在 [2.23.0 及更高版本](https://github.com/prisma/prisma/releases/tag/2.23.0) 中作为预览功能提供。在早期版本中，你可以[过滤精确的 `Json` 字段值](#filter-on-exact-field-value)。
 
 <div class="videoWrapper">
 
@@ -191,7 +191,7 @@ const getUsers = await prisma.user.findMany({
 
 ### 过滤对象属性
 
-在 [2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) 及更高版本中，您可以过滤 JSON 块内的特定属性。在以下示例中， `extendedPetsData` 是一个一层、未嵌套的 JSON 对象：
+在 [2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) 及更高版本中，你可以过滤 JSON 块内的特定属性。在以下示例中， `extendedPetsData` 是一个一层、未嵌套的 JSON 对象：
 
 ```json highlight=11;normal
 {
@@ -574,7 +574,7 @@ const checkJson = await prisma.user.findMany({
 
 - 如果你的过滤器数组包含多个对象，PostgreSQL 只会在所有对象都存在的情况下返回结果 - 如果至少存在一个对象，则不会。
 
-- 你必须设置 `array_contains` 为 JSON 对象，而不是字符串。如果您使用字符串，Prisma 会转义引号并且查询将不会返回结果。例如：
+- 你必须设置 `array_contains` 为 JSON 对象，而不是字符串。如果你使用字符串，Prisma 会转义引号并且查询将不会返回结果。例如：
 
   ```ts
   array_contains: '[{"status": "expired", "insuranceID": 92}]'
