@@ -275,13 +275,13 @@ SELECT "public"."User"."country", "public"."User"."city", "public"."User"."email
 
 > **注意**：`$transaction` 中的多个 `create` 语句会导致多个 `INSERT` 语句。
 
-下面的视频演示了如何使用  `createMany` 和 [faker.js](https://github.com/marak/Faker.js/) 要使用示例数据为数据库种子，请执行以下操作：
+下面的视频演示了如何使用 `createMany` 和 [faker.js](https://github.com/marak/Faker.js/) 要使用示例数据为数据库种子，请执行以下操作：
 
 <div class="videoWrapper">
   <iframe
     width="560"
     height="315"
-    src="https://www.youtube.com/embed/QxyqR4yh1GI"
+    src="https://www.bilibili.com/video/BV1UM4y1T7QF?p=4"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen
@@ -434,7 +434,7 @@ const users = await prisma.user.findMany()
 以下 [`findFirst`](../../../reference/api-reference/prisma-client-reference#findfirst) <span class="api"></span> 查询返回 _最近创建的用户_ 至少有一个帖子有超过 100 个赞：
 
 1. 按升序 ID 排序用户（最大的优先）- 最大的 ID 是最近的 ID
-2. 以升序返回第一个用户，其中至少有一个帖子有100个以上的赞
+2. 以升序返回第一个用户，其中至少有一个帖子有 100 个以上的赞
 
 ```ts
   const findUser = await prisma.user.findFirst({
@@ -454,11 +454,11 @@ const users = await prisma.user.findMany()
 }
 ```
 
-### 获取经过筛选的记录列表
+### 获取经过过滤的记录列表
 
-Prisma Client 支持记录字段和相关记录字段的 [筛选](filtering-and-sorting)。
+Prisma Client 支持记录字段和相关记录字段的 [过滤](filtering-and-sorting)。
 
-#### 按单个字段值筛选
+#### 按单个字段值过滤
 
 下面的查询返回所有 `User` 记录，其中包含以 `"prisma.io"` 结尾的电子邮件：
 
@@ -472,7 +472,7 @@ Prisma Client 支持记录字段和相关记录字段的 [筛选](filtering-and-
   }
 ```
 
-#### 按多个字段值筛选
+#### 按多个字段值过滤
 
 以下查询使用 [operators](../../../reference/api-reference/prisma-client-reference#filter-conditions-and-operators) <span class="api"></span> 组合返回名称以 `E` 开头的用户 _或_ 至少具有 1 个 profile 的管理员：
 
@@ -500,7 +500,7 @@ const users = await prisma.user.findMany({
 })
 ```
 
-#### 按相关记录字段值筛选
+#### 按相关记录字段值过滤
 
 以下查询返回的用户电子邮件以 `prisma.io` 结尾，_并且_ 至少有 _一_ 篇（`some`）为未发布的帖子：
 
@@ -519,7 +519,7 @@ const users = await prisma.user.findMany({
   }
 ```
 
-有关筛选相关字段值的更多示例，请参见[使用关系](relation-queries)。
+有关过滤相关字段值的更多示例，请参见 [使用关系](relation-queries)。
 
 ### 选择字段的子集
 
@@ -662,7 +662,7 @@ const users = await prisma.user.findMany({
 
 有关包含关系的详细信息，请参见 [选择字段并包含关系](select-fields)。
 
-#### 包括关系的筛选列表
+#### 包括关系的过滤列表
 
 请参阅 [使用关系](relation-queries#filter-a-list-of-relations) 以了解如何将 [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> 和 `where` 组合在一起，以获得过滤后的关系列表 - 例如，仅包括用户发布的帖子。
 
@@ -670,7 +670,7 @@ const users = await prisma.user.findMany({
 
 ### 更新单个记录
 
-以下查询使用 [`update`](../../../reference/api-reference/prisma-client-reference#update) <span class="api"></span>  通过 `email` 查找和更新单个 `User` 记录：
+以下查询使用 [`update`](../../../reference/api-reference/prisma-client-reference#update) <span class="api"></span> 通过 `email` 查找和更新单个 `User` 记录：
 
 <CodeWithResult>
 <cmd>

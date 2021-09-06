@@ -1,7 +1,7 @@
 ---
-title: '筛选和排序'
-metaTitle: '筛选和排序 (参考)'
-metaDescription: '使用 Prisma Client API 按字段或关系记录字段的任意组合筛选记录，并对结果进行排序。'
+title: '过滤和排序'
+metaTitle: '过滤和排序 (参考)'
+metaDescription: '使用 Prisma Client API 按字段或关系记录字段的任意组合过滤记录，并对结果进行排序。'
 tocDepth: 2
 ---
 
@@ -13,7 +13,7 @@ Prisma Client 分别支持使用 `where` 和 `orderBy` 查询选项进行过滤�
 
 ## 过滤
 
-Prisma Client 允许你筛选模型字段任意组合上的记录, [包括关系模型](#filter-on-relations), 并支持各种 [过滤条件](#filter-conditions-and-operators).
+Prisma Client 允许你过滤模型字段任意组合上的记录, [包括关系模型](#filter-on-relations), 并支持各种 [过滤条件](#filter-conditions-and-operators).
 
 以下查询：
 
@@ -145,6 +145,7 @@ model Post {
 ```
 
 `User` 和 `Post` 之间的一对多关系允许你根据用户的帖子查询用户 - 例如，以下查询返回所有用户，其中至少有一个帖子（`some`）具有 10 个以上的浏览：
+
 ```ts
 const result = await prisma.user.findMany({
   where: {
@@ -191,7 +192,7 @@ const posts = await client.post.findMany({
 
 不区分大小写过滤 [是为 PostgreSQL 和 MongoDB 提供的一项功能](case-sensitivity#options-for-case-insensitive-filtering)。默认情况下，MySQL 和 MariaDB 不区分大小写，并且不需要 Prisma Client 功能来实现不区分大小写的过滤。
 
-要使用不区分大小写的筛选，请将 `mode` 属性添加到特定筛选器并指定 `insensitive`：
+要使用不区分大小写的过滤，请将 `mode` 属性添加到特定过滤器并指定 `insensitive`：
 
 ```ts highlight=5;normal
 const users = await prisma.user.findMany({
@@ -324,8 +325,8 @@ const posts = await prisma.post.findMany({
 <iframe
   width="560"
   height="315"
-  src="https://www.youtube.com/embed/vmVUeZny73o"
-  title="YouTube video player"
+  src="https://www.bilibili.com/video/BV1UM4y1T7QF?p=5"
+  title="bilibili video player"
   frameborder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowfullscreen
