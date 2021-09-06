@@ -157,7 +157,7 @@ $petFeatures.petName
 ["petFeatures", "petName"]
 ```
 
-### 过滤精确的字段值
+### 过滤精确的字段值 {#filter-on-exact-field-value}
 
 以下查询 `extendedPetsData` 等于 `json` 条件的所有用户结果：
 
@@ -523,7 +523,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-#### JSON 对象数组
+#### JSON 对象数组 {#json-object-arrays}
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -627,7 +627,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### 过滤数组内的对象键值
+### 过滤数组内的对象键值 {#filtering-on-object-key-value-inside-array}
 
 根据你的提供者，你可以过滤数组内对象的键值。
 
@@ -719,7 +719,7 @@ const getUsers = await prisma.user.findMany({
 - `insurances[*]` 匹配 `insurances` 任何 pet 对象内的任何数组
 - `status` 匹配 `status` 任何 insurance 对象中的任何键
 
-## 高级示例：更新嵌套的 JSON 键值
+## 高级示例：更新嵌套的 JSON 键值 {#advanced-example-update-a-nested-json-key-value}
 
 以下示例假设 `extendedPetsData` 的值是以下内容的一些变量：
 

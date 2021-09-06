@@ -155,7 +155,7 @@ $executeRaw<T = any>(query: string | TemplateStringsArray, ...values: any[]): Pr
 
 在 2.10.0 及更高版本中，你可以在 [事务](transactions) 中使用 `.$executeRaw()` 和 `.$queryRaw()`。
 
-## 使用变量
+## 使用变量 {#using-variables}
 
 `$executeRaw` 和 `$queryRaw` 实现为 [**标记模板**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates)。在 Prisma Client 中，建议使用带标记模板的原始 SQL 变量。
 下面的示例包括一个名为 `${userId}` 的占位符。请注意双反引号（` `` `）而不是 `()`：

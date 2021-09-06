@@ -123,7 +123,7 @@ const result = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### 过滤关系
+### 过滤关系 {#filter-on-relations}
 
 Prisma Client 支持 [过滤关系记录](relation-queries#relation-filters)。 例如，在以下 schema 中，用户可以有许多博客帖子：
 
@@ -175,7 +175,7 @@ const res = await prisma.post.findMany({
 
 ### 过滤 scalar 列表 / 数组
 
-Scalar 列表（例如，`String[]`）有一组特殊的 [filter conditions](../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - 例如，以下查询返回 `tags` 数组包含 `databases` 的所有帖子：
+Scalar 列表（例如，`String[]`）有一组特殊的 [过滤条件](../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - 例如，以下查询返回 `tags` 数组包含 `databases` 的所有帖子：
 
 ```ts
 const posts = await client.post.findMany({

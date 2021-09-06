@@ -186,7 +186,7 @@ In both cases, `user_id` is used to refer to an _entire_ "user object", not only
 
 ## 使用 `@map` 和 `@@map` 重命名 Prisma Client API 中的字段和模型
 
-你可以 “重命名” 在 Prisma Client 中使用的字段和模型，方法是使用 `@map` 和 `@@map` 属性将它们映射到数据库中的 “原始” 名称上。对于上面的 [示例](#example)，你可以按照按如下方式对模型进行注解，以防止上述问题出现。
+你可以 “重命名” 在 Prisma Client 中使用的字段和模型，方法是使用 `@map` 和 `@@map` 属性将它们映射到数据库中的 “原始” 名称上。对于上面的示例，你可以按照按如下方式对模型进行注解，以防止上述问题出现。
 
 在你使用 `prisma db pull` 自检你的数据库 _之后_，你可以按照如下所示，手动调整生成的 Prisma schema：
 

@@ -34,7 +34,7 @@ const createUser = await prisma.user.create({
 
 另请参阅: [使用 `Prisma.UserCreateInput` 生成类型](../crud#create-a-single-record-using-generated-types)
 
-## 生成的类型是什么?
+## 生成的类型是什么? {#what-are-generated-types}
 
 生成的类型是源自模型的类型脚本类型。你可以使用它们创建键入对象，你传递到顶级方法，如 `prisma.user.create(...)` 或  `prisma.user.update(...)`，或选项，如 `select` 或 `include`。
 

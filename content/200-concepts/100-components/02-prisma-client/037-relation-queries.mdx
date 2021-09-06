@@ -1096,7 +1096,7 @@ const user = await prisma.user.update({
 })
 ```
 
-## 关系过滤器
+## 关系过滤器 {#relation-filters
 
 ### 过滤 "-to-many" 关系
 
@@ -1187,7 +1187,7 @@ const usersWithSomePosts = await prisma.user.findMany({
 })
 ```
 
-## Fluent API
+## Fluent API {#fluent-api}
 
 fluent API 允许你 _流利地_ 通过函数调用遍历模型的 [关系](../prisma-schema/relations)。请注意 _last_ 函数调用确定了整个查询的返回类型（下面的代码段中添加了相应的类型注释以使其显式）。
 
