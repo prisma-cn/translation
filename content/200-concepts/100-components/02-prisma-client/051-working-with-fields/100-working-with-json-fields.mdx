@@ -107,7 +107,7 @@ const createUser = await prisma.user.create({
 
 ## 过滤 <inlinecode>Json</inlinecode> 字段
 
-高级 `Json` 过滤在 [2.23.0 及更高版本](https://github.com/prisma/prisma/releases/tag/2.23.0) 中作为预览功能提供。在早期版本中，你可以[过滤精确的 `Json` 字段值](#filter-on-exact-field-value)。
+高级 `Json` 过滤在 [2.23.0 及更高版本](https://github.com/prisma/prisma/releases/tag/2.23.0) 中作为预览功能提供。在早期版本中，你可以 [过滤精确的 `Json` 字段值](#filter-on-exact-field-value)。
 
 <div class="videoWrapper">
 
@@ -125,7 +125,7 @@ const createUser = await prisma.user.create({
 
 <Admonition type="warning">
 
-[PostgreSQL](../../../database-connectors/postgresql) 和 [MySQL](../../../database-connectors/mysql) 仅 `Json` 支持高级过滤，但 `path` 选项的语法不同。PostgreSQL 不支持[对数组中的对象键值进行过滤](#filtering-on-object-key-value-inside-array) 。
+[PostgreSQL](../../../database-connectors/postgresql) 和 [MySQL](../../../database-connectors/mysql) 仅 `Json` 支持高级过滤，但 `path` 选项的语法不同。PostgreSQL 不支持 [对数组中的对象键值进行过滤](#filtering-on-object-key-value-inside-array) 。
 
 </Admonition>
 
