@@ -97,7 +97,7 @@ model Tag {
 
 - 将 'params.action' 分别更改为 `update` 和 `updateMany`
 
-- 引入 `data` 参数并设置 `{deleted:true}`，保留其他筛选器参数（如果存在）
+- 引入 `data` 参数并设置 `{deleted:true}`，保留其他过滤器参数（如果存在）
 
 运行以下示例测试软删除中间件：
 
@@ -255,7 +255,7 @@ Are the posts still available?: Yes! //这些帖子还有吗？：是的！
 
 ✘ 这种软删除方法的缺点包括：
 
-- 内容仍然可以读取和更新，除非你明确地按 `where: { deleted: false }` 进行筛选 - 在具有大量查询的大型项目中，仍有显示软删除内容的风险
+- 内容仍然可以读取和更新，除非你明确地按 `where: { deleted: false }` 进行过滤 - 在具有大量查询的大型项目中，仍有显示软删除内容的风险
 
 - 你仍然可以使用原始 SQL 删除记录
 
@@ -325,7 +325,7 @@ async function main() {
   prisma.$use(async (params, next) => {
     if (params.model == 'Post') {
       if (params.action == 'findUnique') {
-        // 更改为 findFirst - 无法筛选
+        // 更改为 findFirst - 无法过滤
         // 除 ID / unique 和 findUnique 之外的任何内容
         params.action = 'findFirst'
         // 添加 'deleted' 过滤器
@@ -350,7 +350,7 @@ async function main() {
   prisma.$use(async (params, next) => {
     if (params.model == 'Post') {
       if (params.action == 'update') {
-        // 更改为 updateMany - 无法筛选
+        // 更改为 updateMany - 无法过滤
         // 除 ID / unique 和 findUnique 之外的任何内容
         params.action = 'updateMany'
         // 添加 'deleted' 过滤器

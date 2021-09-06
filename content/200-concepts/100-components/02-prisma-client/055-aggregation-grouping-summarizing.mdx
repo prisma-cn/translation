@@ -25,7 +25,7 @@ const aggregations = await prisma.user.aggregate({
 console.log('Average age:' + aggregations._avg.age)
 ```
 
-你可以将聚合与筛选和排序结合起来。例如，以下查询返回用户的平均年龄：
+你可以将聚合与过滤和排序结合起来。例如，以下查询返回用户的平均年龄：
 - 按 `age` 升序排列
 - 其中 `email` 包含 `prisma.io`
 - 仅限于 10 个用户
@@ -104,7 +104,7 @@ Prisma Client 的 [`groupBy`](../../../reference/api-reference/prisma-client-ref
 <iframe
   width="560"
   height="315"
-  src="https://www.youtube.com/embed/BdlCPdPaorY"
+  src="https://www.bilibili.com/video/BV1UM4y1T7QF?p=6"
   frameborder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowfullscreen
@@ -143,9 +143,9 @@ const groupUsers = await prisma.user.groupBy({
 
 `groupBy` 支持两种级别的过滤： `where` 和 `having`。
 
-#### 使用 `where` 筛选记录
+#### 使用 `where` 过滤记录
 
-在**分组之前**，使用 `where` 筛选所有记录。以下示例按国家对用户进行分组，并对个人资料浏览数进行汇总，但仅包括电子邮件地址包含 `prisma.io` 的用户：
+在**分组之前**，使用 `where` 过滤所有记录。以下示例按国家对用户进行分组，并对个人资料浏览数进行汇总，但仅包括电子邮件地址包含 `prisma.io` 的用户：
 
 ```ts highlight=3-7;normal
 const groupUsers = await prisma.user.groupBy({
@@ -163,7 +163,7 @@ const groupUsers = await prisma.user.groupBy({
 
 #### 使用 <inlinecode>having</inlinecode> 过滤分组
 
-使用 `having` 按聚合值（如字段的总和或平均值）而不是单个记录筛选 **整个组**，例如，仅返回 _平均_ `人资料浏览数` 大于 100 的组：
+使用 `having` 按聚合值（如字段的总和或平均值）而不是单个记录过滤 **整个组**，例如，仅返回 _平均_ `人资料浏览数` 大于 100 的组：
 
 ```ts highlight=11-17;normal
 const groupUsers = await prisma.user.groupBy({
@@ -239,7 +239,7 @@ const groupUsers = await prisma.user.groupBy({
 })
 ```
 
-> **注意**：在 `having` 中，你只能筛选 `by` 中可用的聚合值 _或_ 字段。
+> **注意**：在 `having` 中，你只能过滤 `by` 中可用的聚合值 _或_ 字段。
 
 ### <inlinecode>分组</inlinecode>和排序
 

@@ -1,7 +1,7 @@
 ---
 title: '关系查询'
 metaTitle: '关系查询 (概念)'
-metaDescription: 'Prisma Client 为处理关系提供了方便的查询，如流畅的 API、嵌套写入（事务）、嵌套读取和关系筛选器。'
+metaDescription: 'Prisma Client 为处理关系提供了方便的查询，如流畅的 API、嵌套写入（事务）、嵌套读取和关系过滤器。'
 tocDepth: 3
 ---
 
@@ -11,7 +11,7 @@ Prisma Client 的一个关键功能是能够查询两个或多个模型之间的
 
 - [嵌套读](#nested-reads) (有时称为 _预先加载_) 通过 [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> 和 [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span>
 - [嵌套写](#nested-writes) 和 [事务](transactions) 保证
-- [筛选相关记录](#relation-filters)
+- [过滤相关记录](#relation-filters)
 
 Prisma Client 还有一个 [用于遍历关系的 fluent API](#fluent-api)。
 
@@ -369,9 +369,9 @@ const getUser = await prisma.user.findUnique({
 
 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中, 你可以 [`include` 或 `select` 一个关系计数](aggregation-grouping-summarizing#count-relations) 沿着字段 - 例如，用户的 post 计数。
 
-### 筛选关系列表
+### 过滤关系列表
 
-当你使用 `select` 从相关记录（例如，用户的帖子）返回数据子集时，你可以 **筛选和排序该关系列表**。例如，你可能希望查询具有 `prisma.io` 电子邮件地址的所有用户，并选择其已发布帖子的标题。
+当你使用 `select` 从相关记录（例如，用户的帖子）返回数据子集时，你可以 **过滤和排序该关系列表**。例如，你可能希望查询具有 `prisma.io` 电子邮件地址的所有用户，并选择其已发布帖子的标题。
 
 #### 返回 `email` 中包含 `prisma.io` 的 _所有_ `User` 记录，并选择尚未发布的所有 `Post` 记录的 `title`
 
@@ -1100,7 +1100,7 @@ const user = await prisma.user.update({
 
 ### 过滤 "-to-many" 关系
 
-Prisma Client 提供了 [`一些`](../../../reference/api-reference/prisma-client-reference#some), [`every`](../../../reference/api-reference/prisma-client-reference#every), 和 [`none`](../../../reference/api-reference/prisma-client-reference#none) 选项通过关系的 "-to-many" 侧的相关记录的属性来过滤记录。 例如，根据用户帖子的属性筛选用户。
+Prisma Client 提供了 [`一些`](../../../reference/api-reference/prisma-client-reference#some), [`every`](../../../reference/api-reference/prisma-client-reference#every), 和 [`none`](../../../reference/api-reference/prisma-client-reference#none) 选项通过关系的 "-to-many" 侧的相关记录的属性来过滤记录。 例如，根据用户帖子的属性过滤用户。
 
 例如:
 
@@ -1136,7 +1136,7 @@ const users = await prisma.user.findMany({
 
 ### 过滤 "-to-one" 关系
 
-Prisma Client 提供了 [`is`](../../../reference/api-reference/prisma-client-reference#is) 和 [`isNot`](../../../reference/api-reference/prisma-client-reference#isNot) 根据关系 "-to-one" 侧的相关记录的属性筛选记录的选项。例如，根据作者的属性筛选帖子。
+Prisma Client 提供了 [`is`](../../../reference/api-reference/prisma-client-reference#is) 和 [`isNot`](../../../reference/api-reference/prisma-client-reference#isNot) 根据关系 "-to-one" 侧的相关记录的属性过滤记录的选项。例如，根据作者的属性过滤帖子。
 
 例如，以下查询返回满足以下条件的 `Post` 记录：
 
@@ -1161,9 +1161,9 @@ Prisma Client 提供了 [`is`](../../../reference/api-reference/prisma-client-re
 })
 ```
 
-### 筛选是否存在相关记录
+### 过滤是否存在相关记录
 
-[按关系计数过滤](https://github.com/prisma/prisma/issues/3821) 目前还不支持 - 但是，你可以根据记录是否有任何相关记录进行筛选。例如，以下查询使用 `none` 返回没有帖子的所有用户：
+[按关系计数过滤](https://github.com/prisma/prisma/issues/3821) 目前还不支持 - 但是，你可以根据记录是否有任何相关记录进行过滤。例如，以下查询使用 `none` 返回没有帖子的所有用户：
 
 ```ts
 const usersWithZeroPosts = await prisma.user.findMany({

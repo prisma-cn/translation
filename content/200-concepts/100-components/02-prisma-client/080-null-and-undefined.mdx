@@ -138,15 +138,15 @@ updateUser: (parent, args, ctx: Context) => {
 
 ## <inlinecode>null</inlinecode> 和 <inlinecode>undefined</inlinecode> 对条件句的影响
 
-使用条件筛选有一些注意事项，可能会产生意外的结果。当使用条件筛选时，你可能期望得到一个结果，但根据 Prisma 处理可空值的方式，你可能会收到另一个结果。
+使用条件过滤有一些注意事项，可能会产生意外的结果。当使用条件过滤时，你可能期望得到一个结果，但根据 Prisma 处理可空值的方式，你可能会收到另一个结果。
 
-下表提供了不同运算符如何处理 0、1 和  `n` 筛选器的高级概述。
+下表提供了不同运算符如何处理 0、1 和  `n` 过滤器的高级概述。
 
-| 运算符 | 0 筛选         | 1 筛选               | n 筛选            |
+| 运算符 | 0 过滤         | 1 过滤               | n 过滤            |
 | -------- | ----------------- | ---------------------- | -------------------- |
-| `OR`     | 返回空列表 | 验证单个筛选器 | 验证所有筛选器 |
-| `AND`    | 返回所有项目  | 验证单个筛选器 | 验证所有筛选器 |
-| `NOT`    | 返回所有项目  | 验证单个筛选器 | 验证所有筛选器 |
+| `OR`     | 返回空列表 | 验证单个过滤器 | 验证所有过滤器 |
+| `AND`    | 返回所有项目  | 验证单个过滤器 | 验证所有过滤器 |
+| `NOT`    | 返回所有项目  | 验证单个过滤器 | 验证所有过滤器 |
 
 此示例显示了 `undefined` 参数如何影响使用 [`OR`](../../../reference/api-reference/prisma-client-reference#or) <span class="api"></span> 运算符的查询返回的结果。
 
@@ -175,7 +175,7 @@ const users = await prisma.user.findMany({
 // returns: []
 ```
 
-查询从 formData 对象接收筛选器，该对象包括可选的电子邮件属性。在本例中，电子邮件属性的值为 `undefined`。运行此查询时，不会返回任何数据。
+查询从 formData 对象接收过滤器，该对象包括可选的电子邮件属性。在本例中，电子邮件属性的值为 `undefined`。运行此查询时，不会返回任何数据。
 
 这与 [`AND`](../../../reference/api-reference/prisma-client-reference#and) <span class="api"></span> 和 [`NOT`](../../../reference/api-reference/prisma-client-reference#not) <span class="api"></span> 操作符形成对比，如果传入 `undefined` 值两者都将返回所有用户。
 
