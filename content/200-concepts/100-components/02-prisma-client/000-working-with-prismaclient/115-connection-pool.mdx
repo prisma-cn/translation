@@ -6,7 +6,7 @@ tocDepth: 3
 
 <TopBlock>
 
-查询引擎管理数据库连接的　**连接池**。当 Prisma Client 打开到数据库的　_第一个_　连接时会创建池，可以通过以下两种方式之一触发：
+查询引擎维护一个数据库连接的　**连接池**。当 Prisma Client 　*第一次*　连接到数据库时会创建池，可以通过以下两种方式之一触发：
 
 - 通过 [显式调用 `$connect()`](connection-management#connect) _或_
 - 通过 运行第一次查询, `$connect()` 在后台被调用
@@ -24,13 +24,13 @@ tocDepth: 3
 以下步骤描述了查询引擎如何使用连接池：
 
 1. 查询引擎使用　[可配置的池大小](#setting-the-connection-pool-size)　和　[池超时时间](#setting-the-connection-pool-timeout)　来实例化连接池。
-1. 查询引擎在连接上创建并将其添加到连接池中。
-1. 当查询进来时，查询引擎从池中保留一个连接来处理查询。
-1. 如果连接池中没有空闲连接可用，查询引擎会打开额外的数据库连接并将它们添加到连接池中，直到数据库连接数达到定义的 `connection_limit` 的限制 。
-1. 如果查询引擎无法从池中保留连接，则会将查询添加到内存中的 FIFO（先进先出）队列。FIFO 意味着查询按照它们进入队列的顺序进行处理。
-1. 如果查询引擎在 **[默认超时时间限制](#default-pool-timeout) 之前** 无法处理队列中的查询，它会抛出带有该查询 `P2024` 错误代码的异常并移至队列中的下一个。
+2. 查询引擎创建一个连接并将其添加到连接池中。
+3. 当查询触发时，查询引擎从池中预定一个连接来处理查询。
+4. 如果连接池中没有空闲连接可用，查询引擎会打开额外的数据库连接并将它们添加到连接池中，直到数据库连接数达到给定的 `connection_limit` 限制。
+5. 如果查询引擎无法从池中预定连接，则会将查询添加到内存中的 FIFO（先进先出）队列。FIFO 意味着查询按照它们进入队列的顺序进行处理。
+6. 如果查询引擎在 **[默认超时时间限制](#default-pool-timeout) 之前** 无法处理队列中的查询，它会抛出带有该查询 `P2024` 错误代码的异常并继续处理队列中的下一个查询。
 
-如果一直遇到池超时错误，则需要 [优化连接池](../../../../guides/performance-and-optimization/connection-management#optimizing-the-connection-pool) <span class="guide"></span>。
+如果你一直遇到池超时错误，则需要 [优化连接池](../../../../guides/performance-and-optimization/connection-management#optimizing-the-connection-pool) <span class="guide"></span>。
 
 ### 连接池大小
 
@@ -42,13 +42,13 @@ tocDepth: 3
 num_physical_cpus * 2 + 1   #物理 cpu 数 * 2 + 1
 ```
 
-`num_physical_cpus` 代表机器上物理 CPU 的数量。如果你的机器有 **4** 个物理 CPU，则你的连接池将包含 **9** (`4 * 2 + 1 = 9`)。
+`num_physical_cpus` 代表机器上物理 CPU 的数量。如果你的机器有 **4** 个物理 CPU，则你的连接池将包含 **9** (`4 * 2 + 1 = 9`)个连接。
 
-虽然公式代表了一个很好的起点，但 [推荐的连接限制](../../../../guides/performance-and-optimization/connection-management#recommended-connection-pool-size) <span class="guide"></span> 还取决于你的部署范例 - 特别是如果你使用无服务器。
+虽然公式代表了一个很好的起点，但 [推荐的连接限制](../../../../guides/performance-and-optimization/connection-management#recommended-connection-pool-size) <span class="guide"></span> 还取决于你的部署范例 - 特别是如果你使用 serverless。
 
 #### 设置连接池大小　{#setting-the-connection-pool-size}
 
-You can specify the number of connections by explicitly setting the `connection_limit` parameter in your database connection URL. For example, with the following `datasource` configuration in your [Prisma schema](../../prisma-schema) the 连接池 will have exactly five connections:
+你可以通过在数据库连接 URL 中显式设置 `connection_limit` 参数来指定连接数量。例如，使用如下 [Prisma schema](../../prisma-schema) 中的 `数据库` 配置，你的连接池会精准地使用 5 个连接：
 
 ```prisma
 datasource db {
@@ -85,7 +85,7 @@ datasource db {
 }
 ```
 
-如果查询必须保留在队列中，你可以选择 [禁用连接池超时](../../../../guides/performance-and-optimization/connection-management#disabling-the-pool-timeout) <span class="guide"></span>   - 例如，如果你并行导入大量记录并且确信在作业完成之前队列不会用完所有可用 RAM。
+如果查询必须保留在队列中，你可以选择 [禁用连接池超时](../../../../guides/performance-and-optimization/connection-management#disabling-the-pool-timeout) <span class="guide"></span> - 例如，如果你并行导入大量记录并且确信在作业完成之前队列不会用完所有可用 RAM。
 
 ## MongoDB
 
@@ -93,6 +93,6 @@ MongoDB 连接器不使用 Prisma 连接池。连接池由 MongoDB 驱动程序�
 
 ## 外部连接池
 
-不能增加 `connection_limit` 超出底层数据库可以支持的范围。这在无服务器环境中是一个特殊的挑战，其中每个函数管理一个 `PrismaClient` 实例 - 以及它自己的连接池。
+你设置的 `connection_limit` 值不能超出底层数据库可以支持的范围。这在 serverless 环境中是一个特殊的挑战，其中每个函数管理一个 `PrismaClient` 实例 - 以及它自己的连接池。
 
 考虑引入 [一个像 PgBouncer 这样的外部连接池](../../../../guides/performance-and-optimization/connection-management#pgbouncer) <span class="guide"></span> 来防止你的应用程序或函数耗尽数据库连接限制。

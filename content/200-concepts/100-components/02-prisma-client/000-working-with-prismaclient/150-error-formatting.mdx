@@ -1,26 +1,26 @@
 ---
-title: '配置错误格式'
-metaTitle: '配置错误格式 (概念)'
-metaDescription: '本页说明如何配置使用 Prisma Client 时的错误格式。'
+title: '配置错误格式化'
+metaTitle: '配置错误格式化 (概念)'
+metaDescription: '本页说明如何配置使用 Prisma Client 时的错误格式化。'
 ---
 
 <TopBlock>
 
-默认情况下，Prisma Client 使用 [ANSI 转义字符](https://en.wikipedia.org/wiki/ANSI_escape_code) 来漂亮地打印错误堆栈并提供有关如何修复问题的建议。虽然这在终端使用 Prisma Client 时非常有用，但在 GraphQL API 之类的 contexts 中，你只需要最少错误而不需要任何额外的格式。
+默认情况下，Prisma Client 使用 [ANSI 转义字符](https://en.wikipedia.org/wiki/ANSI_escape_code) 来漂亮地打印错误堆栈并提供有关如何修复问题的建议。虽然这对于在终端使用 Prisma Client 时非常有用，但在 GraphQL API 之类的 contexts 中，你只需要最少错误而不需要任何额外的格式化信息。
 
-本页解释了如何使用 Prisma Client 配置错误格式。
+本页解释了如何使用 Prisma Client 配置错误格式化。
 
 </TopBlock>
 
 ## 格式化级别
 
-有 3 个错误格式级别：
+有 3 个错误格式化级别：
 
 1. **Pretty Error** (默认): 包括带有颜色的完整堆栈跟踪、代码的语法突出显示和扩展错误消息以及问题的可能解决方案。
 2. **Colorless Error**: 与 Pretty Error 相同，只是没有颜色。
 3. **Minimal Error**: 最少错误消息。
 
-为了配置这些不同的错误格式级别，有两个选项：
+为了配置这些不同的错误格式化级别，有两个选项：
 
 - 通过 环境变量 设置配置选项
 - 为 `PrismaClient` 构造函数提供配置选项
@@ -28,12 +28,11 @@ metaDescription: '本页说明如何配置使用 Prisma Client 时的错误格�
 ## 通过 环境变量 格式化
 
 - [`NO_COLOR`](../../../../reference/api-reference/environment-variables-reference/#no_color): 如果提供了此环境变量，则会从错误消息中去除颜色。因此，你最终会得到一个无颜色错误。该 `NO_COLOR` 环境变量的标准在 [这](https://no-color.org/)。
-- `NODE_ENV=production`: If the env var `NODE_ENV` is set to `production`, only the **minimal error** will be printed. This allows for easier digestion of logs in production environments.
-如果环境变量 `NODE_ENV` 设置为 `production`，则只会打印最少错误。这允许更容易地影响生产环境中的日志。
+- 如果环境变量 `NODE_ENV` 设置为 `production`，则只会打印 **minimal error** 。这有助于更容易地在生产环境中生成日志。
 
 ### 通过 `PrismaClient` 构造函数格式化
 
-或者，使用  `PrismaClient` [`errorFormat`](../../../../reference/api-reference/prisma-client-reference#errorformat) <span class="api"></span> 参数来设置错误格式：
+或者，使用 `PrismaClient` [`errorFormat`](../../../../reference/api-reference/prisma-client-reference#errorformat) <span class="api"></span> 参数来设置错误格式化：
 
 ```ts
 const prisma = new PrismaClient({

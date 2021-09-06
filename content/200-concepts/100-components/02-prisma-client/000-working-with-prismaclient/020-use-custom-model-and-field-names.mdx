@@ -8,7 +8,7 @@ metaDescription: '了解如何你才能将 Prisma 模型的命名与数据库表
 
 Prisma Client API 是基于你的 [Prisma schema](../../prisma-schema) 中的模型生成的。模型 _通常_ 是你数据库表的 1:1 映射。
 
-在某些情况下，尤其是在使用 [自检 introspection](../../introspection) 时, 将数据库表和列的命名与 Prisma Client API 中使用的名称 _分离_ 可能会很有用。这可以通过在你的 Prisma schema 中使用 [`@map` 和 `@@map`](../../prisma-schema/data-model#mapping-model-names-to-tables-or-collections) 属性来实现。
+在某些情况下，尤其是在使用 [内省 introspection](../../introspection) 时, 将数据库表和列的命名与 Prisma Client API 中使用的名称 _分离_ 可能会很有用。这可以通过在你的 Prisma schema 中使用 [`@map` 和 `@@map`](../../prisma-schema/data-model#mapping-model-names-to-tables-or-collections) 属性来实现。
 
 你可以分别使用 `@map` 和 `@@map` 来重命名 MongoDB 的字段和集合。此页面使用关系型数据库来做示例。
 
@@ -47,7 +47,7 @@ CREATE TABLE post_in_categories (
 CREATE UNIQUE INDEX post_id_category_id_unique ON post_in_categories(post_id int4_ops,category_id int4_ops);
 ```
 
-当使用该 schema 自检数据库时, 你将得到一个类似如下的 Prisma schema：
+当使用该 schema 内省数据库时, 你将得到一个类似如下的 Prisma schema：
 
 ```prisma
 model categories {
@@ -188,7 +188,7 @@ In both cases, `user_id` is used to refer to an _entire_ "user object", not only
 
 你可以 “重命名” 在 Prisma Client 中使用的字段和模型，方法是使用 `@map` 和 `@@map` 属性将它们映射到数据库中的 “原始” 名称上。对于上面的示例，你可以按照按如下方式对模型进行注解，以防止上述问题出现。
 
-在你使用 `prisma db pull` 自检你的数据库 _之后_，你可以按照如下所示，手动调整生成的 Prisma schema：
+在你使用 `prisma db pull` 内省你的数据库 _之后_，你可以按照如下所示，手动调整生成的 Prisma schema：
 
 ```prisma
 model Category {
@@ -273,7 +273,7 @@ CREATE TABLE "Post" (
 );
 ```
 
-Prisma 的自检将输出以下 Prisma schema：
+Prisma 的内省将输出以下 Prisma schema：
 
 ```prisma
 model Post {

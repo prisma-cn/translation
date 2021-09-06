@@ -1,12 +1,12 @@
 ---
 title: '配置日志记录'
 metaTitle: '配置日志记录 (概念)'
-metaDescription: '了解如何配置 Prisma Client 记录它发送到数据库的原始 SQL 查询和其他信息。'
+metaDescription: '了解如何配置 Prisma Client 来记录它发送到数据库的原始 SQL 查询和其他信息。'
 ---
 
 <TopBlock>
 
-使用 `PrismaClient` [`log`](../../../../../reference/api-reference/prisma-client-reference#log) <span class="api"></span> 参数来配置 [日志级别](../../../../../reference/api-reference/prisma-client-reference#log-levels) <span class="api"></span>, 包含了警告、错误和有关发​​送到数据库的查询的信息。
+使用 `PrismaClient` [`log`](../../../../../reference/api-reference/prisma-client-reference#log) <span class="api"></span> 参数来配置 [日志级别](../../../../../reference/api-reference/prisma-client-reference#log-levels) <span class="api"></span>, 包含了警告、错误和有关发 ​​ 送到数据库的查询的信息。
 
 Prisma 支持两种类型的日志记录：
 
@@ -63,7 +63,7 @@ const prisma = new PrismaClient({
 1. 设置 `emit` 到 `event` 特定的日志级别，如查询
 2. 使用 `$on()` 方法来订阅事件
 
-下面的例子订阅的所有 `query` 事件和写入 `duration` ，并 `query` 给控制台：
+下面的例子订阅的所有 `query` 事件并将 `声明周期` 和 `查询语句` 输出给控制台：
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -109,4 +109,4 @@ Duration: 2ms
 </cmdResult>
 </CodeWithResult>
 
-准确的 [事件 (`e`) 类型和可用的属性](/reference/api-reference/prisma-client-reference#event-types) <span class="api"></span> 取决于日志级别。
+[事件 (`e`) 类型和可用的属性](/reference/api-reference/prisma-client-reference#event-types) <span class="api"></span> 取决于相应日志级别。
