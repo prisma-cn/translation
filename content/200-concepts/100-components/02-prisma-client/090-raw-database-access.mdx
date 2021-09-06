@@ -85,7 +85,7 @@ const result = await prisma.$queryRaw<User[]>('SELECT * FROM User;')
 
 `result` 现在是 `User[]` 并且 intellisense 可用：
 
-![键入 $queryRaw 结果](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/H2TCRc5.png)
+![键入 $queryRaw 结果](../../../doc-images/cursor-1.png)
 
 如果你正在选择模型的 **特定字段**，或者希望包含关系，请参阅有关 [利用 Prisma Client 生成的类型](advanced-type-safety) 的文档，以确保正确键入结果。
 
