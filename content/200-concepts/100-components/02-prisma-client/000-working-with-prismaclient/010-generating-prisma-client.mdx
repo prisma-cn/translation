@@ -163,3 +163,12 @@ Prisma Client 的功能基于一个*查询引擎 query engine*，该引擎作为
 这个 hook 调用了 `prisma generate` 命令并在默认位置 `node_modules/.prisma/client`生成 Prisma Client 代码。
 
 注意这里需要 `prisma` 命令是能用的，无论作为本地依赖项或者作为全局依赖被提前安装（建议始终将 `prisma` 包作为开发依赖项，使用 `npm install prisma --save-dev`，以避免版本冲突）。
+
+#### 默认情况下，将查询引擎置于版本控制之外
+Prisma Client 使用 [_查询引擎_](../prisma-engines/query-engine)）对数据库运行查询。当调用 `prisma generate` 并将其与生成的客户端一起存储在 `output` 路径中时，将下载此查询引擎。
+
+通过将Prisma Client 生成 `node_modules`，查询引擎通常在默认情况下不受版本控制，因为版本控制通常忽略 `node_modules`。
+为生成的Prisma Client 使用自定义 `output` 路径时，建议将其从版本控制中排除。对于Git，这意味着将 `output` 路径添加到 `.gitignore` 文件中。
+
+## 在 `@prisma/client` 的 `postinstall` 钩子中生成 Prisma Client
+`@prisma/client` 包定义了自己的 `postinstall` 钩子，每当安装包时都会执行该钩子。此钩子调用 `prisma generate` 命令，该命令将 Prisma Client 代码生成到默认位置 `node_modules/.prisma/client`。请注意，这要求 `prisma` CLI 作为本地依赖项或全局安装可用。尽管如此还是建议始终使用 `npm install prisma --save-dev` 将 `prisma` 包作为开发依赖项安装，以避免版本控制冲突。

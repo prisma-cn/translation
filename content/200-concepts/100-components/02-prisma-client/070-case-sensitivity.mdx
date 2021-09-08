@@ -180,3 +180,9 @@ CREATE TABLE mytable (
     sample TEXT COLLATE NOCASE   /* 合并序列 NOCASE */
 );
 ```
+
+### Microsoft SQL Server 提供程序
+
+默认情况下，Microsoft SQL Server 使用 **不区分大小写的排序规则**。因此，默认情况下，使用 Prisma Client 和 Microsoft SQL Server 进行过滤时不区分大小写。
+
+`mode: 'insensitive'` 属性不是必需的，因此在生成的 Prisma Client API 中不可用。
