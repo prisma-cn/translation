@@ -1,53 +1,53 @@
 ---
-title: 'SQL Server on Windows (local)'
-metaTitle: 'SQL Server on Windows (Preview)'
-metaDescription: 'Set up and configure SQL Server on Windows.'
+title: 'Windows上的SQL Server (本地)'
+metaTitle: 'Windows上的SQL Server (预览)'
+metaDescription: '在Windows上设置和配置SQL Server。'
 ---
 
 <TopBlock>
 
-To run a Microsoft SQL Server locally on a Windows machine:
+要在 Windows 上运行 Microsoft SQL Server，请执行以下操作：
 
-1. If you do not have access to an instance of Microsoft SQL Server, download and set up [SQL Server 2019 Developer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads).
+1. 如果您无法访问 Microsoft SQL Server 实例，请下载并设置[SQL Server 2019 Developer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)。
 
-1. Download and install [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15).
+1. 下载并安装[SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)。
 
-1. Use Windows Authentication to log in to Microsoft SQL Server Management Studio (expand the **Server Name** dropdown and click **&lt;Browse for more...&gt;** to find your database engine):
+1. 使用 Windows 身份验证登录 Microsoft SQL Server Management Studio (下拉展开 **Server Name**，点击 **&lt;Browse for more...&gt;** 来找到您的数据库引擎):
 
-![The New Query button in SQL Server Management Studio](../../../../doc-images/connect-sql-server.png)
+![SQL Server Management Studio中的新建查询按钮](../../../../doc-images/connect-sql-server.png)
 
 </TopBlock>
 
-## Enable TCP/IP
+## 启用 TCP/IP
 
-Prisma Client requires TCP/IP to be enabled. To enable TCP/IP:
+Prisma Client 需要启用 TCP/IP。要启用 TCP/IP，请执行以下操作:
 
-1. Open SQL Server Configuration Manager.
+1. 打开 SQL Server 配置管理器。
 
-1. In the left-hand panel, click **SQL Server Network Configuration** > **Protocols for MSSQLSERVER**
+1. 在左侧面板中, 单击 **SQL Server Network Configuration** > **Protocols for MSSQLSERVER**
 
-1. Right-click **TCP/IP** and choose **Enable**.
+1. 右键单击 **TCP/IP**，而后选择 **Enable**.
 
-## Enable authentication with SQL logins (Optional)
+## 启用 SQL 登录身份验证 (可选)
 
-If you want to use a username and password in your connection URL rather than integrated security, [enable mixed authentication mode](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/change-server-authentication-mode?view=sql-server-ver15) as follows:
+如果您希望在连接 URL 中使用用户名和密码，而不是集成安全，请[开启混合认证模式](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/change-server-authentication-mode?view=sql-server-ver15)，如下所示：
 
-1. Right-click on your database engine in the Object Explorer and click **Properties**.
+1. 在对象资源管理器中右键单击数据库引擎，然后再单击**Properties**。
 
-1. In the Server Properties window, click **Security** in the left-hand list and tick the **SQL Server and Windows Authentication Mode** option, then click **OK**.
+1. 在服务器属性窗口中，单击左侧列表中的 **Security**，勾选 **SQL Server and Windows Authentication Mode** 选项，然后再点击 **OK**。
 
-1. Right-click on your database engine in the Object Explorer and click **Restart**.
+1. 在对象资源管理器中右键单击您的数据库引擎，然后再点击 **Restart**。
 
-### Enable the `sa` login
+### 启用 `sa` 登录
 
-To enable the default `sa` (administrator) SQL Server login:
+要启用默认的`sa` (管理员) SQL Server 登录，请执行以下操作:
 
-1. In SQL Server Management Studio, in the Object Explorer, expand **Security** > **Logins** and double-click **sa**.
+1. 在 SQL Server Management Studio 的对象资源管理器中， 展开 **Security** > **Logins**，然后再双击 **sa**。
 
-1. On the **General** page, choose a password for the `sa` account (untick **Enforce password policy** if you do not want to enforce a policy).
+1. 在 **General** 页面，选择 `sa` 账号的密码 (如果您不想执行某个策略，请取消勾选**Enforce password policy**)。
 
-1. On the **Status** page, under **Settings** > **Login**, tick **Enabled**, then click **OK**.
+1. 在 **Status** 页面的 **Settings** > **Login**下，勾选 **Enabled**，然后再点击 **OK**.
 
-You can now use the `sa` account in a connection URL and when you log in to SQL Server Management Studio.
+现在，您可以在连接 URL 中和登录 SQL Server Management Studio 时使用 `sa` 帐户。
 
-> **Note**: The `sa` user has extensive permissions. You can also [create your own login with fewer permissions](https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/create-a-login?view=sql-server-ver15).
+> **请注意**: `sa` 用户具有广泛的权限。 您也可以[用更少的权限创建自己的登录](https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/create-a-login?view=sql-server-ver15)。

@@ -6,71 +6,71 @@ metaDescription: "Prisma's query engine manages the communication with the datab
 
 <TopBlock>
 
-From a technical perspective, Prisma Client consists of three major components:
+从技术角度看，Prisma Client 由三个主要组件组成：
 
-- JavaScript client library
-- TypeScript type definitions
-- A query engine (in the form of binary file)
+- JavaScript Client 库
+- TypeScript 类型定义
+- 查询引擎 (二进制文件形式)
 
-All of these components are located in the [generated `.prisma/client` folder](../prisma-client/working-with-prismaclient/generating-prisma-client#the-prismaclient-npm-package) after you ran `prisma generate`.
+在运行 `Prisma Generate` 之后，所有这些组件都位于[生成的`.prisma/client` 文件夹](../prisma-client/working-with-prismaclient/generating-prisma-client#the-prismaclient-npm-package)中。
 
-This page covers relevant technical details about the query engine.
+本页面介绍了查询引擎的相关技术细节。
 
 </TopBlock>
 
-## The query engine binary file
+## 查询引擎二进制文件
 
-The **query engine binary file** is called `query-engine-PLATFORM` where `PLATFORM` corresponds to the name of a compile target. For example, if the query engine must run on a [Darwin](<https://en.wikipedia.org/wiki/Darwin_(operating_system)>) operating system (e.g. Mac OS), it's called `query-engine-darwin`. You can find an overview of all supported platforms [here](../../../reference/api-reference/prisma-schema-reference#binarytargets-options).
+**查询引擎二进制文件**称为 `query-engine-PLATFORM`，其中 `PLATFORM` 对应于编译目标的名称。例如，如果查询引擎必须在[Darwin](<https://en.wikipedia.org/wiki/Darwin_(operating_system)>)操作系统 (例如 MacOS) 上运行，它被称为 `query-engine-darwin`。您可以在[这里](../../../reference/api-reference/prisma-schema-reference#binarytargets-options)找到所有受支持平台的概述。
 
-The query engine binary file is downloaded into the `runtime` directory of `node_modules/@prisma/client` when `prisma generate` is called.
+当调用 `prisma generate` 时，查询引擎二进制文件会下载到 `node_modules/@prisma/client` 的 `runtime` 目录中。
 
-Note that the query engine is implemented in Rust. The source code is located in the [`prisma-engines`](https://github.com/prisma/prisma-engines/) repository.
+注意，查询引擎是在 Rust 中实现的。源代码位于[`prisma-engines`](https://github.com/prisma/prisma-engines/)存储库中。
 
-## The query engine at runtime
+## 运行时的查询引擎
 
-The query engine is running as a separate process on the same machine where the Node.js/TypeScript application is running.
+查询引擎在运行 Node.js/TypeScript 应用程序的同一台计算机上会作为单独的进程运行。
 
-![Diagram showing the query engine and Node.js at runtime](https://res.cloudinary.com/prismaio/image/upload/v1628764883/docs/1YmOJpx_ao1wft.png)
+![该图显示了运行时的查询引擎和Node.js](https://res.cloudinary.com/prismaio/image/upload/v1628764883/docs/1YmOJpx_ao1wft.png)
 
-The query engine process is started when the [`$connect()`](../prisma-client/working-with-prismaclient/connection-management) method is called on your `PrismaClient` instance. Once the process is started, the query engine creates a [connection pool](../prisma-client/working-with-prismaclient/connection-pool) and manages the physical connections to the database. From that point onwards, Prisma Client is ready to send [queries](../prisma-client/crud) to the database (e.g. `findUnique`, `findMany`, `create`, ...).
+当您的 `PrismaClient` 实例调用[`$connect()`](../prisma-client/working-with-prismaclient/connection-management)方法时，会启动查询引擎进程。一旦进程启动，查询引擎就会创建一个[连接池](../prisma-client/working-with-prismaclient/connection-pool)并管理着数据库的连接。从那时起，Prisma Client 就可以向数据库发送[查询](../prisma-client/crud) (例如，`findUnique`, `findMany`, `create`, ...)
 
-The query engine process is stopped and the database connections are closed when [`$disconnect()`](../prisma-client/working-with-prismaclient/connection-management) is invoked.
+当调用 [`$disconnect()`](../prisma-client/working-with-prismaclient/connection-management)时，查询引擎进程将停止，数据库连接将关闭。
 
-The following diagram depicts a "typical flow":
+下图描绘了一个"典型的流程":
 
-1. `$connect()` is invoked on Prisma Client
-1. The query engine process is started
-1. The query engine establishes connections to the database and creates connection pool
-1. Prisma Client is now ready to send queries to the database
-1. Prisma Client sends a `findMany()` query to the query engine
-1. The query engine translates the query into SQL and sends it to the database
-1. The query engine receives the SQL response from the database
-1. The query engine returns the result as plain old JavaScript objects to Prisma Client
-1. `$disconnect()` is invoked on Prisma Client
-1. The query engine closes the database connections
-1. The query engine process is stopped
+1. `$connect()` 在 Prisma Client 上调用
+1. 将启动查询引擎进程
+1. 查询引擎建立与数据库的连接并创建连接池
+1. Prisma Client 现在可以向数据库发送查询了
+1. Prisma Client 向查询引擎发送一个`findMany()`查询
+1. 查询引擎将查询转换为 SQL 并将其发送到数据库
+1. 查询引擎从数据库接收 SQL 响应
+1. 查询引擎将结果作为 JavaScript 对象返回给 Prisma Client
+1. `$disconnect()` 在 Prisma Client 上调用
+1. 查询引擎关闭数据库连接
+1. 查询引擎进程停止
 
-![Typical flow of the query engine at run time](https://res.cloudinary.com/prismaio/image/upload/v1628764905/docs/Nwwx5Cv_bq7qgy.png)
+![运行时查询引擎的典型流程](https://res.cloudinary.com/prismaio/image/upload/v1628764905/docs/Nwwx5Cv_bq7qgy.png)
 
-## Responsibilities of the query engine
+## 查询引擎的职责
 
-The query engine has the following responsibilities in an application that uses Prisma Client:
+查询引擎在使用 Prisma Client 的应用程序中具有以下职责:
 
-- manage physical database connections in connection pool
-- receive incoming queries from the Prisma Client Node.js process
-- generate SQL queries
-- send SQL queries to the database
-- process responses from the database and send them back to Prisma Client
+- 管理连接池中的数据库连接
+- 接收来自 Prisma Client Node.js 进程的查询
+- 生成 SQL 查询
+- 向数据库发送 SQL 查询
+- 处理来自数据库的响应，并将它们发送回 Prisma Client
 
-## Debugging the query engine
+## 调试查询引擎
 
-You can access the logs of the query engine by setting the [`DEBUG`](../prisma-client/debugging) environment variable to `engine`:
+通过将[`DEBUG`](../prisma-client/debugging)环境变量设置为 `engine`，即可访问查询引擎的日志:
 
 ```terminal
 export DEBUG="engine"
 ```
 
-You can also get more visibility into the SQL queries that are generated by the query engine by setting the `query` log level in Prisma Client:
+通过在 Prisma Client 中设置 `query` 日志级别，您还可以更好地了解查询引擎生成的 SQL 查询:
 
 ```ts
 const prisma = new PrismaClient({
@@ -78,13 +78,13 @@ const prisma = new PrismaClient({
 })
 ```
 
-Learn more in the [Debugging](../prisma-client/debugging) and [Logging](../prisma-client/working-with-prismaclient/logging) pages of the docs.
+在文档的[调试](../prisma-client/debugging)和[日志](../prisma-client/working-with-prismaclient/logging)页面了解更多信息。
 
-## Enable the Node-API (N-API) Preview
+## 启用 Node-API (N-API) 预览
 
-Node-API is available in [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later. It is a new technique for binding Prisma's Rust-based query engine directly to Prisma Client. This reduces the communication overhead between the Node.js and Rust layers when resolving Prisma Client's database queries.
+Node-API 在[2.20.0](https://github.com/prisma/prisma/releases/2.20.0)及更高版本中提供。这是一种将 Prisma 里基于 Rust 的查询引擎直接绑定到 Prisma Client 的新技术。这减少了在解析 Prisma Client 的数据库查询时 Node.js 和 Rust 层之间的通信开销。
 
-To enable this feature, add `nApi` to `previewFeatures` in your schema and then run `prisma generate`:
+若要启用此功能，请将 `nApi` 添加到架构中的 `previewFeatures` 里，然后再运行 `prisma generate`:
 
 ```prisma
 generator client {

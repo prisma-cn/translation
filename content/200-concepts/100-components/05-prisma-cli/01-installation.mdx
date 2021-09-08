@@ -1,36 +1,36 @@
 ---
-title: 'Installing the Prisma CLI'
-metaTitle: 'Prisma CLI Installation (Reference)'
+title: '安装 Prisma CLI'
+metaTitle: 'Prisma CLI 安装 (参考)'
 metaDescription: ''
 ---
 
 <TopBlock>
 
-The Prisma CLI is available as an [npm package](). We **recommend that you install the Prisma CLI locally** in your project's `package.json` to avoid version conflicts.
+我们**建议您将 Prisma CLI 安装在项目**`package.json`中，以避免版本冲突。
 
-See [Prisma CLI command reference](../../../reference/api-reference/command-reference) <span class="api"></span> for a complete list of commands.
+有关命令的完整列表，请参阅[Prisma CLI 命令参考](../../../reference/api-reference/command-reference)<span class="api"></span>。
 
 </TopBlock>
 
-## Local installation (recommended)
+## 本地安装 (推荐)
 
-The Prisma CLI is typically installed as a **development dependency**, that's why the `--save-dev` (npm) and `--dev` (Yarn) options are used in the commands below.
+Prisma CLI 通常安装为**开发依赖项**，这就是为什么在下面的命令中使用了 `--save-dev` (npm) 和 `--dev` (Yarn) 选项。
 
 ### npm
 
-Install with [npm](https://www.npmjs.com/):
+用[npm](https://www.npmjs.com/)安装:
 
 ```
 npm install prisma --save-dev
 ```
 
-This should add `prisma` to the `devDependencies` in your `package.json`. You can then invoke the locally installed CLI with the **`prisma`** command prefixed with [`npx`](https://github.com/npm/npx#readme):
+这会将`prisma` 添加到`package.json`中的`devDependencies`里。然后，您可以使用前缀为[`npx`](https://github.com/npm/npx#readme)的 **`prisma`** 命令调用本地安装的 CLI:
 
 ```
 npx prisma
 ```
 
-Here's an example for invoking the `generate` command:
+下面是调用 `generate` 命令的示例:
 
 ```
 npx prisma generate
@@ -38,19 +38,19 @@ npx prisma generate
 
 ### Yarn (1.19.2+)
 
-Install with [Yarn](https://yarnpkg.com/):
+用[Yarn](https://yarnpkg.com/)安装:
 
 ```
 yarn add prisma --dev
 ```
 
-This should add `prisma` to the `devDependencies` in your `package.json`. You can then invoke the locally installed CLI with the **`prisma`** command prefixed with `yarn`:
+这会将`prisma` 添加到`package.json`中的`devDependencies`里。然后，您可以使用 **`prisma`** 命令以 `yarn` 为前缀调用本地安装的 CLI:
 
 ```
 yarn prisma
 ```
 
-Here's an example for invoking the `generate` command:
+下面是调用 `generate` 命令的示例:
 
 ```
 yarn prisma generate
@@ -58,31 +58,31 @@ yarn prisma generate
 
 <Admonition type="warning">
 
-We recommend that you keep **both** the `prisma` and `@prisma/client` packages in sync to avoid any unexpected errors or behaviors.
+我们建议您保持 `prisma` 和 `@prisma/client` 包的同步，以避免任何意外的错误或行为。
 
 </Admonition>
 
-## Global installation (not recommended)
+## 全局安装 (不推荐)
 
-While it is recommended to [locally install](#local-installation-recommended) the Prisma CLI, you can also install it globally on your machine.
+虽然建议在项目[本地安装](#local-installation-recommended)Prisma CLI，但您也可以在机器上全局安装它。
 
-> **Warning**: If you have several Prisma projects on your machine, a global installation can lead to version conflicts between these projects.
+> **警告**: 如果您的机器上有几个 Prisma 项目，那么全局安装可能会导致这些项目之间的版本冲突。
 
 ### npm
 
-Install with npm:
+用 npm 安装:
 
 ```
 npm install -g prisma
 ```
 
-You can then invoke the globally installed CLI with the **`prisma`** command like so:
+然后您可以用 **`prisma`** 命令调用全局安装的 CLI，如下所示:
 
 ```
 prisma
 ```
 
-Here's an example for invoking the `generate` command:
+这里有一个调用 `generate` 命令的例子:
 
 ```
 prisma generate
@@ -90,33 +90,33 @@ prisma generate
 
 ### Yarn
 
-Install with Yarn:
+用 Yarn 安装:
 
 ```
 yarn global add prisma
 ```
 
-You can then invoke the globally installed CLI with the **`prisma`** command like so:
+然后可以使用 **`prisma`** 命令调用全局安装的 CLI，如下所示:
 
 ```
 prisma
 ```
 
-Here's an example for invoking the `generate` command:
+下面是一个调用 `generate` 命令的示例：
 
 ```
 prisma generate
 ```
 
-## Using a HTTP proxy for the CLI
+## 在 CLI 上使用 HTTP 代理
 
-Prisma CLI supports [custom HTTP proxies](https://github.com/prisma/prisma/issues/506). This is particularly relevant when being behind a corporate firewall.
+Prisma CLI 支持[自定义 HTTP 代理](https://github.com/prisma/prisma/issues/506)。当处于公司防火墙之后时，这一点尤其重要。
 
-To activate the proxy, provide the environment variables `HTTP_PROXY` and/or `HTTPS_PROXY`. The behavior is very similar to how the [`npm` CLI handles this](https://docs.npmjs.com/misc/config#https-proxy).
+要激活代理，请提供环境变量`HTTP_PROXY`和`/`或`HTTPS_PROXY`。这与[`npm` CLI 的处理方式非常相似](https://docs.npmjs.com/misc/config#https-proxy)。
 
-The following environment variables can be provided:
+可以提供以下环境变量:
 
-- [`HTTP_PROXY`](../../../reference/api-reference/environment-variables-reference/#http_proxy) <span class="api"></span> or `http_proxy`: Proxy URL for http traffic, for example `http://localhost:8080`
-- [`HTTPS_PROXY`](../../../reference/api-reference/environment-variables-reference/#https_proxy) <span class="api"></span> or `https_proxy`: Proxy URL for https traffic, for example `https://localhost:8080`
+- [`HTTP_PROXY`](../../../reference/api-reference/environment-variables-reference/#http_proxy) <span class="api"></span> 或 `http_proxy`: 例如，http 的代理 URL `http://localhost:8080`
+- [`HTTPS_PROXY`](../../../reference/api-reference/environment-variables-reference/#https_proxy) <span class="api"></span> 或 `https_proxy`: 例如，https 的代理网址 `https://localhost:8080`
 
-> To get a local proxy, you can also use the [`proxy`](https://www.npmjs.com/package/proxy) module.
+> 要获取本地代理，也可以使用[`proxy`](https://www.npmjs.com/package/proxy)模块。
