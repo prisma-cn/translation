@@ -7,7 +7,7 @@ tocDepth: 2
 
 <TopBlock>
 
-使用 [`Json`](../../../../reference/api-reference/prisma-schema-reference#json) <span class="api"></span> Prisma 字段类型，用于读取、写入和对底层数据库中的 JSON 类型执行基本过滤。在以下示例中， `User` 模型有一个 `Json` 名为的可选字段 `extendedPetsData`：
+使用 [`Json`](../../../../reference/api-reference/prisma-schema-reference#json) <span class="api"></span> Prisma 字段类型，用于读取、写入和对底层数据库中的 JSON 类型执行基本过滤。在以下示例中， `User` 模型有一个可选的 `Json` 字段 `extendedPetsData`：
 
 ```prisma highlight=6;normal
 model User {
@@ -36,7 +36,7 @@ model User {
 
 > **注意**： `Json` 仅当 [底层数据库](../../../database-connectors) 具有相应的 JSON 数据类型时才支持该字段。
 
-`Json` 字段支持一些其他类型，例如 `string` 和 `boolean`。[`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) 支持的匹配类型已有这些其他类型：
+`Json` 字段支持一些其他类型，例如 `string` 和 `boolean`。这些类型和 [`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) 支持的类型相匹配：
 
 ```ts
 export declare type JsonValue =
@@ -102,7 +102,6 @@ const createUser = await prisma.user.create({
 
 > **注意**：JavaScript 对象（例如，`{ extendedPetsData: "none"}`）会自动转换为 JSON。
 
-
 另请参阅：[高级示例：更新嵌套的 JSON 键值](#advanced-example-update-a-nested-json-key-value)
 
 ## 过滤 <inlinecode>Json</inlinecode> 字段
@@ -128,7 +127,7 @@ const createUser = await prisma.user.create({
 $petFeatures.petName
 ```
 
-以下是有效的 PostgreSQL  `path` 值：
+以下是有效的 PostgreSQL `path` 值：
 
 ```
 ["petFeatures", "petName"]
@@ -150,7 +149,7 @@ const getUsers = await prisma.user.findMany({
 })
 ```
 
-以下查询 `extendedPetsData` **不** 等于 `json` 条件的所有用户结果：
+以下查询返回所有 `extendedPetsData` **不** 等于 `json` 的用户结果：
 
 ```ts
 var json = {
@@ -177,9 +176,7 @@ const getUsers = await prisma.user.findMany({
 }
 ```
 
-The following query returns all users where the value of `petName` is `"Claudine"`:
-
-下面是查询条件 `petName` 是 `"Claudine"` 的所有用户结果：
+以下查询返回所有 `petName` 为 `"Claudine"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -273,7 +270,7 @@ const getUsers = await prisma.user.findMany({
 }
 ```
 
-下面是查询条件 `"pet2"` &rarr; `"petName"` 等于 `"Sunny"` 的所有用户结果：
+以下查询返回所有 `"pet2"` . `"petName"` 等于 `"Sunny"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -371,7 +368,7 @@ const getUsers = await prisma.user.findMany({
 ["Claudine", "Sunny"]
 ```
 
-以下查询返回所有带有 pet 名为 `"Claudine"` 的所有用户结果：
+以下查询返回所有 pet 名为 `"Claudine"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -428,7 +425,7 @@ const getUsers = await prisma.user.findMany({
 
 #### Scalar 值数组
 
-以下查询条件 cat 中 foster 名为 `"Fido"` 的所有用户结果：
+以下查询返回所有 养了一只名为 `"Fido"` 的猫 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -467,7 +464,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-以下查询条件 cats 中 fostering 名为 `"Fido" `_和_ `"Bob"`的所有用户结果：
+以下查询返回所有 养了名为 `"Fido"` 和 `"Bob"` 的猫 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -545,9 +542,9 @@ const checkJson = await prisma.user.findMany({
 
 如果你使用 MySQL，必须传入单个对象才能匹配:
 
-  ```json5
-  { status: 'expired', insuranceID: 92 } // MySQL
-  ```
+```json5
+{ status: 'expired', insuranceID: 92 } // MySQL
+```
 
 - 如果你的过滤器数组包含多个对象，PostgreSQL 只会在所有对象都存在的情况下返回结果 - 如果至少存在一个对象，则不会。
 
@@ -557,11 +554,11 @@ const checkJson = await prisma.user.findMany({
   array_contains: '[{"status": "expired", "insuranceID": 92}]'
   ```
 
- 被发送到数据库：
+被发送到数据库：
 
-  ```
-  [{\"status\": \"expired\", \"insuranceID\": 92}]
-  ```
+```
+[{\"status\": \"expired\", \"insuranceID\": 92}]
+```
 
 ### 按索引定位数组元素
 
@@ -606,7 +603,7 @@ const getUsers = await prisma.user.findMany({
 
 ### 过滤数组内的对象键值 {#filtering-on-object-key-value-inside-array}
 
-根据你的提供者，你可以过滤数组内对象的键值。
+根据你提供的选项，可以过滤数组内对象的键值。
 
 <Admonition type="warning">
 

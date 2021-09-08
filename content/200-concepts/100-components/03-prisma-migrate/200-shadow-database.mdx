@@ -1,63 +1,63 @@
 ---
-title: Shadow database
+title: 影子数据库
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../database-connectors/mongodb).
+**未支持 MongoDB** <br />
+Prisma Migrate 目前不支持[MongoDB 连接](../../database-connectors/mongodb)。
 
 </Admonition>
 
-Prisma Migrate uses a second, _temporary_ database when you run development-focused commands such as:
+Prisma Migrate 在运行以开发为中心的命令时会使用第二个临时数据库，例如:
 
 - `prisma migrate dev`
 - `prisma migrate reset`
 
-The shadow database is **created and deleted automatically**\* each time you run a development-focused command and is primarily used to **detect problems** such a schema drift.
+影子数据库会在每次运行开发命令时**自动创建**和**删除**，主要用于**检测问题**，如架构漂移。
 
 <FootNote>
 
-\* If you use a cloud-hosted database for development, you need to [create the shadow database manually](#cloud-hosted-shadow-databases-must-be-created-manually).
+\* 如果您使用云托管数据库进行开发，则需要[手动创建影子数据库](#cloud-hosted-shadow-databases-must-be-created-manually)。
 
 </FootNote>
 
-> **Important**: The shadow database is **not** required in production, and is not used by production-focused commands such as `prisma migrate resolve` and `prisma migrate deploy`.
+> **重要的**: 影子数据库在生产中是**不需要**的，并且不会被`prisma migrate resolve`和`prisma migrate deploy`等以生产为中心的命令使用。
 
 </TopBlock>
 
-## How the shadow database works
+## 影子数据库的工作原理
 
-When you run `prisma migrate dev` to create a new migration, Prisma Migrate uses the shadow database to:
+运行`prisma migrate dev`创建新迁移时，Prisma Migrate 会使用影子数据库:
 
-- [Detect schema drift](#detecting-schema-drift), which means checking that no **manual changes** have been made to the development database
-- [Generate new migrations](#generating-new-migrations)
+- [检测架构漂移](#detecting-schema-drift)，这意味着检查开发数据库没有**手动更改**。
+- [生成新迁移](#generating-new-migrations)
 
-<details><summary>🎨 Expand to see the shadow database explained as a cartoon.
+<details><summary>🎨 展开查看以卡通形式解释的影子数据库。
 
 </summary>
 
-![A cartoon that shows how the shadow database works.](shadow-database.png)
+![一幅卡通画，展示了影子数据库的工作原理。](shadow-database.png)
 
 </details>
 
-### Detecting schema drift
+### 检测架构漂移
 
-To detect drift in development, Prisma Migrate:
+为了检测开发中的漂移，Prisma Migrate:
 
-1. Creates a fresh copy of the shadow database (or performs a soft reset if the shadow database is cloud-hosted)
-1. Replays the **current** migration history in the shadow database.
-1. **Introspects** the shadow database to generate the 'current state' of your Prisma schema.
-1. Compares the end state of the current migration history to the development database.
-1. Reports **schema drift** if the end state of the current migration history does not match the development database (for example, due to a manual change)
+1. 创建影子数据库的最新副本 (如果影子数据库是云托管的，则执行软重置)。
+1. 在影子数据库中重放**当前**迁移历史记录。
+1. **检查**影子数据库，以生成 Prisma 架构的'当前状态'。
+1. 将当前迁移历史的最终状态与开发数据库进行比较。
+1. 如果当前迁移历史的结束状态与开发数据库不匹配 (例如，由于手动更改)，则报告**架构漂移**。
 
-If Prisma Migrate does not detect schema drift, it moves on to [generating new migrations](#generating-new-migrations).
+如果 Prisma Migrate 没有检测到架构漂移，它将继续[生成新的迁移](#generating-new-migrations)。
 
-> **Note**: The shadow database is not responsible for checking if a migration file has been **edited or deleted**. This is done using the `checksum` field in the `_prisma_migrations` table.
+> **请注意**: 影子数据库不负责检查迁移文件是否已**编辑或删除**。这是使用了`_prisma_Migrations`表中的`checksum`字段完成的。
 
-In [2.25.0](https://github.com/prisma/prisma/releases/tag/2.25.0) and later, Prisma Migrate outputs detailed information about which parts of the database have drifted. In the following example output, the schema that would be generated from the target database differs from the expected schema. For example, the `Color` enum in the target database is missing the expected variant `RED` and include the unexpected variant `TRANSPARENT`:
+在[2.25.0](https://github.com/prisma/prisma/releases/tag/2.25.0)和更高版本中，Prisma Migrate 会输出关于数据库里哪些部分发生了漂移的详细信息。在下面的示例输出中，从目标数据库生成的架构会与预期的架构不同。 例如，目标数据库中的 `Color` 枚举缺少预期的变量 `RED`，却包含着意外的变量 `TRANSPARENT` :
 
 ```
 [*] Changed the `Color` enum
@@ -76,22 +76,22 @@ In [2.25.0](https://github.com/prisma/prisma/releases/tag/2.25.0) and later, Pri
   [+] Added unique index on columns (weight)
 ```
 
-### Generating new migrations
+### 生成新迁移
 
-Assuming Prisma Migrate did not [detect schema drift](#detecting-schema-drift), it moves on to generating new migrations from schema changes. To generate new migrations, Prisma Migrate:
+假设 Prisma Migrate 没有[检测架构漂移](#detecting-schema-drift)，它会接着从架构更改中生成新迁移。要生成新的迁移，请使用 Prisma Migrateit:
 
-1. Calculates the target database schema as a function of the current Prisma schema.
-1. Compares the end state of the existing migration history and the target schema, and generates steps to get from one to the other.
-1. Renders these steps to a SQL string and saves it in the new migration file.
-1. Applies the generated migration to the development database (assuming you have not specified the `--create-only` flag)
-1. Drops the shadow database (cloud-hosted databases cannot be dropped, but are reset at the start of the `migrate dev` command)
+1. 根据当前 Prisma 架构计算目标数据库架构。
+1. 比较现有迁移历史记录和目标架构的结束状态，并生成从一个迁移到另一个迁移的步骤。
+1. 将这些步骤呈现为 SQL 字符串，并将其保存在新的迁移文件中。
+1. 将生成的迁移应用到开发数据库 (假设您没有指定 `--create-only` 标志)
+1. 删除影子数据库(云托管数据库不能删除，但会在 `migrate dev` 命令开始时重置)
 
-## Cloud-hosted shadow databases must be created manually
+## 云托管的影子数据库必须手动创建
 
-Some cloud providers do not allow you to drop and create databases with SQL. Some require to create or drop the database via an online interface, and some really limit you to 1 database. If you **develop** in such a cloud-hosted environment, you must:
+一些云提供商不允许您使用 SQL 对数据库进行删除或创建。有些则需要通过在线界面才能对数据库进行创建或删除，而有些则限制您只能创建一个数据库。如果您在这样的云托管环境中进行**开发**，必须:
 
-1. Create a dedicated cloud-hosted shadow database
-2. Add the URL to the [`shadowDatabaseUrl`](../../../reference/api-reference/prisma-schema-reference#datasource) <span class="api"></span> field:
+1. 创建专用的云托管影子数据库
+2. 将 URL 添加到[`shadowDatabaseUrl`](../../../reference/api-reference/prisma-schema-reference#datasource) <span class="api"></span> 字段:
 
 ```prisma highlight=4;normal
 datasource db {
@@ -101,31 +101,31 @@ datasource db {
 }
 ```
 
-## Shadow database user permissions
+## 影子数据库用户权限
 
-In order to create and delete the shadow database when using development commands such as `migrate dev` and `migrate reset`, Prisma Migrate currently requires that the database user defined in your `datasource` has permission to **create databases**.
+为了在使用诸如 `migrate dev` 和 `migrate reset` 等开发命令来创建和删除影子数据库，Prisma Migrate 目前要求您的 `datasource` 中定义的数据库用户必须具有**创建数据库**的权限。
 
-| Database   | Database user requirements                                                                                                                                                                                            |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SQLite     | No special requirements.                                                                                                                                                                                              |
-| MySQL      | Database user must have `CREATE, ALTER, DROP, REFERENCES ON *.*` privileges                                                                                                                                           |
-| PostgreSQL | The user must be a super user or have `CREATEDB` privilege. See `CREATE ROLE` ([PostgreSQL official documentation](https://www.postgresql.org/docs/12/sql-createdatabase.html))                                       |
-| SQL Server | The user must be a site admin or have the `SERVER` securable. See the [official documentation](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine?view=sql-server-ver15). |
+| 数据库     | 数据库用户需求                                                                                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SQLite     | 没有特殊要求。                                                                                                                                                                         |
+| MySQL      | 数据库用户必须具有 `CREATE, ALTER, DROP, REFERENCES ON *.*` 权限。                                                                                                                     |
+| PostgreSQL | 用户必须是超级用户或具有 `CREATEDB` 权限。请参见 `CREATE ROLE` ([PostgreSQL 官方文档](https://www.postgresql.org/docs/12/sql-createdatabase.html))。                                   |
+| SQL Server | 用户必须是站点管理员或具有 `SERVER` 安全权限。请参见[官方文档](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine?view=sql-server-ver15)。 |
 
-> If you use a cloud-hosted database for development and can not use these permissions, see: [Cloud-hosted shadow databases](#cloud-hosted-shadow-databases-must-be-created-manually)
+> 如果您使用云托管数据库进行开发，且无法使用这些权限，请参阅：[云托管影子数据库](#cloud-hosted-shadow-databases-must-be-created-manually)
 
-Prisma Migrate throws the following error if it cannot create the shadow database with the credentials your connection URL supplied:
+如果 Prisma Migrate 无法使用您提供的连接 URL 创建影子数据库，则会引发以下错误:
 
 ```
 Error: A migration failed when applied to the shadow database
 Database error: Error querying the database: db error: ERROR: permission denied to create database
 ```
 
-To resolve this error:
+要解决此错误，请执行以下操作:
 
-- If you are working locally, we recommend that you change the database user's privileges.
-- If you are developing against a cloud-based database (for example, on Heroku), we recommend that you change to a local web environment (such as running your development database on Docker) for the time being and follow the discussions on [GitHub issue #4571](https://github.com/prisma/prisma/issues/4571).
-- If you are developing against a cloud-based database (for example, on Heroku) and **cannot** switch, please remain on version 2.12.0 and follow the discussions on [GitHub issue #4571](https://github.com/prisma/prisma/issues/4571).
-- If you are developing against a cloud-based database (for example, on Heroku) and are currently **prototyping** such that you don't care about generated migration files and only need to apply your Prisma data model to the database schema, you can run [`prisma db push`](../../../reference/api-reference/command-reference#db) instead of the `prisma migrate dev` command.
+- 如果您在本地工作，建议您更改数据库用户的权限。
+- 如果您正在基于云数据库进行开发 (例如，在 Heroku 上)，我们建议您暂时切换到本地 Web 环境(例如在 Docker 上运行您的开发数据库)，并关注[GitHub issue #4571](https://github.com/prisma/prisma/issues/4571)上的讨论。
+- 如果您正在基于云数据库进行开发 (例如，在 Heroku 上)，并且**无法切换**，请继续关注 2.12.0 版本，并关注[GitHub issue #4571](https://github.com/prisma/prisma/issues/4571)上的讨论。
+- 如果您正在基于云数据库进行开发 (例如，在 Heroku 上)，并且正在进行**原型开发**，因此您不必关心生成的迁移文件，而只需要将 Prisma 数据模型应用到数据库架构，您可以运行[`prisma db push`](../../../reference/api-reference/command-reference#db)而不是`prisma migrate dev`命令。
 
-> **Important**: The shadow database is _only_ required in a development environment (specifically for the `prisma migrate dev` command) - you **do not** need to make any changes to your production environment.
+> **重要的**: 在开发环境中，影子数据库是必不可少的 (特别是对于` prisma migrate dev` 命令) —— 您不需要对生产环境进行任何更改。

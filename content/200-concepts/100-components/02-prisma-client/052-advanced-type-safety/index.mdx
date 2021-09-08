@@ -1,29 +1,29 @@
 ---
-title: '高级安全型'
-metaTitle: '高级安全型 (参考)'
-metaDescription: 'Prisma Client 为查询提供全类型安全，即使是部分查询或包含的关系。本页说明如何利用生成的类型和实用程序。'
+title: '高级类型安全'
+metaTitle: '高级类型安全 (参考)'
+metaDescription: 'Prisma Client 为查询提供完整的类型安全，即使是在部分查询中或包含的关系中。本页说明如何利用生成的类型和实用程序。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Prisma Client 生成的代码包含几个有用的类型和实用程序，你可以使用这些类型和实用程序使你的应用程序更加安全。此页面描述了利用它们的模式。
+Prisma Client 生成的代码包含几个有用的类型和实用程序，你可以使用这些类型和实用程序使你的应用程序更加安全。此页面描述了使用它们的模式。
 
 </TopBlock>
 
 ## 导入生成类型
 
-你可以导入 `Prisma` 命名空间，并使用点符号访问类型和实用程序。下列示例显示了如何导入 `Prisma` 命名空间并将其用于访问和使用  `Prisma.UserSelect` [generated type](#what-are-generated-types) 生成的类型：
+你可以导入 `Prisma` 命名空间，并使用 . 点符号访问类型和实用程序。下列示例显示了如何导入 `Prisma` 命名空间并将其用于访问和使用 `Prisma.UserSelect` [generated type](#what-are-generated-types) 生成的类型：
 
 ```ts
 import { Prisma } from '@prisma/client'
 
-// Build 'select' object
+// 创建 'select' 对象
 const userEmail: Prisma.UserSelect = {
   email: true,
 }
 
-// Use select object
+// 使用 select 对象
 const createUser = await prisma.user.create({
   data: {
     email: 'bob@prisma.io',
@@ -36,7 +36,7 @@ const createUser = await prisma.user.create({
 
 ## 生成的类型是什么? {#what-are-generated-types}
 
-生成的类型是源自模型的类型脚本类型。你可以使用它们创建键入对象，你传递到顶级方法，如 `prisma.user.create(...)` 或  `prisma.user.update(...)`，或选项，如 `select` 或 `include`。
+生成的类型是由你定义的 model 推导出来的 TypeScript 类型。你可以使用它们创建键入对象，并传递到顶级方法，如 `prisma.user.create(...)` 或 `prisma.user.update(...)`，或选项中，如 `select` 或 `include`。
 
 例如， `select` 接受 `UserSelect` 类型的对象。根据模型，其对象属性与 `select` 语句支持的对象属性相匹配。
 
@@ -74,14 +74,14 @@ model User {
 
 </TabbedContent>
 
-在类型脚本中，当你声明一个变量并添加类型注释来描述变量的类型时 [类型注释](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-annotations-on-variables) 的概念。请参阅下示例。
+在 TypeScript 中，[类型注释](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-annotations-on-variables) 是当你声明一个变量并为其添加类型注释来描述变量的类型。请参阅如下示例。
 
 ```ts
 const myAge: number = 37
 const myName: string = 'Rich'
 ```
 
-这两个变量声明都有一个类型注释，分别指定它们是什么原始类型，`number` 和 `string`。大多数情况下不需要这种注释，因为 TypeScript 将根据变量的初始化方式推断变量的类型。在上面的示例中， `myAge`  是用一个数字初始化的，因此 TypeScript 猜测它应该是一个数字。
+这两个变量声明都被赋予了一个类型注释，分别指定它们是什么原始类型，各自为 `number` 和 `string`。大多数情况下不需要这种注释，因为 TypeScript 将根据变量的初始化类型推断其类型。在上面的示例中， `myAge` 是用一个数字初始化的，因此 TypeScript 推测它应该是一个数字。
 
 回到 `UserSelect` 类型，如果要在创建的对象 `userEmail` 上使用 `.` 表示法，则可以访问 `User` 模型上的所有字段，这些字段可以使用 `select` 语句进行交互。
 
@@ -102,7 +102,7 @@ const userEmail: Prisma.UserSelect = {
   email: true,
 }
 
-// properties available on the typed object
+// 当前对象可用的属性
 userEmail.id
 userEmail.email
 userEmail.name
@@ -110,7 +110,7 @@ userEmail.posts
 userEmail.profile
 ```
 
-在同一模块中，这样在你使用 `include` 语句之后 的对象就可以访问到那些属性  。
+在同一模块中，你可以在变量上使用一个 `包含` 生成类型，这样在你使用 `include` 语句之后，对象就可以访问到那些属性 。
 
 ```ts
 import { Prisma } from '@prisma/client'

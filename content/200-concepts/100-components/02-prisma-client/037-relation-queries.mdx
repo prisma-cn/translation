@@ -244,7 +244,7 @@ const getUser = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-你还可以在 `include` 中嵌套 `select` - 以下示例返回每个帖子的 _所有_  `User` 字段 和 `title` 字段：
+你还可以在 `include` 中嵌套 `select` - 以下示例返回每个帖子的 _所有_ `User` 字段 和 `title` 字段：
 
 <CodeWithResult>
 <cmd>
@@ -512,14 +512,14 @@ const user = await prisma.user.create({
 
 每种技术都有优点和缺点：
 
-| 功能                               | `create` | `createMany` | 注意                                                                                                                                                                                           |
-| :------------------------------------ | :------- | :----------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 一次创建一条记录          | ✔        | ✘            | 可能性能较差。                                                                                                                                                                    |
-| 在一个查询中创建所有记录     | ✘        | ✔            | 潜在的更高性能。                                                                                                                                                                    |
-| 支持嵌套其他关系 | ✔        | ✘ \*         | 例如，你可以在一个查询中创建一个用户、多篇文章和每篇文章的多条评论。<br />\* 你可以在具有一个关系的数据库中手动设置外键，例如： `{ authorId: 9}` |
-| 支持跳过重复记录   | ✘        | ✔            | 使用 `skipDuplicates` 查询选项   。                                                                                                                                                           |
-| 支持多关系           | ✔        | ✔            | 例如，你可以创建一个用户和多个帖子（一个用户有许多帖子）                                                                                                                 |
-| 支持多对多关系       | ✔        | ✘            | 例如，你可以创建一篇文章和多个类别（一篇文章可以有多个类别，一个类别可以有多篇文章）                                                             |
+| 功能                     | `create` | `createMany` | 注意                                                                                                                                             |
+| :----------------------- | :------- | :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 一次创建一条记录         | ✔        | ✘            | 可能性能较差。                                                                                                                                   |
+| 在一个查询中创建所有记录 | ✘        | ✔            | 潜在的更高性能。                                                                                                                                 |
+| 支持嵌套其他关系         | ✔        | ✘ \*         | 例如，你可以在一个查询中创建一个用户、多篇文章和每篇文章的多条评论。<br />\* 你可以在具有一个关系的数据库中手动设置外键，例如： `{ authorId: 9}` |
+| 支持跳过重复记录         | ✘        | ✔            | 使用 `skipDuplicates` 查询选项 。                                                                                                                |
+| 支持多关系               | ✔        | ✔            | 例如，你可以创建一个用户和多个帖子（一个用户有许多帖子）                                                                                         |
+| 支持多对多关系           | ✔        | ✘            | 例如，你可以创建一篇文章和多个类别（一篇文章可以有多个类别，一个类别可以有多篇文章）                                                             |
 
 以下查询使用嵌套的[`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span> 来创建:
 
@@ -780,7 +780,7 @@ const getUser = await prisma.user.update({
 如果相关记录可能存在，也可能不存在, 使用 `connectOrCreate` <span class="api"></span> 来连接关系记录:
 
 - 将 `User` 与电子邮件地址连接 `viola@prisma.io` _或_
-- 如果用户还不存在则使用电子邮件地址 `viola@prisma.io` 创建新的 `User` 
+- 如果用户还不存在则使用电子邮件地址 `viola@prisma.io` 创建新的 `User`
 
 <CodeWithResult>
 <cmd>
@@ -1079,7 +1079,7 @@ const update = await prisma.post.update({
 
 ### 将新的相关记录添加到现有记录
 
-你可以在  `update` 中嵌套 `create` 或 `createMany`，将新的相关记录添加到现有记录中。以下查询向 `id` 为 9 的用户添加两篇文章：
+你可以在 `update` 中嵌套 `create` 或 `createMany`，将新的相关记录添加到现有记录中。以下查询向 `id` 为 9 的用户添加两篇文章：
 
 ```ts
 const user = await prisma.user.update({
@@ -1104,11 +1104,11 @@ Prisma Client 提供了 [`一些`](../../../reference/api-reference/prisma-clien
 
 例如:
 
-| 要求                                                                       | 要使用的查询选项                 |
-| --------------------------------------------------------------------------------- | ----------------------------------- |
-| "我想要一份至少有一条未发布的 `Post` 记录的每个 `User` 的列表" | `some` 帖子未发布        |
-| "我想要一份每个没有 _未_ 发布的“发布”记录的 `User` 的列表"          | `none` 其中一个帖子未发布 |
-| "我想要一份 _只有_ 未发布的 `Post` 记录的每个 `User` 的列表"        | `every` 帖子未发布         |
+| 要求                                                           | 要使用的查询选项          |
+| -------------------------------------------------------------- | ------------------------- |
+| "我想要一份至少有一条未发布的 `Post` 记录的每个 `User` 的列表" | `some` 帖子未发布         |
+| "我想要一份每个没有 _未_ 发布的“发布”记录的 `User` 的列表"     | `none` 其中一个帖子未发布 |
+| "我想要一份 _只有_ 未发布的 `Post` 记录的每个 `User` 的列表"   | `every` 帖子未发布        |
 
 例如，以下查询返回满足以下条件的 `User`：
 
@@ -1141,7 +1141,7 @@ Prisma Client 提供了 [`is`](../../../reference/api-reference/prisma-client-re
 例如，以下查询返回满足以下条件的 `Post` 记录：
 
 - 作者的名字不是鲍勃
-- 作者年龄超过40岁
+- 作者年龄超过 40 岁
 
 ```ts
   const users = await prisma.post.findMany({
@@ -1209,8 +1209,8 @@ const postsByUser = await prisma.post.findMany({
 
 两个查询之间的主要区别在于，fluent API 调用被转换为两个单独的数据库查询，而另一个查询只生成一个查询（请参见下文） [GitHub issue](https://github.com/prisma/prisma/issues/1984))
 
-> **注意**: 
-你可以使用以下事实： `.findUnique({ where: { email: 'alice@prisma.io' } }).posts()` 查询由 Prisma 数据加载器自动批处理，以 [避免 GraphQL 解析器中的 n+1 问题](../../../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader)。
+> **注意**:
+> 你可以使用以下事实： `.findUnique({ where: { email: 'alice@prisma.io' } }).posts()` 查询由 Prisma 数据加载器自动批处理，以 [避免 GraphQL 解析器中的 n+1 问题](../../../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader)。
 
 此请求按特定帖子返回所有类别：
 

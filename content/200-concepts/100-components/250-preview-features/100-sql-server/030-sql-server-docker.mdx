@@ -1,36 +1,36 @@
 ---
-title: 'SQL Server on Docker'
-metaTitle: 'SQL Server  on Docker (Preview)'
-metaDescription: 'Download and use the Microsoft SQL Server Docker image.'
+title: 'Docker 上的 SQL Server'
+metaTitle: 'Docker 上的 SQL Server (预览)'
+metaDescription: '下载并使用Microsoft SQL Server Docker镜像。'
 ---
 
 <TopBlock>
 
-To run a Microsoft SQL Server container image with Docker:
+要使用 Docker 运行 Microsoft SQL Server 容器镜像，请执行以下操作:
 
-1. Install and set up [Docker](https://docs.docker.com/get-docker/)
-1. Run the following command in your terminal to download the Microsoft SQL Server 2019 image:
+1. 安装和设置[Docker](https://docs.docker.com/get-docker/)
+1. 在终端中运行以下命令下载 Microsoft SQL Server 2019 镜像：
 
    ```terminal
    docker pull mcr.microsoft.com/mssql/server:2019-latest
    ```
 
-1. Create an instance of the container image, replacing the value of `SA_PASSWORD` with a password of your choice:
+1. 创建容器镜像实例，将 `SA_PASSWORD` 的值替换为您的密码:
 
    ```terminal
    docker run --name sql_container -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=myPassword' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
    ```
 
-1. [Follow Microsoft's instructions to connect to SQL Server and use the `sqlcmd` tool](https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver15&pivots=cs1-cmd#connect-to-sql-server), replacing the image name and password with your own.
+1. [按照 Microsoft 的说明连接到 SQL Server 并使用 `sqlcmd` 工具](https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver15&pivots=cs1-cmd#connect-to-sql-server)，将镜像名称和密码替换为您自己的名称和密码。
 
-1. From the `sqlcmd` command prompt, create a new database:
+1. 在 `sqlcmd` 命令提示符下，创建一个新数据库:
 
    ```terminal
    CREATE DATABASE quickstart
    GO
    ```
 
-1. Run the following command to check that your database was created successfully:
+1. 运行以下命令检查数据库是否已成功创建:
 
    ```terminal
    sp_databases
@@ -39,9 +39,9 @@ To run a Microsoft SQL Server container image with Docker:
 
 </TopBlock>
 
-## Connection URL credentials
+## 连接 URL 凭证
 
-Based on this example, your credentials are:
+根据此示例，您的凭证为:
 
 - **Username**: sa
 - **Password**: myPassword

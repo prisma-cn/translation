@@ -145,6 +145,7 @@ model Post {
 ```
 
 `User` 和 `Post` 之间的一对多关系允许你根据用户的帖子查询用户 - 例如，以下查询返回所有用户，其中至少有一个帖子（`some`）具有 10 个以上的浏览：
+
 ```ts
 const result = await prisma.user.findMany({
   where: {
