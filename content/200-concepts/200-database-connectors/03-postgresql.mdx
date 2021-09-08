@@ -46,10 +46,10 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 
 | Name     | Placeholder | Description                                                                                                     |
 | :------- | :---------- | :-------------------------------------------------------------------------------------------------------------- |
-| Host     | `HOST`      | 数据库 IP 或域名, 例如 `localhost`                                                     |
-| Port     | `PORT`      | 数据库端口, 例如 `5432`                                                      |
-| User     | `USER`      | 数据库用户名, 例如 `janedoe`                                                                      |
-| Password | `PASSWORD`  | 数据库密码                                                                                 |
+| Host     | `HOST`      | 数据库 IP 或域名, 例如 `localhost`  |
+| Port     | `PORT`      | 数据库端口, 例如 `5432`  |
+| User     | `USER`      | 数据库用户名, 例如 `janedoe`  |
+| Password | `PASSWORD`  | 数据库密码  |
 | Database | `DATABASE`  | [数据库](https://www.postgresql.org/docs/12/manage-ag-overview.html) 名称, 例如 `mydb` |
 
 <Admonition type="info">
@@ -68,18 +68,18 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?KEY1=VALUE&KEY2=VALUE&KEY3=VALUE
 
 可以使用下列参数：
 
-| 参数名      | 是否必填 | 默认值                | 描述                                                                                                                                                   |
+| 参数名      | 是否必填 | 默认值                | 描述  |
 | :----------------- | :------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `schema`           | **Yes**  | `public`               | [schema](https://www.postgresql.org/docs/12/ddl-schemas.html) 名称。例如 `myschema`                                                    |
 | `connection_limit` | No       | `num_cpus * 2 + 1`     | [连接池](../components/prisma-client/working-with-prismaclient/connection-pool) 最大限制                                                  |
-| `connect_timeout`  | No       | `5`                    | 最大连接建立超时时间，`0` 代表无限制                                                                     |
-| `pool_timeout`     | No       | `10`                   | 等待连接池中连接超时时间， `0` 代表无限制                                                                  |
+| `connect_timeout`  | No       | `5`                    | 最大连接建立超时时间，单位秒，`0` 代表无限制  |
+| `pool_timeout`     | No       | `10`                   | 等待连接池中连接超时时间，单位秒 `0` 代表无限制  |
 | `sslmode`          | No       | `prefer`               | 是否使用 TLS，可选值: `prefer`, `disable`, `require`  |
 | `sslcert`          | No       |                        | 服务器证书路径. 证书路径 [相对于 `./prisma 目录`](../components/prisma-schema/data-sources#ssl-certificates) |
 | `sslidentity`      | No       |                        | PKCS12 证书路径  |
 | `sslpassword`      | No       |                        | PKCS12 文件密码  |
 | `sslaccept`        | No       | `accept_invalid_certs` | 是否检查证书中的缺失值。可选值：`accept_invalid_certs`, `strict`  |
-| `host`             | No       |                        | 指向一个包含用于连接的套接字的目录  |
+| `host`             | No       |                        | 指向一个包含用于连接的套接字（socket）的目录  |
 | `socket_timeout`   | No       |                        | 单个查询的最大等待时间  |
 | `pgbouncer`        | No       | `false`                | 将引擎配置为 [启用 PgBouncer 兼容模式](../../guides/performance-and-optimization/connection-management/configure-pg-bouncer/)  |
 
@@ -130,7 +130,7 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslidentity=client-identity.p12&ss
 
 ## PostgreSQL 和 Prisma schema 间的类型映射
 
-PostgreSQL 连接器将 Prisma [数据模型] (../components/prisma-schema/data-model) 的 [标量类型（scalar types）](../components/prisma-schema/data-model#scalar-fields) 映射为数据库原生类型：
+PostgreSQL 连接器将 Prisma [数据模型](../components/prisma-schema/data-model) 中的 [标量类型（scalar types）](../components/prisma-schema/data-model#scalar-fields) 映射为数据库原生类型：
 
 > 在 [Prisma schema 参考](../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types) 中了解更多关于 prisma 类型映射的信息。
 
@@ -152,7 +152,7 @@ PostgreSQL 连接器将 Prisma [数据模型] (../components/prisma-schema/data-
 
 当内省（introspecting）一个 PostgreSQL 数据库时，数据库类型根据以下表映射到 Prisma：
 
-| PostgreSQL (Type \| Aliases)                | Prisma        | 是否支持 | 原生数据库类型属性           | 注意            |
+| PostgreSQL (Type \| Aliases)                | Prisma        | 是否支持 | 原生数据库类型属性  | 注意  |
 | ------------------------------------------- | ------------- | :-------: | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `bigint` \| `int8`                          | `BigInt`      |    ✔️     | `@db.BigInt`\*                           | \*默认映射为 `BigInt` - 没有在 schema 中添加类型属性                                                                                                             |
 | `boolean` \| `bool`                         | `Bool`        |    ✔️     | `@db.Boolean`\*                          | \*默认映射为 `Bool` - 没有在 schema 中添加类型属性                                                                                                               |
@@ -185,26 +185,26 @@ PostgreSQL 连接器将 Prisma [数据模型] (../components/prisma-schema/data-
 | `xml`                                       | `String`      |    ✔️     | `@db.Xml`                                |
 | Array types                                 | `[]`          |    ✔️     |
 | `citext`                                    | `String`      |   ✔️\*    | `@db.Citext`                             | \* 只有在 [Citext 扩展被启用](../../../concepts/components/prisma-schema/features-without-psl-equivalent#enable-extensions-for-native-database-functions) 时才可用 |
-| `interval`                                  | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `cidr`                                      | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `macaddr`                                   | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `tsvector`                                  | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `tsquery`                                   | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `int4range`                                 | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `int8range`                                 | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `numrange`                                  | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `tsrange`                                   | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `tstzrange`                                 | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `daterange`                                 | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `point`                                     | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `line`                                      | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `lseg`                                      | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `box`                                       | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `path`                                      | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `polygon`                                   | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| `circle`                                    | `Unsupported` |  Not yet  |                                          |                                                                                                                                                                                 |
-| Composite types                             | n/a           |  Not yet  |                                          |                                                                                                                                                                                 |
-| Domain types                                | n/a           |  Not yet  |                                          |                                                                                                                                                                                 |
+| `interval`                                  | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `cidr`                                      | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `macaddr`                                   | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `tsvector`                                  | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `tsquery`                                   | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `int4range`                                 | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `int8range`                                 | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `numrange`                                  | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `tsrange`                                   | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `tstzrange`                                 | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `daterange`                                 | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `point`                                     | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `line`                                      | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `lseg`                                      | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `box`                                       | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `path`                                      | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `polygon`                                   | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| `circle`                                    | `Unsupported` |  不支持  |                                          |                                                                                                                                                                                 |
+| Composite types                             | n/a           |  不支持  |                                          |                                                                                                                                                                                 |
+| Domain types                                | n/a           |  不支持  |                                          |                                                                                                                                                                                 |
 
 [内省 Introspection](../components/introspection) 将尚未支持的数据库类型添加为 [`Unsupported`](../../../reference/api-reference/prisma-schema-reference#unsupported) <span class="api"></span> 字段:
 

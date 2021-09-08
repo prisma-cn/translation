@@ -1,7 +1,7 @@
 ---
 title: 'MongoDB'
-metaTitle: 'MongoDB database connector'
-metaDescription: 'How Prisma can connect to a MongoDB database using the MongoDB database connector.'
+metaTitle: 'MongoDB 数据库连接器'
+metaDescription: 'Prisma 如何使用 MongoDB 数据库连接器连接到 MongoDB 数据库。'
 hidePage: false
 tocDepth: 2
 codeStyle: false
@@ -10,19 +10,19 @@ preview: true
 
 <TopBlock>
 
-The MongoDB data source connector connects Prisma to a hosted [MongoDB](https://www.mongodb.com/) instance.
+MongoDB 数据源连接器将 Prisma 连接到一个托管的 [MongoDB](https://www.mongodb.com/) 实例。
 
 <Admonition type="info">
 
-If you'd like to be kept up to date on the latest updates and stories about the Prisma MongoDB Connector, <a href="https://pris.ly/mongo">sign up here</a>.
+如果你想了解关于 Prisma MongoDB 连接器的最新动态和资讯，<a href="https://pris.ly/mongo">请在这里注册</a>。
 
 </Admonition>
 
 </TopBlock>
 
-## Example
+## 例子
 
-To connect to a MongoDB server, you need to configure a [`datasource`](../components/prisma-schema/data-sources) block in your [Prisma schema file](../components/prisma-schema):
+为了连接到 MongoDB 数据库服务器，你需要在你的 [Prisma schema 文件](../components/prisma-schema) 中配置一个 [`datasource`](../components/prisma-schema/data-sources) 块：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -31,18 +31,18 @@ datasource db {
 }
 ```
 
-The fields passed to the `datasource` block are:
+在 `datasource` 块中有两个字段：
 
-- `provider`: Specifies the `mongodb` data source connector.
-- `url`: Specifies the [connection URL](#connection-url) for the MongoDB server. In this case, an [environment variable is used](../../../guides/development-environment/environment-variables) to provide the connection URL.
+- `provider`: 指定了 `mongodb` 数据源连接器.
+- `url`：指定 MongoDB 数据库的 [连接URL](#connection-url)。可以使用 [环境变量](../components/prisma-schema#accessing-environment-variables-from-the-schema) 来指定。
 
 <Admonition type="warning">
 
-The MongoDB database connector uses transactions to support nested writes. Transactions **requires** a [replica set](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://docs.atlas.mongodb.com/getting-started/). It's free to get started.
+MongoDB 数据库连接器使用事务（transaction）来支持嵌套写入。事务（transaction）**需要** 一个配置了 [副本集（replica set）](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/) 的 MongoDB。最简单的部署副本集（replica set）的方式是使用免费的 [Atlas] (https://docs.atlas.mongodb.com/getting-started/)。
 
 </Admonition>
 
-Because MongoDB is currently a preview feature, you need to explicitly define that in the [`generator`]() block.
+因为 MongoDB 目前是一个预览功能，你需要在 [`generator`]() 块中明确定义。
 
 ```prisma file=schema.prisma
 generator client {
@@ -51,55 +51,55 @@ generator client {
 }
 ```
 
-## Connection details
+## 连接详情
 
-### Connection URL
+### 连接 URL
 
-The MongoDB connection URL can be configured in different ways depending on how you are hosting your database. The standard configuration is made up of the following components:
+MongoDB 的连接 URL 可以以不同的方式进行配置，这取决于你是如果托管你的数据库的。标准配置是由下面几部分组成的：
 
 ![Structure of the MongoDB connection URL](./mongodb.png)
 
-#### Base URL and path
+#### 基础 URL（Base URL） 和路径（path）
 
-The base URL and path sections of the connection URL are made up of your authentication credentials followed by the host (and optionally, a port number) and database.
+连接 URL 中的基础 URL（Base URL）和路径部分是由你的认证凭证、主机（以及可选的端口号）及数据库组成的。
 
 ```
 mongodb://USERNAME:PASSWORD@HOST/DATABASE
 ```
 
-The following components make up the _base URL_ of your database:
+以下部分构成了你的数据库的 _基础URL（base URL）_：
 
-| Name     | Placeholder | Description                                                                                                                                                                                                                                                                                                                                                |
+| 名称     | 占位符 | 描述  |
 | :------- | :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| User     | `USERNAME`  | Name of your database user, e.g. `janedoe`                                                                                                                                                                                                                                                                                                                 |
-| Password | `PASSWORD`  | Password for your database user                                                                                                                                                                                                                                                                                                                            |
-| Host     | `HOST`      | The host where a [`mongod`](https://docs.mongodb.com/manual/reference/program/mongod/#mongodb-binary-bin.mongod) instance is running. If you are running a sharded cluster this will a [`mongos`](https://docs.mongodb.com/manual/reference/program/mongos/#mongodb-binary-bin.mongos) instance. This can be a hostname, IP address or UNIX domain socket. |
-| Port     | `PORT`      | Port on which your database server is running, e.g. `1234`. If none is provided the default `27017` is used.                                                                                                                                                                                                                                               |
-| Database | `DATABASE`  | Name of the database to use. If none is specified but the `authSource` option is set then the `authSource` database name is used. If neither the database in the connection string nor the `authSource` option is specified then it defaults to `admin`                                                                                                    |
+| User     | `USERNAME`  | 数据库用户名, 例如 `janedoe`  |
+| Password | `PASSWORD`  | 数据库密码  |
+| Host     | `HOST`      | 运行 [`mongod`](https://docs.mongodb.com/manual/reference/program/mongod/#mongodb-binary-bin.mongod) 实例的主机地址。如果你正在运行一个集群，这将是一个 [`mongos`](https://docs.mongodb.com/manual/reference/program/mongos/#mongodb-binary-bin.mongos) 实例。这可以是一个主机名、IP地址或 UNIX domain socket  |
+| Port     | `PORT`      | 数据库端口，例如：`1234`。不指定时默认为 `27017` |
+| Database | `DATABASE`  | 数据库名称。如果未指定，但设置了 `authSource` 选项，那么会使用 `authSource` 数据库名称。如果连接字符串中未指定数据库名称，也未指定 `authSource`，那么会默认使用 `admin`  |
 
 <Admonition type="info">
 
-You must [percentage-encode special characters](../../../reference/database-reference/connection-urls#special-characters).
+你必须 [编码特殊字符](../../../reference/database-reference/connection-urls#special-characters)。
 
 </Admonition>
 
-#### Arguments
+#### 参数
 
-A connection URL can also take arguments. The following example sets three arguments:
+连接 URL 也可以接收参数，如下：
 
-- An `ssl` connection
-- A `connectTimeoutMS`
-- And the `maxPoolSize`
+- `ssl` 连接
+- `connectTimeoutMS`
+- `maxPoolSize`
 
 ```
 mongodb://USERNAME:PASSWORD@HOST/DATABASE?ssl=true&connectTimeoutMS=5000&maxPoolSize=50
 ```
 
-Refer to the [MongoDB connection string documentation](https://docs.mongodb.com/manual/reference/connection-string/#connection-string-options) for a complete list of connection string arguments. There are no Prisma-specific arguments.
+请参考 [MongoDB 连接字符串文档](https://docs.mongodb.com/manual/reference/connection-string/#connection-string-options) 了解完整的参数列表。Prisma 并没有添加额外的参数。
 
-## Using <inlinecode>ObjectId</inlinecode>
+## 使用 <inlinecode>ObjectId</inlinecode>
 
-It is common practice for the `_id` field of a MongoDB document to contain an `ObjectId`:
+在 MongoDB 的文档（document）中的 `_id` 字段里，包含一个 `ObjectId` 是一种创建的做法：
 
 ```json
 {
@@ -111,11 +111,11 @@ It is common practice for the `_id` field of a MongoDB document to contain an `O
 }
 ```
 
-Any field (most commonly IDs and relation scalar fields) that maps to an `ObjectId` in the underlying database:
+任何字段（通常是 ID 和关系标量字段（relation scalar field））映射到底层数据库中的 `ObjectId`：
 
-- Must be of type `String` or `Bytes`
-- Must include the `@db.ObjectId` attribute
-- Can optionally use `@default(dbgenerated())` to auto-generate a valid `ObjectId`
+- 比如是 `String` 或 `Bytes` 类型
+- 必须包含 `@db.ObjectId` 属性
+- 使用 `@default(dbgenerated())` 来自动生成一个有效的 `ObjectId`（可选）
 
 ```prisma
 model User {
@@ -131,11 +131,12 @@ model User {
 }
 ```
 
-See also: [Defining ID fields in MongoDB](../components/prisma-schema/data-model#defining-ids-in-mongodb)
+另见：[在 MongoDB 中定义 ID 字段](../components/prisma-schema/data-model#defining-ids-in-mongodb)
 
-### Generating `ObjectId`
+### 生成 `ObjectId`
 
-To generate a valid `ObjectId` (for testing purposes or to manually set an ID field value), use the [`bson`](https://www.npmjs.com/package/bson) package.
+要生成一个有效的 `ObjectId`（用于测试或手动设置 ID 字段值），请使用 [`bson`](https://www.npmjs.com/package/bson) 库。
+
 
 ```
 npm install --save bson
@@ -147,24 +148,23 @@ import { ObjectId } from 'bson'
 const id = new ObjectId()
 ```
 
-## Known limitations
+## 已知的限制
 
-As MongoDB support is currently in preview there are some known limitations that come with adopting Prisma into your MongoDB project, these include:
+由于对 MongoDB 的支持目前还处于预览阶段，因此在 MongoDB 项目中采用 Prisma 会有一些已知的限制，这些限制包括：
 
-- Currently **no embedded collection support**. See [github.com/prisma/prisma/issues/6708](https://github.com/prisma/prisma/issues/6708).
-  - Instead try to [normalize your data models](https://docs.mongodb.com/manual/core/data-model-design/#normalized-data-models). This involves
-    describing relationships using references between documents.
-- The [Migrate](../components/prisma-migrate) and [Introspection](../components/introspection) workflows are currently **not** supported.
-- [`@@id`](../../reference/api-reference/prisma-schema-reference#id-1) and [auto-increment](../../reference/api-reference/prisma-schema-reference#generate-auto-incrementing-integers-as-ids) are **not** currently supported.
-- Error handling is incomplete.
+- 目前**不支持嵌套集合（embedded collection）**。查看 [github.com/prisma/prisma/issues/6708](https://github.com/prisma/prisma/issues/6708)。
+  - 尝试 [规范化你的数据模型](https://docs.mongodb.com/manual/core/data-model-design/#normalized-data-models)。这涉及到使用文档间的引用来描述关联关系。
+- 目前不支持 [迁移（Migrate）](../components/prisma-migrate) 和 [内省（Introspection）](../components/introspection)。
+- 目前不支持 [`@@id`] (../../reference/api-reference/prisma-schema-reference#id-1) 和 [自增（auto-increment）](../../reference/api-reference/prisma-schema-reference#generate-auto-incrementing-integers-as-ids)。
+- 错误处理不完全。
 
-## Troubleshooting
+## 故障排除
 
 ### Error: Transactions are not supported by this deployment
 
-MongoDB only allows you to start a transaction on a replica set. Prisma uses transactions internally to avoid partial writes on nested queries. This means we inherit the requirement of needing a replica set configured.
+MongoDB 只允许你在一个副本集（replica set）上启动一个事务。Prisma 在内部使用事务来避免嵌套写入。这意味着我们继承了需要配置一个副本集（replica set）的要求。
 
-When you try to use Prisma's MongoDB connector on a deployment that has no replica set configured, you can experience an error message as the following:
+当你试图在没有配置副本集的 MongoDB 中使用 Prisma MongoDB 连接器时，你会遇到如下错误：
 
 ```
 PrismaClientUnknownRequestError2 [PrismaClientUnknownRequestError]:
@@ -182,8 +182,8 @@ Invalid `prisma.post.create()` invocation in
 }
 ```
 
-To resolve this, we suggest you change your deployment to one with a replica set configured.
+为了解决这个问题，我们建议你把你的部署改为配置了副本集（replica set）的部署。
 
-One simple way for this is to use use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) to launch a free instance that has replica set support out of the box.
+一个简单的方法是使用 [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) 来启动一个免费的实例，该实例具有开箱即用的副本集支持。
 
-There's also an option to run the replica set locally with this guide: https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set
+还有一种方法是根据这个指南在本地运行副本集： https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set
