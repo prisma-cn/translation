@@ -1,34 +1,34 @@
 ---
-title: 'Deployment overview'
-metaTitle: 'Deploying projects using Prisma to the cloud'
-metaDescription: 'Learn more about the different deployment paradigms for Node.js and TypeScript applications and how they affect deploying an application using Prisma Client.'
+title: '部署概述'
+metaTitle: '使用Prisma将项目部署到云'
+metaDescription: '了解更多关于Node.js和TypeScript应用程序的不同部署范式以及它们如何影响使用Prisma客户端部署应用程序的情况。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Projects using Prisma Client can be deployed to many different cloud platforms. Given the variety of cloud platforms and different names, it's noteworthy to mention the different deployment paradigms, as they affect the way you deploy an application using Prisma Client.
+使用 Prisma 客户端的项目可以被部署到许多不同的云平台。鉴于云平台的多样性和不同的名称，值得一提的是不同的部署范式，因为它们影响你使用 Prisma Client 部署应用程序的方式鉴于云平台的多样性和不同的名称，值得一提的是不同的部署范例，因为它们影响你使用 Prisma Client 部署应用程序的方式。
 
 </TopBlock>
 
-## Deployment paradigms
+## 部署范例
 
-Each paradigm has different tradeoffs that affect the performance, scalability, and operational costs of your application.
+每种范例都有不同的权衡，影响你的应用程序的性能、可扩展性和运营成本。
 
-Moreover, the user traffic pattern of your application is also an important factor to consider. For example, any application with consistent user traffic may be better suited for a [continuously running paradigm](#long-running-process-paas), whereas an application with sudden spikes may be better suited to [serverless](#serverless-faas).
+此外，你的应用程序的用户流量模式也是一个需要考虑的重要因素。例如，任何具有一致用户流量的应用可能更适合[连续运行范式](#long-running-process-paas)，而具有突然峰值的应用可能更适合[无服务器](#serverless-faas)。
 
-### Long-running process (PaaS)
+### 长期运行进程 (PaaS)
 
-Your Node.js process is continuously running and handles multiple requests. Your application can be deployed to a Platform-as-a-Service like [Heroku](./deployment-guides/deploying-to-heroku), as a Docker container to Kubernetes, or as a Node.js process on a virtual machine.
+你的 Node.js 进程持续运行并处理多个请求。你的应用程序可以被部署到像[Heroku](./deployment-guides/deploying-toheroku)这样的平台即服务，作为 Docker 容器部署到 Kubernetes，或作为虚拟机上的 Node.js 进程。
 
-See also: [Connection management in long-running processes](../performance-and-optimization/connection-management#long-running-processes)
+参见: [Connection management in long-running processes](../performance-and-optimization/connection-management#long-running-processes)
 
-### Serverless (FaaS)
+### 无服务器 (FaaS)
 
-Node.js processes of your application (or subsets of it broken into functions) are started as requests come in.
+你的应用程序的 Node.js 进程（或分成函数的子集）在请求进来时被启动。
 
-Serverless environments have the concept of warm starts, which means that for subsequent invocations of the same function, it may use an already existing container that has the allocated processes, memory, file system (`/tmp` is writable on AWS Lambda), and even DB connection still available.
+无服务器环境有热启动的概念，这意味着对于同一函数的后续调用，它可能会使用一个已经存在的容器，该容器具有分配的进程、内存、文件系统（`/tmp`在 AWS Lambda 上是可写的），甚至 DB 连接仍然可用。
 
-Typically, any piece of code [outside the handler](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel) remains initialized.
+通常情况下，任何一段代码[处理程序之外](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel)都保持初始化。
 
-See also: [Connection management in serverless environments](../performance-and-optimization/connection-management#serverless-environments-faas)
+参见: [Connection management in serverless environments](../performance-and-optimization/connection-management#serverless-environments-faas)
