@@ -1,25 +1,25 @@
 ---
-title: 'Integration testing'
-metaTitle: 'Integration testing with Prisma'
-metaDescription: 'Learn how to setup and run integration tests with Prisma and Docker'
+title: '集成测试'
+metaTitle: '用Prisma进行集成测试'
+metaDescription: '了解如何通过Prisma和Docker设置和运行集成测试'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Integration tests focus on testing how separate parts of the program work together. In the context of applications using a database, integration tests usually require a database to be available and contain data that is convenient to the scenarios intended to be tested.
+集成测试的重点是测试程序的独立部分如何一起工作。在使用数据库的应用程序的背景下，集成测试通常需要一个可用的数据库，并包含方便测试的场景的数据。
 
-One way to simulate a real world environment is to use [Docker](https://www.docker.com/get-started) to encapsulate a database and some test data. This can be spun up and torn down with the tests and so operate as an isolated environment away from your production databases.
+模拟真实世界环境的一种方法是使用[Docker](https://www.docker.com/get-started)来封装一个数据库和一些测试数据。这可以随着测试的进行而启动和关闭，因此可以作为一个远离生产数据库的隔离环境来操作。
 
 </TopBlock>
 
-## Prerequisites
+## 前提条件
 
-This guide assumes you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine as well as [`Jest`](../../unit-testing#add-jest-to-project) setup in your project.
+本指南假设你的机器上安装了[Docker](https://docs.docker.com/get-docker/)和[Docker Compose](https://docs.docker.com/compose/install/)，以及在你的项目中设置了[`Jest`](././unit-testing#add-jest-to-project)。
 
-The following ecommerce schema will be used throughout the guide. This varies from the traditional `User` and `Post` models used in other parts of the docs, mainly because it is unlikely you will be running integration tests against your blog.
+本指南将使用以下电子商务模式。这与文档中其他部分使用的传统的`User'和`Post模型不同，主要是因为你不太可能针对你的博客运行集成测试。
 
-<details><summary>Ecommerce schema</summary>
+<details><summary>电子商务模式</summary>
 
 ```prisma file=schema.prisma
 // Can have 1 customer
@@ -76,15 +76,15 @@ model Customer {
 
 </details>
 
-The guide uses a singleton pattern for Prisma Client setup. Refer to the [singleton](./unit-testing#singleton) docs for a walk through of how to set that up.
+本指南在Prisma客户端的设置中使用了一个单例模式。请参考[singleton](./unit-testing#singleton)文档，了解如何设置。
 
-## Add Docker to your project
+## 在你的项目中加入Docker
 
 ![Docker compose code pointing towards image of container holding a Postgres database](./Docker_Diagram_V1.png)
 
-With Docker and Docker compose both installed on your machine you can use them in your project.
+在你的机器上安装Docker和Docker compose，你可以在你的项目中使用它们。
 
-1. Begin by creating a `docker-compose.yml` file at your projects root. Here you will add a Postgres image and specify the environments credentials.
+1. 首先在你的项目根部创建一个`docker-compose.yml`文件，在这里你将添加一个Postgres镜像并指定环境证书。
 
 ```yml file=docker-compose.yml
 # Set the version of docker compose to use
@@ -104,15 +104,15 @@ services:
       POSTGRES_DB: tests
 ```
 
-> **Note**: The compose version used here (`3.9`) is the latest at the time of writing, if you are following along be sure to use the same version for consistency.
+> **注意**: 这里使用的compose版本（3.9）是写作时的最新版本，如果你在跟读，请确保使用相同的版本以保持一致性。
 
-The `docker-compose.yml` file defines the following:
+`docker-compose.yml`文件定义了以下内容:
 
-- The Postgres image (`postgres`) and version tag (`:13`). This will be downloaded if you do not have it locally available.
-- The port `5433` is mapped to the internal (Postgres default) port `5432`. This will be the port number the database is exposed on externally.
-- The database user credentials are set and the database given a name.
+- Postgres 镜像（`postgres`）和版本标签（`:13`）。如果你没有本地可用的，将会被下载。
+- 端口`5433`被映射到内部（Postgres默认）端口`5432`。这将是数据库对外开放的端口号。
+- 设置数据库用户凭证,并给数据库一个名称。
 
-2. To connect to the database in the container, create a new connection string with the credentials defined in the `docker-compose.yml` file. For example:
+2. 为了连接到容器中的数据库，用`docker-compose.yml`文件中定义的凭证创建一个新的连接字符串。例如:
 
 ```env file=.env.test
 DATABASE_URL="postgresql://prisma:prisma@localhost:5433/tests"
@@ -120,17 +120,17 @@ DATABASE_URL="postgresql://prisma:prisma@localhost:5433/tests"
 
 <Admonition type="info">
 
-The above `.env.test` file is used as part of a multiple `.env` file setup. Checkout the [using multiple .env files.](../development-environment/environment-variables/using-multiple-env-files) section to learn more about setting up your project with multiple `.env` files
+上面的.env.test文件是作为多个.env文件设置的一部分使用的。查看使用[多个.env文件](../development-environment/environment-variables/using-multiple-env-files)的章节，来了解更多关于用多个.env文件设置你的项目的信息。
 
 </Admonition>
 
-3. To create the container in a detached state so that you can continue to use the terminal tab, run the following command:
+3. 要在分离状态下创建容器，以便你可以继续使用终端标签，请运行以下命令:
 
 ```terminal
 docker-compose up -d
 ```
 
-4. Next you can check that the database has been created by executing a `psql` command inside the container. Make a note of the container id.
+4. 接下来你可以通过在容器内执行`psql`命令来检查数据库是否已经被创建。记下容器的ID。
 
    <CodeWithResult expanded={true}>
 
@@ -153,9 +153,9 @@ docker-compose up -d
 
    </CodeWithResult>
 
-> **Note**: The container id is unique to each container, you will see a different id displayed.
+> **注意**: 容器的ID对每个容器来说都是独一无二的，你会看到一个显示不同的ID。
 
-5. Using the container id from the previous step, run `psql` in the container, login with the created user and check the database is created:
+5. 使用上一步的容器ID，在容器中运行`psql`，用创建的用户登录，检查数据库是否创建:
 
    <CodeWithResult expanded={true}>
 
@@ -187,34 +187,34 @@ docker-compose up -d
 
    </CodeWithResult>
 
-## Integration testing
+## 集成测试
 
-Integration tests will be run against a database in a **dedicated test environment** instead of the production or development environments.
+集成测试将针对**专用的测试环境**中的数据库运行，而不是生产或开发环境。
 
-### The flow of operations
+### 操作的流程
 
-The flow for running said tests goes as follows:
+运行上述测试的流程如下:
 
-1. Start the container and create the database
-1. Migrate the schema
-1. Run the tests
-1. Destroy the container
+1. 启动容器并创建数据库
+1. 迁移schema
+1. 运行测试
+1. 销毁容器
 
-Each test suite will seed the database before all the test are run. After all the tests in the suite have finished, the data from all the tables will be dropped and the connection terminated.
+每个测试套件都会在所有测试运行前对数据库进行初始化，在套件中的所有测试完成后，所有表的数据将被丢弃，并终止连接。
 
-### The function to test
+### 要测试的函数
 
-The ecommerce application you are testing has a function which creates an order. This function does the following:
+你要测试的电子商务应用程序有一个创建订单的函数。这个函数做了以下工作:
 
-- Accepts input about the customer making the order
-- Accepts input about the product being ordered
-- Checks if the customer has an existing account
-- Checks if the product is in stock
-- Returns an "Out of stock" message if the product doesn't exist
-- Creates an account if the customer doesn't exist in the database
-- Create the order
+- 接受关于客户下订单的输入
+- 接受关于被订购的产品的输入
+- 检查客户是否有一个现有的账户
+- 检查该产品是否有库存
+- 如果产品不存在，返回一个 "缺货 "信息
+- 如果客户在数据库中不存在，则创建一个账户
+- 创建订单
 
-An example of how such a function might look can be seen below:
+以下为一个函数的例子:
 
 ```ts file=create-order.ts
 import prisma from '../client'
@@ -281,21 +281,21 @@ export async function createOrder(input: OrderInput) {
 }
 ```
 
-### The test suite
+### 测试套件
 
-The following tests will check if the `createOrder` function works as it should do. They will test:
+下面的测试将检查`createOrder`函数是否正常工作。测试如下:
 
-- Creating a new order with a new customer
-- Creating an order with an existing customer
-- Show an "Out of stock" error message if a product doesn't exist
+- 为一个新客户创建一个新的订单
+- 为现有客户创建一个订单
+- 如果产品不存在，显示一个 "缺货 "的错误信息
 
-Before the test suite is run the database is seeded with data. After the test suite has finished a [`deleteMany`](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference/#deletemany) <span class="api"></span> is used to clear the database of its data.
+在测试套件运行之前。数据库被注入数据，测试套件结束后，[`deleteMany`](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference/#deletemany) <span class="api"></span>被用来清除数据库中的数据。
 
 <Tip>
 
-Using `deleteMany` may suffice in situations where you know ahead of time how your schema is structured. This is because the operations need to be executed in the correct order according to how the model relations are setup.
+在你提前知道你的模式是如何结构的情况下，使用`deleteMany`可能就足够了。这是因为操作需要根据模型关系的设置，以正确的顺序执行。
 
-However, this doesn't scale as well as having a more generic solution that maps over your models and performs a truncate on them. For those scenarios and examples of using raw SQL queries see [Deleting all data with raw SQL / `TRUNCATE`](../../concepts/components/prisma-client/crud#deleting-all-data-with-raw-sql--truncate)
+然而，这并不像有一个更通用的解决方案那样，可以映射你的模型并对其执行截断。关于这些情况和使用原始SQL查询的例子，请看[用原始SQL/`TRUNCATE`删除所有数据](././concepts/components/prisma-client/crud#deleting-all-data-with-raw-sql--truncate)
 
 </Tip>
 
@@ -448,11 +448,11 @@ it("should show 'Out of stock' message if productId doesn't exit", async () => {
 })
 ```
 
-## Running the tests
+## 运行测试
 
-This setup isolates a real world scenario so that you can test your applications functionality against real data in a controlled environment.
+这种设置隔离了一个真实世界的场景，这样你就可以在一个受控的环境中针对真实数据测试你的应用程序的功能。
 
-You can add some scripts to your projects `package.json` file which will setup the database and run the tests, then afterwards manually destroy the container.
+你可以在你的项目的`package.json`文件中添加一些脚本，这些脚本将设置数据库并运行测试,之后再手动销毁容器。
 
 ```json file=package.json
   "scripts": {
@@ -463,10 +463,10 @@ You can add some scripts to your projects `package.json` file which will setup t
   },
 ```
 
-The `test` script does the following:
+`测试` 脚本做了以下工作:
 
-1. Runs `docker-compose up -d` to create the container with the Postgres image and database.
-1. Runs a migration on the database using your projects schema, this creates the tables in the container's database.
-1. Executes the tests.
+1. 运行`docker-compose up -d`来创建带有Postgres镜像和数据库的容器。
+1. 使用你的项目模式在数据库上运行一个迁移，这将在容器的数据库中创建表。
+1. 执行测试。
 
-Once you are satisfied you can run `yarn docker:down` to destroy the container, its database and any test data.
+一旦你感到满意，你可以运行`yarn docker:down`来销毁容器、其数据库和任何测试数据。

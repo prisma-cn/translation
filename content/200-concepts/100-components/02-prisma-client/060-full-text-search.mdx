@@ -1,0 +1,97 @@
+---
+title: '全文搜索'
+metaTitle: '全文搜索 (预览)'
+metaDescription: '此页面说明如何在字段中搜索文本。'
+preview: true
+---
+
+# 全文搜索 (Preview)
+
+Prisma Client 支持 Postgres 数据库的全文搜索 API。启用全文搜索后，你可以通过在数据库列中搜索文本向应用程序添加搜索功能。
+
+<Admonition type="info">
+
+**注意**: 全文搜索 **只能** 在 Postgres 数据库中使用
+
+</Admonition>
+
+## Enable 全文搜索
+
+全文搜索 API 仍在 **预览** 版中。你可以在 Prisma Schema 中启用 `fullTextSearch`：
+
+1. 在你的 schema 中更新 [`previewFeatures`](../preview-features) 块:
+
+   ```prisma
+   generator client {
+     provider        = "prisma-client-js"
+     previewFeatures = ["fullTextSearch"]
+   }
+   ```
+
+2. 生成 Prisma Client:
+
+   ```terminal copy
+   npx prisma generate
+   ```
+
+重新生成客户端后，在模型上创建的任何 `String` 字段上都会出现一个新的 `search` 字段。
+
+### 新的 <inlinecode>search<inlinecode> 字段示例
+
+```ts
+// 所有包含单词 cat 或 dog 的帖子。
+const result = await prisma.posts.findMany({
+  where: {
+    body: {
+      search: 'cat | dog',
+    },
+  },
+})
+
+// 包含 cat 和 dog 字样的所有帖子。
+const result = await prisma.posts.findMany({
+  where: {
+    status: 'Draft',
+    body: {
+      search: 'cat & dog',
+    },
+  },
+})
+```
+
+## 查询格式
+
+`search` 字段在后台使用数据库的本机查询功能。这意味着 Prisma Client [支持数据库支持的内容](https://www.postgresql.org/docs/12/functions-textsearch.html)。
+
+要了解查询格式是如何工作的，请考虑下面的文本：
+
+**"The quick brown fox jumps over the lazy dog"**
+
+以下是以下查询如何匹配该文本：
+
+| 查询                                   | 匹配? | 描述                         |
+| :-------------------------------------- | :----- | :---------------------------------- |
+| `fox & dog`                             | Yes    | 文本包含 fox 和 dog       |
+| `dog & fox`                             | Yes    | 文本包含 dog 和 fox       |
+| `dog & cat`                             | No     | 文本中没有 dog 和 cat        |
+| `!cat`                                  | Yes    | 文本中没有 cat        |
+| <inlinecode>fox &#124; cat</inlinecode> | Yes    | 文本包含 fox 或 cat        |
+| <inlinecode>cat &#124; pig</inlinecode> | No     | 文本中没有 cat 或 pig |
+| `fox <-> dog`                           | Yes    | 文本中 dog 紧随着 fox、         |
+| `dog <-> fox`                           | No     | 文本中 dog 不紧随着 fox  |
+
+## 添加索引
+
+要加快全文查询速度，应向数据库中添加索引。
+Prisma Migrate 目前不支持添加搜索索引，但你可以可以自己简单添加一个。
+
+```sql
+CREATE INDEX post_body_index ON posts USING GIN (body);
+```
+
+你可以像以前一样继续使用 Prisma Migrate，它将忽略索引，它并不关心。
+
+## 局限性
+
+- `search` 字段仅在 PostgreSQL 中受支持
+- 你需要自己管理索引。

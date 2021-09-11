@@ -9,9 +9,9 @@ preview: false
 
 区分大小写影响数据的 **过滤** 和 **排序**，并由你的 [数据库排序规则](#database-collation-and-case-sensitivity) 决定。根据你的设置，对数据进行排序和过滤会产生不同的结果：
 
-| 动作          | 区分大小写                               | 不区分大小写                             |
-| --------------- | -------------------------------------------- | -------------------------------------------- |
-| 升序排序  | `Apple`, `Banana`, `apple pie`, `banana pie` | `Apple`, `apple pie`, `Banana`, `banana pie` |
+| 动作           | 区分大小写                                   | 不区分大小写                                 |
+| -------------- | -------------------------------------------- | -------------------------------------------- |
+| 升序排序       | `Apple`, `Banana`, `apple pie`, `banana pie` | `Apple`, `apple pie`, `Banana`, `banana pie` |
 | 匹配 `"apple"` | `apple`                                      | `Apple`, `apple`                             |
 
 如果使用 **关系数据库连接器**，[Prisma Client](../) 将遵循你的数据库排序规则。使用 Prisma Client 支持 **不区分大小写** 过滤和排序的选项和建议取决于 [数据库提供程序](#options-for-case-insensitive-filtering)。
@@ -138,7 +138,7 @@ const users = await prisma.user.findMany({
 
 如果你严重依赖于不区分大小写的过滤，请考虑 [在 PostgreSQL 数据库中创建索引](https://www.postgresql.org/docs/current/indexes.html) 来提高性能：
 
-- 对于使用 `equals` 或 `not` 的 Prisma Client 查询 [创建表达式索引](https://www.postgresql.org/docs/current/indexes-expressional.html) 
+- 对于使用 `equals` 或 `not` 的 Prisma Client 查询 [创建表达式索引](https://www.postgresql.org/docs/current/indexes-expressional.html)
 - 对于使用 `startsWith`，`endsWith`，`contains`（在 PostgreSQL 中映射为 `LIKE` / `ILIKE`）的 Prisma Client 查询使用 `pg_trgm` 模块 [创建基于三元图的索引](https://www.postgresql.org/docs/12/pgtrgm.html#id-1.11.7.40.7）
 
 ### MySQL 提供程序
@@ -146,7 +146,6 @@ const users = await prisma.user.findMany({
 默认情况下，MySQL 使用 **不区分大小写的排序规则**。因此，默认情况下，使用 Prisma Client 和 MySQL 进行过滤不区分大小写。
 
 `mode: 'insensitive'` 属性不是必需的，因此在生成的 Prisma Client API 中不可用。
-
 
 #### 附加说明
 
@@ -173,10 +172,16 @@ MongoDB 使用正则表达式规则进行不区分大小写的过滤。
 
 默认情况下，SQLite 本身 [支持 ASCII 字符的不区分大小写的比较](https://www.sqlite.org/faq.html#q18). 因此，Prisma Client 不支持使用 SQLite 进行不区分大小写的过滤。
 
-要在每列的基础上对不区分大小写的过滤启用有限支持（仅限ASCII），请在定义表列时使用 `COLLATE NOCASE`：
+要在每列的基础上对不区分大小写的过滤启用有限支持（仅限 ASCII），请在定义表列时使用 `COLLATE NOCASE`：
 
 ```sql
 CREATE TABLE mytable (
     sample TEXT COLLATE NOCASE   /* 合并序列 NOCASE */
 );
 ```
+
+### Microsoft SQL Server 提供程序
+
+默认情况下，Microsoft SQL Server 使用 **不区分大小写的排序规则**。因此，默认情况下，使用 Prisma Client 和 Microsoft SQL Server 进行过滤时不区分大小写。
+
+`mode: 'insensitive'` 属性不是必需的，因此在生成的 Prisma Client API 中不可用。

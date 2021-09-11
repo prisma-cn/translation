@@ -26,6 +26,7 @@ console.log('Average age:' + aggregations._avg.age)
 ```
 
 你可以将聚合与过滤和排序结合起来。例如，以下查询返回用户的平均年龄：
+
 - 按 `age` 升序排列
 - 其中 `email` 包含 `prisma.io`
 - 仅限于 10 个用户
@@ -495,7 +496,6 @@ const usersWithCount = await prisma.user.findMany({
 ### 计算非 `null` 字段值
 
 在 [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) 和更高版本中，你可以计算所有记录以及非 `null` 字段值的所有实例。以下查询返回的计数为：
-
 
 - 所有 `User` 记录 (`_all`)
 - 所有 非 `null` `name` 值 (不是去重的值, 仅仅它们是非 `null` 的)

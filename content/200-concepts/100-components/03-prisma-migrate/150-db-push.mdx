@@ -7,44 +7,44 @@ codeStyle: true
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-The Migration Engine used by `db push` does not currently support the [MongoDB connector](../../database-connectors/mongodb).
+**未支持 MongoDB** <br />
+`db push`使用的迁移引擎暂不支持[MongoDB 连接](../../database-connectors/mongodb)。
 
 </Admonition>
 
-[`db push`](../../../reference/api-reference/command-reference#db-push) <span class="api"></span> uses the same engine as Prisma Migrate to synchronize your Prisma schema with your database schema, and is best suited for **schema prototyping**. The `db push` command:
+[`db push`](../../../reference/api-reference/command-reference#db-push) <span class="api"></span> 使用与 Prisma Migrate 相关的引擎来同步 Prisma 架构和数据库架构，最适合于**架构原型**。db push 命令:
 
-1. Introspects the database to infer and executes the changes required to make your database schema reflect the state of your Prisma schema.
-2. By default, after changes have been applied to the database schema, generators are triggered (for example, Prisma Client). You do not need to manually invoke `prisma generate`.
-3. If `db push` anticipates that the changes could result in data loss, it will:
+1. 检查数据库，以推断和执行所需的更改，使数据库架构反映 Prisma 架构的状态。
+2. 默认情况下，将更改应用到数据库架构后会触发生成器 (例如，Prisma Client)。您不需要手动调用`Prisma生成`。
+3. 如果 `db push` 预测到更改可能导致数据丢失，它会:
 
-   - Throw an error
-   - Require the `--accept-data-loss` option if you still want to make the changes
+   - 抛出一个错误
+   - 如果仍要进行更改，则需要加上`--accept-data-loss`选项
 
-> **Note**: `db push` does not interact with or rely on migrations. The migrations table will not be updated, and no migration files will be generated.
+> **请注意**: `db push` 不与迁移交互或依赖迁移。不会更新迁移表，也不会生成迁移文件。
 
 </TopBlock>
 
-## Choosing <inlinecode>db push</inlinecode> or Prisma Migrate
+## 选择 <inlinecode>db push</inlinecode> 还是 Prisma Migrate
 
-`db push` works well if:
+`db push` 在以下情况下运行良好:
 
-- You want to **quickly prototype and iterate** on schema design locally without the need to deploy these changes to other environments such as other developers, or staging and production environments.
-- You are prioritizing reaching a **desired end-state** and not the changes or steps executed to reach that end-state (there is no way to preview changes made by `db push`)
-- You do not need to control how schema changes impact data. There is no way to orchestrate schema and data migrations - if `db push` anticipates that changes will result in data loss, you can either accept data loss with the `--accept-data-loss` option or stop the process - there is no way to customize the changes.
+- 您希望在本地**快速地对方案进行原型设计和迭代**，而不需要将这些更改部署到其他环境 (如其他开发人员或试运行或生产环境)。
+- 您正在对达到**所需的最终状态**进行优先级排序，而不是为达到该最终状态而执行的更改或步骤 (无法预览 `db push` 所做的更改)。
+- 您不需要控制架构变化影响数据，没有办法协调架构和数据迁移，如果 `db push` 预期更改将导致数据丢失，您可以使用 `--accept-data-loss` 选项接受数据丢失，也可以停止该过程，但无法自定义更改。
 
-See [Schema prototyping with `db push`](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span> for an example of how to use `db push` in this way.
+请参阅[使用 `db push` 进行架构原型设计](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span> ，这是一个如何以这种方式使用 `db push` 的例子。
 
-`db push` is **not recommended** if:
+如果出现以下情况，**不推荐**使用 `db push`:
 
-- You want to replicate your schema changes in other environments without losing data. You can use `db push` for prototyping, but you should use migrations to commit the schema changes and apply these in your other environments.
-- You want fine-grained control over how the schema changes are executed - for example, [renaming a column instead of dropping it and creating a new one](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#renaming-a-field).
-- You want to keep track of changes made to the database schema over time. `db push` does not create any artifacts that allow you to keep track of these changes.
-- You want the schema changes to be reversible. You can use `db push` again to revert to the original state, but this might result in data loss.
+- 您希望在不丢失数据的情况下在环境中复制更改的内容。您可以使用 `db push` 命令进行原型设计，但是，您应该使用迁移来提交架构更改，并在其他环境中应用这些。
+- 您需要对如何执行架构更改进行细粒度的控制，例如，[重命名列，而不是丢弃它并创建一个新的](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#renaming-a-field)。
+- 您希望跟踪一段时间内对数据库架构所做的更改。 `db push`  不允许您创建任何文件跟踪这些变化。
+- 您希望架构更改是可逆的。可以再次使用  `db push` 来恢复到原来的状态，但这可能会导致数据丢失。
 
-## Can I use Prisma Migrate and <inlinecode>db push</inlinecode> together?
+## 可以同时使用 Prisma Migrate 与 <inlinecode>db push</inlinecode> 吗？
 
-Yes, you can [use `db push` and Prisma Migrate together in you development workflow](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span>. For example, you can:
+是的，您可以在[开发工作中同时使用 `db push` 与 Prisma Migrate](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span>。例如，您可以:
 
-- Use `db push` to prototype a schema at the start of a project and initialize a migration history when you are happy with the first draft
-- Use `db push` to prototype a change to an existing schema, then run `prisma migrate dev` to generate a migration from your changes (you will be asked to reset)
+- 在项目开始时使用 `db push` 对架构进行原型设计，并在您对初稿感到满意时初始化迁移历史记录。
+- 使用 `db push` 来改变现有的原型架构，然后运行`prisma migrate dev`命令，它会根据您的更改生成迁移 (系统会要求您重置)。

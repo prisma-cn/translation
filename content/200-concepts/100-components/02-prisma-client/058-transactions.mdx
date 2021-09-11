@@ -89,11 +89,8 @@ const [userList, updateUser] = await prisma.$transaction([
 
 ### 交互式事务（在预览版）
 
-有时，你需要更多地控制事务中执行的查询。
-
-当一个查询的结果依赖于另一个查询，并且希望在单个事务中运行两个查询时，通常使用交互式事务。
-
-为了支持此用例及更多，你可以通过在 Prisma Schema 的生成器中添加 `interactiveTransactions` 来启用交互式事务：
+有时，你需要更多地控制事务中执行的查询。交互式事务旨在为你提供一个解决方案。
+你可以通过在 Prisma Schema 的生成器中添加 `interactiveTransactions` 来启用交互式事务：
 
 ```prisma
 generator client {
@@ -104,45 +101,72 @@ generator client {
 
 然后你可以将异步函数传递到 [`$transaction`](../../../guides/performance-and-optimization/prisma-client-transactions-guide#transaction-api)。
 
-以下是在线购买电影票的示例。在这个例子中，我们真的不想把同一张票卖两次：
+## 范例
+
+假设你正在构建一个网上银行系统。要执行的操作之一是从一个人向另一个人汇款。
+
+作为经验丰富的开发商，我们希望确保在转让期间，
+
+- 数量并没有消失
+- 数额没有翻倍
+
+这是交互式事务的一个很好的用例，因为我们需要在写入之间执行逻辑来检查平衡。
+
+在下面的示例中，Alice 和 Bob 的帐户中各有 100 美元。如果他们试图发送比他们有更多的钱，转让将被拒绝。
+
+Alice 预计能够以 100 美元进行一次转账，而另一次转账将被拒绝。这将导致 Alice 得到 0 美元，Bob 得到 200 美元。
 
 ```tsx
-import { Ticket } from 'prisma'
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
-const userEmail = 'alice@prisma.io'
-const movieName = 'October Sky'
-
-// 开始一个事务
-const ticket: Ticket = await prisma.$transaction(async (prisma) => {
-  // 找到一个可用的电影票
-  const availableTicket = await prisma.ticket.findFirst({
-    where: {
-      claimedBy: null,
-      movie: {
-        name: movieName,
+async function transfer(from: string, to: string, amount: number) {
+  return await prisma.$transaction(async (prisma) => {
+    // 1. 汇款人递减余额。
+    const sender = await prisma.account.update({
+      data: {
+        balance: {
+          decrement: amount,
+        },
       },
-    },
+      where: {
+        email: from,
+      },
+    })
+    // 2. 验证汇款人的余额是否未低于零。
+    if (sender.balance < 0) {
+      throw new Error(`${from} doesn't have enough to send ${amount}`)
+    }
+    // 3. 按金额增加接收人的余额
+    const recipient = prisma.account.update({
+      data: {
+        balance: {
+          increment: amount,
+        },
+      },
+      where: {
+        email: to,
+      },
+    })
+    return recipient
   })
+}
 
-  // 如果没有可用的电影票抛出一个异常
-  if (!availableTicket) {
-    // 事务将被回滚
-    throw new Error(`Oh no! ${movieName} is all booked.`)
-  }
+async function main() {
+  // 这次转账是成功的
+  await transfer('alice@prisma.io', 'bob@prisma.io', 100)
+  // 转账失败，因为 Alice 的帐户中没有足够的资金
+  await transfer('alice@prisma.io', 'bob@prisma.io', 100)
+}
 
-  // 索取票据、提交事务并返回结果
-  return prisma.ticket.update({
-    data: {
-      claimedBy: userEmail,
-    },
-    where: {
-      id: availableTicket.id,
-    },
+main()
+  .catch(console.error)
+  .finally(() => {
+    prisma.$disconnect()
   })
-})
 ```
 
-在上面的示例中，`findFirst` 和 `update` 查询都在数据库事务中运行。当应用程序到达函数末尾时，事务将 **提交** 到数据库。
+在上面的示例中，两个 `update` 查询都在数据库事务中运行。当应用程序到达函数末尾时，事务 **提交** 到数据库。
 
 如果应用程序在此过程中遇到错误，异步函数将抛出异常并自动 **回滚** 事务。
 
@@ -158,7 +182,7 @@ try {
 }
 ```
 
-此外，事务 API 支持具有以下配置选项的第二个参数：
+交互式事务 API 有第二个参数，具有以下配置选项：
 
 - `maxWait`:Prisma Client 等待从数据库获取事务的最长时间。默认值为 2 秒。
 
@@ -187,13 +211,21 @@ await prisma.$transaction(
 
 </Admonition>
 
-## 事务隔离级别
+## 局限性
+
+### 事务隔离级别
 
 当前无法在 Prisma 级别配置事务隔离级别，Prisma 也未显式设置事务隔离级别。
 
 - [PostgreSQL 中的默认事务隔离级别](https://www.postgresql.org/docs/9.3/runtime-config-client.html#GUC-DEFAULT-TRANSACTION-ISOLATION)
-- [SQL Server 中的默认事务隔离级别](https://docs.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-ver15)
+- [Microsoft SQL Server 中的默认事务隔离级别](https://docs.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-ver15)
 - [MySQL 中的默认事务隔离级别](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html)
+
+### 并发交互事务可能会超时
+
+交互式事务存在一个问题，即同一行上的多个并发事务可能导致超时。
+
+我们计划很快解决这个限制。跟进 [本期](https://github.com/prisma/prisma/issues/8707) 更新。
 
 ## 加入 GitHub 上的对话
 

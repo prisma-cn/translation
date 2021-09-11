@@ -1,5 +1,5 @@
 ---
-title: 'Start from scratch with SQL Server'
+title: '从头开始使用SQL Server'
 langSwitcher: ['typescript', 'node']
 techMetaTitles:
   [
@@ -24,43 +24,43 @@ techMetaDescriptions:
 
 <TopBlock>
 
-Follow this tutorial to use Prisma with a Microsoft SQL Server database.
+跟着本教程，学会将 Prisma 与 Microsoft SQL Server 数据库配合使用。
 
 </TopBlock>
 
-## Prerequisites
+## 前提条件
 
-In order to successfully complete this guide, you need:
+为了成功完成本指南，您需要:
 
-- [Node.js](https://nodejs.org/en/) installed on your machine
-- A [Microsoft SQL Server](https://docs.microsoft.com/en-us/sql/?view=sql-server-ver15) database
+- 将[Node.js](https://nodejs.org/en/)安装在您的机器上
+- [Microsoft SQL Server](https://docs.microsoft.com/en-us/sql/?view=sql-server-ver15)数据库
 
   - [Microsoft SQL Server on Linux for Docker](sql-server-docker)
   - [Microsoft SQL Server on Windows (local)](sql-server-local)
 
-Make sure you have your database [connection URL](sql-server-connection-string) (including authentication credentials) available.
+确保数据库[连接 URL](sql-server-connection-string)(包括身份验证凭据)可用。
 
-## Create project setup
+## 创建项目设置
 
 <SwitchTech technologies={['typescript', '*']}>
 
-1. Create a project directory and navigate into it:
+1. 创建一个项目目录并导航到其中:
 
    ```terminal copy
    mkdir hello-prisma
    cd hello-prisma
    ```
 
-1. Initialize a TypeScript project and add the Prisma CLI as a development dependency:
+1. 初始化 TypeScript 项目并将 Prisma CLI 添加为开发依赖项:
 
    ```terminal copy
    npm init -y
    npm install prisma typescript ts-node @types/node --save-dev
    ```
 
-This creates a `package.json` with an initial setup for your TypeScript app.
+这将为您的 TypeScript 应用创建一个带有初始设置的 `package.json`。
 
-1. Next, create a `tsconfig.json` file and add the following configuration to it:
+1. 接下来，创建一个 `tsconfig.json` 文件，并向其中添加以下配置:
 
    ```json file=tsconfig.json copy
    {
@@ -74,67 +74,67 @@ This creates a `package.json` with an initial setup for your TypeScript app.
    }
    ```
 
-1. Invoke the Prisma CLI by prefixing it with `npx` - confirm that you can see the Prisma help screen:
+1. 通过前缀 `npx` 调用 Prisma CLI — 确认您可以看到 Prisma 帮助:
 
    ```terminal
    npx prisma
    ```
 
-1. Set up your Prisma project by creating your [Prisma schema](../../../components/prisma-schema) file with the following command:
+1. 使用以下命令创建[Prisma schema](../../../components/prisma-schema)文件，以设置您的 Prisma 项目:
 
    ```terminal copy
    npx prisma init
    ```
 
-   This command created a new directory called `prisma` with the following contents:
+   该命令创建了一个名为 `prisma` 的新目录，其内容如下:
 
-   - `schema.prisma`: The Prisma schema with your database connection and the Prisma Client generator
-   - `.env`: A [dotenv](https://github.com/motdotla/dotenv) file for defining environment variables (used for your database connection)
+   - `schema.prisma`: 具有数据库连接和 Prisma Client 生成器的 Prisma 架构
+   - `.env`: 用于定义环境变量的[dotenv](https://github.com/motdotla/dotenv)文件(主要用于数据库连接)
 
 </SwitchTech>
 
 <SwitchTech technologies={['node', '*']}>
 
-1. Create a project directory and navigate into it:
+1. 创建一个项目目录并导航到其中:
 
    ```terminal copy
    mkdir hello-prisma
    cd hello-prisma
    ```
 
-1. Initialize a Node.js project and add the Prisma CLI as a development dependency:
+1. 初始化 Node.js 项目，并将 Prisma CLI 添加为开发依赖：
 
    ```terminal copy
    npm init -y
    npm install prisma --save-dev
    ```
 
-This creates a `package.json` with an initial setup for a Node.js app.
+这将为您的 Node.js 应用创建一个带有初始设置的 `package.json`。
 
-1. Invoke the Prisma CLI by prefixing it with `npx` - confirm that you can see the Prisma help screen:
+1. 通过前缀 `npx` 调用 Prisma CLI - 确认您可以看到 Prisma 帮助:
 
    ```terminal
    npx prisma
    ```
 
-1. Set up your Prisma project by creating your [Prisma schema](../../../components/prisma-schema) file with the following command:
+1. 使用以下命令创建[Prisma schema](../../../components/prisma-schema)文件，以设置您的 Prisma 项目:
 
    ```terminal copy
    npx prisma init
    ```
 
-   This command created a new directory called `prisma` with the following contents:
+   该命令创建了一个名为 `prisma` 的新目录，其内容如下:
 
-   - `schema.prisma`: The Prisma schema with your database connection and the Prisma Client generator
-   - `.env`: A [dotenv](https://github.com/motdotla/dotenv) file for defining environment variables (used for your database connection)
+   - `schema.prisma`: 具有数据库连接和 Prisma Client 生成器的 Prisma schema
+   - `.env`: 用于定义环境变量的[dotenv](https://github.com/motdotla/dotenv)文件(主要用于数据库连接)
 
 </SwitchTech>
 
-## Connect your database
+## 连接您的数据库
 
-To connect to your Microsoft SQL Server database:
+要连接到您的 Microsoft SQL Server 数据库，请执行以下操作:
 
-1. Add the following line to the `client` block in your schema file to enable the Microsoft SQL Server Preview:
+1. 将以下行添加到架构文件中的 `client` 块中，以启用 Microsoft SQL Server 预览:
 
    ```prisma file=prisma/schema.prisma highlight=3;normal
    generator client {
@@ -143,7 +143,7 @@ To connect to your Microsoft SQL Server database:
    }
    ```
 
-1. Set the `provider` and `url` fields of the `datasource` block in your Prisma schema as shown:
+1. 在 Prisma 架构中设置 `datasource` 块的 `provider` 和 `url` 字段，如下所示:
 
    ```prisma file=prisma/schema.prisma
    datasource db {
@@ -152,19 +152,19 @@ To connect to your Microsoft SQL Server database:
    }
    ```
 
-1. Define the `DATABASE_URL` [environment variable](../../../components/prisma-schema#accessing-environment-variables-from-the-schema) in the `prisma/.env` file - this is the connection URL to your database.
+1. 在 `prisma/.env` 文件中定义 `DATABASE_URL` [环境变量](../../../components/prisma-schema#accessing-environment-variables-from-the-schema)。这是数据库的连接 URL。
 
-   The following example connection URL [uses SQL authentication](sql-server-local#enable-authentication-with-sql-logins-optional), but there are [other ways to format your connection URL](sql-server-connection-string):
+   下面的示例是连接 URL [使用的是 SQL 身份验证](sql-server-local#enable-authentication-with-sql-logins-optional)，但也有[其他连接 URL 的方法](sql-server-connection-string):
 
    ```bash file=prisma/.env
    DATABASE_URL="sqlserver://localhost:1433;database=mydb;user=sa;password=r@ndomP@$$w0rd;trustServerCertificate=true"
    ```
 
-1. Adjust the connection URL to match your setup - see [Microsoft SQL Server connection URL](sql-server-connection-string) for more information.
+1. 调整连接 URL 以匹配您的设置 - 有关详细信息，请参阅[Microsoft SQL Server 连接 URL](sql-server-connection-string)。
 
-   > Make sure TCP/IP connections are enabled via [SQL Server Configuration Manager](https://docs.microsoft.com/en-us/sql/relational-databases/sql-server-configuration-manager) to avoid `No connection could be made because the target machine actively refused it. (os error 10061)`
+   > 确保通过[SQL Server 配置管理器](https://docs.microsoft.com/en-us/sql/relational-databases/sql-server-configuration-manager)启用了 TCP/IP 连接，`以避免因为目标计算机主动拒绝而无法建立连接。(操作系统错误10061)`
 
-1. Introspect your database to validate your connection URL - the CLI will throw a `P4001` error because your database is empty:
+1. 检查您的数据库来验证连接 URL - CLI 将抛出一个 `P4001` 错误，因为您的数据库是空的:
 
   <CodeWithResult>
 
@@ -191,24 +191,24 @@ To connect to your Microsoft SQL Server database:
 
   </CodeWithResult>
 
-## Create database tables with SQL
+## 用 SQL 创建数据库表
 
-To create database tables, you can either:
+要创建数据库表，您可以执行以下操作:
 
-- Use the `sqlcmd` command line tool (Docker) OR
-- Use SQL Server Management Studio (Windows only)
+- 使用 `sqlcmd` 命令行工具 (Docker)
+- 使用 SQL Server Management Studio (仅限 Windows)
 
 <Tip>
 
-Alternatively, try [DataGrip](https://www.jetbrains.com/datagrip/), which supports multiple database engines.
+或者尝试[DataGrip](https://www.jetbrains.com/datagrip/)，它支持多个数据库引擎。
 
 </Tip>
 
-### Using `sqlcmd` with Docker
+### 使用 `sqlcmd` 与 Docker
 
-To create tables using the `sqlcmd`:
+使用 `sqlcmd` 创建表:
 
-1. Paste the following SQL query into a file named `create.sql`, replacing `USE sample` with the name of your database - for example, `USE myDatabase`:
+1. 将以下 SQL 查询粘贴到名为`create.sql`的文件中，再将`USE sample`替换为您的数据库名称，例如`USE myDatabase`:
 
    ```sql file=schema.sql copy
    USE sample
@@ -239,33 +239,33 @@ To create tables using the `sqlcmd`:
    );
    ```
 
-1. In your terminal, navigate to the folder with the `create.sql` file.
+1. 在您的终端中，导航到包含 `create.sql` 文件的文件夹。
 
-1. Run the following command (change `sql1` to the name of your container) to copy the `create.sql` from your local machine to your container's root folder:
+1. 运行以下命令 (将 `sql1` 改为容器名称)，将 `create.sql` 从本地复制到容器的根文件夹中：
 
    ```
    docker cp create.sql sql1:/
    ```
 
-1. Run the following command to start an interactive bash shell, replacing `sql1` with the name of your Docker container:
+1. 运行以下命令启动交互式 bash shell，将 `sql1` 替换为您的 Docker 容器名称：
 
    ```terminal
    docker exec -it sql1 "bash"
    ```
 
-1. Use the `sqlcmd` tool to run the `create.sql` script, replacing `mypassword` with your password:
+1. 使用 `sqlcmd` 工具运行 `create.sql` 脚本，将 `mypassword` 替换为您的密码：
 
    ```terminal
    /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "mypassword" -i create.sql
    ```
 
-1. To confirm that your tables were created, log in to `sqlcmd`:
+1. 要确认您的表是否已创建，请登录`sqlcmd`:
 
    ```
    /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "mypassword"
    ```
 
-1. Run the following command (you may need to copy-paste each line):
+1. 运行以下命令 (您可能需要复制粘贴每一行) :
 
   <CodeWithResult>
 
@@ -296,17 +296,17 @@ To create tables using the `sqlcmd`:
 
     </CodeWithResult>
 
-### Using SQL Server Management Studio (Windows only)
+### 使用 SQL Server Management Studio (仅限 Windows)
 
-To create tables SQL Server Management Studio:
+要使用 SQL Server Management Studio 创建表，请执行以下操作:
 
-1. Log in to SQL Server Management Studio.
+1. 登录到 SQL Server Management Studio。
 
-1. Click the **New Query** button:
+1. 单击 **New Query** 按钮:
 
-![The New Query button in SQL Server Management Studio](../../../../doc-images/new-query.png)
+![SQL Server Management Studio中的[New Query]按钮](../../../../doc-images/new-query.png)
 
-1. Change `USE sample` to use name of your database (for example, `USE myDatabase`) and paste it into the query window:
+1. 将 `USE sample` 改为您的数据库名称(例如 `USE myDatabase`)，粘贴到查询窗口中:
 
    ```sql file=schema.sql copy
    | USE sample
@@ -337,7 +337,7 @@ To create tables SQL Server Management Studio:
    );
    ```
 
-1. Click the **Execute** button or press **F5** on your keyboard to execute the query - you should see the following message:
+1. 点击 **Execute** 按钮或按键盘上的 **F5** 执行查询 - 您将看到以下消息:
 
    ```
    Commands completed successfully.
@@ -345,19 +345,19 @@ To create tables SQL Server Management Studio:
    Completion time: 2020-10-25T10:55:16.0721284+01:00
    ```
 
-1. Expand the database node in the Object Explorer to confirm that your tables were created.
+1. 在对象资源管理器中展开数据库节点以确认已创建的表。
 
-## Introspect your database with Prisma
+## 使用 Prisma 检查您的数据库
 
-As a next step, you will introspect your database. The result of the introspection will be a [data model](../../../components/prisma-schema/data-model) inside your Prisma schema.
+下一步，您将检查数据库。检查的结果将是 Prisma 架构中的[数据模型](../../../components/prisma-schema/data-model)。
 
-1. Run the following command to introspect your database:
+1. 运行以下命令检查数据库:
 
    ```terminal copy
    npx prisma db pull
    ```
 
-2. Open `prisma.schema` to see your data model:
+2. 打开 `prisma.schema` 查看您的数据模型:
 
    ```prisma file=prisma/schema.prisma
    model Post {
@@ -386,9 +386,9 @@ As a next step, you will introspect your database. The result of the introspecti
    }
    ```
 
-### Adjust the data model
+### 调整数据模型
 
-The introspected model contains auto-generated relation fields that do not adhere to Prisma's naming convention:
+检查的模型包含着自动生成的关系字段，这些字段不符合 Prisma 的命名约定:
 
 ```prisma file=schema.prisma highlight=5,6;normal
 model User {
@@ -400,9 +400,9 @@ model User {
 }
 ```
 
-Field names affect the shape of the Prisma Client - for example, a property named `Post` that it is a _list_ of posts. To adjust the data model:
+字段名会影响 Prisma Client 的形状 - 例如，一个名为 `Post` 的属性，它是一个 posts _列表_。调整数据模型:
 
-1. Change the field names as shown:
+1. 更改字段名称，如下所示:
 
    ```prisma file=prisma/schema.prisma highlight=7,14,22,23;edit
    model Post {
@@ -431,31 +431,31 @@ Field names affect the shape of the Prisma Client - for example, a property name
    }
    ```
 
-1. Introspect again to confirm that Prisma does not overwrite your manual changes.
+1. 再次检查，确认 Prisma 没有覆盖您的手动更改。
 
-## Install and generate Prisma Client
+## 安装和生成 Prisma Client
 
-Prisma Client is an auto-generated, type-safe query builder based on your data model. To get started with Prisma Client:
+Prisma Client 是基于您的数据模型自动生成的，且类型安全的查询构建器。要开始使用 Prisma Client，请执行以下操作：
 
-1. Install the `@prisma/client` package:
+1. 安装 `@prisma/client` 包:
 
    ```terminal copy
    npm install @prisma/client
    ```
 
-1. Run the following command to generate your Prisma Client:
+1. 运行以下命令生成 Prisma Client:
 
    ```terminal copy
    npx prisma generate
    ```
 
-`prisma generate` reads your Prisma schema and generates your Prisma Client library into a folder named `.prisma/client`, which is referenced by `node_modules/@prisma/client`.
+`prisma generate` 会读取 Prisma 架构，并将 Prisma Client 库生成到名为 `.prisma/client` 的文件夹中，它会被 `node_modules/@prisma/client` 引用。
 
-## Use the Prisma Client to read and write data
+## 使用 Prisma Client 读取和写入数据
 
 <SwitchTech technologies={['typescript', '*']}>
 
-1. Create a file named `index.ts` and add the following sample code:
+1. 创建一个名为 `index.ts` 的文件，并添加以下示例代码:
 
    ```ts
    import { PrismaClient } from '@prisma/client'
@@ -495,13 +495,13 @@ Prisma Client is an auto-generated, type-safe query builder based on your data m
      })
    ```
 
-1. Run the code with the following command:
+1. 通过以下命令运行代码:
 
    ```terminal
    npx ts-node index.ts
    ```
 
-   You should see the following output:
+   应该会看到以下输出:
 
    ```js
    [
@@ -518,18 +518,18 @@ Prisma Client is an auto-generated, type-safe query builder based on your data m
        createdAt: 2020-10-26T08:24:10.966Z,
        content: 'A tutorial in progress!',
        published: false,
-       authorId: 1
+       authorId: 3
      }
    ]
    ```
 
-1. Change `email: "alice@prisma.io"` to another email address and run the code again to create another user and list of posts.
+1. 将 `email: "alice@prisma.io"` 更改为另一个电子邮箱地址，然后再次运行代码以创建另一个用户和 posts 列表。
 
 </SwitchTech>
 
 <SwitchTech technologies={['node', '*']}>
 
-1. Create a file named `index.js` and add the following sample code:
+1. 创建名为 `index.js` 的文件，并添加以下示例代码：
 
    ```js
    const { PrismaClient } = require('@prisma/client')
@@ -569,13 +569,13 @@ Prisma Client is an auto-generated, type-safe query builder based on your data m
      })
    ```
 
-1. Run the code with the following command:
+1. 通过以下命令运行代码:
 
    ```terminal
    node index.js
    ```
 
-   You should see the following output:
+   应该会看到以下输出:
 
    ```js
    [
@@ -597,6 +597,6 @@ Prisma Client is an auto-generated, type-safe query builder based on your data m
    ]
    ```
 
-1. Change `email: "alice@prisma.io"` to another email address and run the code again to create another user and list of posts.
+1. 将 `email: "alice@prisma.io"` 更改为另一个电子邮箱地址，然后再次运行代码以创建另一个用户和 posts 列表。
 
 </SwitchTech>
