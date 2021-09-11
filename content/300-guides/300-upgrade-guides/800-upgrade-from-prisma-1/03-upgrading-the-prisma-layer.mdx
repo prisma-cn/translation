@@ -1,65 +1,62 @@
 ---
-title: 'Upgrading the Prisma layer'
+title: '升级 Prisma 层'
 # metaTitle: 'Upgrading the Prisma layer to Prisma 2'
 # metaDescription: 'Learn how to upgrade the Prisma layer to Prisma 2 and create your Prisma schema.'
 dbSwitcher: ['postgres', 'mysql']
 techMetaTitles:
   [
-    { name: 'mysql', value: 'Upgrading the Prisma layer to Prisma 2 | MySQL' },
-    {
-      name: 'postgres',
-      value: 'Upgrading the Prisma layer to Prisma 2 | PostgreSQL',
-    },
+    { name: 'mysql', value: '升级 Prisma 层至 Prisma 2 | MySQL' },
+    { name: 'postgres', value: '升级 Prisma 层至 Prisma 2 | PostgreSQL' },
   ]
 techMetaDescriptions:
   [
     {
       name: 'mysql',
-      value: 'Learn how to upgrade the Prisma layer to Prisma 2 and create your Prisma schema with MySQL',
+      value: '学习在 MySQL 中如何升级 Prisma 层至 Prisma 2 并创建 Prisma 模型',
     },
     {
       name: 'postgres',
-      value: 'Learn how to upgrade the Prisma layer to Prisma 2 and create your Prisma schema with PostgreSQL',
+      value: '学习在 PostgreSQL 中如何升级 Prisma 层至 Prisma 2 并创建 Prisma 模型',
     },
   ]
 ---
 
-## Overview
+## 概述
 
-This page explains the first step of your upgrade process: Taking your Prisma 1 configuration and upgrading it to Prisma 2. Concretely, you will learn how to:
+本页介绍了升级过程的第一步：将 Prisma 1 配置升级到 Prisma 2。具体而言，您将学习如何：
 
-1. Add the Prisma 2 CLI as a development dependency
-1. Create your Prisma 2 schema
-1. Determine your connection URL and connect to your database
-1. Introspect your database (that was so far managed with Prisma 1)
-1. Use the [Prisma Upgrade CLI](./how-to-upgrade#prisma-upgrade-cli) to resolve the [schema incompatibilities](./schema-incompatibilities-postgres) in the new Prisma 2 data model
-1. Install and generate Prisma Client
+1. 添加 Prisma 2 CLI 作为开发依赖
+1. 创建 Prisma 2 模型
+1. 确定连接 URL 并连接到数据库
+1. 内省数据库（到目前为止，这是由 Prisma 1 管理的）
+1. 使用 [Prisma Upgrade CLI](./how-to-upgrade#prisma-upgrade-cli) 来解决新 Prisma 2 数据模型的[模型不兼容](./schema-incompatibilities-postgres)问题
+1. 安装并生成 Prisma Client
 
-Once done with these steps, you can move on to the next guide that explains how you can upgrade the application layer to use Prisma Client for your database queries.
+完成这些步骤后，您可以继续阅读下一个指南，该指南解释了如何升级应用程序层以使用 Prisma Client 进行数据库查询。
 
-> **Note**: During the upgrade process it can be helpful to get a graphical view on your database. It is therefore recommended to use a graphical database client to connect to your database, such as [TablePlus](https://tableplus.com/) or [Postico](https://eggerapps.at/postico/).
+> 注意：在升级过程中，获取数据库的图形视图可能会有帮助。因此，建议使用图形数据库客户端连接到数据库，如 [TablePlus](https://tableplus.com/) 或 [Postico](https://eggerapps.at/postico/)。
 
-## 1. Install Prisma 2 CLI
+## 1. 安装 Prisma 2 CLI
 
-The Prisma 2 CLI is available as the [`prisma`](https://www.npmjs.com/package/prisma) package on npm and is invoked via the `prisma` command.
+Prisma 2 CLI 作为 [`prisma`](https://www.npmjs.com/package/prisma) NPM 包已可用，通过 `prisma` 命令调用。
 
-Note that the former `prisma` command for Prisma 1 has been renamed to `prisma1`. You can learn more about this [here](https://www.prisma.io/blog/prisma-2-beta-b7bcl0gd8d8e/#renaming-the-prisma2-cli).
+请注意，prisma 1 以前的 `prisma` 命令已重命名为 `prisma1`。了解更多请参考[这里](https://www.prisma.io/blog/prisma-2-beta-b7bcl0gd8d8e/#renaming-the-prisma2-cli)。
 
-You can install the Prisma 2 CLI in your Node.js project as follows (be sure to invoke this command in the directory where your `package.json` is located):
+你可以参考如下内容在你的 Node.js 项目中安装 Prisma 2 CLI （确保在 `package.json` 所在的目录中调用此命令）：
 
 ```terminal copy
 npm install prisma --save-dev
 ```
 
-> **Note**: With Prisma 1, it was usually recommended to install the CLI globally. We now recommend to [install the Prisma CLI locally](../../../concepts/components/prisma-cli/installation#local-installation-recommended) to prevent version conflicts.
+> 注意：对于 Prisma 1，通常建议全局安装 CLI。 我们现在推荐[本地化安装 Prisma CLI](../../../concepts/components/prisma-cli/installation#local-installation-recommended) 以防止版本冲突。
 
-You can now use the local installation of the `prisma` CLI by prefixing it with `npx`:
+现在，您可以在其命令前加上 `npx` 使用 `prisma` CLI 的本地化安装：
 
 ```terminal
 npx prisma
 ```
 
-If you're upgrading your entire project [all at once](./how-to-upgrade#upgrade-strategies), you can now also uninstall the Prisma 1 CLI (otherwise expand below):
+如果你要[一次性](./how-to-upgrade#upgrade-strategies)升级整个项目, 那么你还可以现在卸载 Prisma 1 CLI（否则，请展开下面）：
 
 ```terminal
 # remove global installation
@@ -70,9 +67,9 @@ npm uninstall prisma
 ```
 
 <br />
-<details><summary>Expand if you want to keep using your Prisma 1 CLI side-by-side</summary>
+<details><summary>如果要继续并排使用 Prisma 1 CLI，请展开</summary>
 
-If you want to keep using the Prisma 1 CLI, it is recommend to remove your global installation of it and add the `prisma1` CLI as a development dependency:
+如果要继续使用 Prisma 1 CLI，建议删除它的全局安装，并将 `prisma1` CLI 添加为开发依赖项：
 
 ```terminal
 # installs v1.34 of the Prisma 1 CLI
@@ -80,13 +77,13 @@ npm uninstall -g prisma
 npm install prisma1 --save-dev
 ```
 
-You can now invoke it as follows:
+现在可以按如下方式调用它：
 
 ```terminal
 npx prisma1
 ```
 
-Note that if you need a CLI version smaller than 1.34 (e.g. 1.30), you can install it as follows:
+请注意，如果需要小于 1.34（例如 1.30）的 CLI 版本，可以按如下方式安装：
 
 ```terminal
 # installs v1.30 of the Prisma 1 CLI
@@ -94,7 +91,7 @@ npm uninstall -g prisma@1.30
 npm install prisma@1.30 --save-dev
 ```
 
-You can now invoke it as follows:
+现在可以按如下方式调用它：
 
 ```terminal
 npx prisma
@@ -102,36 +99,36 @@ npx prisma
 
 </details>
 
-## 2. Create your Prisma 2 schema
+## 2. 创建 Prisma 2 模型
 
-For this guide, you'll first create a new Prisma schema using the `prisma init` command and then "fill" it with a data model using [introspection](../../../concepts/components/introspection).
+对于本指南，您将首先使用 `Prisma init` 命令创建一个新的 Prisma 模型，然后使用[内省](../../../concepts/components/introspection)。
 
-Run the following command to create your Prisma schema (note that this throws an error if you already have a folder called `prisma`):
+运行以下命令以创建 Prisma 模型（请注意，如果您已经有一个名为 `Prisma` 的文件夹，则会抛出一个错误`）：
 
 ```terminal copy
 npx prisma init
 ```
 
-If you're seeing the following error, you need to rename your current `prisma` directory:
+如果您看到以下错误，则需要重命名当前的 `prisma` 目录：
 
 ```no-lines
 ERROR  A folder called prisma already exists in your project.
        Please try again in a project that is not yet using Prisma.
 ```
 
-You can rename the current `prisma` directory to `prisma1` to make it clear that this holds the former Prisma 1 configuration:
+您可以将当前的 `prisma` 目录重命名为 `prisma1`，以明确此目录包含以前的 Prisma 1 配置：
 
 ```terminal copy
 mv prisma prisma1
 ```
 
-Now you can run `init` and it will succeed:
+现在可运行 `init` 且将成功：
 
 ```terminal copy
 npx prisma init
 ```
 
-It should print the following output:
+它应打印以下输出：
 
 ```no-lines
 ✔ Your Prisma schema was created at prisma/schema.prisma.
@@ -147,12 +144,12 @@ More information in our documentation:
 https://pris.ly/d/getting-started
 ```
 
-The command created a new folder called `prisma`, and two files:
+此命令将创建名为 `prisma` 的文件夹和两个文件：
 
-- `prisma/schema.prisma`: Your Prisma schema file that specifies the [data source](../../../concepts/components/prisma-schema/data-sources), [generator](../../../concepts/components/prisma-schema/generators) and [data model](../../../concepts/components/prisma-schema/data-model) (note that the data model doesn't exist yet, it will be generated via introspection).
-- `.env`: A [dotenv](https://github.com/motdotla/dotenv#readme) file to configure your database [connection URL](../../../reference/database-reference/connection-urls).
+- `prisma/schema.prisma`: 用以说明[数据源](../../../concepts/components/prisma-schema/data-sources)，[生成器](../../../concepts/components/prisma-schema/generators)和[数据模型](../../../concepts/components/prisma-schema/data-model)的 Prisma 模型文件（注意，数据模型还不存在，它将通过内省生成）。
+- `.env`: 用以配置 [连接 URL](../../../reference/database-reference/connection-urls) 的 [dotenv](https://github.com/motdotla/dotenv#readme) 文件。
 
-Your initial Prisma schema looks as follows:
+您的初始 Prisma 模型如下所示：
 
 ```prisma file=schema.prisma
 // This is your Prisma schema file,
@@ -168,24 +165,24 @@ generator client {
 }
 ```
 
-With Prisma 1, you specify which language variant of the Prisma client you wanted to use in your `prisma.yml`. With Prisma 2, this information is now specified inside the Prisma schema via a `generator` block.
+使用 Prisma 1，可以指定要在 `prisma.yml` 中使用的 Prisma 客户端的语言变体。对于 Prisma 2，该信息现在通过 `generator` 块在 Prisma 模型内指定。
 
-> **Note**: Unlike Prisma 1, the TypeScript and JavaScript variants of Prisma Client 2.0 use the _same_ generator called `prisma-client-js`. The generated types in `index.d.ts` are _always_ included, even in plain JavaScript projects. This enables feature like autocompletion in VS Code even when not using TypeScript.
+> 注意：与 Prisma 1 不同，Prisma Client 2.0 的 TypeScript 和 JavaScript 变体使用名为 `prisma-client-js` 的*相同*生成器。即使在普通 JavaScript 项目中，`index.d.ts`中生成的类型也*总是*包含在内。即使不使用 TypeScript，也可以在 VS Code 中启用类似自动完成的功能。
 
-## 3. Determine your connection URL and connect to your database
+## 3. 确定连接 URL 并连接到数据库
 
-With Prisma 1, the database connection is configured in the Docker Compose file that's used to launch the Prisma server. The Prisma server then exposes a GraphQL endpoint (via HTTP) that proxies all database requests from the Prisma client application code. That HTTP endpoint is specified in your `prisma.yml`.
+对于 Prisma 1，数据库连接在用于启动 Prisma 服务端的 Docker Compose 文件中配置。Prisma 服务端随后公开一个 GraphQL 接入点（通过 HTTP），该接入点代理来自 Prisma 客户端应用程序代码的所有数据库请求。该 HTTP 接入点是在 `prisma.yml` 中指定的。
 
-With Prisma 2, the HTTP layer isn't exposed any more and Prisma Client 2.0 is configured to run requests "directly" against the database (that is, requests are proxied by Prisma's [query engine](../../../concepts/components/prisma-engines/query-engine), but there isn't an extra server any more).
+使用 Prisma 2，HTTP 层不再公开，Prisma Client 2.0 配置为“直接”对数据库运行请求（即，请求由 Prisma 的 [请求引擎](../../../concepts/components/prisma-engines/query-engine)代理，但不再有额外的服务器）。
 
-So, as a next step you'll need to tell Prisma 2 _what_ kind of database you use (MySQL or PostgreSQL) and _where_ it is located.
+因此，作为下一步，您需要告诉 Prisma 2 使用的是哪种数据库（MySQL 或 PostgreSQL）以及它的*位置*。
 
-First, you need to ensure that that `provider` field on the `datasource` block inside `schema.prisma` is configured to use the right database:
+首先，您需要确保 `schema.prisma` 内的 `datasource` 块上的 `provider` 字段配置为使用正确的数据库：
 
-- If you're using PostgreSQL, it needs to define the value `"postgresql"` in the `provider` field.
-- If you're using MySQL, it needs to define the value `"mysql"` in the `provider` field.
+- 如果您使用的是 PostgreSQL，它需要在 `provider` 字段中定义值 `"postgresql"` 。
+- 如果您使用的是 MySQL，它需要在 `provider` 字段中定义值 `"mysql"` 。
 
-Switch around with the tabs in the code block to see examples of both:
+切换代码块中的选项卡以查看这两个示例：
 
 <CodeBlock languages={["PostgreSQL", "MySQL"]}>
 
@@ -205,9 +202,9 @@ datasource db {
 
 </CodeBlock>
 
-With the `provider` field set, you can go ahead and configure the connection URL inside the `.env` file.
+通过设置 `provider` 字段，您可以继续在 `.env` 文件中配置连接 URL。
 
-Assume the database configuration in your Docker Compose file that you used to deploy your Prisma server looks as follows:
+假设 Docker Compose 文件中用于部署 Prisma 服务端的数据库配置如下所示：
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
@@ -223,27 +220,27 @@ PRISMA_CONFIG: |
       password: prisma
 ```
 
-Also assume your `endpoint` in `prisma.yml` is configured as follows:
+还假设 `prisma.yml` 中的 `endpoint` 配置如下：
 
 ```yml file=prisma.yml
 endpoint: http://localhost:4466/myproject/dev
 ```
 
-Based on these connection details, you need to configure the `DATABASE_URL` environment variable inside your `.env` file as follows:
+根据这些连接详细信息，您需要在 `.env` 文件中配置 `DATABASE_URL` 环境变量，如下所示：
 
 ```bash file=.env
 DATABASE_URL="postgresql://janedoe:randompassword@localhost:5432/prisma?schema=myproject$dev"
 ```
 
-Note that the `schema` argument is typically composed of your _service name_ and _service stage_ (which are part of the `endpoint` in `prisma.yml`), separated by the `$` character.
+请注意，`schema` 参数通常由 _服务名称_ 和 _服务阶段_ 组成（它们是 `prisma.yml` 中 `endpoint` 的一部分），由 `$` 字符分隔。
 
-Sometimes no service name and stage are specified in `prisma.yml`:
+有时在 `prisma.yml` 中没有指定服务名称和阶段：
 
 ```yml file=prisma.yml
 endpoint: http://localhost:4466/
 ```
 
-In that case, the `schema` must be specified as follows:
+在这种情况下，必须按如下方式指定 `schema`：
 
 ```bash file=.env
 DATABASE_URL="postgresql://janedoe:randompassword@localhost:5432/prisma?schema=default$default"
@@ -265,27 +262,27 @@ PRISMA_CONFIG: |
       password: randompassword
 ```
 
-Also assume your `endpoint` in `prisma.yml` is configured as follows:
+还假设 `prisma.yml` 中的 `endpoint` 配置如下：
 
 ```yml file=prisma.yml
 endpoint: http://localhost:4466/myproject/dev
 ```
 
-Based on these connection details, you need to configure the `DATABASE_URL` environment variable inside your `.env` file as follows:
+根据这些连接详细信息，您需要在 `.env` 文件中配置 `DATABASE_URL` 环境变量，如下所示：
 
 ```bash file=.env
 DATABASE_URL="mysql://root:randompassword@localhost:3306/myproject@dev"
 ```
 
-Note that the _database name_ in the connection URL is typically composed of your _service name_ and _service stage_ (which are part of the `endpoint` in `prisma.yml`), separated by the `@` character.
+请注意，连接 URL 中的*数据库名称*通常由*服务名称*和*服务阶段*组成（它们是 `prisma.yml` 中 `endpoint` 的一部分），由 `@` 字符分隔。
 
-Sometimes no service name and stage are specified in `prisma.yml`:
+有时在 `prisma.yml` 中没有指定服务名称和阶段：
 
 ```yml file=prisma.yml
 endpoint: http://localhost:4466/
 ```
 
-In that case, the database name must be specified as follows:
+在这种情况下，必须按如下方式指定数据库名称：
 
 ```bash file=.env
 DATABASE_URL="mysql://root:randompassword@localhost:3306/default@default"
@@ -293,11 +290,11 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/default@default"
 
 </SwitchTech>
 
-Learn more on the [Connection URLs](../../../reference/database-reference/connection-urls) page.
+学习更多请前往[连接 URL](../../../reference/database-reference/connection-urls) 页面。
 
-## 4. Introspect your database
+## 4. 内省数据库
 
-For the purpose of this guide, we'll use the following Prisma 1 data model (select the **SQL** tab below to see what the data model maps to in SQL):
+在本指南中，我们将使用以下 Prisma 1 数据模型（选择如下 **SQL** 选项卡以查看数据模型在 SQL 中映射内容）：
 
 <CodeBlock languages={["Prisma 1 datamodel", "SQL"]}>
 
@@ -392,23 +389,23 @@ CREATE INDEX "_CategoryToPost_B" ON"_CategoryToPost"("B" text_ops);
 
 </CodeBlock>
 
-Note that this data model has three [relations](../../../../../../concepts/components/prisma-schema/relations):
+注意此数据模型有三种[关系](../../../../../../concepts/components/prisma-schema/relations)：
 
-- 1-1: `User` ↔ `Profile`
-- 1-n: `User` ↔ `Post` (maintained via the `_PostToUser` relation table)
-- m-n: `Post` ↔ `Category` (maintained via the `_CategoryToPost` relation table)
+- 一对一： `User` ↔ `Profile`
+- 一对多： `User` ↔ `Post` (由 `_PostToUser` 关系表维护)
+- 多对多： `Post` ↔ `Category` (由 `_CategoryToPost` 关系表维护)
 
-Now you can run Prisma's introspection against your database with the following command:
+现在，您可以使用以下命令对数据库执行 Prisma 内省：
 
 ```terminal copy
 npx prisma db pull
 ```
 
-Here's a graphical illustration for what happens when `db pull` is invoked:
+下面是调用 `db pull` 时发生的情况的图形化说明：
 
-![Introspect your database with Prisma](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/f7itiYw.png)
+![使用 Prisma 内省你的数据库](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/f7itiYw.png)
 
-For the above Prisma 1 datamodel, this results in the following Prisma 2 schema (note that the models have been reordered to match the initial order of the Prisma 1 datamodel):
+对于上述 Prisma 1 数据模型，这将导致以下 Prisma 2 模型（注意，模型已重新排序，以匹配 Prisma 1 数据模型的初始顺序）：
 
 ```prisma file=schema.prisma
 model User {
@@ -446,56 +443,54 @@ model Category {
 }
 ```
 
-While this is already a valid Prisma 2 schema, it lacks a number of _features_ that were part of its Prisma 1 equivalent:
+虽然这已经是一个有效的 Prisma 2 模型，但它缺少一部分 Prisma 1 时具有的等价*功能*：
 
-- no auto-generated date values for the `createdAt` and `updatedAt` fields on `Post`
-- no default value for the `role` field on `User`
-- no default value for the `published` field on `Post`
+- `Post` 上的 `createdAt` 和 `updatedAt` 字段没有自动生成的日期值`
+- `User` 上的 `role` 字段没有默认值`
+- `Post` 上的 `published` 字段没有默认值`
 
-There further are a number of inconsistencies which result in a less idiomatic/ergonomic Prisma Client API:
+此外，还存在许多不一致之处，导致 Prisma Client API 不太惯用或符合人体工程学：
 
-- `User` ↔ `Profile` is a 1-n instead of 1-1 relation
-- `User` ↔ `Post` is a m-n instead of 1-n relation
-- relation fields are uppercased (e.g. `Profile` and `Post` on `User`)
-- the `jsonData` field on `User` is of type `String` instead of `Json`
-- the `role` field on `User` is of type `String` instead of `Role`, the `enum` definition for role is missing altogether
+- `User` ↔ `Profile` 是一对多而还是一对一关系
+- `User` ↔ `Post` 是多对多而还是一对多关系
+- 关系字段是大写的（如：`User` 表上的 `Profile` 和 `Post`）
+- `User` 表上的 `jsonData` 字段是 `String` 而不是 `Json` 类型
+- `User` 上的 `role` 字段的类型为 `String` 而不是 `Role`，角色的 `enum` 定义完全缺失
 
-While these inconsistencies don't actually impact the "feature set" you'll have available in your Prisma Client API, they make you lose certain constraints/guarantees that were present before.
+虽然这些不一致实际上不会影响 Prisma Client API 中可用的 “功能集”，但它们会使您失去以前存在的某些约束或保证。
 
-For example, Prisma now won't guarantee that a `User` is connected to _at most_ one `Profile` because the relation between the tables was recognized as 1-n during introspection, so one `User` record _could_ now get connected to multiple `Profile` records.
+例如，Prisma 现在不会保证一个 `User` *至多*关联至一个 `Profile`，因为在内省期间表之间的关系被识别为一对多，因此一个 `User` 记录现在*可以*关联至多个 `Profile` 记录。
 
-Another issue is that you can store whatever text for the `jsonData` and `role` fields, regardless of whether it's valid JSON or represents a value of the `Role` enum.
+要了解更多有关不一致性的信息，请查阅 [模型不兼容](./schema-incompatibilities-postgres)页面。
 
-To learn more about these inconsistencies check out the [Schema incompatibilities](./schema-incompatibilities-postgres) page.
+在下面，我们将讨论这些不兼容性，并使用 Prisma 模型 Upgrade CLI 逐一修复它们。
 
-In the following, we'll go through these incompatibilities and fix them one by one using the Prisma schema upgrade CLI.
+## 5. 使用 Prisma Upgrade CLI 来解决模型不兼容问题
 
-## 5. Use the Prisma schema upgrade CLI to resolve schema incompatibilities
+[Prisma Upgrade CLI](./how-to-upgrade#prisma-upgrade-cli)是一个交互式工具，可帮助您升级 Prisma 模型并消除上面列出的大部分不一致。
 
-The [Prisma Upgrade CLI](./how-to-upgrade#prisma-upgrade-cli) is an interactive tool that helps you upgrading your Prisma schema and ironing out most of the inconsistencies listed above.
+Prisma Upgrade CLI 用在两个主要阶段：
 
-The Prisma Upgrade CLI works in two major phases:
+1. 通过纯 SQL 修复数据库模型
+1. Prisma 2 模型所缺失的属性并修复其它问题
 
-1. Fix the database schema via plain SQL
-1. Add missing attributes to the Prisma 2 schema and other schema fixes
+在第一阶段，它将生成并打印一些 SQL 语句，您应该对数据库运行这些 SQL 语句来调整数据库模型。在继续第二阶段之前，您可以运行所有语句或其中的一个子集。
 
-During the first phase, it will generate and print a number of SQL statements that you should run against your database to adjust the database schema. You can either run all of the statements or a subset of them before continuing to the second phase.
+在第二阶段，您不需要手动执行任何操作。 Upgrade CLI 将通过添加某些 Prisma 层属性（如 `@default(cuid))` 或 `@updatedAt`）对 Prisma 模型进行更改，调整关系字段的名称，使其与 Prisma 1 数据模型中的字段匹配，并确保 Prisma 1 数据模型两侧所需的 一对一 关系在 Prisma 2 模型中也是必需的。
 
-During the second phase, you don't need to do anything manually. The Upgrade CLI will make changes to your Prisma schema by adding certain Prisma-level attributes (like `@default(cuid))` or `@updatedAt`), adjusting the names of relation fields to match the ones from your Prisma 1 datamodel and ensure 1-1-relations that were required on both sides in your Prisma 1 datamodel are also required in the Prisma 2 schema.
+请注意**您可以在流程的任何时间**重新开始，然后从第二阶段返回到第一阶段。
 
-Note that **you can start over at any time during the process** and go back from the second to the first phase.
+在本图中，绿色区域显示第一阶段，蓝色区域显示第二阶段。请注意，您可以选择在两个阶段之间运行 `prisma db pull` ，以更新您的 Prisma 数据模型：
 
-In this illustration, the green area shows the first phase, the blue area shows the second phase. Note that you can optionally run `prisma db pull` in between the phases to update your Prisma data model:
+![修复模型不兼容](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/bsFu8HD.png)
 
-![Fixing the schema incompatibilities](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/bsFu8HD.png)
-
-To use the Upgrade CLI, you can either install it locally in your project, or invoke it once without installation using `npx` as done here:
+要使用 Upgrade CLI，您可以在项目中本地安装它，也可以在不安装的情况下使用 `npx` 调用它一次，如下所示：
 
 ```terminal copy
 npx prisma-upgrade prisma1/prisma.yml prisma/schema.prisma
 ```
 
-The CLI will greet you with the following message:
+CLI 将向您发送以下消息：
 
 ```no-lines
 ◮ Welcome to the interactive Prisma Upgrade CLI that helps with the
@@ -539,9 +534,9 @@ https://github.com/prisma/upgrade/issues/new
 Are you ready? [Y/n]
 ```
 
-Press the <kbd>Y</kbd> button, then confirm by hitting <kbd>RETURN</kbd> on your keyboard to continue.
+按下 <kbd>Y</kbd> 按钮， 然后敲下 <kbd>RETURN</kbd> 键继续。
 
-Once you confirmed, the CLI outputs the SQL statements you should be running against your database:
+确认后，CLI 将输出应针对数据库运行的 SQL 语句：
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
@@ -668,29 +663,29 @@ https://pris.ly/d/how-to-upgrade'
 
 </SwitchTech>
 
-> **Note**: If you're seeing the note about breaking changes, you can ignore it for now. We'll discuss it later.
+> 注意：如果您看到关于中断更改的注释，您可以暂时忽略它。我们以后再讨论。
 
-The shown SQL statements are categorized into a number of "buckets", all aiming to resolve a certain [schema incompatibility](./schema-incompatibilities-postgres):
+所示的 SQL 语句被分类为许多 “bucket”，它们都旨在解决某种[模型不兼容](./schema-incompatibilities-postgres)：
 
-- Fix columns with ENUM data types
-- Add missing `DEFAULT` constraints to the database
-- Fix columns with JSON data types
-- Replicate `@createdAt` behavior in Prisma 2
-- Fix 1-1 relations by adding `UNIQUE` constraints
+- 修复具有 ENUM 数据类型的列
+- 添加缺失的 `DEFAULT` 约束至数据库
+- 修复具有 JSON 数据类型的列
+- 复制 Prisma 2 `@createdAt` 表现
+- 添加 `UNIQUE` 约束修复一对一关系
 
-As a next step, you can start sending the SQL statements to your database. Note that all of these changes are non-breaking and you'll be able to continue using Prisma 1 side-by-side with Prisma 2.
+作为下一步，您可以开始向数据库发送 SQL 语句。请注意，所有这些更改都是非中断的，您可以继续同时使用 Prisma 1 与 Prisma 2。
 
-The next sections cover the different kinds of SQL statements to be sent to your database individually.
+下一节将分别介绍要发送至数据库的不同类型的 SQL 语句。
 
-### 5.1. Fix the database schema via plain SQL (non-breaking)
+### 5.1. 通过纯 SQL 修复数据库模型（非中断）
 
-In this section, we'll walk through the printed SQL statements and run them against the database one by one.
+在本节中，我们将浏览打印的 SQL 语句，并逐个在数据库中运行它们。
 
-### 5.1.1. Fix columns with ENUM data types
+### 5.1.1. 修复具有 ENUM 数据类型的列
 
-The first thing the tool does is help you ensure that `enum` definitions in your Prisma 1 datamodel will be represented as actual `ENUM` types in the underlying database, right now they are represented as plain strings (e.g. as `MEDIUMTEXT` in MySQL).
+该工具所做的第一件事是帮助您确保 Prisma 1 数据模型中的 `enum` 定义在基础数据库中表示为实际的 `ENUM` 类型，现在它们表示为纯字符串（例如，在 MySQL 中表示为 `MEDIUMTEXT` ）。
 
-The CLI currently shows the following output:
+CLI 当前显示以下输出：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -717,15 +712,15 @@ https://pris.ly/d/schema-incompatibilities#enums-are-represented-as-text-in-data
 
 </SwitchTech>
 
-Go ahead and run these statements against your database now.
+现在就开始对数据库运行这些语句。
 
-![Altering columns to use ENUM with SQL](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/Fo0LbzU.png)
+![使用 SQL 将列更改为 ENUM](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/Fo0LbzU.png)
 
-### 5.1.2. Add missing `DEFAULT` constraints to the database
+### 5.1.2. 添加缺失的 `DEFAULT` 约束至数据库
 
-Next, the Upgrade CLI helps you resolve the issue that [default values aren't represented in the database](./schema-incompatibilities-postgres#default-values-arent-represented-in-database) by generating SQL statements that add the respective `DEFAULT` constraints directly to the database.
+接下来， Upgrade CLI 通过生成直接向数据库中添加相应 `DEFAULT` 约束的 SQL 语句，帮助您解决[数据库中未表示默认值](./schema-incompatibilities-postgres#default-values-arent-represented-in-database)的问题。
 
-In this case, two `DEFAULT` constraints are missing which are suggested by the tool:
+在这种情况下，缺少工具建议的两个 `DEFAULT` 约束：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -737,9 +732,9 @@ https://pris.ly/d/schema-incompatibilities#default-values-arent-represented-in-d
   ALTER TABLE "default$default"."Post" ALTER COLUMN "published" SET DEFAULT false;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like Postico:
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库执行以下 SQL 语句：
 
-![Adding missing `DEFAULT` constraints to columns](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/o4dJJic.png)
+![添加缺失的 `DEFAULT` 约束至列](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/o4dJJic.png)
 
 </SwitchTech>
 
@@ -753,19 +748,19 @@ https://pris.ly/d/schema-incompatibilities#default-values-arent-represented-in-d
   ALTER TABLE `Post` CHANGE `published` `published` TINYINT(1) NOT NULL DEFAULT 0;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like TablePlus:
+现在，您可以使用命令行客户端或类似 TablePlus 的 GUI 对数据库运行以下 SQL 语句：
 
 ![TablePlus GUI](https://res.cloudinary.com/prismaio/image/upload/v1628761156/docs/Qr7L1Nc.png)
 
 </SwitchTech>
 
-### 5.1.3. Fix columns with JSON data types
+### 5.1.3. 修复具有 JSON 数据类型的列
 
-Next, the tool helps you ensure that `Json` fields in your Prisma 1 datamodel will be represented as `JSON` columns in the underlying database, right now they are represented as plain strings (e.g. as `MEDIUMTEXT` in MySQL).
+该工具所做的第一件事是帮助您确保 Prisma 1 数据模型中的 `enum` 定义在基础数据库中表示为实际的 `JSON` 类型，现在它们表示为纯字符串（例如，在 MySQL 中表示为 `MEDIUMTEXT` ）。
 
-Changing the column type to `JSON` will ensure that the field is properly recognized as `Json` during Prisma 2 introspection.
+将列类型更改为 `JSON` 将确保在 Prisma 2 内省期间该字段被正确识别为 `Json`。
 
-The CLI currently shows the following output:
+CLI 当前显示以下输出：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -776,11 +771,11 @@ https://pris.ly/d/schema-incompatibilities#json-type-is-represented-as-text-in-d
   ALTER TABLE "default$default"."User" ALTER COLUMN "jsonData" TYPE JSON  USING "jsonData"::json;
 ```
 
-> **⚠️ Warning**: If you are running Prisma 1 and Prisma 2 [side-by-side](./how-to-upgrade#upgrade-strategies), these [SQL statements will break your Prisma 1 setup](https://github.com/prisma/upgrade/issues/73). The docs will be updated to reflect this soon.
+> **⚠️ 警告**: 如果你在[同时](./how-to-upgrade#upgrade-strategies)使用 Prisma 1 和 Prisma 2， 这些 [SQL 语句将打断 Prisma 1 配置](https://github.com/prisma/upgrade/issues/73)。文档将很快更新以说明此事。
 
-You can now run these SQL statements against your database either using a command line client or a GUI like Postico:
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库执行以下 SQL 语句：
 
-![Adding missing `DEFAULT` constraints to columns](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/o4dJJic.png)
+![添加缺失的 `DEFAULT` 约束至列](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/o4dJJic.png)
 
 </SwitchTech>
 
@@ -793,17 +788,17 @@ https://pris.ly/d/schema-incompatibilities#json-type-is-represented-as-text-in-d
   ALTER TABLE `User` CHANGE `jsonData` `jsonData` JSON ;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like TablePlus:
+现在，您可以使用命令行客户端或类似 TablePlus 的 GUI 对数据库运行以下 SQL 语句：
 
 ![TablePlus GUI](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/feI3ZUF.png)
 
 </SwitchTech>
 
-### 5.1.4. Replicate `@createdAt` behavior in Prisma 2
+### 5.1.4. 复制 Prisma 2 `@createdAt` 表现
 
-The next thing the tools does is help you resolve the issue that the behavior of [`@createdAt` isn't represented in database](./schema-incompatibilities-postgres#default-values-arent-represented-in-database)
+这些工具所做的下一件事是帮助你解决 [`@createdAt` 不表现在数据库中](./schema-incompatibilities-postgres#default-values-arent-represented-in-database)问题
 
-The CLI currently shows the following output:
+CLI 当前显示以下输出：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -814,9 +809,9 @@ https://pris.ly/d/schema-incompatibilities#createdat-isnt-represented-in-databas
   ALTER TABLE "default$default"."Post" ALTER COLUMN "createdAt" SET DEFAULT CURRENT_TIMESTAMP;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like Postico:
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库运行以下 SQL 语句：
 
-![Running an SQL command to alter a column](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
+![运行 SQL 命令以更改列](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
 
 </SwitchTech>
 
@@ -829,7 +824,7 @@ https://pris.ly/d/schema-incompatibilities#createdat-isnt-represented-in-databas
   ALTER TABLE `Post` CHANGE `createdAt` `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like TablePlus.
+现在，您可以使用命令行客户端或类似 TablePlus 的 GUI 对数据库运行这些 SQL 语句。
 
 </SwitchTech>
 
@@ -848,9 +843,9 @@ https://pris.ly/d/schema-incompatibilities#inline-1-1-relations-are-recognized-a
   ALTER TABLE "default$default"."Profile" ADD UNIQUE ("user");
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like Postico:
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库运行以下 SQL 语句：
 
-![Running an SQL command to alter tables](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
+![运行 SQL 命令以更改表](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
 
 </SwitchTech>
 
@@ -863,17 +858,17 @@ https://pris.ly/d/schema-incompatibilities#inline-1-1-relations-are-recognized-a
   ALTER TABLE `Profile` ADD UNIQUE (`user`);
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like TablePlus.
+现在，您可以使用命令行客户端或类似 TablePlus 的 GUI 对数据库运行这些 SQL 语句。
 
 </SwitchTech>
 
-### 5.1.6. Fix mismatch of CUID length
+### 5.1.6. 修复 CUID 长度的不匹配问题
 
-> **Note**: These SQL statements will keep appearing in the Upgrade CLI even after you have changed the column types in the underlying database. This is a currently a limitation in the Upgrade CLI.
+> 注意：即使更改了基础数据库中的列类型，这些 SQL 语句仍将继续出现在 Upgrade CLI 中。这是当前 Upgrade CLI 中的一个限制。
 
-Finally, the tool will help you [turn the current ID columns of type `VARCHAR(25)` into `VARCHAR(30)`](./schema-incompatibilities-postgres#mismatching-cuid-length) by adding a `UNIQUE` constraint to the foreign key column called `user` (named after the relation field in the Prisma 1 datamodel) in the database.
+最后，该工具将通过向数据库中名为 `user`（根据 Prisma 1 数据模型中的关系字段命名）的外键列添加 `UNIQUE` 约束来帮助您[将当前为 `VARCHAR(25)` 类型的 ID 列转换为 `VARCHAR(30)` 类型](./schema-incompatibilities-postgres#mismatching-cuid-length)。
 
-The CLI currently shows the following output:
+CLI 当前显示以下输出：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -888,9 +883,9 @@ https://pris.ly/d/schema-incompatibilities#mismatching-cuid-length
   ALTER TABLE "default$default"."User" ALTER COLUMN "id" SET DATA TYPE character varying(30);
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like Postico:
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库运行以下 SQL 语句：
 
-![Running an SQL command to alter tables](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
+![运行 SQL 命令以更改表](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/PvuQVkj.png)
 
 </SwitchTech>
 
@@ -909,36 +904,36 @@ ALTER TABLE `User` CHANGE `id` `id` char(30) CHARACTER SET utf8 NOT NULL;
 SET FOREIGN_KEY_CHECKS=1;
 ```
 
-You can now run these SQL statements against your database either using a command line client or a GUI like TablePlus.
+现在，您可以使用命令行客户端或 Postco 之类的 GUI 对数据库运行这些 SQL 语句。
 
 </SwitchTech>
 
-### 5.1.7. Breaking changes detected
+### 5.1.7. 检测破坏性更改
 
-In case the Upgrade CLI has printed a note about breaking changes, your database schema needs some adjustments that will break Prisma 1 compatitibility in order to be fully optimized.
+如果 Upgrade CLI 打印了关于中断更改的注释，则需要对数据库架构进行一些调整，以中断 Prisma 1 的兼容性，以便进行充分优化。
 
-If there are no breaking changes detected, you can [skip forward to section 5.2](#52-re-introspect-your-database-to-update-your-prisma-schema)
+如果未检测到破坏性更改，您可以[跳到第 5.2 节](#52-re-introspect-your-database-to-update-your-prisma-schema)
 
-Depending on your [upgrade strategy](./how-to-upgrade#upgrade-strategies), you can either perform these changes now or skip to the next phase of the Upgrade CLI:
+根据您的[升级策略](./how-to-upgrade#upgrade-strategies)，您可以立即执行这些更改，也可以跳到 Upgrade CLI 的下一阶段：
 
-- If you are following the gradual side-by-side upgrade strategy, do not perform these changes yet since they will break your Prisma 1 setup. In that case, you can continue to the next phase of the Upgrade CLI by typing <kbd>n</kbd> and hitting <kbd>RETURN</kbd>.
-- If you are following the all at once upgrade strategy, you can perform these changes now. In that case, continue by typing <kbd>Y</kbd> and hitting <kbd>RETURN</kbd>.
+- 如果您遵循渐进并行升级策略，请不要执行这些更改，因为它们将破坏您的 Prisma 1 设置。在这种情况下，您可以通过键入 <kbd>n</kbd> 并点击 <kbd>RETURN</kbd> 继续 Upgrade CLI 的下一阶段。
+- 如果您遵循一次性升级策略，现在就可以执行这些更改。在这种情况下，继续键入 <kbd>Y</kbd> 并点击 <kbd>RETURN</kbd>。
 
-### 5.2. Fix the database schema via plain SQL (breaking)
+### 5.2. 通过纯 SQL 修复数据库架构（破坏性）
 
-In this section, you'll resolve the schema incompatibilities that are breaking your Prisma 1 setup. Do not perform these changes if you are still running Prisma 1 in your project!
+在本节中，您将解决破坏 Prisma 1 设置的模式不兼容问题。如果项目中仍在运行 Prisma 1，请不要执行这些更改！
 
 ### 5.2.1. Fix incorrect m-n relations
 
-Now, the Upgrade CLI helps you fix all 1-1 and 1-n relations that Prisma 1 represents with relation tables and that [currently only exist as m-n relations](./schema-incompatibilities-postgres#all-non-inline-relations-are-recognized-as-m-n) in your new Prisma 2 schema. Concretely, this is the case for the `User` ↔ `Post` relation which currently is defined as m-n but _should_ really be a 1-n relation.
+现在，Upgrade CLI 帮助你修复 Prisma 1 内用关系表所表示的所有一对一和一对多关系[而在 Prisma 2 中仅作为多对多关系存在](./schema-incompatibilities-postgres#all-non-inline-relations-are-recognized-as-m-n)的问题。就本例来说，`User` ↔ `Post` 为多对多，但实际上*应该*是一对一关系。
 
-To fix this, you'll need to perform the following migration:
+要解决此问题，您需要执行以下迁移：
 
-1. Create a new foreign key column on `Post` to link directly to the `User` table.
-1. Migrate the foreign key values from the relation table into the new foreign key column on `Post`.
-1. Delete the relation table.
+1. 在 `Post` 表上创建一个新的外键列，以直接链接到 `User` 表。
+1. 将外键值从关系表迁移到 `Post` 表上的新外键列中。
+1. 删除关系表。
 
-These instructions are now printed by the CLI:
+以下说明由 CLI 打印：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
@@ -971,27 +966,27 @@ schema that are not picked up by introspection.
 Skip to the last step? [Y/n]?
 ```
 
-For this fix, you'll need to run three SQL statements:
+对于此修复，您需要运行三条 SQL 语句：
 
-1. Create new column `authorId` on the `Post` table. This column should be a _foreign key_ that references the `id` field of the `User` table:
+1. 在 `Post` 表上创建新列 `authorId`。此列应为引用 `User` 表的 `id` 字段的*外键*：
    ```sql no-lines
    ALTER TABLE `Post` ADD COLUMN `authorId` VARCHAR(25);
    ALTER TABLE `Post` ADD FOREIGN KEY (`authorId`) REFERENCES `User` (`id`);
    ```
-1. Write a SQL query that reads all the rows from the `_PostToUser` relation table and for each row:
-   1. Finds the respective `Post` record by looking up the value from column `A`
-   1. Inserts the value from column `B` as the value for `authorId` into that `Post` record
+1. 编写一个 SQL 查询，读取 `_PostToUser` 关系表中的所有行，并对每行进行如下操作：
+   1. 通过从 `A` 列中查找值来查找相应的 `Post` 记录
+   1. 将列 `B` 中的值作为 `authorId` 的值插入到该 `Post` 记录中
    ```sql no-lines
    UPDATE Post, _PostToUser
    SET Post.authorId = _PostToUser.B
    WHERE Post.id = _PostToUser.A
    ```
-1. Delete the `_PostToUser` relation table
+1. 删除 `_PostToUser` 关系表
    ```sql no-lines
    DROP TABLE `_PostToUser`;
    ```
 
-![Fixing incorrect m-n relations with SQL](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/nvrKuVJ.png)
+![通过 SQL 修复多对多关系](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/nvrKuVJ.png)
 
 </SwitchTech>
 
@@ -1044,23 +1039,23 @@ For this fix, you'll need to run three SQL statements:
    DROP TABLE `_PostToUser`;
    ```
 
-![Fixing incorrect m-n relations with SQL](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/nvrKuVJ.png)
+![通过 SQL 修复多对多关系](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/nvrKuVJ.png)
 
 </SwitchTech>
 
-After these commands, the user ID values of the records from column `B` of the relation table are migrated to the new `authorId` column.
+执行这些命令后，关系表 `B` 列中记录的用户 ID 值将迁移到新的 `authorId` 列。
 
-### 5.2. Re-introspect your database to update your Prisma schema
+### 5.2. 重新内省数据库以更新 Prisma 模型
 
-At this point, you've resolved the schema incompatibilities with the Upgrade CLI. You can now exit the Upgrade CLI for now by typing <kbd>n</kbd> and hitting <kbd>RETURN</kbd>.
+至此，您已经解决了与 Upgrade CLI 的模型不兼容问题。您现在可以通过键入 <kbd>n</kbd> 并点击 <kbd>RETURN</kbd> 退出 Upgrade CLI。
 
-In this section, you'll update your Prisma schema with another introspection round. This time, the previous flaws of the Prisma schema will be resolved because the database schema has been adjusted:
+在本节中，您将使用开启另一轮自省更新 Prisma 模型。这一次，Prisma 模型以往的缺陷将得到解决，因为数据库模型已经调整：
 
 ```terminal copy
 npx prisma db pull
 ```
 
-This time, the resulting Prisma schema looks as follows:
+这一次，生成的 Prisma 模型如下所示：
 
 ```prisma file=schema.prisma
 model User {
@@ -1104,11 +1099,11 @@ enum Role {
 }
 ```
 
-This schema has most issues resolved, but it still lacks the following:
+此模式虽解决了大多数问题，但仍然缺少以下内容：
 
-### 5.2. Add missing attributes to the Prisma 2 schema and other schema fixes
+### 5.2. 将缺少的属性添加到 Prisma 2 模型并修复其他模型相关问题
 
-The CLI now prints the following:
+CLI 现打印以下内容：
 
 ```no-lines
 ➤ What happens next
@@ -1126,26 +1121,26 @@ make sure you have a backup!
 Are you ready? [Y/n]
 ```
 
-At this point, you either ran all the SQL statement that were printed by the CLI or you skipped some of them. Either way, you can now move on the last step and let the Upgrade CLI add the missing Prisma 2 attributes. Typically these are the following:
+此时，您要么运行 CLI 打印的所有 SQL 语句，要么跳过其中一些。无论哪种方式，现在都可以继续执行最后一步，让 Upgrade CLI 添加缺少的 Prisma 2 属性。通常如下所示：
 
-- `@default(cuid())` for your `@id` fields
-- `@updatedAt` for any fields that were using this attribute in Prisma 1
-- `@map` and `@@map` as replacements for `@db` and `@@db` from Prisma 1
+- 添加 `@default(cuid())` 至 `@id` 字段
+- 添加 `@updatedAt` 至所有在 Prisma 1 用过此属性的字段
+- 用 `@map` 和 `@@map` 替代 Prisma 1 中的 `@db` 和 `@@db`
 
-In that step, the Upgrade CLI also fixes other issues that occurred in the transition to Prisma 2:
+在该步骤中，Upgrade CLI 还修复了向 Prisma 2 过渡过程中出现的其他问题：
 
-- it makes sure that 1-1-relations that were required on both sides in Prisma 1 are also required in your Prisma 2 schema
-- it renames relation fields to the same names they had in your Prisma 1 datamodel ([coming soon](https://github.com/prisma/upgrade/issues/25))
+- 它确保 Prisma 1 中必需的一对一关系的双方在 Prisma 2 模型中也必需
+- 它将关系字段重命名为 Prisma 1 数据模型中的相同名称（[即将推出](https://github.com/prisma/upgrade/issues/25))
 
-To apply these changes, you can re-run the Upgrade CLI:
+要应用这些更改，可以重新运行 Upgrade CLI：
 
 ```terminal copy
 npx prisma-upgrade prisma1/prisma.yml prisma/schema.prisma
 ```
 
-If you did not resolve all schema incompatibilities, the Upgrade CLI now prints the remaining SQL statements (as well as the ones for migrating IDs). You can just ignore them at this point and continue to the last step by continuously typing <kbd>Y</kbd> and hitting <kbd>RETURN</kbd> when prompted.
+如果没有解决所有模型不兼容问题，Upgrade CLI 现在将打印其余的 SQL 语句（以及迁移 ID）。此时，您可以忽略它们，继续执行最后一步，方法是连续键入 <kbd>Y</kbd>，并在提示时单击 <kbd>RETURN</kbd>。
 
-If you did resolve all schema incompatibilities, no SQL statements will be printed and the Upgrade CLI only outputs the following:
+如果解决了所有模型不兼容问题，则不会打印 SQL 语句，Upgrade CLI 只输出以下内容：
 
 ```no-lines
 $ npx prisma-upgrade prisma1/prisma.yml prisma/schema.prisma
@@ -1166,9 +1161,9 @@ schema that are not picked up by introspection.
 Skip to the last step? [Y/n]?
 ```
 
-One more time, type <kbd>Y</kbd> and hit <kbd>RETURN</kbd> to confirm.
+再一次键入 <kbd>Y</kbd> 并敲击 <kbd>RETURN</kbd> 确认。
 
-The final prompt of the Upgrade CLI now asks you to confirm the above mentioned changes it will make to your Prisma schema:
+Upgrade CLI 的最后一个提示现在要求你确认它将对 Prisma 模型进行的上述更改：
 
 ```no-lines
 ➤ What happens next
@@ -1186,9 +1181,9 @@ make sure you have a backup!
 Are you ready? [Y/n]
 ```
 
-One last time, type <kbd>Y</kbd> and hit <kbd>RETURN</kbd> to confirm.
+最后一次键入 <kbd>Y</kbd> 并敲击 <kbd>RETURN</kbd> 确认。
 
-This is the final output of the Upgrade CLI:
+这是 Upgrade CLI 的最终输出：
 
 ```no-lines
 Updating prisma/schema.prisma...
@@ -1213,9 +1208,9 @@ You can find guides for different upgrade scenarios in the docs:
 https://pris.ly/d/upgrade-from-prisma-1
 ```
 
-### 5.3. Final result
+### 5.3. 最终结果
 
-The final version of the Prisma schema should look as follows:
+Prisma 模型的最终版本应如下所示：
 
 ```prisma file=schema.prisma
 model User {
@@ -1259,9 +1254,9 @@ enum Role {
 }
 ```
 
-### 5.4. Rename relation fields
+### 5.4. 重命名关系字段
 
-One thing you'll notice with this version of the Prisma 2 schema is that all [relation fields](../../../../concepts/components/prisma-schema/relations#relation-fields) are named after their respective models, e.g:
+在这个版本的 Prisma 2 模型中，您会注意到，所有[关系字段](../../../../concepts/components/prisma-schema/relations#relation-fields)都是以各自的模型命名的，例如：
 
 ```prisma file=schema.prisma
 model User {
@@ -1283,11 +1278,11 @@ model Category {
 }
 ```
 
-This is not ideal and you can in fact manually rename all of them to their previous versions!
+这并不理想，事实上，您可以手动将它们全部重命名为以前的版本！
 
-Because all relation fields are _virtual_, meaning they don't _manifest_ in the database, you can name them whatever you like. In this case, all relation fields are lowercased and sometimes pluralized.
+因为所有关系字段都是*虚拟的*，这意味着它们不在数据库中*显示*，所以您可以随意命名它们。在这种情况下，所有关系字段都是小写的，有时是复数的。
 
-Here's what they look like after the rename:
+重命名后如下所示：
 
 ```prisma file=schema.prisma
 model User {
@@ -1310,34 +1305,34 @@ model Category {
 }
 ```
 
-> **Note**: For the 1-1-relation between `User` and `Profile` it was not possible to set the old name `user` for the relation field. This is because there'd be a naming conflict with the already existing [relation scalar](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) field that holds the foreign key. In that case, you can choose a different name or alternatively rename the foreign key column directly in the database via SQL.
+> 注意：对于 `User` 和 `Profile` 之间的一对一关系，无法为关系字段设置旧名称 `user`。这是因为与保存外键的现有[关系常量](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields)字段存在命名冲突。在这种情况下，您可以选择其他名称，或者直接通过 SQL 在数据库中重命名外键列。
 
-### 5.5. Resolving remaining schema incompatibilities
+### 5.5. 解决剩余的模型不兼容问题
 
-There are a few schema incompatibilities that were not yet resolved by the Upgrade CLI. At this point you still haven't fixed [scalar lists](./schema-incompatibilities-postgres#scalar-lists-arrays-are-maintained-with-extra-table) and [cascading deletes](./schema-incompatibilities-postgres#cascading-deletes-are-not-supported-in-prisma-2). You can find the recommended workarounds for these on the [Schema incompatibilities](./schema-incompatibilities-postgres) page.
+Upgrade CLI 尚未解决一些架构不兼容问题。在这一点上，您还没有修复[标量列表](./schema-incompatibilities-postgres#scalar-lists-arrays-are-maintained-with-extra-table)和[级联删除](./schema-incompatibilities-postgres#cascading-deletes-are-not-supported-in-prisma-2)。您可以在[模型不兼容](./schema-incompatibilities-postgres)找到这些建议的解决方案。
 
-## 6. Install and generate Prisma Client
+## 6. 安装并生成 Prisma Client
 
-Now that you have your Prisma 2 schema ready, you can install Prisma Client with the following command:
+现在您已经准备好 Prisma 2 模型，可以使用以下命令安装 Prisma Client：
 
 ```terminal copy
 npm install @prisma/client
 ```
 
-## 7. Next steps
+## 7. 下一步
 
-Congratulations, you have now upgraded your Prisma layer to Prisma 2! From here on, you can move on to update your application code using one of the following guides:
+恭喜，您现在已将 Prisma 层 升级到 Prisma 2！从这里开始，您可以使用以下指南之一继续更新应用程序代码：
 
-- [Old to new Nexus](./upgrading-nexus-prisma-to-nexus): Choose this guide if you're currently running Prisma 1 with GraphQL Nexus.
-- [prisma-binding to Nexus](./upgrading-prisma-binding-to-nexus): Choose this guide if you're currently running Prisma 1 with `prisma-binding` and want to upgrade to [Nexus](https://www.nexusjs.org/#/) (and TypeScript).
-- [prisma-binding to SDL-first](./upgrading-prisma-binding-to-sdl-first): Choose this guide if you're currently running Prisma 1 with `prisma-binding` and want to upgrade to an [SDL-first](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3/) GraphQL server.
-- [REST API](./upgrading-a-rest-api): Choose this guide if you're currently running Prisma 1 using Prisma client 1 and are building a REST API.
+- [由旧版更新至新版 Nexus](./upgrading-nexus-prisma-to-nexus)：如果您当前正在使用 GraphQL Nexus 运行 Prisma 1，请选择本指南。
+- [由 prisma-binding 更新至 Nexus](./upgrading-prisma-binding-to-nexus)：如果您当前正在运行带 `prisma-binding` 的 Prisma 1，并希望升级到[Nexus](https://www.nexusjs.org/#/)（可使用 TypeScript），请选择本指南。
+- [由 prisma-binding 更新至 SDL-first](./upgrading-prisma-binding-to-sdl-first)：如果您当前正在运行带 `prisma-binding` 的 Prisma 1，并且希望升级到 [SDL-first](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3/) GraphQL 服务器，请选择本指南。
+- [REST API](./upgrading-a-rest-api)：如果您当前正在使用 Prisma client 1 运行 Prisma 1，并且正在构建 REST API，请选择本指南。
 
-## Bonus: Prisma Client API comparison
+## Bonus: Prisma Client API 比较
 
-This section contains a high-level and side-by-side comparison of the Prisma Client APIs of Prisma 1 and Prisma 2. For more details about the new Prisma Client API, you can explore the [Prisma Client](../../../concepts/components/prisma-client) docs.
+本节包含 Prisma 1 和 Prisma 2 的 Prisma Client API 的高级并行比较。有关新 Prisma 客户端 API 的更多详细信息，您可以浏览 [Prisma Client](../../../concepts/components/prisma-client) 文档。
 
-### Reading single records
+### 读取单一记录
 
 <ParallelBlocks>
 
@@ -1361,7 +1356,7 @@ await prisma.user.findUnique({
 
 </ParallelBlocks>
 
-### Reading lists of records
+### 读取记录列表
 
 <ParallelBlocks>
 
@@ -1383,7 +1378,7 @@ await prisma.user.findMany()
 
 </ParallelBlocks>
 
-### Filtering lists
+### 列表筛选
 
 <ParallelBlocks>
 
@@ -1413,7 +1408,7 @@ await prisma.user.findMany({
 
 </ParallelBlocks>
 
-### Paginating lists
+### 列表分页
 
 <ParallelBlocks>
 
@@ -1441,9 +1436,9 @@ await prisma.user.findMany({
 
 </ParallelBlocks>
 
-> **Note**: You can learn more about the new pagination API in the respective [release notes](https://github.com/prisma/prisma/releases/tag/2.0.0-beta.7) or the [Pagination](../../../concepts/components/prisma-client/pagination) page in the docs.
+> 注意：您可以在相应的[发行说明](https://github.com/prisma/prisma/releases/tag/2.0.0-beta.7)中了解有关新分页 API 的更多信息或文档中的[分页](../../../concepts/components/prisma-client/pagination)页面。
 
-### Sorting lists
+### 列表排序
 
 <ParallelBlocks>
 
@@ -1471,7 +1466,7 @@ await prisma.posts({
 
 </ParallelBlocks>
 
-### Creating records
+### 创建记录
 
 <ParallelBlocks>
 
@@ -1499,7 +1494,7 @@ await prisma.user.create({
 
 </ParallelBlocks>
 
-### Updating records
+### 更新记录
 
 <ParallelBlocks>
 
@@ -1533,7 +1528,7 @@ await prisma.user.update({
 
 </ParallelBlocks>
 
-### Deleting records
+### 删除记录
 
 <ParallelBlocks>
 
@@ -1557,11 +1552,11 @@ await prisma.user.delete({
 
 </ParallelBlocks>
 
-### Selecting fields & loading relations
+### 选择字段与加载关系
 
-In Prisma 1, the only ways to select specific fields and/or load relations of an object was by using the string-based `$fragment` and `$graphql` functions. With Prisma 2, this is now done in a clean and type-safe manner using [`select`](../../../concepts/components/prisma-client/select-fields#select-specific-fields) and [`include`](../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields).
+在 Prisma 1 中，选择对象的特定字段与加载关系的唯一方法是使用基于字符串的 `$fragment` 和 `$graphql` 函数。对于 Prisma 2，现在可以使用 [`select`](../../../concepts/components/prisma-client/select-fields#select-specific-fields) 和 [`include`](../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields) 以干净和类型安全的方式完成此操作。
 
-Another benefit of this approach is that you can use `select` and `include` on _any_ Prisma Client query, e.g. `findUnique`, `findMany`, `create`, `update`, `delete`, ...
+这种方法的另一个好处是，你可以在*任何* Prisma Client 查询上使用 `select` 和 `include`，例如：`findUnique`, `findMany`, `create`, `update`, `delete`, ...
 
 <ParallelBlocks>
 
@@ -1591,7 +1586,7 @@ await prisma.user.findUnique({
 
 </ParallelBlocks>
 
-As an example, creating a new record and only retrieving the `id` in the returned object was not possible in Prisma 1. With Prisma 2 you can achieve this as follows:
+例如，在 Prisma 1 中不可能创建新记录并仅检索返回对象中的 `id`。使用 Prisma 2，您可以通过以下方式实现：
 
 ```ts
 await prisma.user.create({
