@@ -101,7 +101,7 @@ datasource db {
 }
 ```
 
-### <inlinecode>日志</inlinecode>
+### <inlinecode>log</inlinecode>
 
 确定日志类型和级别。参见[日志](../../../concepts/components/prisma-client/working-with-prismaclient/logging) <span class="concept"></span>
 
@@ -1466,7 +1466,7 @@ const groupUsers = await prisma.user.groupBy({
 #### 注意
 
 - 您不能在同一级别上组合使用 `select` 和 `include`。
-- 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0)及更高版本, 你可以[选择一个`_count`个关系] (#select-a-\_count-of-relations).
+- 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0)及更高版本, 你可以[选择一个`_count`个关系](#select-a-_count-of-relations).
 
 #### 参考
 
@@ -4284,7 +4284,6 @@ generator client {
 
 <Admonition type="warning">
 
-Supported by [PostgreSQL](../../../concepts/database-connectors/postgresql) <span class="concept"></span> and [MySQL](../../../concepts/database-connectors/mysql) <span class="concept"></span> with different syntaxes for the `path` option. PostgreSQL does not support filtering on object key values in arrays.
 支持[PostgreSQL](../../../concepts/database-connectors/postgresql) <span class="concept"></span> 和 [MySQL](../../../concepts/database-connectors/mysql) <span class="concept"></span> `path` 选项有不同的语法。 PostgreSQL 不支持对数组中的对象键值进行过滤。
 
 </Admonition>
@@ -4318,7 +4317,6 @@ Supported by [PostgreSQL](../../../concepts/database-connectors/postgresql) <spa
 
 ### <inlinecode>path</inlinecode>
 
-`path` represents the location of a specific key. The following query returns all users where the nested `favourites` > `dogBreed` key equals `"Rottweiler"`.
 `path` 表示特定键的位置。 以下查询返回嵌套的 `favourites` > `dogBreed` 键等于 `"Rottweiler"`.
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
@@ -4719,7 +4717,7 @@ $connect(): Promise<void>
 <!-- prettier-ignore -->
 ### <inlinecode>$on()</inlinecode>
 
-`$on()` 方法允许您订阅事件。有了这些你可以订阅[记录事件](#log) 或 [退出钩子](../../../concepts/components/prisma-client/working-with-prismaclient/connection-management#exit-hooks).
+`$on()` 方法允许您订阅事件。有了这些你可以订阅[记录日志](#log) 或 [退出 hooks](../../../concepts/components/prisma-client/working-with-prismaclient/connection-management#exit-hooks).
 
 <!-- prettier-ignore -->
 ### <inlinecode>$use()</inlinecode>
