@@ -1,25 +1,25 @@
 ---
-title: 'Old to new Nexus'
-metaTitle: 'Upgrade Prisma 1 with nexus-prisma to @nexus/schema'
-metaDescription: 'Learn how to upgrade existing Prisma 1 projects with nexus-prisma to Prisma 2 and Nexus.'
+title: '由旧版更新至新版 Nexus'
+metaTitle: '更新使用 nexus-prisma 的 Prisma 1 至 @nexus/schema'
+metaDescription: '学习如何更新现有的使用 nexus-prisma 的 Prisma 1 项目至 Prisma 2 和 Nexus。'
 ---
 
-## Overview
+## 概述
 
-> **Note**: This guide is not fully up-to-date as it currently uses the [deprecated](https://github.com/graphql-nexus/nexus-plugin-prisma/issues/1039) version of the [`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma). While this is still functional, it is recommended to use the new [`nexus-prisma`](https://github.com/prisma/nexus-prisma/) library going forward. This guide will be updated soon to use the new approach. If you have any questions, feel free to drop them in the [`#graphql-nexus`](https://prisma.slack.com/archives/CM2LEN7JL) channel in the [Prisma Slack](https://slack.prisma.io).
+> 注意：本指南不是完全最新的，因为它当前使用[不受支持的](https://github.com/graphql-nexus/nexus-plugin-prisma/issues/1039) [`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma)版本。虽然此功能仍然可用，但建议使用新的 [`nexus-prisma`](https://github.com/prisma/nexus-prisma/) 模块。本指南将很快更新，以使用新方法。如果您有任何问题，请随时在 [Prisma Slack](https://slack.prisma.io) 的 [`#graphql-nexus`](https://prisma.slack.com/archives/CM2LEN7JL) 频道提问。
 
-This upgrade guide describes how to upgrade a project that's based on [Prisma 1](https://github.com/prisma/prisma1) and uses [`nexus`](https://www.npmjs.com/package/nexus) (< v0.12.0) or [`@nexus/schema`](https://github.com/graphql-nexus/schema) together with [`nexus-prisma`](https://www.npmjs.com/package/nexus-prisma) (< v4.0.0) to implement a GraphQL server.
+本升级指南介绍如何升级基于 [Prisma 1] 的项目并使用 [`nexus`](https://www.npmjs.com/package/nexus) (< v0.12.0) 或 [`@nexus/schema`](https://github.com/graphql-nexus/schema) 和 [`nexus-prisma`](https://www.npmjs.com/package/nexus-prisma) (< v4.0.0) 来实现 GraphQL 服务端。
 
-The code will be upgraded to the latest version of `@nexus/schema`. Further, the `nexus-prisma` package will be replaced with the new [`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma).
+代码将升级至最新版本的 `@nexus/schema`。未来 `nexus-prisma` 模块将会被替换为新版 [`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma)。
 
-The guide assumes that you already went through the [guide for upgrading the Prisma layer](./upgrading-the-prisma-layer-postgres). This means you already:
+本指南假设你已经完成[升级 Prisma layer 指南](./upgrading-the-prisma-layer-postgres)。这意味着你已经完成如下内容：
 
-- installed the Prisma 2 CLI
-- created your Prisma 2 schema
-- introspected your database and resolved potential [schema incompatibilities](./schema-incompatibilities-postgres)
-- installed and generated Prisma Client
+- 安装 Prisma 2 CLI
+- 创建 Prisma 2 模型
+- 内省数据库并处理潜在的[模型不兼容](./schema-incompatibilities-postgres)问题
+- 安装并生成 Prisma Client
 
-The guide further assumes that you have a file setup that looks similar to this:
+本指南进一步假设你的文件体系与此类似：
 
 ```
 .
@@ -40,50 +40,50 @@ The guide further assumes that you have a file setup that looks similar to this:
     └── index.ts
 ```
 
-The important parts are:
+重要的部分如下：
 
-- A folder called with `prisma` with your Prisma 2 schema
-- A folder called `src` with your application code
+- 一个名为 `prisma` 的文件夹，其中包含 Prisma 2 模型
+- 一个名为 `src` 的文件夹，其中包含你的应用代码
 
-If this is not what your project structure looks like, you'll need to adjust the instructions in the guide to match your own setup.
+如果这不是你的项目结构的外观，则你需要调整指南中的说明以匹配你自己的设置。
 
-## 1. Upgrade Nexus dependencies
+## 1. 升级 Nexus 依赖
 
-To get started, you can remove the old Nexus and Prisma 1 dependencies:
+要开始，您可以删除旧的 Nexus 和 Prisma 1 的依赖项：
 
 ```copy
 npm uninstall nexus nexus-prisma prisma-client-lib prisma1
 ```
 
-Then, you can install the latest `@nexus/schema` dependency in your project:
+现在你可以在你的项目中安装最新版本的 `@nexus/schema` 依赖：
 
 ```copy
 npm install @nexus/schema
 ```
 
-Next, install the Prisma plugin for Nexus which will allow you to expose Prisma models in your GraphQL API (this is the new equivalent of the former `nexus-prisma` package):
+接下来，为 Nexus 安装 Prisma 插件，该插件将允许您在 GraphQL API 中公开 Prisma 模型（这是旧模块 `nexus-prisma` 的替代品）：
 
 ```copy
 npm install nexus-plugin-prisma
 ```
 
-The `nexus-plugin-prisma` dependency bundles all required Prisma dependencies. You should therefore remove the dependencies that you added installed when you upgraded the Prisma layer of your app:
+`nexus-plugin-prisma` 依赖项捆绑了所有必需的 Prisma 依赖项。因此，您应该删除在升级应用程序的 Prisma 层时添加所安装的依赖项：
 
 ```copy
 npm uninstall @prisma/cli @prisma/client
 ```
 
-Note however that you can still invoke the Prisma 2 CLI with the familiar command:
+但是请注意，您仍然可以使用熟悉的命令调用 Prisma 2 CLI：
 
 ```copy
 npx prisma -v
 ```
 
-> **Note**: If you see the output of the Prisma 1 CLI when running `npx prisma -v`, be sure to delete your `node_modules` folder and re-run `npm install`.
+> 注意：如果在运行 `npx prisma -v` 时看到 Prisma 1 CLI 的输出，请确保删除 `node_modules` 文件夹并重新运行 `npm install`。
 
-## 2. Update the configuration of Nexus and Prisma
+## 2. 更新 Nexus 和 Prisma 配置
 
-To get started, you can remove the old imports that are not needed any more with your new setup:
+开始之前，您可以删除不再需要的旧导入：
 
 ```ts line-number highlight=1-3;delete
 import { makePrismaSchema, prismaObjectType } from 'nexus-prisma'
@@ -91,7 +91,7 @@ import datamodelInfo from './generated/nexus-prisma'
 import { prisma } from './generated/prisma-client'
 ```
 
-Instead, you now import the following into your application:
+现在，您可以将以下内容导入到应用程序中：
 
 ```ts line-number highlight=1-3;add
 import { nexusSchemaPrisma } from 'nexus-plugin-prisma/schema'
@@ -99,9 +99,9 @@ import { objectType, makeSchema, queryType, mutationType } from '@nexus/schema'
 import { PrismaClient } from '@prisma/client'
 ```
 
-Next you need to adjust the code where you currently create your `GraphQLSchema`, most likely this is currently happening via the `makePrismaSchema` function in your code. Since this function was imported from the removed `nexus-prisma` package, you'll need to replace it with the `makeSchema` function from the `@nexus/schema` package. The way how the Prisma plugin for Nexus is used also changes in the latest version.
+接下来，您需要调整当前创建` GraphQLSchema` 的代码，这很可能是通过代码中的 `makePrismaSchema` 函数实现的。由于此函数是从已删除的 `nexus-prisma` 包导入的，因此需要将其替换为 `@nexus/schema` 包中的 `makeSchema` 函数。Nexus 的 Prisma 插件的使用方式在最新版本中也不同。
 
-Here's an example for such a configuration:
+以下是此类配置的示例：
 
 ```ts file=./src/index.ts line-number highlight=2,12-14;add|1,8-11;delete
  const schema = makePrismaSchema({
@@ -144,7 +144,7 @@ Here's an example for such a configuration:
 })
 ```
 
-If you previously typed the GraphQL `context` object that's passed through your resolver chain, you need to adjust the type like so:
+如果之前键入了通过解析器链传递的 GraphQL `context` 对象，则需要如下调整类型：
 
 ```ts file=./src/types.ts highlight=2,6;add|1,5;delete
 import { Prisma } from './generated/prisma-client'
@@ -156,19 +156,19 @@ export interface Context {
 }
 ```
 
-## 3. Migrate your GraphQL types
+## 3. 迁移 GraphQL 类型
 
-Here's a quick overview of the main differences between the two approaches of creating GraphQL types with the latest versions of `@nexus/schema` and `nexus-plugin-prisma`.
+下面简要介绍了使用最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 创建 GraphQL 类型的两种方法之间的主要区别。
 
-- The `prismaObjectType` function is not available any more, all types are created with Nexus' `objectType` function.
-- To expose Prisma models via Nexus, you can use the `t.model` property which is added to the `t` argument that's passed into Nexus' `definition` functions. `t.model` gives you access to the properties of a Prisma model and lets you expose them.
-- Exposing CRUD operations for Prisma models via Nexus follows a similar approach. These are exposed via `t.crud` in the `definition` functions of your `queryType` and `mutationType` types.
+- `prismaObjectType` 函数不再可用，所有类型都是使用 Nexus 的`objectType` 函数创建的。
+- 要通过 Nexus 公开 Prisma 模型，可以使用添加到传递到 Nexus `definition` 函数的 `t` 参数中的 `t.model` 属性 `t.model` 允许您访问 Prisma 模型的属性，并允许您公开这些属性。
+- 通过 Nexus 公开 Prisma 模型的 CRUD 操作遵循类似的方法。它们通过 `queryType` 和 `mutationType` 类型的 `definition` 函数中的 `t.crud` 公开。
 
-### 3.1. Migrating the `Post` type
+### 3.1. 迁移 `Post` 类型
 
-#### Type definition with the previous `nexus-prisma` package
+#### 使用先前的 `nexus-prisma` 包的类型定义
 
-In the sample app, the `User` type is defined as follows:
+在示例应用程序中，`User` 类型定义如下：
 
 ```ts
 const User = prismaObjectType({
@@ -189,9 +189,9 @@ const User = prismaObjectType({
 })
 ```
 
-#### Type definition with the latest version of `@nexus/schema` and the `nexus-plugin-prisma`
+#### 使用最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 进行类型定义
 
-With the latest version of `@nexus/schema`, you can now access the `objectType` function on your main `schema` instance and expose all fields from the Prisma model like so:
+使用最新版本的 `@nexus/schema`，您现在可以访问主 `schema` 实例上的 `objectType` f 函数，并公开 Prisma 模型中的所有字段，如下所示：
 
 ```ts
 const User = objectType({
@@ -212,21 +212,21 @@ const User = objectType({
 })
 ```
 
-Note that `t.model` looks at the `name` attribute in the object that's passed as an argument to the `objectType` function and matches it against the models in your Prisma schema. In this case, it's matched against the `User` model. Therefore, `t.model` exposes functions that are named after the fields of the `User` model.
+注意，`t.model` 会查找作为参数传递给 `objectType` 函数的对象中的 `name` 属性，并将其与 Prisma 模型中的模型进行匹配。在本例中，它与 `User` 模型匹配。因此，`t.model` 会公开以 `User` 模型的字段命名的函数。
 
-At this point, you might see errors on the relation fields `posts` and `profile`, e.g.:
+此时，您可能会在关系字段 `posts` 和 `profile`中看到错误，例如：
 
 ```bash highlight=1;delete
 Missing type Post, did you forget to import a type to the root query?
 ```
 
-This is because you didn't add the `Post` and `Profile` types to the GraphQL schema yet, the errors will go away once these types are part of the GraphQL schema as well!
+这是因为您尚未将 `Post` 和 `Profile` 类型添加到 GraphQL 模型中，一旦这些类型也是 GraphQL 模型的一部分，错误就会消失！
 
-### 3.2. Migrating the `Post` type
+### 3.2. 迁移 `Post` 类型
 
-#### Type definition with the previous `nexus-prisma` package
+#### 使用先前的 `nexus-prisma` 包的类型定义
 
-In the sample app, the `Post` type is defined as follows:
+在示例应用程序中，`Post` 类型定义如下：
 
 ```ts
 const Post = prismaObjectType({
@@ -237,13 +237,13 @@ const Post = prismaObjectType({
 })
 ```
 
-The asterisk in `prismaFields` means that _all_ Prisma fields are exposed.
+`prismaFields` 中的星号表示*所有* Prisma 字段都已暴露。
 
-#### Type definition with the latest version of `@nexus/schema` and the `nexus-plugin-prisma`
+#### 使用最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 进行类型定义
 
-With the latest version of `@nexus/schema`, you need to expose all fields explicitly, there's no option to just expose everything from a Prisma model.
+使用最新版本的 `@nexus/schema`，您需要显式地公开所有字段，不再可以只公开 Prisma 模型中的所有内容。
 
-Therefore, the new definition of `Post` must explicitly list all its fields:
+因此，`Post` 的新定义必须明确列出其所有字段：
 
 ```ts
 const Post = objectType({
@@ -259,13 +259,13 @@ const Post = objectType({
 })
 ```
 
-Note that `t.model` looks at the `name` attribute and matches it against the models in your Prisma schema. In this case, it's matched against the `Post` model. Therefore, `t.model` exposes functions that are named after the fields of the `Post` model.
+注意，`t.model` 会查找 `name` 属性，并将其与 Prisma 模型中的模型进行匹配。在本例中，它与 `Post` 模型匹配。因此，`t.model` 公开以 `Post` 模型的字段命名的函数。
 
-### 3.3. Migrating the `Profile` type
+### 3.3. 迁移 `Profile` 类型
 
-#### Type definition with the previous `nexus-prisma` package
+#### 使用先前的 `nexus-prisma` 包的类型定义
 
-In the sample app, the `Profile` type is defined as follows:
+在示例应用程序中，`Profile` 类型定义如下：
 
 ```ts
 const Profile = prismaObjectType({
@@ -276,13 +276,13 @@ const Profile = prismaObjectType({
 })
 ```
 
-The asterisk in `prismaFields` means that _all_ Prisma fields are exposed.
+`prismaFields` 中的星号表示*所有* Prisma 字段都已暴露。
 
-#### Type definition with the latest version of `@nexus/schema` and the `nexus-plugin-prisma`
+#### 使用最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 进行类型定义
 
-With the latest version of `@nexus/schema`, you need to expose all fields explicitly, there's no option to just expose everything from a Prisma model.
+使用最新版本的 `@nexus/schema`，您需要显式地公开所有字段，不再可以只公开 Prisma 模型中的所有内容。
 
-Therefore, the new definition of `Profile` must explicitly list all its fields:
+因此，`Profile` 的新定义必须明确列出其所有字段：
 
 ```ts
 const Profile = objectType({
@@ -296,13 +296,13 @@ const Profile = objectType({
 })
 ```
 
-Note that `t.model` looks at the `name` attribute and matches it against the models in your Prisma schema. In this case, it's matched against the `Profile` model. Therefore, `t.model` exposes functions that are named after the fields of the `Profile` model.
+注意，`t.model` 会查找 `name` 属性，并将其与 Prisma 模型中的模型进行匹配。在本例中，它与 `Profile` 模型匹配。因此，`t.model` 公开以 `Profile` 模型的字段命名的函数。
 
-### 3.4. Migrating the `Category` type
+### 3.4. 迁移 `Category` 类型
 
-#### Type definition with the previous `nexus-prisma` package
+#### 使用先前的 `nexus-prisma` 包的类型定义
 
-In the sample app, the `Category` type is defined as follows:
+在示例应用程序中，`Category` 类型定义如下：
 
 ```ts
 const Category = prismaObjectType({
@@ -313,13 +313,13 @@ const Category = prismaObjectType({
 })
 ```
 
-The asterisk in `prismaFields` means that _all_ Prisma fields are exposed.
+`prismaFields` 中的星号表示*所有* Prisma 字段都已暴露。
 
-#### Type definition with the latest version of `@nexus/schema` and the `nexus-plugin-prisma`
+#### 使用最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 进行类型定义
 
-With the latest version of `@nexus/schema`, you need to expose all fields explicitly, there's no option to just expose everything from a Prisma model.
+使用最新版本的 `@nexus/schema`，您需要显式地公开所有字段，不再可以只公开 Prisma 模型中的所有内容。
 
-Therefore, the new definition of `Category` must explicitly list all its fields:
+因此，`Category` 的新定义必须明确列出其所有字段：
 
 ```ts
 const Category = objectType({
@@ -336,13 +336,13 @@ const Category = objectType({
 })
 ```
 
-Note that `t.model` looks at the `name` attribute and matches it against the models in your Prisma schema. In this case, it's matched against the `Category` model. Therefore, `t.model` exposes functions that are named after the fields of the `Category` model.
+注意，`t.model` 会查找 `name` 属性，并将其与 Prisma 模型中的模型进行匹配。在本例中，它与 `Category` 模型匹配。因此，`t.model` 公开以 `Category` 模型的字段命名的函数。
 
-## 4. Migrate GraphQL operations
+## 4. 迁移 GraphQL 操作
 
-As a next step, you can start migrating all the GraphQL _queries_ and _mutations_ from the "previous" GraphQL API to the new one.
+作为下一步，您可以开始将所有 GraphQL 查询和变更从“先前的” GraphQL API 迁移到新的 GraphQL API。
 
-For this guide, the following sample GraphQL operations will be used:
+对于本指南，将使用以下示例 GraphQL 操作：
 
 ```graphql
 input UserUniqueInput {
@@ -364,13 +364,13 @@ type Mutation {
 }
 ```
 
-### 4.1. Migrate GraphQL queries
+### 4.1. 迁移 GraphQL 查询
 
-In this section, you'll migrate all GraphQL _queries_ from the previous version of `nexus` and `nexus-prisma` to the latest version of `@nexus/schema` and the `nexus-plugin-prisma`.
+在本节中，您将把所有 GraphQL 查询从先前版本的 `nexus` 和 `nexus-prisma` 迁移到最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma`。
 
-#### 4.1.1. Migrate the `users` query
+#### 4.1.1. 迁移 `users` 查询
 
-In our sample API, the `users` query from the sample GraphQL schema is implemented as follows.
+在示例应用程序中，`users` 查询定义如下：
 
 ```ts
 const Query = prismaObjectType({
@@ -381,7 +381,7 @@ const Query = prismaObjectType({
 })
 ```
 
-To get the same behavior with the new Nexus, you need to call the `users` function on `t.crud`:
+要使用新的 Nexus 实现类似功能，您需要调用 `t.crud` 上的 `users` 函数：
 
 ```ts
 schema.queryType({
@@ -395,11 +395,11 @@ schema.queryType({
 })
 ```
 
-Recall that the `crud` property is added to `t` by the `nexus-plugin-prisma` (using the same mechanism as for `t.model`).
+顺带一提，`crud` 属性是由 `nexus-plugin-prisma`（使用与 `t.model` 相同的机制）添加到 `t` 的。
 
-#### 4.1.2. Migrate the `posts(searchString: String): [Post!]!` query
+#### 4.1.2. 迁移 `posts(searchString: String): [Post!]!` 查询
 
-In the sample API, the `posts` query is implemented as follows:
+在示例应用程序中，`posts` 查询定义如下：
 
 ```ts
 queryType({
@@ -424,7 +424,7 @@ queryType({
 })
 ```
 
-The only thing that needs to be updated for this query is the call to Prisma since the new Prisma Client API looks a bit different from the one used in Prisma 1.
+对于这个查询，唯一需要更新的是对 Prisma 的调用，因为新的 Prisma Client API 看起来与 Prisma 1 中使用的 API 有点不同。
 
 ```ts line-number highlight=6,9,12,13;normal
 queryType({
@@ -449,11 +449,11 @@ queryType({
 })
 ```
 
-Notice that the `db` object is automatically attached to the `context` by the `nexus-plugin-prisma`. It represents an instance of your `PrismaClient` which enables you to send queries to your database inside your resolvers.
+注意，`db` 对象由 `nexus-plugin-prisma` 自动附加到 `context` 上。它表示 `PrismaClient` 的一个实例，它使您能够在解析器中向数据库发送查询。
 
-#### 4.1.3. Migrate the `user(uniqueInput: UserUniqueInput): User` query
+#### 4.1.3. 迁移 `user(uniqueInput: UserUniqueInput): User` 查询
 
-In the sample API, the `user` query is implemented as follows:
+在示例应用程序中，`user` 查询定义如下：
 
 ```ts
 inputObjectType({
@@ -485,7 +485,7 @@ queryType({
 })
 ```
 
-You now need to adjust the call to your `prisma` instance since the new Prisma Client API looks a bit different from the one used in Prisma 1.
+现在需要调整对 `prisma` 实例的调用，因为新的 Prisma Client API 与 Prisma 1 中的有些不同。
 
 ```ts line-number highlight=6,12-17;normal
 const Query = queryType({
@@ -511,13 +511,13 @@ const Query = queryType({
 })
 ```
 
-### 4.2. Migrate GraphQL mutations
+### 4.2. 迁移 GraphQL 变更
 
-In this section, you'll migrate the GraphQL mutations from the sample schema to the latest versions of `@nexus/schema` and the `nexus-plugin-prisma`.
+在本节中，您将把 GraphQL 变更从示例模型迁移到最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma`。
 
-#### 4.2.1. Migrate the `createUser` mutation
+#### 4.2.1. 迁移 `createUser` 变更
 
-In our sample API, the `createUser` mutation from the sample GraphQL schema is implemented as follows.
+在示例 API 中，`createUser` 变更的定义和实现如下。
 
 ```ts
 const Mutation = prismaObjectType({
@@ -528,7 +528,7 @@ const Mutation = prismaObjectType({
 })
 ```
 
-To get the same behavior with the latest versions of `@nexus/schema` and the `nexus-plugin-prisma`, you need to call the `createOneUser` function on `t.crud` and pass an `alias` in order to rename the field in your GraphQL schema to `createUser` (otherwise it would be called `createOneUser`, after the function that's used):
+要在最新版本的 `@nexus/schema` 和 `nexus-plugin-prisma` 中实现相同的功能，您需要在 `t.crud` 上调用 `createOneUser` 函数并传递 `alias`，以便将 GraphQL 模型中的字段重命名为 `createUser`（否则，在所使用的函数之后，它将被称为 `createOneUser`）：
 
 ```ts
 const Query = queryType({
@@ -540,11 +540,11 @@ const Query = queryType({
 })
 ```
 
-Recall that the `crud` property is added to `t` by the `nexus-plugin-prisma` (using the same mechanism as for `t.model`).
+顺带一提，`crud` 属性是由 `nexus-plugin-prisma`（使用与 `t.model` 相同的机制）添加到 `t` 的。
 
-#### 4.2.2. Migrate the `createDraft(title: String!, content: String, authorId: String!): Post!` query
+#### 4.2.2. 迁移 `createDraft(title: String!, content: String, authorId: String!): Post!` 变更
 
-In the sample app, the `createDraft` mutation implemented as follows.
+在示例 API 中，`createDraft` 变更的定义和实现如下。
 
 ```ts line-number
 mutationType({
@@ -570,7 +570,7 @@ mutationType({
 })
 ```
 
-You now need to adjust the call to your `prisma` instance since the new Prisma Client API looks a bit different from the one used in Prisma 1.
+现在需要调整对 `prisma` 实例的调用，因为新的 Prisma Client API 与 Prisma 1 中的有些不同。
 
 ```ts line-number highlight=11-19;normal
 const Mutation = mutationType({
@@ -598,9 +598,9 @@ const Mutation = mutationType({
 })
 ```
 
-#### 4.2.3. Migrate the `updateBio(bio: String, userUniqueInput: UserUniqueInput!): User` mutation
+#### 4.2.3. 迁移 `updateBio(bio: String, userUniqueInput: UserUniqueInput!): User` 变更
 
-In the sample API, the `updateBio` mutation is defined and implemented as follows.
+在示例 API 中，`updateBio` 变更的定义和实现如下。
 
 ```ts
 mutationType({
@@ -632,7 +632,7 @@ mutationType({
 })
 ```
 
-You now need to adjust the call to your `prisma` instance since the new Prisma Client API looks a bit different from the one used in Prisma 1.
+现在需要调整对 `prisma` 实例的调用，因为新的 Prisma Client API 与 Prisma 1 中的有些不同。
 
 ```ts highlight=13-23;normal
 const Mutation = mutationType({
@@ -664,9 +664,9 @@ const Mutation = mutationType({
 })
 ```
 
-#### 4.2.4. Migrate the `addPostToCategories(postId: String!, categoryIds: [String!]!): Post` mutation
+#### 4.2.4. 迁移 `addPostToCategories(postId: String!, categoryIds: [String!]!): Post` 变更
 
-In the sample API, the `addPostToCategories` mutation is defined and implemented as follows.
+在示例 API 中，`addPostToCategories` 变更的定义和实现如下。
 
 ```ts line-number
 mutationType({
@@ -696,7 +696,7 @@ mutationType({
 })
 ```
 
-You now need to adjust the call to your `prisma` instance since the new Prisma Client API looks a bit different from the one used in Prisma 1.
+现在需要调整对 `prisma` 实例的调用，因为新的 Prisma Client API 与 Prisma 1 中的有些不同。
 
 ```ts line-number highlight=14-21;normal
 const Mutation = mutationType({
@@ -726,25 +726,25 @@ const Mutation = mutationType({
 })
 ```
 
-## 5. Cleaning up
+## 5. 清理
 
-### 5.1. Clean up npm dependencies
+### 5.1. 清理 npm 依赖项
 
-If you haven't already, you can now uninstall dependencies that were related to the Prisma 1 setup:
+如果尚未卸载，现在可以卸载与 Prisma 1 配置相关的依赖项：
 
 ```
 npm uninstall prisma1 prisma-client-lib
 ```
 
-### 5.2. Delete unused files
+### 5.2. 删除无用文件
 
-Next, delete the files of your Prisma 1 setup:
+接下来，删除 Prisma 1 相关配置文件：
 
 ```
 rm -rf src/generated
 rm -rf prisma1
 ```
 
-### 5.3. Stop the Prisma server
+### 5.3. 停止 Prisma 服务端
 
-Finally, you can stop running your Prisma server.
+最后，您可以停止运行 Prisma 服务端。
