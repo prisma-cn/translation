@@ -1,69 +1,71 @@
 ---
-title: 'Is Prisma an ORM?'
-metaTitle: 'Is Prisma an ORM? | What is an ORM?'
-metaDescription: 'Learn about how Prisma implements the Data Mapper ORM pattern and how it achieves the same goal as traditional ORMs without requiring you to map classes to tables as traditional ORMs do.'
+title: 'Prisma 是 ORM 吗'
+metaTitle: 'Prisma 是 ORM 吗？ | 什么是 ORM?'
+metaDescription: '了解 Prisma 如何实现数据映射器（Data Mapper） ORM 模式，以及它如何实现与传统 ORM 相同的目标，而不像传统 ORM 那样要求你将类映射到表'
 ---
 
 <TopBlock>
 
-To answer the question briefly: _Yes, Prisma is a new kind of ORM that fundamentally differs from traditional ORMs and doesn't suffer from many of the problems commonly associated with these_.
+简单的回答一下这个问题：是的，Prisma 是一种新的 ORM，它与传统的 ORM 有根本的不同，而且不会有许多传统 ORM 的问题。
 
-Traditional ORMs provide an object-oriented way for working with relational databases by mapping tables to _model classes_ in your programming language. This approach leads to many problems that are caused by the [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object%E2%80%93relational_impedance_mismatch).
+传统的 ORM 提供了一种面向对象的方法，通过将表映射到编程语言中的 _模型类（model classes）_ 来处理关系型数据库。这种方法导致了很多问题，这些问题是由于 [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object%E2%80%93relational_impedance_mismatch) 引起的。
 
-Prisma works fundamentally different compared to that. With Prisma, you define your models in the declarative [Prisma schema](../../components/prisma-schema) which serves as the single source of truth for your database schema and the models in your programming language. In your application code, you can then use Prisma Client to read and write data in your database in a type-safe manner without the overhead of managing complex model instances. This makes the process of querying data a lot more natural as well as more predictable since Prisma Client always returns plain JavaScript objects.
+与此相比，Prisma 的工作方式有根本性的不同。使用 Prisma，你在声明性的 [Prisma schema](../../components/prisma-schema) 文件中定义你的模型，作为你的数据库 schema 和编程语言中模型的单一来源。在你的应用程序代码中，你可以使用 Prisma Client 以类型安全的方式读写数据库中的数据，而无需承担管理复杂的模型实例的开销。这使得查询数据的过程更加自然，也更加可预测，因为 Prisma Client 总是返回普通的 JavaScript 对象。
 
-In this article, you will learn in more detail about ORM patterns and workflows, how Prisma implements the Data Mapper pattern, and the benefits of Prisma's approach.
+在这篇文章中，你将更详细地了解 ORM 模式和工作流程，Prisma 如何实现数据映射器（Data Mapper）模式，以及使用 Prisma 的好处。
 
 </TopBlock>
 
-## What are ORMs?
+## 什么是 ORM？
 
-If you're already familiar with ORMs, feel free to jump to the [next section](#prisma) on Prisma.
+如果你已经很熟悉 ORM，可以随时跳到关于 Prisma 的下一节 [next section](#prisma)。
 
 ### ORM Patterns - Active Record and Data Mapper
 
-ORMs provide a high-level database abstraction. They expose a programmatic interface through objects to create, read, delete, and manipulate data while hiding some of the complexity of the database.
+### ORM 模式 - Active Record 和数据映射器
 
-The idea with ORMs is that you define your models as **classes** that map to tables in a database. The classes and their instances provide you with a programmatic API to read and write data in the database.
+ORM 提供了一个高等级的数据库抽象。它们通过对象暴露了一个程序化的接口，以创建、读取、删除和操作数据，同时隐藏了数据库的一些复杂特性。
 
-There are two common ORM patterns: [_Active Record_](https://en.wikipedia.org/wiki/Active_record_pattern) and [_Data Mapper_](https://en.wikipedia.org/wiki/Data_mapper_pattern) which differ in how they transfer data between objects and the database. While both patterns require you to define classes as the main building block, the most notable difference between the two is that the Data Mapper pattern decouples in-memory objects in the application code from the database and uses the data mapper layer to transfer data between the two. In practice, this means that with Data Mapper the in-memory objects (representing data in the database) don't even know that there’s a database present.
+ORM 的理念是，你将你的模型定义为 **类**，然后映射到数据库中的表。这些类和它们的实例为你提供了一个程序化的的 API 来读写数据库中的数据。
+
+有两种常见的 ORM 模式：[_Active Record_](https://en.wikipedia.org/wiki/Active_record_pattern) 和 [_Data Mapper_](https://en.wikipedia.org/wiki/Data_mapper_pattern)。两者的区别在于如何在对象和数据库之间传输数据。虽然这两种模式都需要你定义类作为主要构建模块，但两者之间最明显的区别是，数据映射器模式将应用代码中的内存对象与数据库解耦，并使用数据映射器层在两者之间传输数据。在实践中，这意味着在数据映射器中，内存对象（代表数据库中的数据）甚至不知道有数据库的存在。
 
 #### Active Record
 
-_Active Record_ ORMs map model classes to database tables where the structure of the two representations is closely related, e.g. each field in the model class will have a matching column in the database table. Instances of the model classes wrap database rows and carry both the data and the access logic to handle persisting changes in the database. Additionally, model classes can carry business logic specific to on the data in the model.
+_Active Record_ ORM 将模型类映射到数据库表中，这两种表现形式的结构是密切相关的，例如，模型类中的每个字段在数据库表中都有一个匹配的列。模型类的实例包裹着数据库行，并携带数据和访问逻辑，以处理数据库中的变化。此外，模型类可以携带特定于模型中的数据的业务逻辑。
 
-The model class typically has methods that do the following:
+模型类通常有起到以下作用的方法：
 
-- Construct an instance of the model from an SQL query.
-- Construct a new instance for later insertion into the table.
-- Methods to wrap commonly used SQL queries and return Active Record objects.
-- Update the database and insert into it the data in the Active Record.
-- Get and set the fields.
-- Implement business logic.
+- 从一个 SQL 查询中构建一个模型的实例
+- 构建一个新的实例以便以后插入到表中
+- 包裹常用的 SQL 查询并返回 Active Record 对象
+- 更新数据库并将活动记录（Active Record）中的数据插入其中
+- 获取和设置字段
+- 实现业务逻辑
 
-#### Data Mapper
+#### 数据映射器（Data Mapper）
 
-_Data Mapper_ ORMs, in contrast to Active Record, decouple the application's in-memory representation of data from the database's representation. The decoupling is achieved by requiring you to separate the mapping responsibility into two types of classes:
+与 Active Record 相比，_数据映射器（Data Mapper）_ ORM 将应用程序的内存数据表示与数据库的表示解耦。这种解耦是通过要求你把映射的责任分成两种类型的类来实现的。
 
-- **Entity classes**: The application's in-memory representation of entities which have no knowledge of the database
-- **Mapper classes**: These have two responsibilities:
-  - Transforming the data between the two representations.
-  - Generating the SQL necessary to fetch data from the database and persist changes in the database.
+- **实体类（Entity class）：应用程序对实体的内存表示，与数据库无关
+- **映射器类（Mapper class）：这些类有两个职责：
+  - 在两种表现形式之间转换数据
+  - 生成必要的 SQL，从数据库中获取和写入数据。
 
-Data Mapper ORMs allow for greater flexibility between the problem domain as implemented in code and the database. This is because the data mapper pattern allows you to hide the ways in which your database is implemented which isn’t an ideal way to think about your domain behind the whole data-mapping layer.
+数据映射器（Data Mapper）ORM 有更强的灵活性。因为数据映射器模式允许你隐藏你的数据库的实现方式。
 
-One of the reasons that traditional data mapper ORMs do this is due to the structure of organizations where the two responsibilities would be handled by separate teams, e.g., [DBAs](https://en.wikipedia.org/wiki/Database_administrator) and backend developers.
+传统的数据映射器 ORM 这样做的原因之一是由于组织的架构，这两种职责将交由不同的团队进行处理，例如 [DBAs](https://en.wikipedia.org/wiki/Database_administrator) 和后端开发人员。
 
-In reality, not all Data Mapper ORMs adhere to this pattern strictly. For example, [TypeORM](https://github.com/typeorm/typeorm/blob/master/docs/active-record-data-mapper.md#what-is-the-data-mapper-pattern), a popular ORM in the TypeScript ecosystem which supports both Active Record and Data Mapper, takes the following approach to Data Mapper:
+在现实中，并非所有的数据映射器 ORM 都严格遵循这一模式。例如 [TypeORM](https://github.com/typeorm/typeorm/blob/master/docs/active-record-data-mapper.md#what-is-the-data-mapper-pattern) 是 TypeScript 生态系统中流行的一个 ORM，它同时支持 Active Record 和 数据映射器（Data Mapper），它对数据映射器采取了以下方法：
 
-- Entity classes use decorators (`@Column`) to map class properties to table columns and are aware of the database.
-- Instead of mapper classes, _repository_ classes are used for querying the database and may contain custom queries. Repositories use the decorators to determine the mapping between entity properties and database columns.
+- 实体类使用装饰器（`@Column`） 将类的属性映射到表的列上。
+- _repository_ 类用于替代映射类（mapper class）来查询数据库，并可能包含自定义查询。Repository 类使用装饰器来确定实体属性和数据库列之间的映射关系。
 
-Given the following `User` table in the database:
+假设数据库中有如下 `User` 表：
 
 ![user-table](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/f5SFwjC.png)
 
-This is what the corresponding entity class would look like:
+这就是相应的实体类的样子：
 
 ```ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
@@ -84,21 +86,21 @@ export class User {
 }
 ```
 
-### Schema migration workflows
+### 数据库模式（Database Schema）迁移流程
 
-A central part of developing applications that make use of a database is changing the database schema to accommodate new features and to better fit the problem you're solving. In this section, we'll discuss what [schema migrations](https://www.prisma.io/dataguide/types/relational/what-are-database-migrations) are and how they affect the workflow.
+开发应用程序时，使用数据库的一个核心部分是改变数据库模式（schema），来适配新的功能或是修复已有的问题。在本节中，我们将讨论什么是 [模式迁移（schema migrations）](https://www.prisma.io/dataguide/types/relational/what-are-database-migrations)
 
-Because the ORM sits between the developer and the database, most ORMs provide a **migration tool** to assist with the creation and modification of the database schema.
+由于 ORM 位于开发者和数据库之间，大多数 ORM 都提供了一个 **迁移工具** 来协助创建和修改数据库模式（schema）。
 
-A migration is a set of steps to take the database schema from one state to another. The first migration usually creates tables and indices. Subsequent migrations may add or remove columns, introduce new indices, or create new tables. Depending on the migration tool, the migration may be in the form of SQL statements or programmatic code which will get converted to SQL statements (as with [ActiveRecord](https://guides.rubyonrails.org/active_record_migrations.html) and [SQLAlchemy](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script)).
+迁移是将数据库模式从一种状态迁移到另一种状态的一系列步骤。第一次迁移通常会创建表和索引。随后的迁移可能会增加或删除列、引入新的索引或者创建新的表。根据迁移工具的不同，迁移的形式可能是 SQL 语句或程序代码，这些代码被转换成 SQL 语句（如 [ActiveRecord](https://guides.rubyonrails.org/active_record_migrations.html) 和 [SQLAlchemy](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script) ）。
 
-Because databases usually contain data, migrations assist you with breaking down schema changes into smaller units which helps avoid inadvertent data loss.
+由于数据库通常包含数据，迁移（migration）可以帮助你将模式（schema）变化分解成更小的单元，这有助于避免无意中的数据丢失。
 
-Assuming you were starting a project from scratch, this is what a full workflow would look like: you create a migration that will create the `User` table in the database schema and define the `User` entity class as in the example above.
+假设你从头开始做一个项目，一个完整的工作流程是这样的：你创建一个迁移（migration），在数据模式（schema）中创建 `User` 表，并定义 `User` 类，如上面的例子。
 
-Then, as the project progresses and you decide you want to add a new `salutation` column to the `User` table, you would create another migration which would alter the table and add the `salutation` column.
+然后，随着项目的进展，你决定要在 `User` 表中增加一个新的 `salutation` 列，你将创建另一个迁移（migration），改变该表并增加 `salutation` 列。
 
-Let's take a look at how that would look like with a TypeORM migration:
+让我们看一下，如果采用 TypeOrm 进行迁移，会是什么样子。
 
 ```ts
 import { MigrationInterface, QueryRunner } from 'typeorm'
@@ -114,9 +116,9 @@ export class UserRefactoring1604448000 implements MigrationInterface {
 }
 ```
 
-Once a migration is carried out and the database schema has been altered, the entity and mapper classes must also be updated to account for the new `salutation` column.
+一旦进行了迁移，数据库模式被改变，实体和映射器（Data mapper）类也必须被更新，以考虑到新的 `salutation` 列。
 
-With TypeORM that means adding a `salutation` property to the `User` entity class:
+对于 TypeORM 来说，这意味着在 `User` 实体类中添加一个 `salutation` 属性。
 
 ```ts highlight=17,18;normal
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
@@ -140,57 +142,61 @@ export class User {
 }
 ```
 
-Synchronizing such changes can be a challenge with ORMs because the changes are applied manually and are not easily verifiable programmatically. Renaming an existing column can be even more cumbersome and involve searching and replacing references to the column.
+同步这样的变化对 ORM 来说是一个挑战，因为这些变化是手动应用的，不容易通过程序验证。重新命名一个现有的列可能更加麻烦，需要搜索和替换对该列的引用。
 
-> **Note:** Django's [makemigrations](https://docs.djangoproject.com/en/3.1/ref/django-admin/#django-admin-makemigrations) CLI generates migrations by inspecting changes in models which, similar to Prisma, does away with the synchronization problem.
+> **注意：** Django's 的 [makemigrations](https://docs.djangoproject.com/en/3.1/ref/django-admin/#django-admin-makemigrations) CLI 通过检查模型的变化来生成迁移，这于 Prisma 类似，消除了同步的问题。
 
-In summary, evolving the schema is a key part of building applications. With ORMs, the workflow for updating the schema involves using a migration tool to create a migration followed by updating the corresponding entity and mapper classes (depending on the implementation). As you'll see, Prisma takes a different approach to this.
+总而言之，更新 schema 是构建应用时的一个关键部分。对于 ORM 来说，更新数据库 schema 的流程包括使用迁移工具来创建一个迁移，然后更新相应的实体和映射器类（取决于具体的实现）。正如你将要看到的，Prisma 对此采取了不同的方法。
 
-Now that you've seen what migrations are and how they fit into the development workflows, you will learn more about the benefits and drawbacks of ORMs.
+现在你已经看到了什么是迁移，以及它们是如何融入开发流程的，你将会了解更多关于 ORM 的优点和缺点。
 
-### Benefits of ORMs
+### ORM 的优点
 
-There are different reasons why developers choose to use ORMs:
+开发者选择使用 ORM 的原因有很多：
 
-- ORMs facilitate implementing the domain model. The domain model is an object model that incorporates the behavior and data of your business logic. In other words, it allows you to focus on real business concepts rather than the database structure or SQL semantics.
-- ORMs help reduce the amount of code. They save you from writing repetitive SQL statements for common CRUD (Create Read Update Delete) operations and escaping user input to prevent vulnerabilities such as SQL injections.
-- ORMs require you to write little to no SQL (depending on your complexity you may still need to write the odd raw query). This is beneficial for developers who are not familiar with SQL but still want to work with a database.
-- Many ORMs abstract database-specific details. In theory, this means that an ORM can make changing from one database to another easier. It should be noted that in practice applications rarely change the database they use.
+- ORM 有利于实现领域模型。领域模型是一个对象模型，它包含了你业务逻辑的行为和数据。换句话说，它允许你专注于真正的业务概念，而不是数据库结构和 SQL 语义。
+- ORM 有助于减少代码量。它们使你不必为常见的 CRUD（创建、读取、更新、删除）操作编写重复的 SQL 语句，也不必为防止 SQL 注入等漏洞而避免用户输入。
+- ORM 要求你几乎不写 SQL（根据你的复杂性，你可能仍然需要写一些奇怪的原生查询）。这对那些不熟悉 SQL 但仍想使用数据库的开发者来说是有利的。
+- 许多 ORM 抽象了数据库的具体细节。在理论上，这意味着 ORM 可以使得从一种数据库迁移到另一种数据库变得更为容易。应该注意的是，在实践中，应用程序很少改变它们使用的数据库。
 
-As with all abstractions that aim to improve productivity, there are also drawbacks to using ORMs.
+和所有这些旨在提高生产力的抽象一样，使用 ORM 也有一些缺点。
 
-### Drawbacks of ORMs
+### ORM 的缺点
 
-The drawbacks of ORMs are not always apparent when you start using them. This section covers some of the commonly accepted ones:
+当你开始使用 ORM 时，它们的缺点并不总是很明显。本节涵盖了一些较为普遍的缺点：
 
-- With ORMs, you form an object graph representation of database tables which may lead to the [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object-relational_impedance_mismatch). This happens when the problem you are solving forms a complex object graph which doesn't trivially map to a relational database. Synchronizing between two different representations of data, one in the relational database, and the other in-memory (with objects) is quite difficult. This is because objects are more flexible and varied in the way they can relate to each other compared to relational database records.
-- While ORMs handle the complexity associated with the problem, the synchronization problem doesn't go away. Any changes to the database schema or the data model require the changes to be mapped back to the other side. This burden is often on the developer. In the context of a team working on a project, database schema changes require coordination.
-- ORMs tend to have a large API surface due to the complexity they encapsulate. The flip side of not having to write SQL is that you spend a lot of time learning how to use the ORM. This applies to most abstractions, however without understanding how the database works, improving slow queries can be difficult.
-- Some _complex queries_ aren't supported by ORMs due to the flexibility that SQL offers. This problem is alleviated by raw SQL querying functionality in which you pass the ORM a SQL statement string and the query is run for you.
+- 通过 ORM，你形成了数据库表的对象表示，这可能导致 [object-relational impedance mismatch](https://en.wikipedia.org/wiki/Object-relational_impedance_mismatch)。当你要解决的问题会形成一个复杂的对象图，而这个对象图并不能简单地映射到关系型数据库时，就会发生这种情况。在两种不同的数据表示之间进行同步，一种是在关系型数据库中，另一种是在内存中（对象），这是相当困难的。这是因为与关系型数据库的记录相比，对象之间的关联方式更加灵活多样。
+- 虽然 ORM 处理了与之相关的复杂问题，但同步问题并没有消失。对数据库 schema 或数据模型的任何更改都需要将这些改变映射回另一方。这个负担往往在开发者身上。在一个项目开发团队的背景下，数据库 schema 的变化需要成员之间相互协调。
+- 由于 ORM 封装的复杂性，它们往往有一个庞大的 API 层。不用写 SQL 的另一面是，你要花很多时间来学习如何使用 ORM。这适用于大多数抽象的业务场景，然而，如果不了解数据库的工作原理，优化缓慢的查询就会很困难。
+- 由于 SQL 提供的灵活性，一些 _复杂的查询_ 并不被 ORM 支持。这个问题可以通过原生 SQL 查询来应对，你可以向 ORM 传递一个 SQL 语句字符串，然后 ORM 就会为你执行这个查询。
 
-Now that the costs and benefits of ORMs have been covered, you can better understand what Prisma is and how it fits in.
+现在已经说明了使用 ORM 的成本和好处，你可以更好的理解 Prisma 是什么，以及它是如何工作的。
 
 ## Prisma
 
 Prisma is a **next-generation ORM** that makes working with databases easy for application developers and features the following tools:
 
-- [**Prisma Client**](../../components/prisma-client): Auto-generated and type-safe database client for use in your application.
-- [**Prisma Migrate**](../../components/prisma-migrate): A declarative data modeling and migration tool.
-- [**Prisma Studio**](../../components/prisma-studio): A modern GUI for browsing and managing data in your database.
+Prisma 是一个 **下一代 ORM**，使应用开发者能够更容易地使用数据库，并提供了以下工具：
 
-> **Note:** Since Prisma Client is the most prominent tool, we often refer to it as simply Prisma.
+- [**Prisma Client**](../../components/prisma-client): 在你的应用中自动生成的类型安全数据库客户端。
+- [**Prisma Migrate**](../../components/prisma-migrate): 一个声明式的数据建模和迁移工具。
+- [**Prisma Studio**](../../components/prisma-studio): 一个用来浏览和管理你的数据的现代图形化界面。
 
-The three tools use the [Prisma schema](../../components/prisma-schema) as a single source of truth for the database schema, your application's object schema, and the mapping between the two. It's defined by you and is your main configuration file for Prisma.
+> **注意：** 因为 Prisma Client 是最重要的工具，所以我们经常把它简称为 Prisma。
 
-Prisma makes you productive and confident in the software you're building with features such as _type safety_, rich auto-completion, and a natural API for fetching relations.
+这三个工具都使用 [Prisma schema](../../components/prisma-schema) 来作为数据库 schema、应用程序的对象 schema 以及两者之间的映射关系的唯一源。Prisma schema 由你来进行定义，是你对 Prisma 的主要配置文件。
 
-In the next section, you will learn about how Prisma implements the Data Mapper ORM pattern.
+Prisma 通过提供 _类型安全_、丰富的自动补全、平滑的 API 等特性，来使你在开发应用程序时更有生产力和信心。
 
-### How Prisma implements the Data Mapper pattern
+在下一节中，你将了解 Prisma 如何实现数据映射器 ORM 模式。
 
-As mentioned earlier in the article, the Data Mapper pattern aligns well with organizations where the database and application are owned by different teams.
+### Prisma 如何实现数据映射器（Data Mapper）模式
 
-With the rise of modern cloud environments with managed database services and DevOps practices, more teams embrace a cross-functional approach, whereby teams own both the full development cycle including the database and operational concerns.
+正如前文所提到的，数据映射器模式非常适合于应用程序和数据库分别归属于不同团队的场景。
+
+随着现代云数据库和 DevOps 实践的兴起，更多的团队接受了跨职能的方式，即团队掌控包含应用开发和数据库在内的整个开发生命周期。
+
+Prisma 实现了数据库 schema 和对象 schema 的串联更新，从而减少了对
 
 Prisma enables the evolution of the DB schema and object schema in tandem, thereby reducing the need for deviation in the first place, while still allowing you to keep your application and database somewhat decoupled using `@map` attributes. While this may seem like a limitation, it prevents the domain model's evolution (through the object schema) from getting imposed on the database as an afterthought.
 

@@ -1,18 +1,18 @@
 ---
 title: 'Mongoose'
-metaTitle: 'Prisma vs Mongoose'
-metaDescription: 'Learn how Prisma compares to Mongoose.'
+metaTitle: 'Prisma 对比 Mongoose'
+metaDescription: '了解 Prisma 和 Mongoose 的对比情况。'
 ---
 
 <TopBlock>
 
-This page compares the Prisma and [Mongoose](https://mongoosejs.com/docs/guide.html) APIs.
+本文比较了 Prisma 和 [Mongoose](https://mongoosejs.com/docs/guide.html) 的 API.
 
-> **Note**: [MongoDB support is currently in Preview](../../../concepts/database-connectors/mongodb).
+> **注意**：[对 MongoDB 的支持当前处于预览阶段](../../../concepts/database-connectors/mongodb) 。
 
 </TopBlock>
 
-## Fetching single objects
+### 获取单个对象
 
 **Prisma**
 
@@ -30,7 +30,7 @@ const user = await prisma.user.findUnique({
 const result = await User.findById('5eb9354624286a04e42401d8')
 ```
 
-## Fetching selected scalars of single objects
+### 获取单个对象的选定字段
 
 **Prisma**
 
@@ -54,7 +54,7 @@ const user = await User.findById('5eb9354624286a04e42401d8').select([
 ])
 ```
 
-## Fetching relations
+### 获取关联关系
 
 **Prisma**
 
@@ -89,7 +89,7 @@ const posts = await prisma.user
 const userWithPosts = await User.findById(id).populate('posts')
 ```
 
-## Filtering for concrete values
+### 对具体值进行过滤
 
 **Prisma**
 
@@ -111,7 +111,7 @@ const user = await Post.find({
 })
 ```
 
-## Other filter criteria
+### 其他过滤场景
 
 **Prisma**
 
@@ -121,7 +121,7 @@ Prisma generates many [additional filters](../../components/prisma-client/filter
 
 Mongoose exposes the [MongoDB query selectors](https://docs.mongodb.com/manual/reference/operator/query/#query-selectors) as filter criteria.
 
-## Relation filters
+### 过滤关联关系
 
 **Prisma**
 
@@ -147,11 +147,11 @@ const posts = await prisma.user.findMany({
 
 Mongoose doesn't offer a dedicated API for relation filters. You can get similar functionality by adding an additional step to filter the results returned by the query.
 
-## Pagination
+### 分页（Pagination）
 
 **Prisma**
 
-Cursor-style pagination:
+基于游标的分页：
 
 ```ts
 const page = prisma.post.findMany({
@@ -162,7 +162,7 @@ const page = prisma.post.findMany({
 })
 ```
 
-Offset pagination:
+基于 limit-offset 的分页：
 
 ```ts
 const cc = prisma.post.findMany({
@@ -180,7 +180,7 @@ const posts = await Post.find({
 })
 ```
 
-## Creating objects
+### 新建
 
 **Prisma**
 
@@ -213,7 +213,7 @@ await user.save()
 
 </CodeBlock>
 
-## Updating objects
+### 更新
 
 **Prisma**
 
@@ -252,7 +252,7 @@ await user.save()
 
 </CodeBlock>
 
-## Deleting objects
+### 删除
 
 **Prisma**
 
@@ -270,7 +270,7 @@ const user = prisma.user.delete({
 await User.deleteOne({ _id: id })
 ```
 
-## Batch deletes
+### 批量更新
 
 **Prisma**
 
