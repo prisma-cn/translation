@@ -1,138 +1,138 @@
 ---
-title: 'Database features matrix'
-metaTitle: 'Database features matrix (Reference)'
-metaDescription: 'Learn which database features are supported in Prisma and how they map to the different Prisma tools.'
+title: '数据库特性'
+metaTitle: '数据库特特性 (参考)'
+metaDescription: '了解Prisma支持哪些数据库特性，以及它们如何映射到不同的Prisma工具。'
 ---
 
 <TopBlock>
 
-This page gives an overview of the features which are provided by the databases that Prisma supports. Additionally, it explains how each of these features can be used in Prisma with pointers to further documentation.
+本页概述了受 Prisma 支持的数据库自身特性，以及如何在 Prisma 中使用这些特性并附带相关文档链接。
 
-> **Note**: If a feature is not supported natively by the database, it's also not available in Prisma.
+> **注意**: 如果数据库原生不支持某个功能，则 Prisma 中也不支持该功能。
 
 </TopBlock>
 
-## Relational database features
+## 关系数据库特性
 
-This section describes which database features exist on the relational databases that are currently supported by Prisma. The **Prisma schema** column indicates how a certain feature can be represented in the [Prisma schema](../../concepts/components/prisma-schema) and links to its documentation. Note that database features can be used in **Prisma Client** even though they might not yet be representable in the Prisma schema.
+本节介绍 Prisma 当前支持的关系数据库特性。**Prisma schema** 列指明了如何在 [Prisma schema](../../concepts/components/prisma-schema) 及其文档链接中表示特定功能。请注意，尚未在 Prisma 模式中表示的数据库功能也可以在 **Prisma Client** 中使用。
 
-### Constraints
+### 约束
 
-| Constraint    | PostgreSQL | SQL Server | MySQL | SQLite |                                             Prisma schema                                              | Prisma Client | Prisma Migrate |
-| ------------- | :--------: | :--------- | :---: | :----: | :----------------------------------------------------------------------------------------------------: | :-----------: | :------------: |
-| `PRIMARY KEY` |     ✔️     | ✔️         |  ✔️   |   ✔️   |      [`@id` and `@@id`](../../concepts/components/prisma-schema/data-model#defining-an-id-field)       |      ✔️       |       ✔️       |
-| `FOREIGN KEY` |     ✔️     | ✔️         |  ✔️   |   ✔️   |          [Relation fields](../../concepts/components/prisma-schema/relations#relation-fields)          |      ✔️       |       ✔️       |
-| `UNIQUE`      |     ✔️     | ✔️†        |  ✔️   |   ✔️   | [`@unique` and `@@unique`](../../concepts/components/prisma-schema/data-model#defining-a-unique-field) |      ✔️       |       ✔️       |
-| `CHECK`       |     ✔️     | ✔️         | ✔️\*  |   ✔️   |                                                Not yet                                                 |      ✔️       |    Not yet     |
-| `NOT NULL`    |     ✔️     | ✔️         |  ✔️   |   ✔️   |                [`?`](../../concepts/components/prisma-schema/data-model#type-modifiers)                |      ✔️       |       ✔️       |
-| `DEFAULT`     |     ✔️     | ✔️         |  ✔️   |   ✔️   |       [`@default`](../../concepts/components/prisma-schema/data-model#defining-a-default-value)        |      ✔️       |       ✔️       |
+| 约束          | PostgreSQL | SQL Server | MySQL | SQLite |                                             Prisma schema                                             | Prisma Client | Prisma Migrate |
+| ------------- | :--------: | :--------- | :---: | :----: | :---------------------------------------------------------------------------------------------------: | :-----------: | :------------: |
+| `PRIMARY KEY` |     ✔️     | ✔️         |  ✔️   |   ✔️   |      [`@id` 和 `@@id`](../../concepts/components/prisma-schema/data-model#defining-an-id-field)       |      ✔️       |       ✔️       |
+| `FOREIGN KEY` |     ✔️     | ✔️         |  ✔️   |   ✔️   |         [Relation fields](../../concepts/components/prisma-schema/relations#relation-fields)          |      ✔️       |       ✔️       |
+| `UNIQUE`      |     ✔️     | ✔️†        |  ✔️   |   ✔️   | [`@unique` 和 `@@unique`](../../concepts/components/prisma-schema/data-model#defining-a-unique-field) |      ✔️       |       ✔️       |
+| `CHECK`       |     ✔️     | ✔️         | ✔️\*  |   ✔️   |                                               暂不支持                                                |      ✔️       |    暂不支持    |
+| `NOT NULL`    |     ✔️     | ✔️         |  ✔️   |   ✔️   |               [`?`](../../concepts/components/prisma-schema/data-model#type-modifiers)                |      ✔️       |       ✔️       |
+| `DEFAULT`     |     ✔️     | ✔️         |  ✔️   |   ✔️   |       [`@default`](../../concepts/components/prisma-schema/data-model#defining-a-default-value)       |      ✔️       |       ✔️       |
 
-- \*In [MySQL 8 and higher](https://mysqlserverteam.com/mysql-8-0-16-introducing-check-constraint/)
-- † [Caveats apply when using the `UNIQUE` constraint with SQL Server](../../concepts/components/preview-features/sql-server#cannot-use-column-with-unique-constraint-and-filtered-index-as-foreign-key)
+- \* [MySQL 8 及以上](https://mysqlserverteam.com/mysql-8-0-16-introducing-check-constraint/)
+- † [SQL Server 使用 `UNIQUE` 约束时的注意事项](../../concepts/components/preview-features/sql-server#cannot-use-column-with-unique-constraint-and-filtered-index-as-foreign-key)
 
-### Deletion behaviors (for foreign key references)
+### 删除行为（对于外键引用）
 
-| Deletion behavior | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
-| ----------------- | ---------- | ---------- | ----- | ------ | ------------- | ------------- | -------------- |
-| `CASCADE`         | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `RESTRICT`        | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `NO ACTION`       | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `SET DEFAULT`     | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `SET NULL`        | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| 删除行为      | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
+| ------------- | ---------- | ---------- | ----- | ------ | ------------- | ------------- | -------------- |
+| `CASCADE`     | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `RESTRICT`    | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `NO ACTION`   | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `SET DEFAULT` | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `SET NULL`    | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
 
-- † In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later you can define [referential actions](../../concepts/components/prisma-schema/relations/referential-actions) on your relation fields. Referential actions determine what should happen to a record when a related record is deleted or updated. **Note** that referential actions are currently a **Preview feature**.
+- † 在[2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0)及以上版本中，你可以在关系字段上定义 [关联操作](../../concepts/components/prisma-schema/relations/referential-actions)。关联操作决定删除或更新相关记录时的处理方式 **注意** 引用操作当前处于**预览功能**阶段。
 
-### Update behaviors (for foreign key references)
+### 更新行为（对于外键引用）
 
-| Update behavior | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
-| --------------- | ---------- | ---------- | ----- | ------ | ------------- | ------------- | -------------- |
-| `CASCADE`       | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `RESTRICT`      | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `NO ACTION`     | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `SET DEFAULT`   | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
-| `SET NULL`      | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| 更新行为      | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
+| ------------- | ---------- | ---------- | ----- | ------ | ------------- | ------------- | -------------- |
+| `CASCADE`     | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `RESTRICT`    | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `NO ACTION`   | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `SET DEFAULT` | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
+| `SET NULL`    | ✔️         | ✔️         | ✔️    | ✔️     | **✔️**†       | ✔️            | **✔️**†        |
 
-- † In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later you can define [referential actions](../../concepts/components/prisma-schema/relations/referential-actions) on your relation fields. Referential actions determine what should happen to a record when a related record is deleted or updated. **Note** that referential actions are currently a **Preview feature**.
+- † 在 [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) 及以上版本中，你可以在关系字段上定义 [关联操作](../../concepts/components/prisma-schema/relations/referential-actions) 。关联操作决定删除或更新相关记录时的处理方式 **注意** 引用操作当前处于**预览特性**阶段。
 
-### Indexes
+### 索引
 
-| Index    | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema                                                                                          | Prisma Client | Prisma Migrate |
-| -------- | ---------- | ---------- | ----- | ------ | ------------------------------------------------------------------------------------------------------ | ------------- | -------------- |
-| `UNIQUE` | ✔️         | ✔️         | ✔️    | ✔️     | [`@unique` and `@@unique`](../../concepts/components/prisma-schema/data-model#defining-a-unique-field) | ✔️            | ✔️             |
-| `WHERE`  | ✔️         | ✔️         | ✔️    | ✔️     | Not yet                                                                                                | ✔️            | Not yet        |
-| `USING`  | ✔️         | ✔️         | ✔️    | ✔️     | Not yet                                                                                                | ✔️            | Not yet        |
+| 索引     | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema                                                                                         | Prisma Client | Prisma Migrate |
+| -------- | ---------- | ---------- | ----- | ------ | ----------------------------------------------------------------------------------------------------- | ------------- | -------------- |
+| `UNIQUE` | ✔️         | ✔️         | ✔️    | ✔️     | [`@unique` 和 `@@unique`](../../concepts/components/prisma-schema/data-model#defining-a-unique-field) | ✔️            | ✔️             |
+| `WHERE`  | ✔️         | ✔️         | ✔️    | ✔️     | 暂不支持                                                                                              | ✔️            | 暂不支持       |
+| `USING`  | ✔️         | ✔️         | ✔️    | ✔️     | 暂不支持                                                                                              | ✔️            | 暂不支持       |
 
-Algorithm specified via `USING`:
+通过 `USING` 指定索引类型：
 
-| Index type (Algorithm) | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
-| ---------------------- | ---------- | ---------- | ----- | ------ | ------------- | ------------- | -------------- |
-| B-tree                 | ✔️         | ✔️         | ✔️    | ✔️     | Not yet       | ✔️            | Not yet        |
-| Hash                   | ✔️         | ✔️         | ✔️    | ✔️     | Not yet       | ✔️            | Not yet        |
-| GiST                   | ✔️         | ✔️         | No    | No     | Not yet       | ✔️\*          | Not yet        |
-| GIN                    | ✔️         | ✔️         | No    | No     | Not yet       | ✔️\*          | Not yet        |
-| BRIN                   | ✔️         | ✔️         | No    | No     | Not yet       | ✔️\*          | Not yet        |
-| SP-GiST                | ✔️         | ✔️         | No    | No     | Not yet       | ✔️\*          | Not yet        |
+| 索引类型（算法） | PostgreSQL | SQL Server | MySQL  | SQLite | Prisma schema | Prisma Client | Prisma Migrate |
+| ---------------- | ---------- | ---------- | ------ | ------ | ------------- | ------------- | -------------- |
+| B-tree           | ✔️         | ✔️         | ✔️     | ✔️     | 暂不支持      | ✔️            | 暂不支持       |
+| Hash             | ✔️         | ✔️         | ✔️     | ✔️     | 暂不支持      | ✔️            | 暂不支持       |
+| GiST             | ✔️         | ✔️         | 不支持 | 不支持 | 暂不支持      | ✔️\*          | 暂不支持       |
+| GIN              | ✔️         | ✔️         | 不支持 | 不支持 | 暂不支持      | ✔️\*          | 暂不支持       |
+| BRIN             | ✔️         | ✔️         | 不支持 | 不支持 | 暂不支持      | ✔️\*          | 暂不支持       |
+| SP-GiST          | ✔️         | ✔️         | 不支持 | 不支持 | 暂不支持      | ✔️\*          | 暂不支持       |
 
-\* Only available if natively supported by database.
+\* 仅当数据库原生支持时可用。
 
-<!-- **MySQL only**
+<!-- **MySQL 特有**
 
-Algorithm option (MySQL):
+算法选项 (MySQL):
 
-| Index type (Algorithm) | MySQL | Prisma schema | Prisma Migrate | Prisma Client |
+| 索引类型（算法） | MySQL | Prisma schema | Prisma Migrate | Prisma Client |
 | ---------------------- | ----- | ------------- | -------------- | ------------- |
-| `INPLACE`              | ✔️    | Not yet       | Not yet        | ✔️            |
-| `COPY`                 | ✔️    | Not yet       | Not yet        | ✔️            |
+| `INPLACE`              | ✔️    | 暂不支持       | 暂不支持        | ✔️            |
+| `COPY`                 | ✔️    | 暂不支持       | 暂不支持        | ✔️            |
 
-Lock option (MySQL):
+锁定选项 (MySQL):
 
-| Index type (Algorithm)      | MySQL | Prisma schema | Prisma Migrate | Prisma Client |
+| 索引类型 (Algorithm)      | MySQL | Prisma schema | Prisma Migrate | Prisma Client |
 | --------------------------- | ----- | ------------- | -------------- | ------------- |
-| `NONE`                      | ✔️    | Not yet       | Not yet        | ✔️            |
-| `EXCLUSIVE`                 | ✔️    | Not yet       | Not yet        | ✔️            |
-| `SHARED`                    | ✔️    | Not yet       | Not yet        | ✔️            |
-| ✔️ (e.g. via `date('now')`) | -->
+| `NONE`                      | ✔️    | 暂不支持       | 暂不支持        | ✔️            |
+| `EXCLUSIVE`                 | ✔️    | 暂不支持       | 暂不支持        | ✔️            |
+| `SHARED`                    | ✔️    | 暂不支持       | 暂不支持        | ✔️            |
+| ✔️ (例如使用 `date('now')`) | -->
 
-### Misc
+### 杂项
 
-| Feature                           | PostgreSQL | SQL Server | MySQL | SQLite | Prisma schema                                                               | Prisma Client                                                                                    | Prisma Migrate |
-| :-------------------------------- | :--------- | :--------- | :---- | :----- | :-------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- | --- |
-| Autoincrementing IDs              | ✔️         | ✔️         | ✔️    |        | ✔️                                                                          | [`autoincrement()`](../../concepts/components/prisma-schema/data-model#defining-a-default-value) | ✔️             | ✔️  |
-| Arrays                            | ✔️         | No         | No    | No     | [`[]`](../../concepts/components/prisma-schema/data-model#type-modifiers)   | ✔️\*                                                                                             | ✔️\*           |
-| Enums                             | ✔️         | No         | ✔️    | No     | [`enum`](../../concepts/components/prisma-schema/data-model#defining-enums) | ✔️\*                                                                                             | ✔️\*           |
-| Native database types             | ✔️         | ✔️         | ✔️    | ✔️     | ✔️                                                                          | ✔️                                                                                               | Not yet        |
-| SQL Views                         | ✔️         | ✔️         | ✔️    | ✔️     | Not yet                                                                     | Not yet                                                                                          | Not yet        |
-| Authorization and user management | ✔️         | ✔️         | ✔️    | No     | Not yet                                                                     | Not yet                                                                                          | Not yet        |
-| JSON support                      | ✔️         | ✔️         | ✔️    | No     | ✔️\*                                                                        | ✔️\*                                                                                             | ✔️\*           |
-| Fuzzy/Phrase full text search     | ✔️         | ✔️         | ✔️    | No     | Not yet                                                                     | Not yet                                                                                          | Not yet        |
-| Table inheritance                 | ✔️         | ✔️         | No    | No     | Not yet                                                                     | ✔️\*                                                                                             | Not yet        |
+| 特性                              | PostgreSQL | SQL Server | MySQL  | SQLite | Prisma schema                                                               | Prisma Client                                                                                    | Prisma Migrate |
+| :-------------------------------- | :--------- | :--------- | :----- | :----- | :-------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- | --- |
+| Autoincrementing IDs              | ✔️         | ✔️         | ✔️     |        | ✔️                                                                          | [`autoincrement()`](../../concepts/components/prisma-schema/data-model#defining-a-default-value) | ✔️             | ✔️  |
+| Arrays                            | ✔️         | 不支持     | 不支持 | 不支持 | [`[]`](../../concepts/components/prisma-schema/data-model#type-modifiers)   | ✔️\*                                                                                             | ✔️\*           |
+| Enums                             | ✔️         | 不支持     | ✔️     | 不支持 | [`enum`](../../concepts/components/prisma-schema/data-model#defining-enums) | ✔️\*                                                                                             | ✔️\*           |
+| Native database types             | ✔️         | ✔️         | ✔️     | ✔️     | ✔️                                                                          | ✔️                                                                                               | 暂不支持       |
+| SQL Views                         | ✔️         | ✔️         | ✔️     | ✔️     | 暂不支持                                                                    | 暂不支持                                                                                         | 暂不支持       |
+| Authorization and user management | ✔️         | ✔️         | ✔️     | 不支持 | 暂不支持                                                                    | 暂不支持                                                                                         | 暂不支持       |
+| JSON support                      | ✔️         | ✔️         | ✔️     | 不支持 | ✔️\*                                                                        | ✔️\*                                                                                             | ✔️\*           |
+| Fuzzy/Phrase full text search     | ✔️         | ✔️         | ✔️     | 不支持 | 暂不支持                                                                    | 暂不支持                                                                                         | 暂不支持       |
+| Table inheritance                 | ✔️         | ✔️         | 不支持 | 不支持 | 暂不支持                                                                    | ✔️\*                                                                                             | 暂不支持       |
 
 <FootNote>
 
-\* Only available if natively supported by database.
+\* 仅当数据库原生支持时可用。
 
 </FootNote>
 
-## NoSQL database features
+## NoSQL 数据库特性
 
-This section describes which database features exist on the NoSQL databases that are currently supported by Prisma.
+本节介绍 Prisma 当前支持的 NoSQL 数据库特性。
 
 ### MongoDB
 
-The following table lists common MongoDB features and describes the level of support offered by Prisma:
+下表列出了常见的 MongoDB 功能，并描述了 Prisma 提供的支持程度：
 
-| Feature                                   | Supported by Prisma | Notes                                                                                                                                                                                                         |
-| :---------------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Embedded documents                        | Not formally        | Embedded documents are not formally supported, but you can technically use the `Json` field to manage embedded documents on your own. See [GitHub issue #6708](https://github.com/prisma/prisma/issues/6708). |
-| Transactions                              | ✔️                  |                                                                                                                                                                                                               |
-| Indexes                                   | ✔️ with caveats     | You cannot model indexes in the Prisma schema, but Prisma does not prevent you from creating indexes for your database.                                                                                       |
-| Autoincrementing IDs                      | No                  |                                                                                                                                                                                                               |
-| Compound IDs                              | No                  | MongoDB does not support composite IDs (`@@id`)                                                                                                                                                               |
-| Generated `ObjectId`                      | ✔️                  | See: [Defining IDs for MongoDB](../../concepts/components/prisma-schema/data-model#defining-ids-in-mongodb)                                                                                                   |
-| Arrays                                    | ✔️                  |                                                                                                                                                                                                               |
-| Enums                                     | ✔️                  | Implemented at Prisma level                                                                                                                                                                                   |
-| Native database types                     | ✔️                  | See: [Field mapping reference](../api-reference/prisma-schema-reference#model-field-scalar-types)                                                                                                             |
-| JSON support                              | ✔️                  | Advanced `Json` field filtering not supported                                                                                                                                                                 |
-| DBrefs                                    | No                  |
-| Change streams                            | No                  |
-| Direct access to the aggregation pipeline | No                  |
+| 特性                                      | Prisma 是否支持 | 备注                                                                                                                                                 |
+| :---------------------------------------- | :-------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Embedded documents                        | 未正式支持      | 嵌入文档不受正式支持，但从技术上讲，你可以使用 `Json` 字段自行管理嵌入文档. 参考 [GitHub issue #6708](https://github.com/prisma/prisma/issues/6708). |
+| Transactions                              | ✔️              |                                                                                                                                                      |
+| Indexes                                   | ✔️ 警告         | 你不能在 Prisma schema 中为索引建模，但手动为数据库创建索引。                                                                                        |
+| Autoincrementing IDs                      | 不支持          |                                                                                                                                                      |
+| Compound IDs                              | 不支持          | MongoDB 不支持复合 id (`@@id`)                                                                                                                       |
+| Generated `ObjectId`                      | ✔️              | 参考： [为 MongoDB 创建 ID](../../concepts/components/prisma-schema/data-model#defining-ids-in-mongodb)                                              |
+| Arrays                                    | ✔️              |                                                                                                                                                      |
+| Enums                                     | ✔️              | Prisma 内部实现。                                                                                                                                    |
+| Native database types                     | ✔️              | 参考： [字段映射参考](../api-reference/prisma-schema-reference#model-field-scalar-types)                                                             |
+| JSON support                              | ✔️              | 不支持高级 `Json` 字段筛选项                                                                                                                         |
+| DBrefs                                    | 不支持          |
+| Change streams                            | 不支持          |
+| Direct access to the aggregation pipeline | 不支持          |
