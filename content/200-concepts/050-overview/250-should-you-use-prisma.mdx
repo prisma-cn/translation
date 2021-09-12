@@ -1,20 +1,20 @@
 ---
 title: '你是否应该使用 Prisma？'
 metaTitle: '你是否应该使用 Prisma 作为 Node.js/TypeScript 的 ORM？'
-metaDescription: 'Prisma 是一种新型的 ORM。本文解释了 Prisma 在什么时候适合使用，并为其他情况提供了替代方案。'
+metaDescription: 'Prisma 是一种新型的 ORM。本文介绍了 Prisma 在什么时候适合使用，并为其他情况提供了替代方案。'
 tocDepth: 2
 toc: true
 ---
 
 <TopBlock>
 
-Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。本文解释了 Prisma 在什么时候适合使用，并为其他情况提供了替代方案。
+Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。本文介绍了 Prisma 在什么时候适合使用，并为其他情况提供了替代方案。
 
 </TopBlock>
 
 <!-- ## TLDR
 
-这里概述了 Prisma 可能适合或不适合你的项目的不同情况。想要更详细的了解每种情况，请在本文下面找到相应的部分。
+此处是 Prisma 在可能适用也可能不适用于您项目的不同场景下的应用概述，如果想要了解每种场景的具体使用，请查看本文后面相应的章节。
 
 **Prisma 可能适合你的情况**
 
@@ -26,9 +26,9 @@ Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。
 
 ... 你想要一个能全面覆盖你的数据库工作流程的工具
 
-... 你想要一个具有透明的开发过程、并有人维护和支持的 ORM
+... 你想要一个开发过程透明、并有人维护和支持的 ORM
 
-... 你想成为一个很棒的社区的一部分
+... 你想成为一个很棒的社区的一员
 
 
 **Prisma 可能不太适合你的情况 ...**
@@ -37,7 +37,7 @@ Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。
 
 ... 你不想为你的后端应用写任何代码
 
-... 你想要一个 CURD GraphQL API，而不用写任何代码
+... 你想要一个具有 CURD 能力的 GraphQL API，并且不需要写任何代码
 
 ... 你想使用原生的、类型安全的 SQL 来查询你的数据库
 
@@ -47,7 +47,7 @@ Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。
 
 这是 Prisma 的主要使用情况。服务端应用程序通常是 API 服务器，通过 REST、GraphQL 或 gRPC 等技术暴露数据操作。它们通常被构建为微服务或单体应用，并通过长期运行的服务器或 serverless 函数部署。Prisma 非常适合这些应用和部署模式。
 
-目前，Prisma [支持](../../reference/database-reference/supported-databases) 数个关系型数据库，MongoDB 正处于预览阶段。
+目前，Prisma [支持](../../reference/database-reference/supported-databases) 数个关系型数据库，MongoDB 将会于不久的将来支持。
 
 ### ... 你对生产力和开发人员的体验比较关注
 
@@ -58,7 +58,7 @@ Prisma 是一种新型的 ORM，像其他工具一样，有其自身的权衡。
 以下是我们在设计和构建我们的工具时采用的一些指导原则和一般做法：
 
 - [让正确的事情变简单](https://lengstorf.com/right-thing-easy-thing/)
-- [跌入成功的坑](https://blog.codinghorror.com/falling-into-the-pit-of-success/)
+- [成功的陷阱](https://blog.codinghorror.com/falling-into-the-pit-of-success/)
 - 在可能的情况下提供智能自动补全
 - 打造强大的编辑器扩展 (例如 [VS Code](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma))
 - 为实现完全的类型安全而全力以赴
@@ -69,7 +69,7 @@ Prisma 在团队协作时使用尤其令人瞩目。
 
 声名式的 [Prisma schema](../components/prisma-schema) 提供了一个对每个人来说都很容易理解的数据库当前状态的概述。这是对传统的工作流程的重大改进，在传统的工作流程中，开发人员必须通过迁移文件来了解当前的表结构。
 
-[Prisma Client](../components/prisma-client) 的简单 API 使开发者能够迅速掌握它，而没有太多的学习开销，因此新的开发人员加入一个团队变得更加顺利。
+[Prisma Client](../components/prisma-client) 的简单 API 使开发者能够迅速掌握它，而没有太多的学习开销，因此新的开发人员融入一个团队变得更加顺利。
 
 [Prisma Migrate](../components/prisma-migrate) 工作流程的设计方式涵盖了协作模式下的数据库 schema 变化。从最初的 schema 创建，到将 schema 变化部署到生产环境中，以及解决并行修改带来的冲突，Prisma Migrate 都能满足你的要求。
 
@@ -86,9 +86,9 @@ Prisma 不仅仅是 "另一个 ORM"。我们正在建立一个数据库工具包
 
 ### ... 你重视类型安全
 
-Prisma 是 TypeScript 生态中唯一一个 _完全_ 的类型安全 ORM。生成的 Prisma Cient 会确保查询结果的类型化，甚至是针对部分查询和关联。你可以在 [与 TypeORM 进行类型安全对比](../more/comparisons/prisma-and-typeorm#type-safety) 中了解更多。
+Prisma 是 TypeScript 生态中唯一一个 _彻底_ 的类型安全 ORM。生成的 Prisma Cient 会确保查询结果的类型化，甚至是针对部分查询和关联。你可以在 [与 TypeORM 进行类型安全对比](../more/comparisons/prisma-and-typeorm#type-safety) 中了解更多。
 
-### ... 你想要一个具有透明的开发过程、并有人维护和支持的 ORM
+### ... 你想要一个开发过程透明、并有人维护和支持的 ORM
 
 Prisma 的相关工具都是开源透明的，大部分都直接托管在 GitHub 上的 [`prisma/prisma`](https://github.com/prisma/prisma) 仓库中。
 
@@ -98,7 +98,7 @@ Prisma 的相关工具都是开源透明的，大部分都直接托管在 GitHub
 - 我们有一个专门的支持团队，在 [Slack](https://slack.prisma.io) 和 [GitHub](https://github.com/prisma/prisma/discussions) 上回答问题
 - 我们的产品团队总是渴望在 Slack 的 `#产品反馈` 频道中与你交流，以获得你对 Prisma 的反馈。
 
-### ... 你想成为一个很棒的社区的一部分
+### ... 你想成为一个很棒的社区的一员
 
 Prisma 拥有一个活跃的 [社区](https://www.prisma.io/community)，在 [Slack](https://slack.prisma.io) 上有超过4万名开发者。我们还定期举办线下活动、会议和其他以开发者为中心的活动。加入我们吧！
 
@@ -124,7 +124,7 @@ _替代方案_: SQL drivers (e.g. [`node-postgres`](https://node-postgres.com/),
 
 _替代方案_: [AWS AppSync](https://aws.amazon.com/appsync/), [8base](https://www.8base.com/), [Nhost](https://nhost.io/), [Supabase](https://supabase.io/), [Firebase](https://firebase.google.com/), [Amplication](https://amplication.com/)
 
-### ... 你想要一个 CURD GraphQL API，而不用写任何代码
+### ... 你想要一个具有 CURD 能力的 GraphQL API，并且不需要写任何代码
 
 虽然像 [`nexus-plugin-prisma`](https://nexusjs.org/docs/plugins/prisma/overview) 和 [`typegraphql-prisma`](https://github.com/MichalLytek/typegraphql-prisma#readme) 这样的工具允许你在 GraphQL API 中为你的 Prisma 模型快速生成 CRUD 操作，但这些方法仍然需要你手动设置 GraphQL 服务器，并做一些工作来针对 Prisma schema 中定义的模型暴露 GraphQL query 和 mutation。
 
