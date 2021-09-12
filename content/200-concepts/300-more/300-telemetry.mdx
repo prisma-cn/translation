@@ -1,7 +1,6 @@
 ---
 title: 'Telemetry'
 metaTitle: 'Telemetry (Reference)'
-metaDescription: 'This page explains how Prisma uses telemetry features to improve the Prisma developer experience.'
 metaDescription: '本文解释了 Prisma 如何通过数据收集来改善 Prisma 的开发体验'
 ---
 
@@ -34,16 +33,16 @@ Telemetry 帮助我们更好的了解 _有多少用户_ 在使用我们的产品
 
 下面是会被提交的数据的概述：
 
-|          字段 | 属性 | 描述                                                                            |
-| -------------: | :--------: | :------------------------------------------------------------------------------------- |
-|      `product` |  _string_  | 产品名称 (例如：`prisma`)                                                    |
-|      `version` |  _string_  | 产品当前的版本号 (例如： `1.0.0-rc0`)                          |
-|         `arch` |  _string_  | 客户的操作系统架构 (例如：`amd64`).                                 |
-|           `os` |  _string_  | 客户的操作系统 (例如：`darwin`).                                             |
-| `node_version` |  _string_  | 客户的 node 版本 (例如：`v12.12.0`).                                               |
-|    `signature` |  _string_  | 随机、不可识别的 UUID (例如：`91b014df3-9dda-4a27-a8a7-15474fd899f8`) |
-|   `user_agent` |  _string_  | User agent of the checkpoint client (e.g. `prisma/js-checkpoint`)                      |
-|    `timestamp` |  _string_  | 请求发送时间，使用 RFC3339 格式 (e.g. `2019-12-12T17:45:56Z`)              |
+|           字段 |   属性   | 描述                                                                  |
+| -------------: | :------: | :-------------------------------------------------------------------- |
+|      `product` | _string_ | 产品名称 (例如：`prisma`)                                             |
+|      `version` | _string_ | 产品当前的版本号 (例如： `1.0.0-rc0`)                                 |
+|         `arch` | _string_ | 客户的操作系统架构 (例如：`amd64`).                                   |
+|           `os` | _string_ | 客户的操作系统 (例如：`darwin`).                                      |
+| `node_version` | _string_ | 客户的 node 版本 (例如：`v12.12.0`).                                  |
+|    `signature` | _string_ | 随机、不可识别的 UUID (例如：`91b014df3-9dda-4a27-a8a7-15474fd899f8`) |
+|   `user_agent` | _string_ | User agent of the checkpoint client (e.g. `prisma/js-checkpoint`)     |
+|    `timestamp` | _string_ | 请求发送时间，使用 RFC3339 格式 (e.g. `2019-12-12T17:45:56Z`)         |
 
 你可以通过设置 `CHECKPOINT_DISABLE` 环境变量值为 `1` 来禁用此行为，例如：
 

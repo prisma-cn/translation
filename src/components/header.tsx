@@ -251,11 +251,12 @@ const HeaderSec = ({ headerProps }: HeaderViewProps) => {
     return (
       <SecondLevelNav>
         <div>
-          {bucketItems.map((item) => {
+          {bucketItems.map((item,index) => {
             const isCurrent = location && item.to && location.pathname.includes(item.to)
             return (
               <DarkNavLink
                 to={item.to}
+                key={index+item.to}
                 state={{ bucketName: item.bucketName }}
                 activeClassName="active-item"
                 className={isCurrent ? 'active-item' : 'non-active'}
@@ -266,8 +267,8 @@ const HeaderSec = ({ headerProps }: HeaderViewProps) => {
           })}
         </div>
         <div>
-          {externalLinkItems.map((item) => (
-            <DarkNavLink className="link" to={item.to}>
+          {externalLinkItems.map((item,index) => (
+            <DarkNavLink key={index+item.to} className="link" to={item.to}>
               {item.text} &nbsp;&nbsp;
               <ExternalLink />
             </DarkNavLink>
@@ -308,13 +309,14 @@ const HeaderSec = ({ headerProps }: HeaderViewProps) => {
 
   const SecondLevelMobileMenu = () => (
     <SecondLevelNav>
-      {headerProps.secondLevelHeaderMenuItems.map((item) => {
+      {headerProps.secondLevelHeaderMenuItems.map((item,index) => {
         return (
           <MenuItem
             componentToShow={<Sidebar isMobile={true} slug={item.bucketName} />}
             type={item.type}
             text={item.text}
             link={item.to}
+            key={index+item.text}
           />
         )
       })}
@@ -333,7 +335,7 @@ const HeaderSec = ({ headerProps }: HeaderViewProps) => {
       {/* Second level header */}
       <SecondLevelHeader>
         <Container style={{ display: 'flex' }}>
-          <SearchComponent hitsStatus={changeHitsStatus} />
+          {/* <SearchComponent hitsStatus={changeHitsStatus} /> */}
           {showDocsBtn && (
             <NonMobileMenu style={{ width: '100%' }}>
               <SecondLevelMenu />

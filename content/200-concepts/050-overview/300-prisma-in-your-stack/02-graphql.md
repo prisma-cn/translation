@@ -1,6 +1,5 @@
 ---
 title: 'GraphQL'
-metaTitle: 'Building GraphQL servers with Prisma'
 metaTitle: '使用 Prisma 构建 GraphQL 服务器'
 metaDescription: '本文介绍了如何使用 Prisma 构建 GraphQL 服务器。并显示了 Prisma 是如何融入 GraphQL 生态的，同时提供了一些实际的例子'
 ---
@@ -24,25 +23,25 @@ GraphQL 服务由两个主要部分组成：
 
 GraphQL schema 和 HTTP 服务通常由不同的库进行处理。下面是当前常用的一些 GraphQL 服务端库及其使用场景的概述。
 
-| Library (npm package) | Purpose                     | 兼容 Prisma | Prisma 集成                                                        |
-| :-------------------- | :-------------------------- | :--------------------- | :------------------------------------------------------------------------ |
-| `graphql`             | GraphQL schema (code-first) | Yes                    | No                                                                        |
-| `graphql-tools`       | GraphQL schema (SDL-first)  | Yes                    | No                                                                        |
-| `type-graphql`        | GraphQL schema (code-first) | Yes                    | [`typegraphql-prisma`](https://www.npmjs.com/package/typegraphql-prisma)  |
-| `nexus`               | GraphQL schema (code-first) | Yes                    | [`nexus-plugin-prisma`](https://nexusjs.org/docs/plugins/prisma/overview) |
-| `apollo-server`       | HTTP server                 | Yes                    | n/a                                                                       |
-| `express-graphql`     | HTTP server                 | Yes                    | n/a                                                                       |
-| `fastify-gql`         | HTTP server                 | Yes                    | n/a                                                                       |
-| `graphql-yoga`        | HTTP server                 | Yes                    | n/a                                                                       |
+| Library (npm package) | Purpose                     | 兼容 Prisma | Prisma 集成                                                               |
+| :-------------------- | :-------------------------- | :---------- | :------------------------------------------------------------------------ |
+| `graphql`             | GraphQL schema (code-first) | Yes         | No                                                                        |
+| `graphql-tools`       | GraphQL schema (SDL-first)  | Yes         | No                                                                        |
+| `type-graphql`        | GraphQL schema (code-first) | Yes         | [`typegraphql-prisma`](https://www.npmjs.com/package/typegraphql-prisma)  |
+| `nexus`               | GraphQL schema (code-first) | Yes         | [`nexus-plugin-prisma`](https://nexusjs.org/docs/plugins/prisma/overview) |
+| `apollo-server`       | HTTP server                 | Yes         | n/a                                                                       |
+| `express-graphql`     | HTTP server                 | Yes         | n/a                                                                       |
+| `fastify-gql`         | HTTP server                 | Yes         | n/a                                                                       |
+| `graphql-yoga`        | HTTP server                 | Yes         | n/a                                                                       |
 
 In addition to these standalone and single-purpose libraries, there are several projects building integrated _application frameworks_:
 
 除了这些独立和单一用途的库之外，还有几个项目正在建立集成的 _应用框架_。
 
-| Framework                                  | Stack     | Built by                                          | Prisma                 | Description                                                                      |
-| :----------------------------------------- | :-------- | :------------------------------------------------ | :--------------------- | :------------------------------------------------------------------------------- |
-| [Redwood.js](https://redwoodjs.com)        | 全栈 | [Tom Preston-Werner](https://github.com/mojombo/) | 建立在 Prisma 之上 | 将全栈能力引入 JAMstack_                                           |
-| [Blitz](https://github.com/blitz-js/blitz) | 全栈 | [Brandon Bayer](https://github.com/flybayer)      | 建立在 Prisma 之上 | _类似 Rails 的框架，用来建立纯前端或全栈的 React 应用 - 建立在 Next.js 之上_ |
+| Framework                                  | Stack | Built by                                          | Prisma             | Description                                                                  |
+| :----------------------------------------- | :---- | :------------------------------------------------ | :----------------- | :--------------------------------------------------------------------------- |
+| [Redwood.js](https://redwoodjs.com)        | 全栈  | [Tom Preston-Werner](https://github.com/mojombo/) | 建立在 Prisma 之上 | 将全栈能力引入 JAMstack\_                                                    |
+| [Blitz](https://github.com/blitz-js/blitz) | 全栈  | [Brandon Bayer](https://github.com/flybayer)      | 建立在 Prisma 之上 | _类似 Rails 的框架，用来建立纯前端或全栈的 React 应用 - 建立在 Next.js 之上_ |
 
 > **注意**：如果你发现列表中缺少了任何 GraphQL 库/框架，请让我们知道。
 
@@ -54,23 +53,23 @@ In the following section will find several ready-to-run examples that showcase h
 
 ### TypeScript
 
-| Demo                                                                                                              | HTTP Server     | GraphQL schema  | Description                                                                                                                     |
-| :---------------------------------------------------------------------------------------------------------------- | :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| [GraphQL API](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql)                           | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                                    |
+| Demo                                                                                                              | HTTP Server     | GraphQL schema  | Description                                                                                                  |
+| :---------------------------------------------------------------------------------------------------------------- | :-------------- | :-------------- | :----------------------------------------------------------------------------------------------------------- |
+| [GraphQL API](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql)                           | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                    |
 | [GraphQL API (SDL-first)](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-sdl-first)     | `apollo-server` | `graphql-tools` | 基于 [`graphql-tools`](https://www.apollographql.com/docs/graphql-tools/) (Apollo) 的 SDL-first GraphQL 服务 |
 | [GraphQL API (TypeGraphQL)](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-typegraphql) | `apollo-server` | `type-graphql`  | 基于 [TypeGraphQL](https://typegraphql.com/) 的 code-first GraphQL 服务                                      |
-| [GraphQL API (Auth)](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-auth)               | `apollo-server` | `nexus`         | 带有邮箱-密码校验的 GraphQL 服务                                                                 |
-| [Fullstack app](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-nextjs)                  | `apollo-server` | `nexus`         | 使用 Next.js (React), Apollo Client, Apollo Server 和 Nexus 的全栈应用                                                      |
-| [GraphQL subscriptions](https://github.com/prisma/prisma-examples/tree/latest/typescript/subscriptions-pubsub)    | `apollo-server` | `nexus`         | 实现了 GraphQL 实时订阅的 GraphQL 服务                                                                      |
+| [GraphQL API (Auth)](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-auth)               | `apollo-server` | `nexus`         | 带有邮箱-密码校验的 GraphQL 服务                                                                             |
+| [Fullstack app](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-nextjs)                  | `apollo-server` | `nexus`         | 使用 Next.js (React), Apollo Client, Apollo Server 和 Nexus 的全栈应用                                       |
+| [GraphQL subscriptions](https://github.com/prisma/prisma-examples/tree/latest/typescript/subscriptions-pubsub)    | `apollo-server` | `nexus`         | 实现了 GraphQL 实时订阅的 GraphQL 服务                                                                       |
 
 ### JavaScript (Node.js)
 
-| Demo                                                                                                                  | HTTP Server     | GraphQL schema  | Description                                                                                                                     |
-| :-------------------------------------------------------------------------------------------------------------------- | :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| [GraphQL API](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql)                               | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                                    |
-| [GraphQL API (Apollo Server)](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-apollo-server) | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                                    |
+| Demo                                                                                                                  | HTTP Server     | GraphQL schema  | Description                                                                                                  |
+| :-------------------------------------------------------------------------------------------------------------------- | :-------------- | :-------------- | :----------------------------------------------------------------------------------------------------------- |
+| [GraphQL API](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql)                               | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                    |
+| [GraphQL API (Apollo Server)](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-apollo-server) | `apollo-server` | `nexus`         | 基于 [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) 的 GraphQL 服务                    |
 | [GraphQL API (SDL-first)](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-sdl-first)         | `apollo-server` | `graphql-tools` | 基于 [`graphql-tools`](https://www.apollographql.com/docs/graphql-tools/) (Apollo) 的 SDL-first GraphQL 服务 |
-| [GraphQL API (Auth)](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-auth)                   | `apollo-server` | `nexus`         | 带有邮箱-密码校验的 GraphQL 服务                                                             |
+| [GraphQL API (Auth)](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-auth)                   | `apollo-server` | `nexus`         | 带有邮箱-密码校验的 GraphQL 服务                                                                             |
 |                                                                                                                       |
 
 ## 常见问题

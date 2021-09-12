@@ -36,7 +36,7 @@ Prisma Client 支持 Postgres 数据库的全文搜索 API。启用全文搜索�
 
 重新生成客户端后，在模型上创建的任何 `String` 字段上都会出现一个新的 `search` 字段。
 
-### 新的 <inlinecode>search<inlinecode> 字段示例
+### 新的 `search` 字段示例
 
 ```ts
 // 所有包含单词 cat 或 dog 的帖子。
@@ -69,16 +69,16 @@ const result = await prisma.posts.findMany({
 
 以下是以下查询如何匹配该文本：
 
-| 查询                                   | 匹配? | 描述                         |
-| :-------------------------------------- | :----- | :---------------------------------- |
-| `fox & dog`                             | Yes    | 文本包含 fox 和 dog       |
-| `dog & fox`                             | Yes    | 文本包含 dog 和 fox       |
-| `dog & cat`                             | No     | 文本中没有 dog 和 cat        |
-| `!cat`                                  | Yes    | 文本中没有 cat        |
-| <inlinecode>fox &#124; cat</inlinecode> | Yes    | 文本包含 fox 或 cat        |
-| <inlinecode>cat &#124; pig</inlinecode> | No     | 文本中没有 cat 或 pig |
-| `fox <-> dog`                           | Yes    | 文本中 dog 紧随着 fox、         |
-| `dog <-> fox`                           | No     | 文本中 dog 不紧随着 fox  |
+| 查询                                    | 匹配? | 描述                    |
+| :-------------------------------------- | :---- | :---------------------- |
+| `fox & dog`                             | Yes   | 文本包含 fox 和 dog     |
+| `dog & fox`                             | Yes   | 文本包含 dog 和 fox     |
+| `dog & cat`                             | No    | 文本中没有 dog 和 cat   |
+| `!cat`                                  | Yes   | 文本中没有 cat          |
+| <inlinecode>fox &#124; cat</inlinecode> | Yes   | 文本包含 fox 或 cat     |
+| <inlinecode>cat &#124; pig</inlinecode> | No    | 文本中没有 cat 或 pig   |
+| `fox <-> dog`                           | Yes   | 文本中 dog 紧随着 fox、 |
+| `dog <-> fox`                           | No    | 文本中 dog 不紧随着 fox |
 
 ## 添加索引
 

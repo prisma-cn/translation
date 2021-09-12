@@ -26,37 +26,37 @@ const config = {
   header: {
     secondLevelHeaderMenuItems: [
       {
-        text: 'Getting Started',
+        text: '开始使用',
         to: '/getting-started',
         type: 'bucket',
         bucketName: '/100-getting-started',
       },
       {
-        text: 'Concepts',
+        text: '概念',
         to: '/concepts',
         type: 'bucket',
         bucketName: '/200-concepts',
       },
       {
-        text: 'Guides',
+        text: '指南',
         to: '/guides',
         type: 'bucket',
         bucketName: '/300-guides',
       },
       {
-        text: 'Reference',
+        text: '相关',
         to: '/reference',
         type: 'bucket',
         bucketName: '/400-reference',
       },
       {
-        text: 'Support',
+        text: '支持',
         to: '/support',
         type: 'bucket',
         bucketName: '/500-support',
       },
-      { text: 'About', to: '/about', type: 'bucket', bucketName: '/600-about' },
-      { text: 'Prisma 1 Docs', to: 'https://v1.prisma.io/docs/1.34', type: 'external-link' },
+      { text: '关于', to: '/about', type: 'bucket', bucketName: '/600-about' },
+      { text: 'Prisma 1 文档', to: 'https://v1.prisma.io/docs/1.34', type: 'external-link' },
     ],
     search: {
       indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
@@ -73,13 +73,13 @@ const config = {
       git: 'https://github.com/prisma',
       buttons: [
         {
-          text: 'Getting started',
+          text: '快速开始',
           url: 'getting-started/',
           special: true,
           icon: 'DoubleArrow',
         },
         {
-          text: 'Example projects',
+          text: '示例项目',
           url: 'https://github.com/prisma/prisma-examples',
           special: false,
           icon: null,
@@ -89,38 +89,38 @@ const config = {
 
     GeneralLinkData: [
       {
-        categoryName: 'Overview',
+        categoryName: '概览',
         icon: 'OverviewIcon',
         links: [
           {
-            text: 'What is Prisma',
+            text: 'Prisma是什么',
             url: 'concepts/overview/what-is-prisma',
             codeBlock: false,
           },
           {
-            text: 'Why Prisma?',
+            text: '为什么使用Prisma?',
             url: 'concepts/overview/why-prisma',
             codeBlock: false,
           },
           {
-            text: 'Should you use Prisma?',
+            text: '你应该用Prisma吗?',
             url: 'concepts/overview/should-you-use-prisma',
             codeBlock: false,
           },
           {
-            text: 'Prisma in your stack',
+            text: 'Prisma在你技术栈的定位',
             url: 'concepts/overview/prisma-in-your-stack',
             codeBlock: false,
           },
           {
-            text: 'Under the hood',
+            text: 'Prisma底层',
             url: 'concepts/components/prisma-engines',
             codeBlock: false,
           },
         ],
       },
       {
-        categoryName: 'Components',
+        categoryName: '组件',
         icon: 'ComponentsIcon',
         links: [
           {
@@ -154,14 +154,14 @@ const config = {
             codeBlock: false,
           },
           {
-            text: 'Preview features',
+            text: '预览特性',
             url: 'concepts/components/preview-features',
             codeBlock: false,
           },
         ],
       },
       {
-        categoryName: 'Database Connectors',
+        categoryName: '数据库连接器',
         icon: 'DatabaseIcon',
         links: [
           {
@@ -192,11 +192,11 @@ const config = {
         ],
       },
       {
-        categoryName: 'More',
+        categoryName: '更多',
         icon: 'MoreIcon',
         links: [
           {
-            text: 'Editor setup',
+            text: '编辑器设置',
             url: 'concepts/more/editor-setup',
             codeBlock: false,
           },
@@ -211,67 +211,66 @@ const config = {
             codeBlock: false,
           },
           {
-            text: 'Comparing Prisma',
+            text: '和Prisma比较',
             url: 'concepts/more/comparisons',
             codeBlock: false,
           },
         ],
       },
     ],
-    GuideText: 'Guides for building and deploying applications with Prisma.',
+    GuideText: '使用Prisma构建和部署应用程序指南',
 
     GuideLinkData: [
       {
-        title: 'Developing with Prisma Migrate',
+        title: '使用Prisma Migrate',
         color: '#48BB78',
         small: false,
-        content: 'Get started with Prisma Migrate.',
+        content: '开始使用Prisma Migrate',
         url: 'guides/database/developing-with-prisma-migrate',
       },
       {
-        title: 'Performance and optimization',
+        title: '性能和优化',
         color: '#38B2AC',
         small: true,
-        content: 'Tune your queries and monitor your application.',
+        content: '调整查询并监视应用程序',
         url: 'guides/performance-and-optimization',
       },
       {
-        title: 'Working with your database',
+        title: '数据库工作流程',
         color: '#4299E1',
         small: true,
-        content:
-          'Guides for common database workflow such as configuring constraints or cascading deletes.',
+        content: '常见数据库的工作流（如配置约束或级联删除）指南',
         url: 'guides/database',
       },
       {
-        title: 'Adopting Prisma',
+        title: '采用 Prisma',
         color: '#9F7AEA',
         small: true,
-        content: 'Migrate to Prisma from other ORMs.',
+        content: '从其他 ORMs 迁移到Prisma',
         url: 'guides/migrate-to-prisma',
       },
       {
-        title: 'Upgrading to Prisma',
+        title: '从 Prisma1 升级',
         color: '#ED64A6',
         small: true,
-        content: 'Upgrade to Prisma from Prisma 1 or Graphcool.',
+        content: '从Prisma 1 或 Graphcool升级到最新',
         url: 'guides/upgrade-guides',
       },
       {
-        title: 'Deploying Prisma apps',
+        title: '部署Prisma 项目',
         color: '#667EEA',
         small: false,
         content:
-          'Deploy a Node.js application with Prisma Client to platforms like Vercel, AWS Lambda, Netlify, and Heroku.',
+          '将带有Prisma client的Node.js应用程序部署到Vercel、AWS Lambda、Netlify和Heroku等平台',
         url: 'guides/deployment',
       },
     ],
     ReferenceText:
-      'Reference documentation for Prisma Client, the Prisma Schema Language (PSL), the Prisma CLI, and supported database providers.',
+      'Prisma Client, Prisma Schema Language (PSL), Prisma CLI, 和支持database providers的参考文档',
 
     ReferenceLinkData: [
       {
-        categoryName: 'Prisma Reference',
+        categoryName: 'Prisma 参考文档',
         mainUrl: 'reference',
         icon: 'Schema',
         links: [
@@ -293,7 +292,7 @@ const config = {
         ],
       },
       {
-        categoryName: 'CLI Commands',
+        categoryName: 'CLI 命令行指令',
         mainUrl: 'reference/api-reference/command-reference',
         icon: 'CLI',
         links: [
@@ -315,22 +314,22 @@ const config = {
         ],
       },
       {
-        categoryName: 'Database',
+        categoryName: '数据库',
         mainUrl: 'reference/database-reference',
         icon: 'DbLink',
         links: [
           {
-            text: 'Features matrix',
+            text: '特性列表',
             url: 'reference/database-reference/database-features',
             codeBlock: false,
           },
           {
-            text: 'Connection URLs',
+            text: '连接地址',
             url: 'reference/database-reference/connection-urls',
             codeBlock: false,
           },
           {
-            text: 'Supported databases',
+            text: '支持的数据库',
             url: 'reference/database-reference/supported-databases',
             codeBlock: false,
           },
@@ -340,32 +339,32 @@ const config = {
 
     MoreUsefulLinks: [
       {
-        text: `What's new in Prisma docs`,
+        text: `最近更新`,
         url: 'about/whats-new-in-prisma-docs',
         codeBlock: false,
       },
       {
-        text: 'About the docs ',
+        text: '关于文档 ',
         url: 'about/about-the-docs',
         codeBlock: false,
       },
       {
-        text: 'Prisma style guide',
+        text: '风格指南',
         url: 'about/style-guide',
         codeBlock: false,
       },
       {
-        text: 'Ask a question on Github',
+        text: '在Github提问',
         url: 'support#ask-a-question-about-prisma',
         codeBlock: false,
       },
       {
-        text: 'Create a bug report',
+        text: '提交Bug',
         url: 'support#create-a-bug-report-for-prisma',
         codeBlock: false,
       },
       {
-        text: 'Submit a feature request',
+        text: '提交功能建议',
         url: 'support#submit-a-feature-request',
         codeBlock: false,
       },
@@ -376,15 +375,15 @@ const config = {
       },
       {
         text: 'FAQ',
-        url: 'about/faq',
+        url: 'about/prisma/faq',
       },
       {
-        text: 'Limitations',
+        text: '限制',
         url: 'about/limitations',
         codeBlock: false,
       },
       {
-        text: 'Community',
+        text: '社区',
         url: 'https://www.prisma.io/community',
         codeBlock: false,
       },
@@ -394,18 +393,18 @@ const config = {
         codeBlock: false,
       },
       {
-        text: 'Releases and maturity levels',
+        text: '版本发布',
         url: 'about/releases',
         codeBlock: false,
       },
     ],
   },
   siteMetadata: {
-    title: 'Prisma Documentation | Concepts, Guides, and Reference',
+    title: 'Prisma 官方中文文档 - 下一代Node.js、TypeScript、Go 的数据库 ORM',
     description:
-      "Get started with Prisma in the official documentation, and learn more about all Prisma's features with reference documentation, guides, and more.",
+      'Prisma是下一代Node.js、TypeScript、Go 的数据库 ORM，帮助开发者以更快的速度和更少的错误去连接并管理PostgreSQL、MySQL、SQLite、MongoDB、SQLServer等。',
     keywords: 'Docs, prisma, 2.0',
-    docsLocation: 'https://github.com/prisma/docs/tree/main/content',
+    docsLocation: 'https://github.com/prisma-cn/translation/tree/main/content',
     twitter: {
       site: '@prisma',
       creator: '@prisma',
@@ -415,7 +414,7 @@ const config = {
       site_name: 'Prisma',
       type: 'website',
       image: {
-        alt: 'Database tools for modern developers',
+        alt: '现代化开发的数据库工具',
         height: '630',
         type: 'image/png',
         url: '/social/docs-social.png',
@@ -424,21 +423,15 @@ const config = {
     },
   },
   feedback: {
-    sentimentUrl:
-      process.env.NODE_ENV === 'production' && process.env.DEPLOY_PREVIEW !== true
-        ? 'https://prisma2-docs.netlify.app/.netlify/functions/sentiment'
-        : '/.netlify/functions/sentiment',
-    feedbackUrl:
-      process.env.NODE_ENV === 'production' && process.env.DEPLOY_PREVIEW !== true
-        ? 'https://prisma2-docs.netlify.app/.netlify/functions/feedback'
-        : '/.netlify/functions/feedback',
+    sentimentUrl: 'https://prisma2-docs.netlify.app/.netlify/functions/sentiment',
+    feedbackUrl: 'https://prisma2-docs.netlify.app/.netlify/functions/feedback',
   },
   sidebar: {
     tablet_menu_split: ['04-guides', '05-more'], // Slugs for top level folders which should appear in right pane on tablet
   },
   footer: {
     newsletter: {
-      text: 'Stay up to date with the latest features and changes to Prisma',
+      text: '订阅 Prisma 的功能更新消息',
     },
   },
 }
