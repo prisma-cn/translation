@@ -313,7 +313,7 @@ const Homepage = () => {
         <NormalPara>
           选择一个{' '}
           <Link to={SummaryLinkData.gettingStarted}>快速开始教程</Link> 或查看{' '}
-          <a target="_blank" href={SummaryLinkData.readyToRun}>GitHub上已经准备好的示例项目</a>。 加入我们的社区 <a target="_blank" href={SummaryLinkData.slack}>Slack</a> 和{' '}
+          <a target="_blank" href={SummaryLinkData.readyToRun}>GitHub上已经准备好的示例项目</a>。 加入我们的社区 <Link to={'community'}>微信群</Link> 和{' '}
           <a target="_blank" href={SummaryLinkData.git}>GitHub</a> 寻求帮助和建议。
         </NormalPara>
         <NormalPara><a target="_blank" href={'https://prisma.io'}>查看英文官网</a> | <a target="_blank" href={'https://cloud.prisma.io'}>使用Prisma云</a></NormalPara>

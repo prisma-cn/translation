@@ -383,8 +383,8 @@ const config = {
         codeBlock: false,
       },
       {
-        text: '社区',
-        url: 'https://www.prisma.io/community',
+        text: '微信群',
+        url: 'community',
         codeBlock: false,
       },
       {
