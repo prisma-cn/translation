@@ -1,22 +1,22 @@
 ---
 title: 'Prisma Client'
 metaTitle: 'Prisma Client (参考)'
-metaDescription: '是一个自动生成的、类型安全的查询生成器，由数据库中的表生成。'
+metaDescription: 'Prisma Client 是一个自动生成的、类型安全的、基于你数据库中定义的表结构生成的查询构造器。'
 ---
 
 <TopBlock>
 
-Prisma Client 是一个自动生成的类型安全查询生成器，可根据你的数据进行定制。开始使用 Prisma Client 的最简单方法是遵循 **[Quickstart](../../../getting-started/quickstart)**。
+Prisma Client 是一个自动生成的类型安全查询构造器，可根据你的数据进行定制。开始使用 Prisma Client 最简单的方法是通过 **[快速开始](../../../getting-started/quickstart)**。
 
 <ButtonLink
   color="dark"
   type="primary"
   href="../../../getting-started/quickstart"
 >
-  Quickstart (5 min)
+  快速开始 (5 min)
 </ButtonLink>
 
-[下面](#set-up) 设置说明提供了设置 Prisma Client 所需步骤的高级概述。如果你想开始在自己的数据库中使用 Prisma Client，请遵循以下指南之一：
+[下方的](#set-up) 启动说明提供了启动 Prisma Client 所需步骤的高级概述。如果你想开始在自己的数据库中使用 Prisma Client，请遵循以下指南之一：
 
 <ButtonLink
   color="dark"
@@ -41,7 +41,7 @@ Prisma Client 是一个自动生成的类型安全查询生成器，可根据你
 
 ### 1. 先决条件
 
-为了设置 Prisma Client，你需要一个带有数据库连接的 [Prisma schema 文件](../prisma-schema)、Prisma Client 生成器和至少一个模型：
+为了启动 Prisma Client，你需要一个带有数据库连接的 [Prisma schema 文件](../prisma-schema)、Prisma Client 生成器和至少一个模型：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -76,7 +76,7 @@ npx prisma
 npm install @prisma/client
 ```
 
-此命令还运行 `prisma generate` 命令，该命令 [将 Prisma Client 生成到 `node_modules/.prisma/client` 目录](working-with-prismaclient/generating-prisma-client#the-prismaclient-npm-package)。
+执行此命令还将运行 `prisma generate` 命令，该命令 [将 Prisma Client 生成到 `node_modules/.prisma/client` 目录](working-with-prismaclient/generating-prisma-client#the-prismaclient-npm-package)。
 
 ### 3. 使用 Prisma Client 向数据库发送查询
 

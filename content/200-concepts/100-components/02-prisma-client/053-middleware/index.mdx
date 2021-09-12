@@ -1,17 +1,17 @@
 ---
 title: '中间件'
 metaTitle: '中间件 (参考)'
-metaDescription: 'Prisma Client 中间件允许你在使用 prisma.$use 方法对任何模型进行任何查询之前或之后执行操作。'
+metaDescription: 'Prisma Client 中间件允许你使用 prisma.$use 方法，在对任何模型进行任何查询之前或之后执行操作。'
 ---
 
 <TopBlock>
 
-中间件充当查询级生命周期挂钩，允许你在查询运行 **之前或之后** 执行操作。使用 [`prisma.$use`](../../../../reference/api-reference/prisma-client-reference#use) <span class="api"></span> 方法添加中间件：
+中间件充当查询级生命周期钩子，允许你在查询运行 **之前或之后** 执行操作。使用 [`prisma.$use`](../../../../reference/api-reference/prisma-client-reference#use) <span class="api"></span> 方法添加中间件：
 
 ```ts highlight=4-9,12-17;normal
 const prisma = new PrismaClient()
 
-// Middleware 1
+// 中间件 1
 prisma.$use(async (params, next) => {
   // 在这里操纵参数
   const result = await next(params)
@@ -19,7 +19,7 @@ prisma.$use(async (params, next) => {
   return result
 })
 
-// Middleware 2
+// 中间件 2
 prisma.$use(async (params, next) => {
   // 在这里操纵参数
   const result = await next(params)
@@ -30,16 +30,16 @@ prisma.$use(async (params, next) => {
 // 在此查询
 ```
 
-[`params`](../../../../reference/api-reference/prisma-client-reference#params) <span class="api"></span> 表示中间件中可用的参数，例如查询的名称，和 [`next`](../../../../reference/api-reference/prisma-client-reference#next) <span class="api"></span> 表示 [堆栈中的下一个中间件 _或_ 原始 Prisma Client 查询](#running-order-and-the-middleware-stack).
+[`params`](../../../../reference/api-reference/prisma-client-reference#params) <span class="api"></span> 表示中间件中可用的参数，例如查询的名称，[`next`](../../../../reference/api-reference/prisma-client-reference#next) <span class="api"></span> 表示 [堆栈中的下一个中间件 _或_ 原始 Prisma Client 查询](#running-order-and-the-middleware-stack).
 
-中间件的可能用例包括：
+中间件可能在以下场景下发挥作用：
 
 - 设置或覆盖字段值 - 例如，[设置博客帖子评论的上下文语言]（会话数据中间件）
 - 验证输入数据 - 例如，通过外部服务检查用户输入的不适当语言
-- 截取 `delete` 查询并将其更改为 `update`，以便执行[软删除]（软删除中间件）
+- 拦截 `delete` 查询并将其更改为 `update`，以便执行[软删除]（软删除中间件）
 - [记录执行查询所用的时间]（记录中间件）
 
-中间件还有更多的用例 - 这个列表为中间件设计用来解决的问题类型提供了灵感。
+中间件还有更多的用例 - 这个列表为中间件被设计用来解决的问题类型提供了灵感。
 
 </TopBlock>
 
@@ -51,7 +51,7 @@ prisma.$use(async (params, next) => {
 
 ## 在哪里添加中间件
 
- **在请求处理程序的上下文之外** 添加 Prisma 中间件，否则每个请求都会向堆栈中添加一个新的中间件 _实例_。 以下示例演示了在 Express 应用程序的上下文中向何处添加 Prisma 中间件：
+**在请求处理程序的上下文之外** 添加 Prisma 中间件，否则每个请求都会向堆栈中添加一个新的中间件 _实例_。 以下示例演示了在 Express 应用程序的上下文中向何处添加 Prisma 中间件：
 
 ```ts highlight=6-11;normal
 import express from 'express'
@@ -88,7 +88,7 @@ app.get('/feed', async (req, res) => {
 
 - 运行下一个中间件（在本例中为中间件 #1 和中间件 #2）_或_
 - 运行原始 Prisma Client 查询（在中间件 #3 中）
- 
+
 ```ts
 const prisma = new PrismaClient()
 
@@ -151,9 +151,9 @@ How to Prisma!
 
 ## 性能和适当的用例
 
-中间件针对 **每个** 查询执行，这意味着过度使用可能会对性能产生负面影响。为避免增加性能开销，请执行以下操作：
+中间件在 **每个** 查询过程都会执行，这意味着过度使用可能会对性能产生负面影响。为避免增加性能开销，请执行以下操作：
 
-- 在中间件的早期检查 `params.model` 和 `params.action` 属性，以避免不必要地运行逻辑：
+- 在中间件中尽早检查 `params.model` 和 `params.action` 属性，以避免不必要地运行逻辑：
 
   ```ts
   prisma.$use(async (params, next) => {
@@ -162,6 +162,8 @@ How to Prisma!
     }
     return next(params)
   })
+  ```
+
 ```
 
 - 考虑中间件是否适合你的方案。例如：
@@ -169,3 +171,4 @@ How to Prisma!
 - 如果需要填充字段，可以使用 [`@default`](../../../../reference/api-reference/prisma-schema-reference#default) 属性吗？
 - 如果需要设置 `DateTime` 字段的值，可以使用 `now()` 函数或 `@updatedAt` 属性吗
 - 如果需要执行更复杂的验证，是否可以在数据库本身中使用 `CHECK` 约束？
+```

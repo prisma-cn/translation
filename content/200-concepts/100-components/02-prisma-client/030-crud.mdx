@@ -1,7 +1,7 @@
 ---
-title: 'CRUD'
-metaTitle: 'CRUD (参考)'
-metaDescription: '如何使用 Prisma Client 执行 CRUD。'
+title: 'CRUD 增删改查'
+metaTitle: 'CRUD 增删改查(参考)'
+metaDescription: '如何使用 Prisma Client 执行 CRUD 增删改查。'
 tocDepth: 5
 ---
 
@@ -9,10 +9,10 @@ tocDepth: 5
 
 本页介绍如何使用生成的 Prisma Client API 执行 CRUD 操作。CRUD 是一个缩写词，代表：
 
-- [Create](#create)
-- [Read](#read)
-- [Update](#update)
-- [Delete](#delete)
+- [Create 增](#create)
+- [Read 查](#read)
+- [Update 改](#update)
+- [Delete 删](#delete)
 
 有关每种方法的详细说明，请参阅 [Prisma Client API 参考文档](../../../../reference/api-reference/prisma-client-reference#on) <span class="api"></span>。
 
@@ -139,7 +139,7 @@ enum Role {
 
 </details>
 
-对于 **关系型数据库**，使用 `db push` 命令将示例 schema 推送到你自己的数据库中
+对于 **关系型数据库**，使用 `db push` 命令将示例 schema 添加到你自己的数据库中
 
 ```terminal
 npx prisma db push
@@ -232,7 +232,7 @@ main()
 
 ### 创建多个记录
 
-Prisma Client 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中支持将大量插入作为 GA 功能。
+Prisma Client 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中支持将大量插入作为 基础可用 功能。
 
 以下 [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany) <span class="api"></span> 查询创建多个用户并跳过任何重复项 (`email` 必须是唯一的)：
 
@@ -273,7 +273,7 @@ COMMIT
 SELECT "public"."User"."country", "public"."User"."city", "public"."User"."email", SUM("public"."User"."profileViews"), COUNT(*) FROM "public"."User" WHERE 1=1 GROUP BY "public"."User"."country", "public"."User"."city", "public"."User"."email" HAVING AVG("public"."User"."profileViews") >= $1 ORDER BY "public"."User"."country" ASC OFFSET $2
 ```
 
-> **注意**：`$transaction` 中的多个 `create` 语句会导致多个 `INSERT` 语句。
+> **注意**：`$transaction` 中的多个 `create` 语句会生成多个 `INSERT` 语句。
 
 下面的视频演示了如何使用 `createMany` 和 [faker.js](https://github.com/marak/Faker.js/) 要使用示例数据为数据库种子，请执行以下操作：
 
@@ -430,11 +430,11 @@ const timePeriod = await prisma.timePeriod.findUnique({
 const users = await prisma.user.findMany()
 ```
 
-你也可以 [对你的结果分页](pagination)。
+你也可以 [对你的结果进行分页](pagination)。
 
 ### 获取与特定条件匹配的第一条记录
 
-以下 [`findFirst`](../../../reference/api-reference/prisma-client-reference#findfirst) <span class="api"></span> 查询返回 _最近创建的用户_ 至少有一个帖子有超过 100 个赞：
+以下 [`findFirst`](../../../reference/api-reference/prisma-client-reference#findfirst) <span class="api"></span> 查询返回 至少有一个帖子有超过 100 个赞的 _最新创建的用户_：
 
 1. 按升序 ID 排序用户（最大的优先）- 最大的 ID 是最近的 ID
 2. 以升序返回第一个用户，其中至少有一个帖子有 100 个以上的赞
@@ -794,7 +794,7 @@ const updatePosts = await prisma.post.updateMany({
 })
 ```
 
-### 连接和断开相关记录
+### 创建和断开相关记录的关系
 
 有关断开（[`disconnect`](../../../reference/api-reference/prisma-client-reference#disconnect) <span class="api"></span>) 和连接（[`connect`[`connect`](../../../reference/api-reference/prisma-client-reference#connect) <span class="api"></span>）相关记录的信息，请参阅 [使用关系](relation-queries)。
 
