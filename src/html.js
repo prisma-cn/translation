@@ -7,6 +7,7 @@ export default function HTML(props) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+        <link rel="manifest" href="/manifest.json" />
         {props.headComponents}
       </head>
       <body {...props.bodyAttributes}>
