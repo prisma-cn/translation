@@ -1,39 +1,39 @@
 ---
-title: 'Unit testing'
-metaTitle: 'Unit testing with Prisma'
-metaDescription: 'Learn how to setup and run unit tests with the Prisma client'
+title: '单元测试'
+metaTitle: '用Prisma进行单元测试'
+metaDescription: '了解如何使用Prisma客户端设置和运行单元测试'
 tocDepth: 3
 ---
 
 <TopBlock>
 
-Unit testing aims to isolate a small portion (unit) of code and test it for logically predictable behaviors. It generally involves mocking objects or server responses to simulate real world behaviors. Some benefits to unit testing include:
+单元测试的目的是隔离代码的一小部分（单元），并测试它在逻辑上可预测的行为。它通常涉及模拟对象或服务器响应，以模拟现实世界的行为。单元测试的一些好处包括：
 
-- Quickly find and isolate bugs in code.
-- Provides documentation for each module of code by way of indicating what certain code blocks should be doing.
-- A helpful gauge that a refactor has gone well. The tests should still pass after code has been refactored.
+- 快速找到并隔离代码中的错误。
+- 通过指出某些代码块应该用什么的方式做，为每个模块的代码提供文档。
+- 衡量重构是否顺利的一个有用指标。 在代码被重构后，测试仍应通过。
 
-In the context of Prisma, this generally means testing a function which makes database calls using the Prisma Client.
+在Prisma的上下文中，这通常意味着测试一个使用Prisma客户端进行数据库调用的函数。
 
-A single test should focus on how your function logic handles different inputs (such as a null value or an empty list).
+一个单一的测试应该集中在你的函数逻辑如何处理不同的输入（如空值或空列表）。
 
-This means that you should aim to remove as many dependencies as possible, such as external services and databases, to keep the tests and their environments as lightweight as possible.
+这意味着你的目标应该是去掉尽可能多的依赖性，如外部服务和数据库，以保持测试和他们的环境尽可能的轻量。
 
 </TopBlock>
 
-## Prerequisites
+## 前提条件
 
-This guide assumes you have the JavaScript testing library [`Jest`](https://jestjs.io/) already setup in your project. If you do not then the following short guide will help you to get up and running.
+本指南假定你的项目中已经设置了JavaScript测试库[`Jest`](https://jestjs.io/)。如果你没有，那么下面的简短指南将帮助你启动和运行。
 
-<details id="add-jest-to-project" open><summary>Add Jest to your project</summary>
+<details id="add-jest-to-project" open><summary>将Jest添加到你的项目中</summary>
 
-Prisma uses TypeScript and Jest can be setup to use TypeScript with the help of the [`ts-jest`](https://github.com/kulshekhar/ts-jest) package.
+Prisma使用TypeScript，Jest可以在[`ts-jest`](https://github.com/kulshekhar/ts-jest)包的帮助下被设置为使用TypeScript。
 
 ```terminal
 npm install --save-dev jest typescript ts-jest @types/jest
 ```
 
-Next create a `jest.config.js` file at your projects root, adding the following configuration:
+接下来在你的项目根部创建一个`jest.config.js`文件，添加以下配置:
 
 ```js file=jest.config.js
 module.exports = {
@@ -44,9 +44,9 @@ module.exports = {
 }
 ```
 
-The above configuration declares a path to a `singleton.ts` file, this can be called anything you like, the following guide will name it `singleton.ts`. The module the path points towards is the code that runs setting up the testing framework before each test file is executed.
+上面的配置声明了一个`singleton.ts`文件的路径，它可以被称为任何你喜欢的东西，下面的指南将它命名为`singleton.ts`。路径所指向的模块是在每个测试文件执行之前运行设置测试框架的代码。
 
-Add a script to your `package.json` file which will run the tests. The `-i` flag will ensure that the tests are run one at a time to avoid any race conditions. The scripts will look for a folder at your projects root called `__tests__` (double\_\_underscore), and run any tests within files, within that folder.
+在你的`package.json`文件中添加一个脚本，它将运行测试。`-i`标志将确保测试一次运行一个，以避免任何竞争条件。脚本将在你的项目根部寻找一个名为`__tests__`的文件夹，并在该文件夹内运行任何测试文件。
 
 ```json file=package.json
   "scripts": {
@@ -57,21 +57,21 @@ Add a script to your `package.json` file which will run the tests. The `-i` flag
 
 </details>
 
-## Mocking the Prisma client
+## 模拟Prisma客户端
 
-To ensure your unit tests are isolated from external factors you can mock the Prisma client, this means you get the benefits of being able to use your schema (**_type-safety_**), without having to make actual calls to your database when your tests are run.
+为了确保你的单元测试与外部因素隔离，你可以模拟Prisma client，这意味着你可以获得能够使用你的模式（**_type-safety_**）的好处。而不必在你的测试运行时对数据库进行实际调用。
 
-This guide will cover two approaches to mocking the client, a singleton instance and dependency injection. Both have their merits depending on your use cases. To help with mocking the client the [`jest-mock-extended`](https://github.com/marchaos/jest-mock-extended) package will be used.
+本指南将涵盖两种模拟客户端的方法，分别是单例模式和依赖注入。这两种方法都有其优点，取决于你的用例。为了帮助模拟client，将使用[`jest-mock-extended`](https://github.com/marchaos/jest-mock-extended)包。
 
 ```terminal
 npm install jest-mock-extended --save-dev
 ```
 
-### Singleton
+### 单例模式
 
-The following steps guide you through mocking the Prisma Client using a singleton pattern.
+通过下面的步骤引导你使用单例模式来模拟Prisma Client。
 
-1. Create a file at your projects root called `client.ts` and add the following code. This will instantiate a Prisma client instance.
+1. 在你的项目根部创建一个名为`client.ts`的文件并添加以下代码。这将实例化一个Prisma客户端实例。
 
    ```ts file=client.ts
    import { PrismaClient } from '@prisma/client'
@@ -80,7 +80,7 @@ The following steps guide you through mocking the Prisma Client using a singleto
    export default prisma
    ```
 
-2. Next create a file named `singleton.ts` at your projects root and add the following:
+2. 接下来在你的项目根部创建一个名为`singleton.ts`的文件，并添加以下内容:
 
    ```ts file=singleton.ts
    import { PrismaClient } from '@prisma/client'
@@ -101,13 +101,13 @@ The following steps guide you through mocking the Prisma Client using a singleto
    export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
    ```
 
-The singleton file tells Jest to mock a default export (the Prisma client instantiated in `./client.ts`), and uses the `mockDeep` method from `jest-mock-extended` to enable access to the objects and methods available on the Prisma client. It then resets the mocked instance before each test is run.
+这个单例文件告诉Jest模拟一个默认的输出（在./client.ts中实例化的Prisma客户端），并使用`jest-mock-extended`中的`mockDeep`方法来实现对Prisma client上可用对象和方法的访问。然后在每个测试运行前重置模拟的实例。
 
-### Dependency injection
+### 依赖注入
 
-Another popular pattern that can be used is dependency injection.
+另一个可以使用的流行模式是依赖注入。
 
-1. Create a `context.ts` file and add the following:
+1. 创建一个`context.ts`文件并添加以下内容:
 
    ```ts file=context.ts
    import { PrismaClient } from '@prisma/client'
@@ -131,12 +131,11 @@ Another popular pattern that can be used is dependency injection.
 
 <Tip>
 
-If you find that you're seeing a circular dependency error highlighted through mocking the client, try adding `"strictNullChecks": true`
-to your `tsconfig.json`.
+如果你发现你通过模拟客户端看到了一个循环依赖错误，试着在你的`tsconfig.json`中加入 `"strictNullChecks": true`。
 
 </Tip>
 
-2. To use the context, you would do the following in your test file:
+2. 为了使用上下文，你要在你的测试文件中做以下事情:
 
    ```ts
    import { MockContext, Context, createMockContext } from '../context'
@@ -150,13 +149,13 @@ to your `tsconfig.json`.
    })
    ```
 
-This will create a new context before each test is run via the `createMockContext` function. This (`mockCtx`) context will be used to make a mock call to Prisma and run a query to test. The `ctx` context will be used to run a scenario query that is tested against.
+这将在每个测试运行前通过`createMockContext`函数创建一个新的上下文。这个（`mockCtx`）上下文将被用来对Prisma进行模拟调用，并运行一个查询来测试`.ctx`上下文将被用来运行一个被测试的场景查询。
 
-## Example unit tests
+## 单元测试示例
 
-Prisma already tests query functions like `findMany`. A real world use case for unit testing Prisma might be a signup form. Your user fills in a form which calls a function, which in turn uses Prisma to make a call to your database.
+Prisma已经测试了`findMany`等查询函数。Prisma单元测试的一个真实用例可能是一个注册表单，你的用户填写一个表格，调用一个函数，而这个函数又使用Prisma来调用你的数据库。
 
-All of the examples that follow use the following schema model:
+下面的所有例子都使用以下模式模型:
 
 ```prisma file=schema.prisma
 model User {
@@ -167,13 +166,13 @@ model User {
 }
 ```
 
-The following unit tests will mock the process of
+下面的单元测试将模拟以下过程
 
-- Creating a new user
-- Updating a users name
-- Failing to create a user if terms are not accepted
+- 创建一个新的用户
+- 更新一个用户的名字
+- 如果条件不被接受，创建用户失败
 
-The functions that use the dependency injection pattern will have the context injected (passed in as a parameter) into them, whereas the functions that use the singleton pattern will use the singleton instance of the Prisma client.
+使用依赖注入模式的函数将把上下文注入其中（作为参数传入），而使用单例模式的函数将使用Prisma client的单例实例。
 
 <TabbedContent tabs={[<FileWithIcon text="functions-with-context.ts" icon="file"/>, <FileWithIcon text="functions-without-context.ts" icon="file"/>]}>
 
@@ -253,11 +252,11 @@ export async function updateUsername(user: UpdateUser) {
 
 </TabbedContent>
 
-The tests for each methodology are fairly similar, the difference is how the mocked Prisma Client is used.
+两种测试的方法都相当相似，区别在于如何使用模拟的Prisma Client。
 
-The **_dependency injection_** example passes the context through to the function that is being tested as well as using it to call the mock implementation.
+`_依赖注入_`例子将上下文传递给正在测试的函数，并使用它来调用模拟实现。
 
-The **_singleton_** example uses the singleton client instance to call the mock implementation.
+在`_单例模式_`的例子中，使用单例客户端实例来调用模拟的实现。
 
 <TabbedContent tabs={[<FileWithIcon text="with-singleton.ts" icon="file"/>, <FileWithIcon text="with-dependency-injection" icon="file"/>]}>
 

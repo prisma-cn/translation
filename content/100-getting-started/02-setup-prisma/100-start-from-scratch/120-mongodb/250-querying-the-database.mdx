@@ -1,19 +1,19 @@
 ---
-title: 'Querying the database'
-metaTitle: 'Querying the database'
-metaDescription: 'Write data to and query the database'
+title: '查询数据库'
+metaTitle: '查询数据库'
+metaDescription: '对数据库进行写操作和查询操作'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['mongodb']
 toc: false
 ---
 
-## Write your first query with Prisma Client
+## 使用 Prisma Client 编写您的第一个查询
 
-Now that you have generated Prisma Client, you can start writing queries to read and write data in your database. For the purpose of this guide, you'll use a plain Node.js script to explore some basic features of Prisma Client.
+现在您已经生成了Prisma Client，您可以开始编写查询来读取和写入数据库中的数据。出于本指南的目的，您将使用一个普通的Node.js脚本来探索Prisma Client的一些基本功能。
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Create a new file named `index.ts` and add the following code to it:
+创建一个名为`index.ts`的新文件，并添加以下代码:
 
 ```js file=index.ts copy
 import { PrismaClient } from '@prisma/client'
@@ -39,7 +39,7 @@ main()
 
 <SwitchTech technologies={['node', '*']}>
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为`index.js`的新文件，并添加以下代码:
 
 ```js file=index.js copy
 const { PrismaClient } = require('@prisma/client')
@@ -63,16 +63,16 @@ main()
 
 </SwitchTech>
 
-Here's a quick overview of the different parts of the code snippet:
+下面是代码片段不同部分的快速概述:
 
-1. Import the `PrismaClient` constructor from the `@prisma/client` node module
-1. Instantiate `PrismaClient`
-1. Define an `async` function named `main` to send queries to the database
-1. Connect to the database
-1. Call the `main` function
-1. Close the database connections when the script terminates
+1. `PrismaClient`从`@prisma/client`节点模块导入构造函数
+2. 实例化 `PrismaClient`
+3. 定义一个名为`main`的`async`函数向数据库发送查询
+4. 连接数据库
+5. 调用`main`函数
+6. 当脚本终止时关闭数据库连接
 
-Inside the `main` function, add the following query to read all `User` records from the database and print the result:
+在`main`函数内部，添加以下查询从数据库读取所有`User`记录并打印结果:
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -102,7 +102,7 @@ async function main() {
 
 </SwitchTech>
 
-Now run the code with this command:
+现在用下面的命令运行代码:
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -120,17 +120,18 @@ node index.js
 
 </SwitchTech>
 
-This should print an empty array because there are no `User` records in the database yet:
+这应该打印一个空数组，因为`User`数据库中还没有记录：
 
 ```json no-lines
 []
 ```
 
-## Write data into the database
+## 将数据写入数据库
 
 The `findMany` query you used in the previous section only _reads_ data from the database (although it was still empty). In this section, you'll learn how to write a query to _write_ new records into the `Post`, `User` and `Comment` tables.
+在上一节中使用的`findMany`查询只从数据库中读取数据(尽管它仍然是空的)。在本节中，您将学习如何将一个查询以及写入新记录到`Post`，`User`和`Comment`表中。
 
-Adjust the `main` function to send a `create` query to the database:
+调整`main`函数向数据库发送`create`查询:
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -194,11 +195,14 @@ async function main() {
 
 </SwitchTech>
 
-This code creates a new `User` record together with a new `Post` using a [nested write](../../../../../concepts/components/prisma-client/relation-queries#nested-writes) query. The `User` record is connected to the other one via the `Post.author` ↔ `User.posts` [relation fields](../../../../../concepts/components/prisma-schema/relations#relation-fields) respectively.
+这段代码使用[嵌套写入](../../../../../concepts/components/prisma-client/relation-queries#nested-writes)查询创建了一个新的`User`记录和一个新的`Post`。`User`记录通过“发布”连接到另一个记录。`Post.author`↔`User.posts`[关系字段](../../../../../concepts/components/prisma-schema/relations#relation-fields)。
 
-Notice that you're passing the [`include`](../../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields) option to `findMany` which tells Prisma Client to include the `posts` relations on the returned `User` objects.
 
-Run the code with this command:
+
+
+注意，你将[`include`](../../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields)选项传递给`findMany`，它告诉Prisma Client在返回的`User`对象上包含`posts`关系。
+
+用下面的命令运行代码:
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -216,7 +220,7 @@ node index.js
 
 </SwitchTech>
 
-The output should look similar to this:
+输出应类似于以下内容：
 
 ```json5 no-lines
 [
@@ -239,7 +243,7 @@ The output should look similar to this:
 
 <SwitchTech technologies={['typescript']}>
 
-Also note that `allUsers` is _statically typed_ thanks to [Prisma Client's generated types](../../../../../concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types). You can observe the type by hovering over the `allUsers` variable in your editor. It should be typed as follows:
+还要注意`allUsers`是 _静态类型_，这要感谢[Prisma Client's 生成的类型](../../../../../concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types)。您可以将鼠标悬停在编辑器中的`allUsers`变量上观察该类型。它应该输入如下:
 
 ```ts no-lines
 const allUsers: (User & {
@@ -257,7 +261,7 @@ export type Post = {
 
 </SwitchTech>
 
-The query added new records to the `User` and the `Post` tables:
+该查询向`User`和`Post`表添加了新记录:
 
 **User**
 
@@ -272,8 +276,9 @@ The query added new records to the `User` and the `Post` tables:
 | `60cc9bad005059d6007f45dd` | `2020-03-21T16:45:01.246Z` | `"My first post"` | `Lots of really interesting stuff` | `false`       | `60cc9b0e001e3bfd00a6eddf` |
 
 > **Note**: The unique IDs in the `authorId` column on `Post` reference the `id` column of the `User` table, meaning the `id` value `60cc9b0e001e3bfd00a6eddf` column therefore refers to the first (and only) `User` record in the database.
+> **注**:`Post`上`authorId`列的唯一`id`引用了`User`表的`id`列，这意味着id值为`60cc9b0e001e3bfd00a6eddf`，因此是第一个(也是唯一的)列。`User`记录在数据库中。
 
-Before moving on to the next section, you'll add a couple of comments to the `Post` record you just created using an `update` query. Adjust the `main` function as follows:
+在继续下一部分之前，您将向`Post`刚刚使用`update`查询创建的记录添加几条注释。调整`main`功能如下：
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -339,7 +344,7 @@ async function main() {
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Now run the code using the same command as before:
+现在像以前一样使用相同的命令运行代码:
 
 ```terminal copy
 npx ts-node index.ts
@@ -349,7 +354,7 @@ npx ts-node index.ts
 
 <SwitchTech technologies={['node', '*']}>
 
-Now run the code using the same command as before:
+现在像以前一样使用相同的命令运行代码:
 
 ```terminal copy
 node index.js
@@ -357,7 +362,7 @@ node index.js
 
 </SwitchTech>
 
-You will see the following output:
+您将看到以下输出：
 
 ```json5 no-lines
 [
@@ -383,7 +388,7 @@ You will see the following output:
 ]
 ```
 
-Fantastic, you just wrote new data into your database for the first time using Prisma Client 🚀
+太棒了，您刚刚使用Prisma Client首次将新数据写入数据库🚀
 
 <SwitchTech technologies={['node', 'mongodb']}>
 
@@ -395,11 +400,11 @@ Fantastic, you just wrote new data into your database for the first time using P
   href="./install-prisma-client-node-mongodb"
   arrowLeft
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 <ButtonLink color="dark" type="primary" href="./next-steps-node-mongodb" arrow>
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -416,7 +421,7 @@ Fantastic, you just wrote new data into your database for the first time using P
   href="./install-prisma-client-typescript-mongodb"
   arrowLeft
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 <ButtonLink
@@ -425,7 +430,7 @@ Fantastic, you just wrote new data into your database for the first time using P
   href="./next-steps-typescript-mongodb"
   arrow
 >
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>

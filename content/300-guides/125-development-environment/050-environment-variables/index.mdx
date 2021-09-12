@@ -1,50 +1,52 @@
 ---
-title: 'Environment variables'
-metaTitle: 'Environment variables'
-metaDescription: 'Learn how to use environment variables in your Prisma project'
+title: '环境变量'
+metaTitle: '环境变量'
+metaDescription: '了解如何在你的Prisma项目中使用环境变量t'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-An environment variable is a key value pair of string data stored on your machine's local environment.
+环境变量是一个存储在你的机器本地环境中的字符串数据的键值对。
 
-Traditionally the name of the variable is uppercase, this is then followed by an equals sign then the value of the variable:
+传统上，变量的名称是大写的，然后是一个等号，然后是变量的值。:
 
 ```env
 MY_VALUE=prisma
 ```
 
-The environment variable belongs to the environment where a process is running.
+环境变量属于一个正在运行的进程所在的环境。
 
-Taking the `TEMP` environment variable as an example, one can query its value to find where to store temporary files. This is a system environment variable and can be queried by any process or application running on the machine.
+以`TEMP`环境变量为例，人们可以通过查询它的值来找到存储临时文件的位置。这是一个系统环境变量，可以被机器上运行的任何进程或应用程序所查询。
 
 </TopBlock>
 
-## How does Prisma use environment variables?
+## Prisma 如何使用环境变量?
 
-Prisma always reads environment variables from the system's environment.
+Prisma 总是从系统的环境中读取环境变量。
 
-When you install Prisma for the first time it creates a convenience `.env` file for you to set your [`connection url`](../../../reference/database-reference/connection-urls) as an environment variable. When you use Prisma CLI or Prisma Client, the `.env` file content and the variables defined in there are put into the system's environment, where Prisma can read it and use it.
+当你第一次安装 Prisma 时，它会为你创建一个方便的.env 文件，将你的[`connection url`](../../../reference/database-reference/connection-urls)设置为环境变量。当你使用 Prisma CLI 或 Prisma Client 时，`.env`文件的内容和其中定义的变量被放入系统的环境中，Prisma 可以读取并使用它。
 
 <Admonition type="info">
 
-Looking to use more than one `.env` file? See [Using multiple `.env` files](./using-multiple-env-files) for information on how to setup and use multiple `.env` files in your application.
+想使用一个以上的`.env`文件？请参见使用[多个`.env`文件](./using-multiple-env-files)，了解如何在你的应用程序中设置和使用多个`.env`文件。
 
 </Admonition>
 
-## Using <inlinecode>.env</inlinecode> files
+## 使用 <inlinecode>.env</inlinecode> 文件
 
-Prisma creates a default `.env` file at your projects root. You can choose to replace this file or create a new one in the `prisma` folder, or if you choose to relocate your `prisma.schema` file, alongside that.
+Prisma 在你的项目根目录创建一个默认的`.env`文件。你可以选择替换这个文件或在`prisma`文件夹中创建一个新的文件，如果你选择重新定位你的`prisma.schema`文件，也可以在它旁边。
 
-### `.env` file locations
+### `.env` 文件的位置
 
-The Prisma CLI looks for `.env` files, in order, in the following locations:
+Prisma CLI 依次在以下位置寻找`.env`文件:
 
-1. In the root folder of your project (`./.env`)
-1. From the same folder as the schema specified by the `--schema` argument
-1. From the same folder as the schema taken from `"prisma": {"schema": "/path/to/schema.prisma"}` in `package.json`
-1. From the `./prisma` folder
+1. 在你项目的根目录文件夹中 (`./.env`)
+1. --schema 参数指定 schema 所在文件位置的同文件夹下
+1. `package.json中的`"prisma": {"schema": "/path/to/schema.prisma"}`配置指定 schema 所在文件位置的同文件夹下
+1. 来自`./prisma` 文件夹
+
+如果一个`.env`文件位于步骤#1 中，但额外的、冲突的`.env`变量位于步骤#2-4 中，CLI 将抛出一个错误。例如，如果你在两个不同的`.env`文件中指定一个 DATABASE_URL 变量，你会得到以下错误:
 
 If a `.env` file is located in step #1, but additional, clashing `.env` variables are located in steps #2 - 4, the CLI will throw an error. For example, if you specify a `DATABASE_URL` variable in two different `.env` files, you will get the following error:
 
@@ -56,7 +58,7 @@ Conflicting env vars:
 We suggest to move the contents of prisma/.env to .env to consolidate your env vars.
 ```
 
-The following table describes where the Prisma CLI looks for the `.env` file:
+下表描述了 Prisma CLI 寻找.env 文件的位置:
 
 | **Command**                                     | **Schema file location**                                                     | **`.env` file locations checked, in order**               |
 | :---------------------------------------------- | :--------------------------------------------------------------------------- | :-------------------------------------------------------- |
@@ -65,19 +67,19 @@ The following table describes where the Prisma CLI looks for the `.env` file:
 | `prisma [command]`                              | `"prisma": {"schema": "/path/to/schema.prisma"}`                             | `.env`<br /> `./path/to/schema/.env`<br />`./prisma/.env` |
 | `prisma [command]`                              | No schema (for example, when running `prisma db pull` in an empty directory) | `./.env`<br />`./prisma/.env`                             |
 
-Any environment variables defined in that `.env` file will automatically be loaded when running a Prisma CLI command.
+在该`.env`文件中定义的任何环境变量将在运行 Prisma CLI 命令时自动加载。
 
 <Admonition type="warning">
 
-**Do not commit your `.env` files into version control**!
+\*\*不要把你的`.env`文件提交到版本控制中去!
 
 </Admonition>
 
-Refer to the `dotenv` documentation for information about [what happens if an environment variable is defined in two places](https://www.npmjs.com/package/dotenv#what-happens-to-environment-variables-that-were-already-set).
+请参考`dotenv`文档，了解[如果一个环境变量被定义在两个地方会发生什么](https://www.npmjs.com/package/dotenv#what-happens-to-environment-variables-that-were-already-set)。
 
-### Expanding variables
+### 扩展变量
 
-Variables stored in `.env` files can be expanded using the format specified by [dotenv-expand](https://github.com/motdotla/dotenv-expand). This is useful when dealing with PaaS or similar products. such as Heroku):
+存储在`.env`文件中的变量可以使用[dotenv-expand](https://github.com/motdotla/dotenv-expand)指定的格式来扩展。这在处理 PaaS 或类似产品时很有用，如 Heroku）:
 
 ```
 # .env
@@ -85,9 +87,9 @@ DATABASE_URL=postgresql://test:test@localhost:5432/test
 DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=public
 ```
 
-### Example: Set the `DATABASE_URL` environment variable in an `.env` file
+### 例子: 在一个`.env`文件中设置`DATABASE_URL`环境变量
 
-It is common to load your database connection URL from an environment variable:
+从环境变量中加载你的数据库连接 URL 是很常见的做法:
 
 ```prisma
 // schema.prisma
@@ -97,18 +99,18 @@ datasource db {
 }
 ```
 
-You can set the `DATABASE_URL` in your `.env` file:
+你可以在你的`.env`文件中设置`DATABASE_URL`:
 
 ```
 # .env
 DATABASE_URL=postgresql://test:test@localhost:5432/test?schema=public
 ```
 
-When you run a command that needs access to the database defined via the `datasource` block (for example, `prisma db pull`), the Prisma CLI automatically loads the `DATABASE_URL` environment variables from the `.env` file and makes it available to the CLI.
+当你运行一个需要访问通过数据源定义的数据库的命令时（例如，`prisma db pull`），Prisma CLI 会自动从`.env`文件中加载`DATABASE_URL`环境变量，并使它对 CLI 可用。
 
-### Using environment variables in your code
+### 在你的代码中使用环境变量
 
-If you want environment variables to be evaluated at runtime, you need to load them manually in your application code (for example, by using [`dotenv`](https://github.com/motdotla/dotenv)):
+如果你希望环境变量在运行时被指定，你需要在你的应用程序代码中手动加载它们（例如，通过使用 dotenv)
 
 ```ts
 import * as dotenv from 'dotenv'

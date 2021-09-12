@@ -1,15 +1,15 @@
 ---
-title: 'Using Prisma Migrate'
-metaTitle: 'Using Prisma Migrate'
-metaDescription: 'Create database tables with Prisma Migrate'
+title: '使用Prisma迁移'
+metaTitle: '使用Prisma迁移'
+metaDescription: '使用Prisma Migrate创建数据库表'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['postgres', 'mysql']
 toc: false
 ---
 
-## Create database tables with Prisma Migrate
+## 使用Prisma Migrate创建数据库表
 
-In this guide, you'll use [Prisma Migrate](../../../../concepts/components/prisma-migrate) to create the tables in your database. Add the following Prisma data model to your Prisma schema in `prisma/schema.prisma`:
+在本指南中，您将使用[Prisma Migrate](../../../../concepts/components/prisma-migrate)在数据库中创建表。在`prisma/schema.prisma`中将以下Prisma数据模型添加到你的Prisma表中:
 
 ```prisma file=prisma/schema.prisma copy
 model Post {
@@ -39,20 +39,21 @@ model User {
 }
 ```
 
-To map your data model to the database schema, you need to use the `prisma migrate` CLI commands:
+要将数据模型映射到数据库架构，需要使用`prisma migrate`CLI命令：
+
 
 ```terminal
 npx prisma migrate dev --name init
 ```
 
-This command does two things:
+此命令执行两项操作：
 
-1. It creates a new SQL migration file for this migration
-1. It runs the SQL migration file against the database
+1. 为这次迁移创建了一个新的SQL迁移文件
+2. 对数据库运行SQL迁移文件
 
-> **Note**: `generate` is called under the hood by default, after running `prisma migrate dev`. If the `prisma-client-js` generator is defined in your schema, this will check if `@prisma/client` is installed and install it if it's missing.
+> **注意**:默认情况下，在运行`prisma migrate dev`之后，会调用`generate`。如果你的模式中定义了`prisma-client-js`生成器，这将检查`@prisma/client`是否已经安装，如果它没有安装，就安装它。
 
-Great, you now created three tables in your database with Prisma Migrate 🚀
+很好，现在使用Prisma Migrate在数据库中创建了三个表🚀
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
@@ -214,7 +215,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./connect-your-database-node-postgres"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -223,7 +224,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./install-prisma-client-node-postgres"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -240,7 +241,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./connect-your-database-node-mysql"
   arrowRight
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -249,7 +250,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./install-prisma-client-node-mysql"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -266,7 +267,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./connect-your-database-typescript-postgres"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -275,7 +276,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./install-prisma-client-typescript-postgres"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -292,7 +293,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./connect-your-database-typescript-mysql"
   arrowRight
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -301,7 +302,7 @@ ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE
   href="./install-prisma-client-typescript-mysql"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma Client
 </ButtonLink>
 
 </NavigationLinksContainer>

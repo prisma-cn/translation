@@ -1,63 +1,63 @@
 ---
-title: 'Deploying to Heroku'
-metaTitle: 'Deploy a Prisma app to Heroku'
-metaDescription: 'Learn how to deploy a Node.js server that uses Prisma to Heroku.'
+title: '部署到Heroku'
+metaTitle: '部署Prisma应用到Heroku'
+metaDescription: '了解如何将使用Prisma的Node.js服务器部署到Heroku。'
 ---
 
 <TopBlock>
 
-In this guide, you will set up and deploy a Node.js server that uses Prisma with PostgreSQL to [Heroku](https://www.heroku.com). The application exposes a REST API and uses Prisma Client to handle fetching, creating, and deleting records from a database.
+在本指南中，你将设置并部署一个使用 Prisma 与 PostgreSQL 的 Node.js 服务器到[Heroku](https://www.heroku.com)。该应用程序暴露了一个 REST API，并使用 Prisma 客户端来处理从数据库中获取、创建和删除记录。
 
-Heroku is a cloud platform as a service (PaaS). In contrast to the popular serverless deployment model, with Heroku, your application is constantly running even if no requests are made to it. This has several benefits due to the connection limits of a PostgreSQL database. For more information, check out the [general deployment documentation](../deployment)
+Heroku 是一个云平台即服务（PaaS）。与流行的无服务器部署模式相比，有了 Heroku，即使没有向它发出请求，你的应用程序也会持续运行。由于 PostgreSQL 数据库的连接限制，这有几个好处。欲了解更多信息，请查看[部署文档](../deployment)。
 
-Typically Heroku integrates with a Git repository for automatic deployments upon commits. You can deploy to Heroku from a GitHub repository or by pushing your source to a [Git repository that Heroku creates per app](https://devcenter.heroku.com/articles/git). This guide uses the latter approach whereby you push your code to the app's repository on Heroku, which triggers a build and deploys the application.
+通常情况下，Heroku 与 Git 仓库集成，在提交后自动部署。你可以从 GitHub 仓库部署到 Heroku，也可以通过将你的源代码推送到 Heroku 为[每个应用创建的 Git 仓库](https://devcenter.heroku.com/articles/git)。本指南使用后一种方法，即你将代码推送到 Heroku 上的应用仓库，后者会触发构建并部署应用。
 
-The application has the following components:
+该应用程序有以下组件:
 
-- **Backend**: Node.js REST API built with Express.js with resource endpoints that use Prisma Client to handle database operations against a PostgreSQL database (e.g., hosted on Heroku).
-- **Frontend**: Static HTML page to interact with the API.
+- **后台**: 用 Express.js 构建的 Node.js REST API，其资源端点使用 Prisma Client 来处理针对 PostgreSQL 数据库（例如，托管在 Heroku 上）的数据库操作。
+- **前端**: 静态 HTML 页面，与 API 进行交互。
 
-![architecture diagram](../images/heroku-architecture.png)
+![架构图](../images/heroku-architecture.png)
 
-The focus of this guide is showing how to deploy projects using Prisma to Heroku. The starting point will be the [Prisma Heroku example](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/heroku), which contains an Express.js server with a couple of pre-configured REST endpoints and a simple frontend.
+本指南的重点是展示如何使用 Prisma 将项目部署到 Heroku。出发点是[Prisma Heroku 例子](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/heroku)，它包含一个 Express.js 服务器，有几个预先配置的 REST 端点和一个简单的前端。
 
-> **Note:** The various **checkpoints** throughout the guide allowing you to validate whether you performed the steps correctly.
+> **注意：**整个指南中的各种**检查点**允许你验证你是否正确执行了这些步骤。
 
 </TopBlock>
 
-## A note on deploying GraphQL servers to Heroku
+## 关于将 GraphQL 服务器部署到 Heroku 的说明
 
-While the example uses REST, the same principles apply to a GraphQL server, with the main difference being that you typically have a single GraphQL API endpoint rather than a route for every resource as with REST.
+虽然这个例子使用的是 REST，但同样的原则也适用于 GraphQL 服务器，主要区别在于，你通常只有一个 GraphQL API 端点，而不是像 REST 那样为每个资源提供一个路由。
 
-## Prerequisites
+## 前提条件
 
-- [Heroku](https://www.heroku.com) account.
-- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed.
-- Node.js installed.
-- PostgreSQL CLI `psql` installed.
+- [Heroku](https://www.heroku.com)账户。
+- 安装[Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)。
+- 安装了 Node.js。
+- 安装了 PostgreSQL CLI `psql`。
 
-> **Note:** Heroku provides a free plan which includes Node.js hosting and a PostgreSQL database, so no billing information is required.
+> **注意：** Heroku 提供了一个免费计划，包括 Node.js 主机和 PostgreSQL 数据库，所以不需要帐单信息。
 
-## Prisma workflow
+## Prisma 工作流程
 
-At the core of Prisma is the [Prisma schema](/concepts/components/prisma-schema) – a declarative configuration where you define your data model and other Prisma-related configuration. The Prisma schema is also a single source of truth for both Prisma Client and Prisma Migrate.
+Prisma 的核心是[Prisma 模式](/concepts/components/prisma-schema) - 一个声明性的配置，你在这里定义你的数据模型和其他与 Prisma 相关的配置。Prisma 模式也是 Prisma 客户端和 Prisma 迁移的单一来源。
 
-In this guide, you will use [Prisma Migrate](/concepts/components/prisma-migrate) to create the database schema. Prisma Migrate is based on the Prisma schema and works by generating `.sql` migration files that are executed against the database.
+在本指南中，你将使用[Prisma Migrate]（/concepts/components/prisma-migrate）来创建数据库模式。Prisma Migrate 以 Prisma 模式为基础，通过生成`.sql`迁移文件来工作，并针对数据库执行。
 
-Migrate comes with two primary workflows:
+Migrate 有两个主要工作流程:
 
-- Creating migrations and applying during local development with `prisma migrate dev`
-- Applying generated migration to production with `prisma migrate deploy`
+- 在本地开发过程中使用`prisma migrate dev`创建迁移文件并应用。
+- 使用`prisma migrate deploy`将生成的迁移应用到生产中。
 
-For brevity, the guide does not cover how migrations are created with `prisma migrate dev`. Rather, it focuses on the production workflow and uses the Prisma schema and SQL migration that are included in the example code.
+为了简洁起见，本指南不涉及如何使用`prisma migrate dev`创建迁移。相反，它侧重于生产工作流程，并使用示例代码中包含的 Prisma 模式和 SQL 迁移。
 
-You will use Heroku's [release phase](https://devcenter.heroku.com/articles/release-phase) to run the `prisma migrate deploy` command so that the migrations are applied before the application starts.
+你将使用 Heroku 的[release phase](https://devcenter.heroku.com/articles/release-phase)来运行`prisma migrate deploy`命令，以便在应用程序启动前应用迁移。
 
-To learn more about how migrations are created with Prisma Migrate, check out the [start from scratch guide](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
+要了解更多关于如何用 Prisma Migrate 创建迁移，请查看[start from scratch guide](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
 
-## 1. Download the example and install dependencies
+## 1. 下载示例并安装依赖项
 
-Open your terminal and navigate to a location of your choice. Create the directory that will hold the application code and download the example code:
+打开你的终端，导航到你选择的一个位置。创建将存放应用程序代码的目录，并下载示例代码:
 
 ```no-lines
 mkdir prisma-heroku
@@ -67,7 +67,7 @@ curl https://codeload.github.com/prisma/prisma-examples/tar.gz/latest | tar -xz 
 
 <!-- tar strip folder is a concatenation of the REPOSITORY-BRANCH/REF, e.g. prisma-examples-latest -->
 
-**Checkpoint:** `ls -1` should show:
+**检查点：** `ls -1`应显示
 
 ```no-lines
 ls -1
@@ -79,73 +79,73 @@ public
 src
 ```
 
-Install the dependencies:
+安装依赖:
 
 ```no-lines
 npm install
 ```
 
-> **Note:** The `Procfile` tells Heroku the command needed to start the application, i.e. `npm start`, and the command to run during the release phase, i.e., `npx prisma migrate deploy`
+> **注意：**"Procfile "告诉 Heroku 启动应用程序所需的命令，即`npm start'，以及在发布阶段运行的命令，即`npx prisma migrate deploy'。
 
-## 2. Create a Git repository for the application
+## 2. 为应用程序创建一个 Git 仓库
 
-In the previous step, you downloaded the code. In this step, you will create a repository from the code so that you can push it to Heroku for deployment.
+在上一步骤中，你下载了代码。在这一步，你将从代码中创建一个仓库，这样你就可以把它推送到 Heroku 进行部署。
 
-To do so, run `git init` from the source code folder:
+为此，从源代码文件夹中运行`git init`:
 
 ```no-lines
 git init
 > Initialized empty Git repository in /Users/alice/prisma-heroku/.git/
 ```
 
-To use the `main` branch as the default branch, run the following command:
+要使用 "main "分支作为默认分支，请运行以下命令:
 
 ```no-lines
 git branch -M main
 ```
 
-With the repository initialized, add and commit the files:
+仓库初始化后，添加并提交文件:
 
 ```no-lines
 git add .
 git commit -m 'Initial commit'
 ```
 
-**Checkpoint:** `git log -1` should show the commit:
+**检查点：** `git log -1`应该显示提交的内容:
 
 ```no-lines
 git log -1
 commit 895534590fdd260acee6396e2e1c0438d1be7fed (HEAD -> main)
 ```
 
-## 3. Heroku CLI login
+## 3. 登录 Heroku CLI
 
-Make sure you're logged in to Heroku with the CLI:
+确保你已经用 CLI 登录到 Heroku 了:
 
 ```no-lines
 heroku login
 ```
 
-This will allow you to deploy to Heroku from the terminal.
+这将使你能够从终端部署到 Heroku。
 
-**Checkpoint:** `heroku auth:whoami` should show your username:
+**检查点：** `heroku auth:whoami`应该显示你的用户名。
 
 ```no-lines
 heroku auth:whoami
 > your-email
 ```
 
-## 4. Create a Heroku app
+## 4. 创建一个 Heroku 应用程序
 
-To deploy an application to Heroku, you need to create an app. You can do so with the following command:
+要将应用程序部署到 Heroku，你需要创建一个应用程序。你可以用下面的命令来做。:
 
 ```no-lines
 heroku apps:create your-app-name
 ```
 
-> **Note:** Use a unique name of your choice instead of `your-app-name`.
+> **注意：**使用你选择的唯一名称，而不是`你的应用程序名称`。
 
-**Checkpoint:** You should see the URL and the repository for your Heroku app:
+**检查点：**你应该看到你的 Heroku 应用程序的 URL 和存储库：
 
 ```no-lines
 heroku apps:create your-app-name
@@ -153,32 +153,32 @@ heroku apps:create your-app-name
 > https://your-app-name.herokuapp.com/ | https://git.heroku.com/your-app-name.git
 ```
 
-Creating the Heroku app will add the git remote Heroku created to your local repository. Pushing commits to this remote will trigger a deploy.
+创建 Heroku 应用将把 Heroku 创建的 git 远程添加到你的本地仓库。向该远程推送提交将触发部署。
 
-**Checkpoint:** `git remote -v` should show the Heroku git remote for your application:
+**检查点：** `git remote -v`应该显示你的应用程序的 Heroku git remote:
 
 ```no-lines
 heroku https://git.heroku.com/your-app-name.git (fetch)
 heroku https://git.heroku.com/your-app-name.git (push)
 ```
 
-If you don't see the heroku remote, use the following command to add it:
+如果你没有看到 heroku 远程，使用下面的命令来添加它:
 
 ```no-lines
 heroku git:remote --app your-app-name
 ```
 
-## 5. Add a PostgreSQL database to your application
+## 5. 在你的应用程序中添加一个 PostgreSQL 数据库
 
-Heroku allows your to provision a PostgreSQL database as part of an application.
+Heroku 允许你提供一个 PostgreSQL 数据库作为应用程序的一部分。
 
-Create the database with the following command:
+用下面的命令创建数据库:
 
 ```no-lines
 heroku addons:create heroku-postgresql:hobby-dev
 ```
 
-**Checkpoint:** To verify the database was created you should see the following:
+**检查点：**为了验证数据库的创建，你应该看到以下内容:
 
 ```no-lines
 Creating heroku-postgresql:hobby-dev on ⬢ your-app-name... free
@@ -188,19 +188,19 @@ Database has been created and is available
 Created postgresql-parallel-73780 as DATABASE_URL
 ```
 
-> **Note:** Heroku automatically sets the `DATABASE_URL` environment variable when the app is running on Heroku. Prisma uses this environment variable because it's declared in the _datasource_ block of the Prisma schema (`prisma/schema.prisma`) with `env("DATABASE_URL")`.
+> **注意：**当应用程序在 Heroku 上运行时，Heroku 自动设置`DATABASE_URL`环境变量。Prisma 使用这个环境变量是因为它在 Prisma 模式(`prisma/schema.prisma`)的*datasource*块中用`env("DATABASE_URL")`声明。
 
-## 6. Push to deploy
+## 6. 推送部署
 
-Deploy the app by pushing the changes to the Heroku app repository:
+通过将改动推送到 Heroku 应用仓库来部署该应用:
 
 ```no-lines
 git push heroku main
 ```
 
-This will trigger a build and deploy your application to Heroku. Heroku will also run the `npx prisma migrate deploy` command which executes the migrations to create the database schema before deploying the app (as defined in the `release` step of the `Procfile`).
+这将触发构建并将你的应用程序部署到 Heroku。Heroku 还将运行`npx prisma migrate deploy`命令，在部署应用程序之前执行迁移以创建数据库模式（如在`Procfile`的`release`步骤中定义）。
 
-**Checkpoint:** `git push` will emit the logs from the build and release phase and display the URL of the deployed app:
+**检查点：** `git push`将发出构建和发布阶段的日志，并显示已部署应用程序的 URL:
 
 ```no-lines
 remote: -----> Launching...
@@ -226,25 +226,25 @@ remote: All migrations have been successfully applied.
 remote: Waiting for release.... done.
 ```
 
-> **Note:** Heroku will also set the `PORT` environment variable to which your application is bound.
+> **注意：** Heroku 还将设置你的应用程序所绑定的`PORT`环境变量。
 
-## 7. Test your deployed application
+## 7. 测试你部署的应用程序
 
-You can use the static frontend to interact with the API you deployed via the preview URL.
+你可以使用静态前端与你通过预览 URL 部署的 API 进行交互。
 
-Open up the preview URL in your browser, the URL should like this: `https://APP_NAME.herokuapp.com`. You should see the following:
+在你的浏览器中打开预览 URL，该 URL 应该是这样的。`https://APP_NAME.herokuapp.com`。你应该看到以下内容。
 
 ![deployed-screenshot](../images/heroku-deployed.png)
 
-The buttons allow you to make requests to the REST API and view the response:
+这些按钮允许你向 REST API 提出请求并查看响应:
 
-- **Check API status**: Will call the REST API status endpoint that returns `{"up":true}`.
-- **Seed data**: Will seed the database with a test `user` and `post`. Returns the created users.
-- **Load feed**: Will load all `users` in the database with their related `profiles`.
+- **检查 API 状态**。将调用 REST API 状态端点，返回`{"up":true}`。
+- **输入数据**。将用测试的 `user` 和 `post` 作为数据库的模型。返回创建的用户。
+- **加载数据**: 将加载数据库中所有的`user`和他们相关的 `profiles`。
 
-For more insight into Prisma Client's API, look at the route handlers in the `src/index.js` file.
+为了更深入地了解 Prisma Client 的 API，请看`src/index.js`文件中的路由处理程序。
 
-You can view the application's logs with the `heroku logs --tail` command:
+你可以用`heroku logs --tail`命令查看应用程序的日志:
 
 ```no-lines
 2020-07-07T14:39:07.396544+00:00 app[web.1]:
@@ -256,11 +256,11 @@ You can view the application's logs with the `heroku logs --tail` command:
 2020-07-07T14:39:07.842546+00:00 heroku[web.1]: State changed from starting to up
 ```
 
-## Heroku specific notes
+## Heroku 的具体说明
 
-There are some implementation details relating to Heroku that this guide addresses and are worth reiterating:
+本指南涉及一些与 Heroku 有关的实施细节，值得重申一下:
 
-- **Port binding**: web servers bind to a port so that they can accept connections. When deploying to Heroku The `PORT` environment variable is set by Heroku. Ensure you bind to `process.env.PORT` so that your application can accept requests once deployed. A common pattern is to try binding to try `process.env.PORT` and fallback to a preset port as follows:
+- **端口绑定**：网络服务器绑定到一个端口，以便它们能够接受连接。当部署到 Heroku 时 `PORT`环境变量由 Heroku 设置。确保你绑定到`process.env.PORT`，以便你的应用程序在部署后可以接受请求。一个常见的模式是尝试绑定到`process.env.PORT`，然后回退到一个预设的端口，如下所示:
 
 ```js
 const PORT = process.env.PORT || 3000
@@ -269,12 +269,12 @@ const server = app.listen(PORT, () => {
 })
 ```
 
-- **Database URL**: As part of Heroku's provisioning process, a `DATABASE_URL` config var is added to your app’s configuration. This contains the URL your app uses to access the database. Ensure that your `schema.prisma` file uses `env("DATABASE_URL")` so that Prisma Client can successfully connect to the database.
+- **数据库 URL**。作为 Heroku 配置过程的一部分，一个`DATABASE_URL`配置变量被添加到你的应用程序的配置中。它包含你的应用程序用来访问数据库的 URL。确保你的`schema.prisma`文件使用`env("DATABASE_URL")`，以便 Prisma 客户端能够成功连接到数据库。
 
-## Summary
+## 总结
 
-Congratulations! You have successfully deployed a Node.js app with Prisma to Heroku.
+恭喜你! 你已经成功地将一个带有 Prisma 的 Node.js 应用程序部署到 Heroku。
 
-You can find the source code for the example in [this GitHub repository](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/heroku).
+你可以在[这个 GitHub 仓库](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/heroku)找到这个例子的源代码。
 
-For more insight into Prisma Client's API, look at the route handlers in the `src/index.js` file.
+要想更深入地了解 Prisma 客户端的 API，请看`src/index.js`文件中的路由处理程序。

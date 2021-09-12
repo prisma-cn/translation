@@ -1,30 +1,30 @@
 ---
-title: 'Relation queries'
-metaTitle: 'Relation queries (Concepts)'
-metaDescription: 'Prisma Client provides convenient queries for working with relations, such as a fluent API, nested writes (transactions), nested reads and relation filters.'
+title: '关系查询'
+metaTitle: '关系查询 (概念)'
+metaDescription: 'Prisma Client 为处理关系提供了方便的查询，如流畅的 API、嵌套写入（事务）、嵌套读取和关系过滤器。'
 tocDepth: 3
 ---
 
 <TopBlock>
 
-A key feature of Prisma Client is the ability to query [relations](../prisma-schema/relations) between two or more models. Relation queries include:
+Prisma Client 的一个关键功能是能够查询两个或多个模型之间的[关系](../prisma-schema/relations)。关系查询包括：
 
-- [Nested reads](#nested-reads) (sometimes referred to as _eager loading_) via [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> and [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span>
-- [Nested writes](#nested-writes) with [transactional](transactions) guarantees
-- [Filtering on related records](#relation-filters)
+- [嵌套读](#nested-reads) (有时称为 _预先加载_) 通过 [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> 和 [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span>
+- [嵌套写](#nested-writes) 和 [事务](transactions) 保证
+- [过滤相关记录](#relation-filters)
 
-Prisma Client also has a [fluent API for traversing relations](#fluent-api).
+Prisma Client 还有一个 [用于遍历关系的 fluent API](#fluent-api)。
 
 </TopBlock>
 
-## Nested reads
+## 嵌套读 {#nested-reads}
 
-Nested reads allow you to read related data from multiple tables in your database - such as a user and that user's posts. You can:
+在你的数据库嵌套读允许你从多个表中读取关系数据 -例如用户和该用户的帖子。你可以：
 
-- Use [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> to include related records, such as a user's posts or profile, in the query response.
-- Use a nested [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> to include specific fields from a related record. You can also nest `select` inside an `include`.
+- 使用 [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> 在查询响应中包括相关记录，例如用户的帖子或个人资料。
+- 使用嵌套的 [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> 来包含相关记录中的特定字段。你还可以将 `select` 嵌套在 `include` 中。
 
-The following example returns a single user _and_ that user's posts:
+以下示例返回单个用户和该用户的帖子：
 
 <CodeWithResult>
 <cmd>
@@ -77,9 +77,9 @@ const getUser = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-### Include all fields for a specific relation
+### 包括特定关系的所有字段
 
-The following example returns all posts with the word `cookies` in the `title` field and the author of each post. The result includes _all_ author fields.
+下面的示例返回 `title` 字段中包含 `cookies` 一词的所有帖子以及每篇帖子的作者。结果包括 _所有_ 作者字段。
 
 <CodeWithResult>
 <cmd>
@@ -92,7 +92,7 @@ const getPosts = await prisma.post.findMany({
     },
   },
 |  include: {
-|    author: true, // Return all fields
+|    author: true, // 返回所有字段
 |  },
 })
 ```
@@ -142,9 +142,9 @@ const getPosts = await prisma.post.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### Include deeply nested relations
+### 包含深嵌套关系
 
-You can nest `include` options to include relations of relations. The following example returns a user's posts, and each post's categories:
+你可以嵌套 `include` 选项以包含关系的关系。以下示例返回用户的帖子以及每个帖子的类别：
 
 <CodeWithResult>
 <cmd>
@@ -208,9 +208,9 @@ const user = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### Select specific relation fields
+### 选择特定的关系字段
 
-You can use a nested `select` to choose a subset of relation fields to return. For example, the following query returns the user's `name` and the `title` of each related post:
+你可以使用嵌套的 `select` 来选择要返回的关系字段的子集。例如，以下查询返回每个相关帖子的用户 `name` 和 `title`：
 
 <CodeWithResult>
 <cmd>
@@ -244,7 +244,7 @@ const getUser = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-You can also nest a `select` inside an `include` - the following example returns _all_ `User` fields and the `title` field of each post:
+你还可以在 `include` 中嵌套 `select` - 以下示例返回每个帖子的 _所有_ `User` 字段 和 `title` 字段：
 
 <CodeWithResult>
 <cmd>
@@ -254,7 +254,7 @@ const getUser = await prisma.user.findUnique({
   where: {
     id: 1,
   },
-  // select: { name: true } <-- Can't do this!
+  // select: { name: true } <-- 不能这样！
   include: {
     posts: {
       select: {
@@ -290,21 +290,21 @@ const getUser = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-Note that you **cannot** use `select` and `include` _on the same level_. This means that if you choose to `include` a user's post and `select` each post's title, you cannot `select` only the users' `email`:
+请注意，你 **不能** _在同一级别上_ 使用 `select` 和 `include`。这意味着，如果你选择 `include` 用户的帖子并 `select` 每篇帖子的标题，则不能仅 `select` 用户的 `email`：
 
 <CodeWithResult>
 <cmd>
 
 ```ts
-// The following query returns an exception
+// 以下查询返回一个异常
 const getUser = await prisma.user.findUnique({
   where: {
     id: 19,
   },
-|  select: { // This won't work!
+|  select: { // 这行不通！
     email:  true
   }
-|  include: { // This won't work!
+|  include: { // 这行不通！
     posts: {
       select: {
         title: true
@@ -339,13 +339,14 @@ Invalid `prisma.user.findUnique()` invocation:
 }
 
 
-Please either use `include` or `select`, but not both at the same time.
+请使用 `include` 或 `select`，但不能同时使用两者。
+
 ```
 
 </cmdResult>
 </CodeWithResult>
 
-Instead, use nested `select` options:
+相反，请使用嵌套的 `select` 选项：
 
 ```ts
 const getUser = await prisma.user.findUnique({
@@ -353,7 +354,7 @@ const getUser = await prisma.user.findUnique({
     id: 19,
   },
   select: {
-    // This will work!
+    // 这行不通！
     email: true,
     posts: {
       select: {
@@ -364,15 +365,15 @@ const getUser = await prisma.user.findUnique({
 })
 ```
 
-### Relation count
+### 关系计数
 
-In [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later, you can [`include` or `select` a count of relations](aggregation-grouping-summarizing#count-relations) alongside fields - for example, a user's post count.
+在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中, 你可以 [`include` 或 `select` 一个关系计数](aggregation-grouping-summarizing#count-relations) 沿着字段 - 例如，用户的 post 计数。
 
-### Filter a list of relations
+### 过滤关系列表
 
-When you use `select` to return a subset of data from related records (for example, a user's posts), you can **filter and sort that list of relations**. For example, you might want to query all users with a `prisma.io` email address and select the titles of their published posts.
+当你使用 `select` 从相关记录（例如，用户的帖子）返回数据子集时，你可以 **过滤和排序该关系列表**。例如，你可能希望查询具有 `prisma.io` 电子邮件地址的所有用户，并选择其已发布帖子的标题。
 
-#### Return _all_ `User` records where `email` contains `prisma.io`, and select the `title` of all `Post` records that have not been published yet
+#### 返回 `email` 中包含 `prisma.io` 的 _所有_ `User` 记录，并选择尚未发布的所有 `Post` 记录的 `title`
 
 ```js highlight=9-14;normal
 const result = await prisma.user.findMany({
@@ -397,7 +398,7 @@ const result = await prisma.user.findMany({
 })
 ```
 
-You can use the `post` model property to write the same query:
+你可以使用 `post` 模型属性编写相同的查询：
 
 ```js
 const result = await prisma.post.findMany({
@@ -415,9 +416,9 @@ const result = await prisma.post.findMany({
 })
 ```
 
-## Nested writes
+## 嵌套写入 {#nested-writes}
 
-A nested write allows you to write **relational data** to your database in **a single transaction**. For example, the following nested write creates a `User` and two related `Post` records:
+嵌套写入允许你在 **单个事务** 中将 **关系数据** 写入数据库。例如，以下嵌套写入创建一个 `User` 和两个相关的 `Post` 记录：
 
 ```ts
 const createUserAndPost = await prisma.user.create({
@@ -434,15 +435,15 @@ const createUserAndPost = await prisma.user.create({
 })
 ```
 
-Nested writes:
+嵌套写入：
 
-- Provide **transactional guarantees** for creating, updating or deleting data across multiple tables in a single Prisma Client query. If any part of the query fails (for example, creating a user succeeds but creating posts fails), Prisma Client rolls back all changes.
-- Support any level of nesting supported by the data model.
-- Are available for [relation fields](../prisma-schema/relations#relation-fields) when using the model's create or update query. The following section shows the nested write options that are available per query.
+- 为在单个 Prisma Client 查询中跨多个表创建、更新或删除数据提供 **事务保证**。如果查询的任何部分失败（例如，创建用户成功，但创建帖子失败），Prisma Client 将回滚所有更改。
+- 支持数据模型支持的任何级别的嵌套。
+- 在使用模型的创建或更新查询时，可用于[关系字段](../prisma-schema/relations#relation-fields)。以下部分显示每个查询可用的嵌套写入选项。
 
-### Create a related record
+### 创建相关记录
 
-You can create a record and one or more related records at the same time. The following query creates a `User` record and two related `Post` records:
+你可以同时创建一个记录和一个或多个相关记录。以下查询将创建一个 `User` 记录和两个相关的 `Post` 记录：
 
 <CodeWithResult>
 <cmd>
@@ -502,31 +503,31 @@ const user = await prisma.user.create({
 </cmdResult>
 </CodeWithResult>
 
-### Create a single record and multiple related records
+### 创建单个记录和多个相关记录
 
-There are two ways to create or update a single record and multiple related records - for example, a user with mutiple posts:
+有两种方法可以创建或更新单个记录和多个相关记录 - 例如，具有多个帖子的用户：
 
-- Use a nested [`create`](../../../reference/api-reference/prisma-client-reference#create-1) <span class="api"></span> query
-- Use a nested [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany-1) <span class="api"></span> query
+- 使用一个嵌套的 [`create`](../../../reference/api-reference/prisma-client-reference#create-1) <span class="api"></span> 查询
+- 使用一个嵌套的 [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany-1) <span class="api"></span> 查询
 
-Each technique has pros and cons:
+每种技术都有优点和缺点：
 
-| Feature                               | `create` | `createMany` | Notes                                                                                                                                                                                           |
-| :------------------------------------ | :------- | :----------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Creates one record at a time          | ✔        | ✘            | Potentially less performant.                                                                                                                                                                    |
-| Creates all records in one query      | ✘        | ✔            | Potentially more performant.                                                                                                                                                                    |
-| Supports nesting additional relations | ✔        | ✘ \*         | For example, you can create a user, several posts, and several comments per post in one query.<br />\* You can manually set a foreign key in a has-one relation - for example: `{ authorId: 9}` |
-| Supports skipping duplicate records   | ✘        | ✔            | Use `skipDuplicates` query option.                                                                                                                                                              |
-| Supports has-many relations           | ✔        | ✔            | For example, you can create a user and multiple posts (one user has many posts)                                                                                                                 |
-| Supports many-to-many relations       | ✔        | ✘            | For example, you can create a post and several categories (one post can have many categories, and one category can have many posts)                                                             |
+| 功能                     | `create` | `createMany` | 注意                                                                                                                                             |
+| :----------------------- | :------- | :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 一次创建一条记录         | ✔        | ✘            | 可能性能较差。                                                                                                                                   |
+| 在一个查询中创建所有记录 | ✘        | ✔            | 潜在的更高性能。                                                                                                                                 |
+| 支持嵌套其他关系         | ✔        | ✘ \*         | 例如，你可以在一个查询中创建一个用户、多篇文章和每篇文章的多条评论。<br />\* 你可以在具有一个关系的数据库中手动设置外键，例如： `{ authorId: 9}` |
+| 支持跳过重复记录         | ✘        | ✔            | 使用 `skipDuplicates` 查询选项 。                                                                                                                |
+| 支持多关系               | ✔        | ✔            | 例如，你可以创建一个用户和多个帖子（一个用户有许多帖子）                                                                                         |
+| 支持多对多关系           | ✔        | ✘            | 例如，你可以创建一篇文章和多个类别（一篇文章可以有多个类别，一个类别可以有多篇文章）                                                             |
 
-The following query uses nested [`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span> to create:
+以下查询使用嵌套的[`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span> 来创建:
 
 - One user
 - Two posts
 - One post category
 
-The example uses a nested `include` to include all posts and post categories.
+该示例使用嵌套的 `include` 来包含所有帖子和帖子类别。
 
 <CodeWithResult>
 <cmd>
@@ -551,10 +552,10 @@ const user = await prisma.user.create({
     },
   },
   include: {
-    // Include posts
+    // 包含 posts
     posts: {
       include: {
-        categories: true, // Include post categories
+        categories: true, // 包含 post 分类
       },
     },
   },
@@ -608,12 +609,12 @@ const user = await prisma.user.create({
 </cmdResult>
 </CodeWithResult>
 
-The following query uses a nested [`createMany`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span> to create:
+以下查询使用嵌套 [`createMany`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span> 来创建:
 
 - One user
 - Two posts
 
-The example uses a nested `include` to include all posts. Note that it is **not possible** to nest an additional `create` or `createMany` inside the highlighted query, which means that you cannot create a user, posts, and post categories at the same time:
+该示例使用嵌套的 `include` 来包含所有帖子。请注意，**不可能** 在突出显示的查询中嵌套额外的 `create` 或 `createMany`，这意味着你不能同时创建用户、帖子和帖子类别：
 
 <CodeWithResult>
 <cmd>
@@ -674,9 +675,9 @@ const user = await prisma.user.create({
 </cmdResult>
 </CodeWithResult>
 
-### Create multiple records and multiple related records
+### 创建多个记录和多个相关记录
 
-You cannot access relations in a `createMany` query, which means that you cannot create multiple users and multiple posts in a single nested write. The following is **not** possible:
+你不能在 `createMany` 查询中访问关系，这意味着你不能在一次嵌套写入中创建多个用户和多篇文章。以下是 **不** 可能的：
 
 ```ts highlight=6-8,13-15;delete
 const createMany = await prisma.user.createMany({
@@ -699,9 +700,9 @@ const createMany = await prisma.user.createMany({
 })
 ```
 
-### Connect an existing record
+### 连接现有记录
 
-The following query creates ([`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span>) a new `User` record and connects that record (`connect` <span class="api"></span>) to three existing posts:
+以下查询创建（[`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span>）一个新的 `User` 记录，并将该记录（`connect` <span class="api"></span>）到三个现有的帖子：
 
 <CodeWithResult>
 <cmd>
@@ -715,7 +716,7 @@ const user = await prisma.user.create({
     },
   },
   include: {
-    posts: true, // Include all posts in the returned object
+    posts: true, // 包括返回对象中的所有帖子
   },
 })
 ```
@@ -748,12 +749,13 @@ const user = await prisma.user.create({
 </cmdResult>
 </CodeWithResult>
 
-> **Note**: Prisma Client throws an exception if any of the post records cannot be found: `connect: [{ id: 8 }, { id: 9 }, { id: 10 }]`
+> **注意**：如果找不到任何 post 记录，Prisma Client 将引发异常：`connect: [{ id: 8 }, { id: 9 }, { id: 10 }]`
 
-You can `connect` <span class="api"></span> an existing record to a new or existing user. The following query:
+你可以将现有记录 `connect` <span class="api"></span> 到新用户或现有用户。以下查询：
 
-1. Connects an existing post (`id: 11`) to an existing user (`id: 9`)
-2. Adds a new related post (`title: "My fist post title"`)
+1. 将现有帖子（`id:11`）连接到现有用户（`id:9`）
+
+2. 添加一个新的相关帖子（`title: "My new post title"`）
 
 ```ts
 const getUser = await prisma.user.update({
@@ -773,12 +775,12 @@ const getUser = await prisma.user.update({
 })
 ```
 
-### Connect _or_ create a record
+### 连接 _或_ 创建一个记录
 
-If a related record may or may not already exist, use `connectOrCreate` <span class="api"></span> to connect the related record:
+如果相关记录可能存在，也可能不存在, 使用 `connectOrCreate` <span class="api"></span> 来连接关系记录:
 
-- Connect a `User` with the email address `viola@prisma.io` _or_
-- Create a new `User` with the email address `viola@prisma.io` if the user does not already exist
+- 将 `User` 与电子邮件地址连接 `viola@prisma.io` _或_
+- 如果用户还不存在则使用电子邮件地址 `viola@prisma.io` 创建新的 `User`
 
 <CodeWithResult>
 <cmd>
@@ -830,9 +832,9 @@ const createPost = await prisma.post.create({
 </cmdResult>
 </CodeWithResult>
 
-### Disconnect a related record
+### 断开相关记录的连接
 
-To `disconnect` one out of a list of records (for example, a specific blog post) provide the ID or unique identifier of the record(s) to disconnect:
+要 `disconnect` 记录列表中的一条记录（例如，特定博客帖子），请提供要断开连接的记录的 ID 或唯一标识符：
 
 <CodeWithResult>
 <cmd>
@@ -871,7 +873,7 @@ const updatePost = await prisma.user.update({
 </cmdResult>
 </CodeWithResult>
 
-To `disconnect` _one_ record (for example, a post's author), use `disconnect: true`:
+要 `disconnect` _一_ 条记录（例如，一篇文章的作者），请使用 `disconnect: true`：
 
 <CodeWithResult>
 <cmd>
@@ -911,9 +913,9 @@ const updatePost = await prisma.post.update({
 </cmdResult>
 </CodeWithResult>
 
-### Disconnect all related records
+### 断开所有相关记录的连接
 
-To `disconnect` <span class="api"></span> _all_ related records in a one-to-many relation (a user has many posts), `set` the relation to an empty list as shown:
+要 `disconnect` <span class="api"></span> 一对多关系（用户有许多帖子）中的 _所有_ 相关记录，请将关系 `设置` 为空列表，如图所示：
 
 <CodeWithResult>
 <cmd>
@@ -952,9 +954,9 @@ const updateUser = await prisma.user.update({
 </cmdResult>
 </CodeWithResult>
 
-### Delete all related records
+### 删除所有相关记录
 
-Delete all related `Post` records:
+删除所有相关的 `Post` 记录：
 
 ```ts
 const update = await prisma.user.update({
@@ -969,9 +971,9 @@ const update = await prisma.user.update({
 })
 ```
 
-### Delete specific related records
+### 删除特定的相关记录
 
-Update a user by deleting all unpublished posts:
+通过删除所有未发布的帖子来更新用户：
 
 ```ts
 const update = await prisma.user.update({
@@ -988,7 +990,7 @@ const update = await prisma.user.update({
 })
 ```
 
-Update a user by deleting specific posts:
+通过删除特定帖子更新用户：
 
 ```ts
 const update = await prisma.user.update({
@@ -1003,9 +1005,9 @@ const update = await prisma.user.update({
 })
 ```
 
-### Update all related records (or filter)
+### 更新所有相关记录（或过滤器）
 
-You can use a nested `updateMany` to update _all_ related records for a particular user. The following query unpublishes all posts for a specific user:
+你可以使用嵌套的 `updateMany` 来更新特定用户的 _所有_ 相关记录。以下查询将取消发布特定用户的所有帖子：
 
 ```ts
 const update = await prisma.user.update({
@@ -1027,7 +1029,7 @@ const update = await prisma.user.update({
 })
 ```
 
-### Update a specific related record
+### 更新特定的相关记录
 
 ```ts
 const update = await prisma.user.update({
@@ -1049,9 +1051,9 @@ const update = await prisma.user.update({
 })
 ```
 
-### Update _or_ create a related record
+### 更新 _或_ 创建相关记录
 
-The following query uses a nested `upsert` to update `"bob@prisma.io"` if that user exists, or create the user if they do not exist:
+以下查询使用嵌套的 `upsert` 来更新 `"bob@prisma.io"` 如果该用户存在，或者如果该用户不存在，则创建该用户：
 
 ```ts
 const update = await prisma.post.update({
@@ -1075,9 +1077,9 @@ const update = await prisma.post.update({
 })
 ```
 
-### Add new related records to an existing record
+### 将新的相关记录添加到现有记录
 
-You can nest `create` or `createMany` inside an `update` to add new related records to an existing record. The following query adds two posts to a user with an `id` of 9:
+你可以在 `update` 中嵌套 `create` 或 `createMany`，将新的相关记录添加到现有记录中。以下查询向 `id` 为 9 的用户添加两篇文章：
 
 ```ts
 const user = await prisma.user.update({
@@ -1094,24 +1096,24 @@ const user = await prisma.user.update({
 })
 ```
 
-## Relation filters
+## 关系过滤器 {#relation-filters
 
-### Filter on "-to-many" relations
+### 过滤 "-to-many" 关系
 
-Prisma Client provides the [`some`](../../../reference/api-reference/prisma-client-reference#some), [`every`](../../../reference/api-reference/prisma-client-reference#every), and [`none`](../../../reference/api-reference/prisma-client-reference#none) options to filter records by the properties of related records on the "-to-many" side of the relation. For example, filtering users based on properties of their posts.
+Prisma Client 提供了 [`一些`](../../../reference/api-reference/prisma-client-reference#some), [`every`](../../../reference/api-reference/prisma-client-reference#every), 和 [`none`](../../../reference/api-reference/prisma-client-reference#none) 选项通过关系的 "-to-many" 侧的相关记录的属性来过滤记录。 例如，根据用户帖子的属性过滤用户。
 
-For example:
+例如:
 
-| Requirement                                                                       | Query option to use                 |
-| --------------------------------------------------------------------------------- | ----------------------------------- |
-| "I want a list of every `User` that has _at least one_ unpublished `Post` record" | `some` posts are unpublished        |
-| "I want a list of every `User` that has _no_ unpublished `Post` records"          | `none` of the posts are unpublished |
-| "I want a list of every `User` that has _only_ unpublished `Post` records"        | `every` post is unpublished         |
+| 要求                                                           | 要使用的查询选项          |
+| -------------------------------------------------------------- | ------------------------- |
+| "我想要一份至少有一条未发布的 `Post` 记录的每个 `User` 的列表" | `some` 帖子未发布         |
+| "我想要一份每个没有 _未_ 发布的“发布”记录的 `User` 的列表"     | `none` 其中一个帖子未发布 |
+| "我想要一份 _只有_ 未发布的 `Post` 记录的每个 `User` 的列表"   | `every` 帖子未发布        |
 
-For example, the following query returns `User` that meet the following criteria:
+例如，以下查询返回满足以下条件的 `User`：
 
-- No posts with more than 100 views
-- All posts have less than, or equal to 50 likes
+- 没有超过 100 个视图的帖子
+- 所有帖子的赞数都小于或等于 50
 
 ```ts
 const users = await prisma.user.findMany({
@@ -1132,14 +1134,14 @@ const users = await prisma.user.findMany({
 })
 ```
 
-### Filter on "-to-one" relations
+### 过滤 "-to-one" 关系
 
-Prisma Client provides the [`is`](../../../reference/api-reference/prisma-client-reference#is) and [`isNot`](../../../reference/api-reference/prisma-client-reference#isNot) options to filter records by the properties of related records on the "-to-one" side of the relation. For example, filtering posts based on properties of their author.
+Prisma Client 提供了 [`is`](../../../reference/api-reference/prisma-client-reference#is) 和 [`isNot`](../../../reference/api-reference/prisma-client-reference#isNot) 根据关系 "-to-one" 侧的相关记录的属性过滤记录的选项。例如，根据作者的属性过滤帖子。
 
-For example, the following query returns `Post` records that meet the following criteria:
+例如，以下查询返回满足以下条件的 `Post` 记录：
 
-- Author's name is not Bob
-- Author is older than 40
+- 作者的名字不是鲍勃
+- 作者年龄超过 40 岁
 
 ```ts
   const users = await prisma.post.findMany({
@@ -1159,9 +1161,9 @@ For example, the following query returns `Post` records that meet the following 
 })
 ```
 
-### Filter on presence of related records
+### 过滤是否存在相关记录
 
-[Filtering by count of relations](https://github.com/prisma/prisma/issues/3821) is not yet supported - however, you can filter on whether a record has any related records at all. For example, the following query uses `none` to return all users that have zero posts:
+[按关系计数过滤](https://github.com/prisma/prisma/issues/3821) 目前还不支持 - 但是，你可以根据记录是否有任何相关记录进行过滤。例如，以下查询使用 `none` 返回没有帖子的所有用户：
 
 ```ts
 const usersWithZeroPosts = await prisma.user.findMany({
@@ -1173,7 +1175,7 @@ const usersWithZeroPosts = await prisma.user.findMany({
 })
 ```
 
-The following query returns all users with at least one post:
+以下查询返回至少有一篇文章的所有用户：
 
 ```ts
 const usersWithSomePosts = await prisma.user.findMany({
@@ -1185,11 +1187,11 @@ const usersWithSomePosts = await prisma.user.findMany({
 })
 ```
 
-## Fluent API
+## Fluent API {#fluent-api}
 
-The fluent API lets you _fluently_ traverse the [relations](../prisma-schema/relations) of your models via function calls. Note that the _last_ function call determines the return type of the entire query (the respective type annotations are added in the code snippets below to make that explicit).
+fluent API 允许你 _流利地_ 通过函数调用遍历模型的 [关系](../prisma-schema/relations)。请注意 _last_ 函数调用确定了整个查询的返回类型（下面的代码段中添加了相应的类型注释以使其显式）。
 
-This query returns all `Post` records by a specific `User`:
+此查询返回特定 `User` 的所有 `Post` 记录：
 
 ```ts
 const postsByUser: Post[] = await prisma.user
@@ -1197,7 +1199,7 @@ const postsByUser: Post[] = await prisma.user
   .posts()
 ```
 
-This is equivalent to the following `findMany` query:
+这相当于以下 `findMany` 查询：
 
 ```ts
 const postsByUser = await prisma.post.findMany({
@@ -1205,11 +1207,12 @@ const postsByUser = await prisma.post.findMany({
 })
 ```
 
-The main difference between the queries is that the fluent API call is translated into two separate database queries while the other one only generates a single query (see this [GitHub issue](https://github.com/prisma/prisma/issues/1984))
+两个查询之间的主要区别在于，fluent API 调用被转换为两个单独的数据库查询，而另一个查询只生成一个查询（请参见下文） [GitHub issue](https://github.com/prisma/prisma/issues/1984))
 
-> **Note**: You can use the fact that `.findUnique({ where: { email: 'alice@prisma.io' } }).posts()` queries are automatically batched by the Prisma dataloader to [avoid the n+1 problem in GraphQL resolvers](../../../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader).
+> **注意**:
+> 你可以使用以下事实： `.findUnique({ where: { email: 'alice@prisma.io' } }).posts()` 查询由 Prisma 数据加载器自动批处理，以 [避免 GraphQL 解析器中的 n+1 问题](../../../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader)。
 
-This request returns all categories by a specific post:
+此请求按特定帖子返回所有类别：
 
 ```ts
 const categoriesOfPost: Category[] = await prisma.post
@@ -1217,7 +1220,7 @@ const categoriesOfPost: Category[] = await prisma.post
   .categories()
 ```
 
-Note that you can chain as many queries as you like. In this example, the chaining starts at `Profile` and goes over `User` to `Post`:
+请注意，可以根据需要链接任意多个查询。在本例中，链接从 `Profile` 开始，经过 `User` 到 `Post`：
 
 ```ts
 const posts: Post[] = await prisma.profile
@@ -1226,11 +1229,11 @@ const posts: Post[] = await prisma.profile
   .posts()
 ```
 
-The only requirement for chaining is that the previous function call must return only a _single object_ (e.g. as returned by a `findUnique` query or a "to-one relation" like `profile.user()`).
+链接的唯一要求是前一个函数调用必须只返回一个 _单个对象_（例如，由 `findUnique` 查询或 `profile.user()` 之类的 "to-one 关系" 返回）。
 
-The following query is **not possible** because `findMany` does not return a single object but a _list_:
+以下查询 **不可能**，因为 `findMany` 不返回单个对象，而是返回一个 _列表_;
 
 ```ts
-// This query is illegal
+// 此查询是非法的
 const posts = await prisma.user.findMany().posts()
 ```

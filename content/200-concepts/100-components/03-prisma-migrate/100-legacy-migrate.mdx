@@ -1,43 +1,44 @@
 ---
-title: 'Legacy Prisma Migrate'
-metaTitle: 'Legacy Prisma Migrate (Reference)'
-metaDescription: 'Legacy Prisma Migrate is a declarative data modeling and schema migration tool that is available via the Prisma CLI.'
+title: '[遗留] Prisma Migrate'
+metaTitle: '[遗留] Prisma Migrate (参考)'
+metaDescription: '[遗留] Prisma Migrate 是一个声明性数据建模和模式迁移工具，可通过Prisma CLI获得。'
 tocDepth: 2
 hidePage: true
+# Legacy Prisma Migrate is a tool that lets you _change your database schema_, e.g. by creating new tables or adding columns to existing tables. These changes are called _schema migrations_. legacy Prisma Migrate is available as part of the [Prisma CLI](../prisma-cli/installation) via the `legacy Prisma Migrate` command. */}
 ---
 
 <TopBlock>
 
-> **Important!** This page documents legacy Prisma Migrate (Experimental) available in version 2.12.0 and earlier. [Prisma Migrate](.) is available in version [2.13.0](https://github.com/prisma/prisma/releases/tag/2.13.0) and Generally Available in [2.19.0](https://github.com/prisma/prisma/releases/tag/2.19.0).
+> **重要的!** 本页记录了 2.12.0 版与更早版本中提供的 Prisma(实验)，[Prisma(Migrate)](.) 在 [2.13.0](https://github.com/prisma/prisma/releases/tag/2.13.0) 与 [2.19.0](https://github.com/prisma/prisma/releases/tag/2.19.0) 版中提供.
 
-Legacy Prisma Migrate is a tool that lets you _change your database schema_, e.g. by creating new tables or adding columns to existing tables. These changes are called _schema migrations_. legacy Prisma Migrate is available as part of the [Prisma CLI](../prisma-cli/installation) via the `legacy Prisma Migrate` command.
+[遗留] Prisma Migrate 是一个可以更改数据库模式的工具，例如通过创建新表或向现有表添加列，这些更改称为模式迁移。它作为[Prisma CLI](../prisma-cli/install)的一部分，通过`Legacy Prisma Migrate`命令提供。
 
 </TopBlock>
 
-## Documentation
+## 文档
 
-### Legacy Prisma Migrate vs the `db push` command
+### [遗留] Prisma Migrate 与 `db push` 命令的对比
 
-If you want to prototype or iterate on a schema design in a development environment, consider the [`db push` command](../../../../reference/api-reference/command-reference#db-push).
+如果您想在开发环境中对模式的设计进行原型化或迭代, 可以考虑 [`db push` 命令](../../../../reference/api-reference/command-reference#db-push).
 
-### Legacy Prisma Migrate vs SQL migrations
+### [遗留] Prisma Migrate vs SQL 迁移
 
-Legacy Prisma Migrate is a _declarative_ migration system, as opposed to SQL which can be considered _imperative_:
+[遗留] Prisma Migrate 是一个 _声名式_ 的迁移系统，它与 SQL 相反，SQL 是 _命令式_ 的 :
 
-- **SQL (imperative)**: Provide the individual _steps_ to get from the current schema to the desired schema.
-- **legacy Prisma Migrate (declarative)**: Define the desired schema as a [Prisma data model](../prisma-schema/data-model) (legacy Prisma Migrate takes care of generating the necessary _steps_).
+- **SQL (命令式)**: 提供从当前模式到所需模式的各个 _步骤_
+- **[遗留] Prisma Migrate (声名式)**: 将所需的模式定义为[Prisma 数据模型](../prisma-schema/data-model)([遗留] Prisma Migrate 负责生成必要的 _步骤_ )。
 
-Here's a quick comparison. Assume you have the following scenario:
+以下场景是一个显而易见的比较:
 
-1. You need to create the `User` table to store user information (name, email, ...)
-1. Create two new tables `Post` and `Profile` with foreign keys to `User`
-1. Add a new column with a default value to the `Post` table
+1. 创建 `User` 表来存储用户信息(name, email, …)
+2. 创建两个新表 `Post` 和 `Profile` ，外键为 `User`
+3. 向 `Post` 表添加一个带有默认值的新列
 
 #### SQL
 
-In SQL, you'd have to send three subsequent SQL statements to account for this scenario:
+在 SQL 中，您必须发送三条 SQL 语句来处理这个场景:
 
-##### 1. Create the `User` table to store user information (name, email, ...)
+##### 1. 创建 `User` 表来存储用户信息 (name, email, ...)
 
 ```sql
 CREATE TABLE "User" (
@@ -47,7 +48,7 @@ CREATE TABLE "User" (
 );
 ```
 
-##### 2. Create two new tables `Post` and `Profile` with foreign keys to `User`
+##### 2. 创建两个新表 `Post` 和 `Profile` ，外键为 `User`
 
 ```sql
 CREATE TABLE "Profile" (
@@ -64,29 +65,31 @@ CREATE TABLE "Post" (
 );
 ```
 
-##### 3. Add a new column with a default value to the `Post` table
+##### 3. 向 `Post` 表添加一个带有默认值的新列
 
 ```sql
 ALTER TABLE "Post"
 ADD COLUMN published BOOLEAN DEFAULT false;
 ```
 
-#### legacy Prisma Migrate
+#### [遗留] Prisma Migrate
 
-With legacy Prisma Migrate, you write the desired database schema in the form of a [Prisma data model](../prisma-schema/data-model) inside your [Prisma schema file](../prisma-schema). To map the data model to your database schema, you then have to run these two commands:
+<!-- With legacy Prisma Migrate, you write the desired database schema in the form of a [Prisma data model](../prisma-schema/data-model) inside your [Prisma schema file](../prisma-schema). To map the data model to your database schema, you then have to run these two commands: -->
+
+使用 [遗留] Prisma Migrate，在[Prisma schema](../prisma-schema/data-model)文件中以[Prisma 数据模型](../prisma-schema)的形式编写所需的数据库模式。即可将数据模型映射成数据库模式，必须运行这两行命令:
 
 ```terminal
 prisma migrate save --experimental
 prisma migrate up --experimental
 ```
 
-The first command _saves_ a new migration to the `prisma/migrations` directory in the file system of your project and updates the `_Migration` table in your database. Each time you run this command to save a new migration, it creates a dedicated directory inside of `prisma/migrations` for that specific migration, which will have its own `README.md` file containing detailed information about the migration (e.g. the generated SQL statements which will be executed when you run `legacy Prisma Migrate up`).
+第一行的命令是将新的迁移保存到项目 `prisma/migrations` 目录里，并更新数据库中的 `_Migration` 表。每次运行此命令保存新迁移时，它会在 `prisma/migrations` 中为该特定迁移创建一个专用目录，它将有自己的 `README.md` 文件，其中包含有关迁移的详细信息（例如，运行 `legacy Prisma Migrate up` 时将执行的生成 SQL 语句）
 
-The second command _executes_ the migration against your database.
+第二行命令是对数据库执行迁移
 
-##### 1. Create the `User` table to store user information (name, email, ...)
+##### 1. 创建 `User` 表来存储用户信息 (name, email, ...)
 
-Add the model to your Prisma schema:
+将模型添加到 Prisma 模式中:
 
 ```prisma
 model User {
@@ -96,16 +99,16 @@ model User {
 }
 ```
 
-Now run the two commands mentioned above:
+再运行上面提到的两行命令:
 
 ```terminal
 prisma migrate save --experimental
 prisma migrate up --experimental
 ```
 
-##### 2. Create two new tables `Post` and `Profile` with foreign keys to `User`
+##### 2. 创建两个新表 `Post` 和 `Profile` ，外键为 `User`
 
-Add two models with [relation fields](https://www.prisma.io/docs/concepts/components/prisma-schema/relations#relation-fields) to your Prisma schema:
+将两个带有[关系字段](https://www.prisma.io/docs/concepts/components/prisma-schema/relations#relation-fields)的模型添加到 Prisma 模式中:
 
 ```prisma
 model User {
@@ -131,18 +134,18 @@ model Post {
 }
 ```
 
-Notice that in addition to the [annotated relation fields](../prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) and its relation scalar field (which represent the foreign keys), you must also specify the Prisma-level [relation fields](../prisma-schema/relations#relation-fields) on the other side of the relation.
+注意，除了[带注释的关系字段](../prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields)及其关系标量字段(外键)之外，您还必须在关系的另一端指定 Prism 级的[关系字段](../prisma-schema/relations#relation-fields)。
 
-Now run the two commands mentioned above:
+再运行上面提到的两行命令:
 
 ```terminal
 prisma migrate save --experimental
 prisma migrate up --experimental
 ```
 
-##### 3. Add a new column with default value to the `Post` table
+##### 3. 向 `Post` 表添加一个带有默认值的新列
 
-Add a [field](../prisma-schema/data-model#defining-fields) to the `Post` model:
+添加一个[字段](../prisma-schema/data-model#defining-fields)到 `Post` 模型:
 
 ```prisma
 model User {
@@ -169,16 +172,16 @@ model Post {
 }
 ```
 
-Now run the two commands mentioned above:
+再运行上面提到的两行命令:
 
 ```terminal
 prisma migrate save --experimental
 prisma migrate up --experimental
 ```
 
-### Supported operations
+### 支持的操作
 
-The following table shows which SQL operations are currently supported by legacy Prisma Migrate. If an operation is not yet supported, it links to a workaround that uses plain SQL and [introspection](../introspection) to enable this feature in Prisma Client.
+下表展示了当前 [遗留]Prisma Migrate 支持哪些 SQL 操作，如果还不支持某个操作，它会链接到一个使用普通 SQL 和[Introspection](../introspection)的解决方案，可在 Prisma 客户端启用此功能。
 
 | Operation                           | SQL                             |                                               Supported                                               |
 | :---------------------------------- | :------------------------------ | :---------------------------------------------------------------------------------------------------: |
@@ -199,69 +202,69 @@ The following table shows which SQL operations are currently supported by legacy
 | Cascading updates                   | `ON UPDATE`                     |                                   Not yet (workaround coming soon)                                    |
 | Data validation                     | `CHECK`                         |  Not yet ([workaround](../../../guides/database/advanced-database-tasks/data-validation/postgresql))  |
 
-Note that this table assumes that the operation is also supported by the underlying database. For example, `ENUM` is not supported in SQLite. This means that you also can't use `enum` when using legacy Prisma Migrate.
+请注意，此表假设底层数据库也支持该操作。例如，SQLite 不支持 `ENUM`。这意味着在使用[遗留]Prisma Migrate 时，您也不能使用 `enum` 。
 
 ### Migration history
 
-legacy Prisma Migrate stores the migration history of your project in two places:
+[遗留]Prisma Migrate 将项目的迁移历史存储在两个地方:
 
-- A directory called `migrations` on your file system
-- A table called `_Migration` in your database
+- 一个名为 `Migrations` 的文件目录
+- 一个数据库中名为`_Migration` 的表
 
-#### The `migrations` directory
+#### `migrations` 目录
 
-The `migrations` directory stores information about the migrations that have been or will be executed against your database. You should never make any manual changes to the files in `migrations`. The only way to change the content of this directory should be using the `legacy Prisma Migrate save` command.
+`migrations` 目录存储了关于已经或将要对数据库执行的迁移信息。永远不要对 `migrations` 目录中的文件进行任何手动更改。改变这个目录内容的唯一方法应该是使用 `legacy Prisma Migrate save` 命令。
 
-The `migrations` directory should be checked into version control (e.g. Git).
+应将 `migrations` 目录签入版本控制中 (例如 Git)
 
-#### The `_Migration` table
+#### `_Migration` 表
 
-The `_Migration` table additionally stores information about each migration that was ever executed against the database by legacy Prisma Migrate.
+`_Migration` 表还存储了关于以前由 Prisma Migrate 对数据库执行的每个迁移信息
 
-### Typical workflow
+### 典型的工作流程
 
-With **legacy Prisma Migrate**, the workflow looks slightly different:
+与 **[遗留] Prisma Migrate** 相比, 工作流程看起来略有不同:
 
-1. Manually adjust your [Prisma data model](../prisma-schema/data-model)
-1. Migrate your database using the `legacy Prisma Migrate` CLI commands
-1. (Re-)generate Prisma Client
-1. Use Prisma Client in your application code to access your database
+1. 手动调整您的[Prisma 数据模型](../prisma-schema/data-model)
+2. 使用 `[遗留] Prisma Migrate` CLI 命令迁移您的数据库
+3. (Re-)生成 Prisma Client
+4. 在您的应用程序中使用 Prisma Client 来访问数据库
 
-![Typical workflow with legacy Prisma Migrate](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/OImder6.png)
+![典型的工作流程与[遗留]Prisma Migrate](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/OImder6.png)
 
-### Troubleshooting
+### 故障排除
 
-Since legacy Prisma Migrate is currently Experimental, you might end up in a state where the `migrations` directory and/or the `_Migrations` table are out of sync with the actual state of the database. In these cases, it often helps to "reset" legacy Prisma Migrate by deleting the `migrations` folder and deleting all entries from the `_Migration` table.
+目前由于[遗留] Prisma Migrate 处于试验阶段，您可能会在 `migrations` 和 `/` 目录或 `_MigrationS` 表中看到与数据库实际状态不同步的情况
 
-#### Delete the `migrations` directory
+#### 删除 `migrations` 目录
 
 ```terminal
 rm -rf migrations
 ```
 
-#### Delete all entries from the `_Migration` table
+#### 删除 `_migration` 表的所有条目
 
 ```sql
 TRUNCATE _Migration;
 ```
 
-## CLI Reference
+## CLI 参考
 
-> Warning: The `migrate` command is still considered Experimental. As such, there are no guarantees about API stability or production-readiness. Access to this command is provided for evaluation and experimentation. To access Experimental commands, you must add the `--experimental` flag.
+> 警告: `migrate` 命令仍是实验性的，因此，无法保证 API 的稳定性或生产就绪性。另外，为系统评估和测试实验而提供了该命令的访问权限。要访问此实验命令，请执行以下操作，切记需添加 `--experiental` 标志.
 
-The `migrate` command creates and manages database migrations. It can be used to create, apply, and rollback database schema updates in a controlled manner.
+`Migrate` 命令可创建和管理数据库迁移。它可以以受控的方式创建、应用和回滚数据库模式更新。
 
-The `migrate` command includes a number of subcommands to specify the desired action.
+`migrate` 命令包含许多子命令，主要用于指定所需的操作。
 
 ### <inlinecode>migrate save</inlinecode>
 
-Saves a migration that defines the steps necessary to update your current schema.
+保存迁移，该迁移定义更新当前模式所需的步骤。
 
-#### Prerequisites
+#### 前提条件
 
-Before using the `migrate save` command, you must define a valid [`datasource`](../prisma-schema/data-sources) within your `schema.prisma` file.
+在使用 `migrate save` 命令前，您必须在模式中定义一个有效的[`datasource`](../prisma-schema/data-sources)`schema.prisma` 文件。
 
-For example, the following `datasource` defines a SQLite database file within the current directory:
+例如，下面的 `datasource` 定义了当前目录中的 SQLite 数据库文件:
 
 ```prisma
 datasource db {
@@ -270,66 +273,66 @@ datasource db {
 }
 ```
 
-#### Options
+#### 选项
 
-The `migrate save` command recognizes the following options to modify its behavior:
+`migrate save` 命令会识别以下选项以修改其行为:
 
-| Option              | Required | Description                                                                                                                                         | Default                                     |
-| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--experimental`    | Yes      | Enables use of Experimental commands.                                                                                                               |                                             |
-| `-n`, `--name`      | No       | The name of the migration. If not provided, `migrate save` will prompt you for a name.                                                              | Timestamp `20200618145356`                  |
-| `-c`, `--create-db` | No       | Create the database if it does not exist.                                                                                                           |                                             |
-| `-p`, `--preview`   | No       | Preview the migration that would be created without writing any changes to the filesystem.                                                          |                                             |
-| `--schema`          | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
+| 选项                | 必填 | 描述                                                                            | 默认值                                      |
+| ------------------- | ---- | ------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--experimental`    | 是   | 允许使用的实验性命令。                                                          |                                             |
+| `-n`, `--name`      | 否   | 迁移的名称。如果未提供，`migrate save` 将提示您输入名称                         | Timestamp `20200618145356`                  |
+| `-c`, `--create-db` | 否   | 如果数据库不存在，则自动创建该数据库                                            |                                             |
+| `-p`, `--preview`   | 否   | 预览将在不对文件系统进行任何更改的情况下创建迁移。                              |                                             |
+| `--schema`          | 否   | 指定要处理的 `schema.prisma` 文件路径，而不是默认路径。支持绝对路径和相对路径。 | `./schema.prisma`, `./prisma/schema.prisma` |
 
-#### Generated Assets
+#### 生成迁移记录
 
-The `migrate save` command generates the following directories and files as necessary:
+`migrate save` 命令会根据需要生成以下目录和文件:
 
-- `migrations`: A directory within the current project to store migrations. This directory will be created if it does not exist.
-- `migrations/migrate.lock`: A lock file created specifying the current migration applied to the database. This file will be created if it does not exist.
-- `migrations/<migration>`: A directory for a specific migration. The migration name is derived from the timestamp when it was created followed by a hyphen and the migration name provided by the user.
-- `migrations/<migration>/README.md`: A human-readable description of the migration including metadata like when the migration was created and by who, a list of the actual migration changes and a diff of the changes that are made to the `schema.prisma` file.
-- `migrations/<migration>/schema.prisma`: The schema that will be created if the migration is applied to the project.
-- `migrations/<migration>/steps.json`: An [alternative representation](https://github.com/prisma/specs/tree/master/lift#step) of the migration steps that will be applied.
+- `migrations`: 用于存储迁移的目录。如果该目录不存在，将创建该目录。
+- `migrations/migrate.lock`: 创建的锁定文件，指定应用于当前数据库的迁移。如果该文件不存在，将创建该文件。
+- `migrations/<migration>`: 用于指定迁移的目录。迁移名称源自创建时的时间戳，后跟连字符和用户提供的迁移名称。
+- `migrations/<migration>/README.md`: 方便开发者可读的迁移描述，包括元数据，比如迁移是什么时候创建的，由谁创建的，实际迁移更改的列表，以及对 `schema.prisma` 文件所做的更改差异。
+- `migrations/<migration>/schema.prisma`: 将迁移应用于项目时将创建的架构。
+- `migrations/<migration>/steps.json`: 将要应用的迁移步骤的[代替表示](https://github.com/prisma/specs/tree/master/lift#step)。
 
-#### Examples
+#### 例子
 
-##### Create a new migration
+##### 创建新的迁移
 
 ```terminal
 prisma migrate save --experimental
 ```
 
-The command will prompt you for a name for the migration since one was not provided on the command line. After creating the migration, the contents of the generated `schema.prisma` file are displayed.
+执行命令需要输入移动地址，地址为空会进行提示。移动成功后，将显示生成的 `schema.prisma` 文件的内容。
 
-##### Create a migration with a specific name
+##### 创建指定名称的迁移
 
 ```terminal
 prisma migrate save --name "First migration" --experimental
 ```
 
-##### Create the database if it does not already exist
+##### 如果数据库不存在，则创建该数据库
 
 ```terminal
 prisma migrate save --create-db --experimental
 ```
 
-##### Preview the migration that would be created by running the `migrate save` command
+##### 通过运行 `Migrate save` 命令预览将创建的迁移
 
 ```terminal
 prisma migrate save --preview --experimental
 ```
 
-### <inlinecode>migrate up</inlinecode>
+### <inlinecode>向上迁移</inlinecode>
 
-Migrate the database up to a specific state.
+将数据库迁移到指定的状态。
 
-#### Prerequisites
+#### 前提条件
 
-Before using the `migrate up` command, you must define a valid [`datasource`](../prisma-schema/data-sources) within your `schema.prisma` file.
+在使用 `migrate up` 命令之前，您必须在模式中定义一个有效的[`datasource`](../prisma-schema/data-sources) `schema.prisma` 文件。
 
-For example, the following `datasource` defines a SQLite database file within the current directory:
+例如，下面的 `datasource` 定义了当前目录中的 SQLite 数据库文件:
 
 ```prisma
 datasource db {
@@ -338,61 +341,61 @@ datasource db {
 }
 ```
 
-#### Arguments
+#### 参数
 
-The point to migrate the database up to can be defined in any of the following three ways:
+可以通过以下三种方式中的任何一种来定义要将数据库迁移到的节点:
 
-| Argument  | Required | Description                                                                        | Default |
-| --------- | -------- | ---------------------------------------------------------------------------------- | ------- |
-| increment | No       | Specifies the number of forward migrations to apply.                               | latest  |
-| name      | No       | Specifies where to migrate to using the name of the final migration to apply.      | latest  |
-| timestamp | No       | Specifies where to migrate to using the timestamp of the final migration to apply. | latest  |
+| 参数      | 必填 | 描述                                           | 默认值 |
+| --------- | ---- | ---------------------------------------------- | ------ |
+| increment | 否   | 指定应用的向前迁移的数量。                     | latest |
+| name      | 否   | 使用应用的最终迁移的名称来指定迁移到的位置。   | latest |
+| timestamp | 否   | 使用应用的最终迁移的时间戳来指定迁移到的位置。 | latest |
 
-#### Options
+#### 选项
 
-Additionally, the following options modify the behavior of the `migrate up` command:
+另外，以下选项可以修改 `migrate up` 命令的行为:
 
-| Option              | Required | Description                                                                                                                                         | Default                                     |
-| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--experimental`    | Yes      | Enables use of Experimental commands                                                                                                                |                                             |
-| `-c`, `--create-db` | No       | Create the database if it does not exist.                                                                                                           |                                             |
-| `-p`, `--preview`   | No       | Preview the migration that would be created without writing any changes to the filesystem.                                                          |                                             |
-| `--schema`          | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
-| `--auto-approve`    | No       | Skip interactive approval before migrating.                                                                                                         |                                             |
+| 选项                | 必填 | 描述                                                                            | 默认值                                      |
+| ------------------- | ---- | ------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--experimental`    | 是   | 允许使用实验性命令                                                              |                                             |
+| `-c`, `--create-db` | 否   | 如果数据库不存在，则自动创建。                                                  |                                             |
+| `-p`, `--preview`   | 否   | 预览将在不对文件系统进行任何更改的情况下创建迁移。                              |                                             |
+| `--schema`          | 否   | 指定要处理的 `schema.prisma` 文件路径，而不是默认路径。支持绝对路径和相对路径。 | `./schema.prisma`, `./prisma/schema.prisma` |
+| `--auto-approve`    | 否   | 迁移前跳过交互式审批。                                                          |                                             |
 
-#### Examples
+#### 例子
 
-##### Migrate the database up to the latest available migration
+##### 将数据库迁移到最新可用的迁移
 
 ```terminal
 prisma migrate up --experimental
 ```
 
-##### Apply the next two migrations to the database
+##### 将接下来的两次迁移应用于数据库
 
 ```terminal
 prisma migrate up 2 --experimental
 ```
 
-##### Apply all migrations necessary up to and including a migration by name
+##### 按名称应用所有必要的迁移(包括迁移)
 
 ```terminal
 prisma migrate up "First migration" --experimental
 ```
 
-##### Apply all migrations necessary up to and including a migration by timestamp
+##### 按时间戳应用所有必要的迁移(包括迁移)
 
 ```terminal
 prisma migrate up 20200223181448 --experimental
 ```
 
-##### Create the database if it does not already exist before applying the migrations
+##### 如果数据库在应用迁移前不存在，则会自动创建
 
 ```terminal
 prisma migrate up --create-db --experimental
 ```
 
-##### Preview the migration that would be applied by running the `migrate up` command
+##### 通过运行 `migrate up` 命令预览将要应用的迁移
 
 ```terminal
 prisma migrate up --preview --experimental
@@ -400,9 +403,9 @@ prisma migrate up --preview --experimental
 
 ### <inlinecode>migrate down</inlinecode>
 
-Migrate the database down to a specific state.
+将数据库向下迁移到指定状态。
 
-#### Prerequisites
+#### 前提条件
 
 Before using the `migrate down` command, you must define a valid [`datasource`](../prisma-schema/data-sources) within your `schema.prisma` file.
 
@@ -415,53 +418,53 @@ datasource db {
 }
 ```
 
-#### Arguments
+#### 参数
 
 The point to migrate back to can be defined in any of the following three ways:
 
-| Argument  | Required | Description                                                                             | Default |
-| --------- | -------- | --------------------------------------------------------------------------------------- | ------- |
-| decrement | No       | Specifies the number of backwards migrations to apply.                                  | 1       |
-| name      | No       | Specifies where to migrate back to using the name of the final migration to apply.      |
-| timestamp | No       | Specifies where to migrate back to using the timestamp of the final migration to apply. |
+| 参数      | 必填 | 描述                                           | 默认值 |
+| --------- | ---- | ---------------------------------------------- | ------ |
+| decrement | 否   | 指定要应用的向后迁移的数量。                   | 1      |
+| name      | 否   | 使用应用的最终迁移的名称来指定迁移到的位置。   |
+| timestamp | 否   | 使用应用的最终迁移的时间戳来指定迁移到的位置。 |
 
-#### Options
+#### 选项
 
-Additionally, the following options modify the behavior of the `migrate down` command:
+此外，以下选项修改了 `migrate down` 命令的行为:
 
-| Option            | Required | Description                                                                                                                                         | Default                                     |
-| ----------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--experimental`  | Yes      | Enables use of Experimental commands                                                                                                                |                                             |
-| `-p`, `--preview` | No       | Preview the migration that would be created without writing any changes to the filesystem.                                                          |                                             |
-| `--schema`        | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
+| 选项              | 必填 | 描述                                                                            | 默认值                                      |
+| ----------------- | ---- | ------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--experimental`  | 是   | 允许使用实验命令                                                                |                                             |
+| `-p`, `--preview` | 否   | 预览将在不对文件系统进行任何更改的情况下创建迁移。                              |                                             |
+| `--schema`        | 否   | 指定要处理的 `schema.prisma` 文件路径，而不是默认路径。支持绝对路径和相对路径。 | `./schema.prisma`, `./prisma/schema.prisma` |
 
-#### Examples
+#### 例子
 
-##### Migrate the database backwards by a single migration
+##### 恢复一次迁移
 
 ```terminal
 prisma migrate down --experimental
 ```
 
-##### Migrate the database backwards by two migrations
+##### 恢复两次迁移
 
 ```terminal
 prisma migrate down 2 --experimental
 ```
 
-##### Migrate backwards through all migrations up to and including a migration by name
+##### 恢复所有的迁移，直到包括一个按名称的迁移
 
 ```terminal
 prisma migrate down "First migration" --experimental
 ```
 
-##### Migrate backwards through all migrations up to and including a migration by timestamp
+##### 恢复所有的迁移，直到包括一个按时间戳的迁移
 
 ```terminal
 prisma migrate down 20200223181448 --experimental
 ```
 
-##### Preview the migration that would be applied by running the `migrate down` command
+##### 运行 `migrate down` 命令预览将要应用的迁移
 
 ```terminal
 prisma migrate down --preview --experimental

@@ -1,29 +1,30 @@
 ---
-title: 'Debugging'
-metaTitle: 'Debugging (Reference)'
-metaDescription: 'This page explains how to enable debugging output for Prisma Client by setting the `DEBUG` environment variable.'
+title: '调试'
+metaTitle: '调试 (参考)'
+metaDescription: '此页面说明如何通过设置 `DEBUG` 环境变量来启用 Prisma Client 的调试输出。'
 ---
+
 
 <TopBlock>
 
-You can enable debugging output in Prisma Client via the [`DEBUG`](../../../reference/api-reference/environment-variables-reference/#debug) environment variable. It accepts two namespaces to print debugging output:
+你可以通过 [`DEBUG`](../../../reference/api-reference/environment-variables-reference/#debug) 环境变量在 Prisma Client 中启用调试输出。它接受两个名称空间来打印调试输出：
 
-- `prisma:engine`: Prints relevant debug messages happening in a Prisma [engine](https://github.com/prisma/prisma-engines/)
-- `prisma:client`: Prints relevant debug messages happening in the Prisma Client runtime
-- `prisma*`: Prints all debug messages from Prisma Client or CLI
-- `*`: Prints all debug messages, including external sources such as `dotenv`
+- `prisma:engine`:打印 Prisma [engine](https://github.com/prisma/prisma-engines/) 中发生的相关调试消息
+- `prisma:client`：打印在 Prisma Client 运行时发生的相关调试消息
+- `prisma*`：从 Prisma Client 或 CLI 打印所有调试消息
+- `*`：打印所有调试消息，包括外部源，如 `dotenv`
 
 <Admonition type="info">
 
-Prisma Client can be configured to log warnings, errors and information related to queries sent to the database. See [Configuring logging](./working-with-prismaclient/logging) for more information.
+Prisma Client 可以配置为记录警告、错误和与发送到数据库的查询相关的信息。有关更多信息，请参阅 [配置日志记录](./working-with-prismaclient/logging)。
 
 </Admonition>
 
 </TopBlock>
 
-## Setting the `DEBUG` environment variable
+##  设置 `DEBUG` 环境变量
 
-Here are examples for setting these debugging options in bash:
+下面是在 bash 中设置这些调试选项的示例：
 
 ```terminal
 # enable only `prisma:engine`-level debugging output

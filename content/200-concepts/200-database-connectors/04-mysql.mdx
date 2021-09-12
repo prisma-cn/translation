@@ -1,18 +1,18 @@
 ---
 title: 'MySQL'
-metaTitle: 'MySQL database connector (Reference)'
-metaDescription: 'This page explains how Prisma can connect to a MySQL database using the MySQL database connector.'
+metaTitle: 'MySQL 数据库连接器 (Reference)'
+metaDescription: '本文解释了 Prisma 如何使用 MySQL 数据库连接器连接到 MySQL 数据库。'
 ---
 
 <TopBlock>
 
-The MySQL data source connector connects Prisma to a [MySQL](https://www.mysql.com/) database server.
+MySQL 数据源连接器将 Prisma 连接到 [MySQL](https://www.mysql.com/) 数据库服务。
 
 </TopBlock>
 
-## Example
+## 例子
 
-To connect to a MySQL database server, you need to configure a [`datasource`](../components/prisma-schema/data-sources) block in your [Prisma schema file](../components/prisma-schema):
+为了连接到 MySQL 数据库服务器，你需要在你的 [Prisma schema 文件](../components/prisma-schema) 中配置一个 [`datasource`](../components/prisma-schema/data-sources) 块：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -21,136 +21,137 @@ datasource db {
 }
 ```
 
-The fields passed to the `datasource` block are:
+在 `datasource` 块中有两个字段：
 
-- `provider`: Specifies the `mysql` data source connector.
-- `url`: Specifies the [connection URL](#connection-url) for the MySQL database server. In this case, an [environment variable is used](../components/prisma-schema#accessing-environment-variables-from-the-schema) to provide the connection URL.
+- `provider`: 指定了 `mysql` 数据源连接器.
+- `url`：指定 MySQL 数据库的 [连接URL](#connection-url)。可以使用 [环境变量](../components/prisma-schema#accessing-environment-variables-from-the-schema) 来指定。
 
-## Connection details
+## 连接详情
 
-### Connection URL
+### 连接 URL
 
-Here's an overview of the components needed for a MySQL connection URL:
+
+下面是一个 MySQL 连接 URL 需要的组件概述：
 
 ![Structure of the MySQL connection URL](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/KkZe3hO.png)
 
-#### Base URL and path
+#### 基础 URL（Base URL） 和路径（path）
 
-Here is an example of the structure of the _base URL_ and the _path_ using placeholder values in uppercase letters:
+下面是一个 _基础URL（base URL）_ 和 _路径（path）_ 的例子。
 
 ```
 mysql://USER:PASSWORD@HOST:PORT/DATABASE
 ```
 
-The following components make up the _base URL_ of your database, they are always required:
+以下部分构成了你的数据库的 _基础URL（base URL）_，他们都是必填项。
 
-| Name     | Placeholder | Description                                                                                                         |
+| 名称     | 占位符 | 描述  |
 | :------- | :---------- | :------------------------------------------------------------------------------------------------------------------ |
-| Host     | `HOST`      | IP address/domain of your database server, e.g. `localhost`                                                         |
-| Port     | `PORT`      | Port on which your database server is running, e.g. `5432`                                                          |
-| User     | `USER`      | Name of your database user, e.g. `janedoe`                                                                          |
-| Password | `PASSWORD`  | Password for your database user                                                                                     |
-| Database | `DATABASE`  | Name of the [database](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html) you want to use, e.g. `mydb` |
+| Host     | `HOST`      | 数据库 IP 或域名, 例如 `localhost`   |
+| Port     | `PORT`      | 数据库端口, 例如 `5432`  |
+| User     | `USER`      | 数据库用户名, 例如 `janedoe`  |
+| Password | `PASSWORD`  | 数据库密码  |
+| Database | `DATABASE`  | [数据库](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html) 名称，例如 `mydb` |
 
 <Admonition type="info">
 
-You must [percentage-encode special characters](../../../reference/database-reference/connection-urls#special-characters).
+你必须 [编码特殊字符](../../../reference/database-reference/connection-urls#special-characters)。
 
 </Admonition>
 
-#### Arguments
+#### 参数
 
-A connection URL can also take arguments. Here is the same example from above with placeholder values in uppercase letters for three _arguments_:
+连接 URL 也可以接收参数，如下：
 
 ```
 mysql://USER:PASSWORD@HOST:PORT/DATABASE?KEY1=VALUE&KEY2=VALUE&KEY3=VALUE
 ```
 
-The following arguments can be used:
+可以使用下列参数：
 
-| Argument name      | Required | Default                | Description                                                                                                                                                   |
+| 参数名      | 是否必填 | 默认值                | 描述  |
 | :----------------- | :------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `connection_limit` | No       | `num_cpus * 2 + 1`     | Maximum size of the [connection pool](../components/prisma-client/working-with-prismaclient/connection-pool)                                                  |
-| `connect_timeout`  | No       | `5`                    | Maximum number of seconds to wait for a new connection to be opened, `0` means no timeout                                                                     |
-| `pool_timeout`     | No       | `10`                   | Maximum number of seconds to wait for a new connection from the pool, `0` means no timeout                                                                    |
-| `sslmode`          | No       | `prefer`               | Configures whether to use TLS. Possible values: `prefer`, `disable`, `require`                                                                                |
-| `sslcert`          | No       |                        | Path to the server certificate. Certificate paths are [resolved relative to the `./prisma folder`](../components/prisma-schema/data-sources#ssl-certificates) |
-| `sslidentity`      | No       |                        | Path to the PKCS12 certificate                                                                                                                                |
-| `sslpassword`      | No       |                        | Password that was used to secure the PKCS12 file                                                                                                              |
-| `sslaccept`        | No       | `accept_invalid_certs` | Configures whether to check for missing values in the certificate. Possible values: `accept_invalid_certs`, `strict`                                          |
-| `socket`           | No       |                        | Points to a directory that contains a socket to be used for the connection                                                                                    |
-| `socket_timeout`   | No       |                        | Number of seconds to wait until a single query terminates                                                                                                     |
+| `connect_timeout`  | No       | `5`                    | 最大连接建立超时时间，单位秒，`0` 代表无限制  |
+| `pool_timeout`     | No       | `10`                   | 等待连接池中连接超时时间，单位秒 `0` 代表无限制  |
+| `sslmode`          | No       | `prefer`               | 是否使用 TLS，可选值: `prefer`, `disable`, `require`  |
+| `sslcert`          | No       |                        | 服务器证书路径. 证书路径 [相对于 `./prisma 目录`](../components/prisma-schema/data-sources#ssl-certificates) |
+| `sslidentity`      | No       |                        | PKCS12 证书路径  |
+| `sslpassword`      | No       |                        | PKCS12 文件密码  |
+| `sslaccept`        | No       | `accept_invalid_certs` | 是否检查证书中的缺失值。可选值：`accept_invalid_certs`, `strict`  |
+| `socket`           | No       |                        | 指向一个包含用于连接的套接字（socket）的目录  |
+| `socket_timeout`   | No       |                        | 单个查询的最大等待时间  |
 
-As an example, if you want to set the connection pool size to `5` and configure a timeout for queries of `3` seconds, you can use the following arguments:
+举例来说，如果你想设置连接池大小为 `5`，配置查询超时为 `3` 秒，你可以使用如下这些参数：
 
 ```
 mysql://USER:PASSWORD@HOST:PORT/DATABASE?connection_limit=5&socket_timeout=3
 ```
 
-### Configuring an SSL connection
+### 配置 SSL 连接
 
-You can add various parameters to the connection URL if your database server uses SSL. Here's an overview of the possible parameters:
+如果你的数据库使用 SSL，你可以在连接 URL 中添加各种参数。下面是可能用到的参数的概述：
 
 - `sslmode=(disable|prefer|require)`:
-  - `prefer` (default): Prefer TLS if possible, accept plain text connections.
-  - `disable`: Do not use TLS.
-  - `require`: Require TLS or fail if not possible.
-- `sslcert=<PATH>`: Path to the server certificate. This is the root certificate used by the database server to sign the client certificate. You need to provide this if the certificate doesn't exist in the trusted certificate store of your system. For Google Cloud this likely is `server-ca.pem`. Certificate paths are [resolved relative to the `./prisma folder`](../components/prisma-schema/data-sources#ssl-certificates)
-- `sslidentity=<PATH>`: Path to the PKCS12 certificate database created from client cert and key. This is the SSL identity file in PKCS12 format which you will generate using the client key and client certificate. It combines these two files in a single file and secures them via a password (see next parameter). You can create this file using your client key and client certificate by using the following command (using `openssl`):
+  - `prefer` (默认): 如果可能的话，优先选择 TLS，接受纯文本连接。
+  - `disable`: 不使用 TLS。
+  - `require`: 必须使用 TLS，如果不能则连接失败。
+- `sslcert=<PATH>`: 服务器证书的路径。这是由数据库服务器用来签署客户证书的根证书。如果该证书不存在于你的系统的受信任的证书存储中时你需要提供它，对于谷歌云，你可能需要提供 `server-ca.pem`。证书路径是 [相对于 `./prisma 目录的`](../components/prisma-schema/data-sources#ssl-certificates)
+- `sslidentity=<PATH>`: 从客户证书和密钥创建的 PKCS12 证书数据库的路径。这是一个 PKCS12 格式的 SSL 身份文件，你将使用客户的密钥和客户的证书生成它。它将这两个文件合并为一个文件，并通过密码来保护它们（见下一个参数）。你可以通过使用以下命令（使用 `openssl`）来使用你的客户密钥和客户证书创建这个文件：
   ```
   openssl pkcs12 -export -out client-identity.p12 -inkey client-key.pem -in client-cert.pem
   ```
-- `sslpassword=<PASSWORD>`: Password that was used to secure the PKCS12 file. The `openssl` command listed in the previous step will ask for a password while creating the PKCS12 file, you will need to provide that same exact password here.
+- `sslpassword=<PASSWORD>`: 用来保护 PKCS12 文件的密码。上一步中列出的 `openssl` 命令会在创建 PKCS12 文件时要求提供密码，你需要在这里提供同样的密码。
 - `sslaccept=(strict|accept_invalid_certs)`:
-  - `strict`: Any missing value in the certificate will lead to an error. For Google Cloud, especially if the database doesn't have a domain name, the certificate might miss the domain/IP address, causing an error when connecting.
-  - `accept_invalid_certs` (default): Bypass this check. Be aware of the security consequences of this setting.
+  - `strict`: 证书中任何缺失的值都会导致错误。对于谷歌云，特别是如果数据库没有域名，证书可能会遗漏域名/IP地址，导致连接时出现错误。
+  - `accept_invalid_certs` (默认): 绕过这个检查。请注意此设置可能会带来的安全后果。
 
-To recap, in order to create a SSL connection to your database, you need:
+简而言之，为了创建一个 SSL 连接到你的数据库，你需要：
 
-- A root [CA](<https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc778623(v=ws.10)?redirectedfrom=MSDN>) file
-- A [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) client file
-- A [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) password
+- 一个根 [证书](<https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc778623(v=ws.10)?redirectedfrom=MSDN>) 文件
+- 一个 [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) 客户端文件
+- 一个 [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) 文件密码
 
-Your database connection URL will look similar to this:
+你的数据库连接 URL 将类似于这样：
 
 ```
 mysql://USER:PASSWORD@HOST:PORT/DATABASE?sslidentity=client-identity.p12&sslpassword=mypassword&sslcert=rootca.cert
 ```
 
-### Connecting via sockets
+### 通过 socket 连接
 
-To connect to your MySQL database via sockets, you must add a `socket` field as a _query parameter_ to the connection URL (instead of setting it as the `host` part of the URI).
-The value of this parameter then must point to the directory that contains the socket, e.g.: `mysql://USER:POST@localhost/database?socket=/var/run/mysql/`
+要通过 socket 连接到你的 MySQL 数据库，你必须在连接 URL 中添加一个 `host` 字段作为 _查询参数_（而不是将其设置为 URI 的 `host` 部分）。
+然后这个参数的值必须指向包含 socket 的目录，例如：`mysql://USER:POST@localhost/database?socket=/var/run/mysql/`
 
-Note that `localhost` is required, the value itself is ignored and can be anything.
+注意，`localhost` 是必须的，值本身被忽略，可以是任何东西。
 
-> **Note**: You can find additional context in this [GitHub issue](https://github.com/prisma/prisma-client-js/issues/437#issuecomment-592436707).
+> **注意**：你可以在这个 [GitHub issue](https://github.com/prisma/prisma-client-js/issues/437#issuecomment-592436707) 中找到更多的信息。
 
-## Type mapping between MySQL to Prisma schema
+## MySQL 和 Prisma schema 间的类型映射
 
-The MySQL connector maps the [scalar types](../components/prisma-schema/data-model#scalar-fields) from the Prisma [data model](../components/prisma-schema/data-model) as follows to native column types:
+MySQL 连接器将 Prisma [数据模型](../components/prisma-schema/data-model) 中的 [标量类型（scalar types）](../components/prisma-schema/data-model#scalar-fields) 映射为数据库原生类型：
 
-> Alternatively, see [Prisma schema reference](../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types) for type mappings organized by Prisma type.
+> 在 [Prisma schema 参考](../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types) 中了解更多关于 prisma 类型映射的信息。
 
-### Prisma Migrate
+### Prisma 迁移
 
-| Data model | MySQL            | Notes                                            |
+| Data model | MySQL            | 注意                                            |
 | ---------- | ---------------- | ------------------------------------------------ |
 | `String`   | `VARCHAR(191)`   |                                                  |
-| `Boolean`  | `BOOLEAN`        | In MySQL `BOOLEAN` is a synonym for `TINYINT(1)` |
+| `Boolean`  | `BOOLEAN`        | 在 MySQL 中， `BOOLEAN` 会用 `TINYINT(1)` 表示 |
 | `Int`      | `INT`            |                                                  |
 | `BigInt`   | `BIGINT`         |
 | `Float`    | `DOUBLE`         |                                                  |
 | `Decimal`  | `DECIMAL(65,30)` |
 | `Datetime` | `DATETIME(3)`    |                                                  |
-| `Json`     | `JSON`           | Supported in MySQL 5.7+ only                     |
+| `Json`     | `JSON`           | 仅在 MySQL 5.7+ 版本中支持                     |
 | `Bytes`    | `LONGBLOB`       |
 
-### Native type mappings
+### 数据库原生类型映射
 
-When introspecting a MySQL database, the database types are mapped to Prisma according to the following table:
+当内省（introspecting）一个 MySQL 数据库时，数据库类型根据以下表映射到 Prisma：
 
-| MySQL                     | Prisma        | Supported | Native database type attribute                 | Notes                                                              |
+| MySQL                     | Prisma        | 是否支持 | 原生数据库类型属性  | 注意  |
 | ------------------------- | ------------- | --------- | ---------------------------------------------- | ------------------------------------------------------------------ |
 | `serial`                  | `BigInt`      | ✔️        | `@db.UnsignedBigInt @default(autoincrement())` |
 | `bigint`                  | `BigInt`      | ✔️        | `@db.BigInt`                                   |
@@ -188,17 +189,17 @@ When introspecting a MySQL database, the database types are mapped to Prisma acc
 | `text`                    | `String`      | ✔️        | `@db.Text`                                     |
 | `mediumtext`              | `String`      | ✔️        | `@db.MediumText`                               |
 | `longtext`                | `String`      | ✔️        | `@db.LongText`                                 |
-| `set`                     | `Unsupported` | Not yet   |                                                |
-| `geometry`                | `Unsupported` | Not yet   |                                                |
-| `point`                   | `Unsupported` | Not yet   |                                                |
-| `linestring`              | `Unsupported` | Not yet   |                                                |
-| `polygon`                 | `Unsupported` | Not yet   |                                                |
-| `multipoint`              | `Unsupported` | Not yet   |                                                |
-| `multilinestring`         | `Unsupported` | Not yet   |                                                |
-| `multipolygon`            | `Unsupported` | Not yet   |                                                |
-| `geometrycollection`      | `Unsupported` | Not yet   |                                                |
+| `set`                     | `Unsupported` | 不支持     |                                                |
+| `geometry`                | `Unsupported` | 不支持     |                                                |
+| `point`                   | `Unsupported` | 不支持     |                                                |
+| `linestring`              | `Unsupported` | 不支持     |                                                |
+| `polygon`                 | `Unsupported` | 不支持     |                                                |
+| `multipoint`              | `Unsupported` | 不支持     |                                                |
+| `multilinestring`         | `Unsupported` | 不支持     |                                                |
+| `multipolygon`            | `Unsupported` | 不支持     |                                                |
+| `geometrycollection`      | `Unsupported` | 不支持     |                                                |
 
-[Introspection](../components/introspection) adds native database types that are **not yet supported** as [`Unsupported`](../../../reference/api-reference/prisma-schema-reference#unsupported) <span class="api"></span> fields:
+[内省 Introspection](../components/introspection) 将尚未支持的数据库类型添加为 [`Unsupported`](../../../reference/api-reference/prisma-schema-reference#unsupported) <span class="api"></span> 字段:
 
 ```prisma file=schema.prisma
 model Device {
@@ -208,6 +209,6 @@ model Device {
 }
 ```
 
-## Engine
+## 引擎
 
-If you are using a version of MySQL where MyISAM is the default engine, you must specify `ENGINE = InnoDB;` when you create a table. If you introspect a database that uses a different engine, relations in the Prisma Schema are not created (or lost, if the relation already existed).
+如果你使用的是以 MyISAM 为默认引擎的 MySQL 版本，当你创建表时，你必须指定 `ENGINE = InnoDB;`。如果你内省（introspect）一个使用不同引擎的数据库，Prisma model 中的关联关系不会被创建（或者丢失，如果关联关系已存在）。

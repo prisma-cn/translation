@@ -43,7 +43,7 @@ const prisma = new PrismaClient()
 
 ## `PrismaClient` 实例的数量很重要
 
-你的应用程序通常只应当创建 **一个** `PrismaClient` 实例。如何实现这一点取决于您是在 [长期运行的应用程序](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-long-running-applications) <span class="guide"></span> 还是在 [无主机 (serverless) 环境](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-serverless-environments) <span class="guide"></span> 中使用 Prisma。
+你的应用程序通常只应当创建 **一个** `PrismaClient` 实例。如何实现这一点取决于你是在 [长期运行的应用程序](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-long-running-applications) <span class="guide"></span> 还是在 [无主机 (serverless) 环境](../../../../guides/performance-and-optimization/connection-management#prismaclient-in-serverless-environments) <span class="guide"></span> 中使用 Prisma。
 
 这样做的原因是每个 `PrismaClient` 实例会维护一个连接池，意味着大量数据库连接会 **耗尽数据库连接数限制**。这适用于所有数据库连接器 (database connector)。
 

@@ -1,8 +1,8 @@
 ---
-title: 'Relational databases'
-metaTitle: 'Start from scratch with relational databases (15 min)'
-metaDescription: 'Learn how to create a new Node.js or TypeScript project from scratch by connecting Prisma to your relational database and generating a Prisma Client for database access.'
-duration: '15 min'
+title: '关系数据库'
+metaTitle: '从头开始使用关系数据库(15分钟)'
+metaDescription: '通过将Prisma连接到你的关系数据库并生成一个Prisma Client来访问数据库，学习如何从头创建一个新的Node.js或TypeScript项目。'
+duration: '15 分钟'
 toc: false
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['postgres', 'mysql']
@@ -10,18 +10,18 @@ dbSwitcher: ['postgres', 'mysql']
 
 <TopBlock>
 
-Learn how to create a new Node.js or TypeScript project from scratch by connecting Prisma to your database and generating a Prisma Client for database access. The following tutorial introduces you to the [Prisma CLI](../../../../concepts/components/prisma-cli), [Prisma Client](../../../../concepts/components/prisma-client), and [Prisma Migrate](../../../../concepts/components/prisma-migrate).
+了解如何通过将 Prisma 连接到数据库并生成用于数据库访问的 Prisma 客户端，将 Prisma 添加到现有 Node.js 或 TypeScript 项目。以下教程向您介绍了[Prisma CLI](../../../../concepts/components/prisma-cli)、[Prisma Client](../../../../concepts/components/prisma-client)和[Prisma Introspection](../../../../concepts/components/introspection)。
 
 </TopBlock>
 
-## Prerequisites
+## 先决条件
 
-In order to successfully complete this guide, you need:
+为了成功完成本指南，您需要：
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
-- [Node.js](https://nodejs.org/en/) installed on your machine
-- a [PostgreSQL](https://www.postgresql.org/) database server running
+- [Node.js](https://nodejs.org/en/) 安装在你的机器上
+- 一个正在运行的[PostgreSQL](https://www.postgresql.org/)数据库服务器和一个至少有一张表的数据库
 
 </SwitchTech>
 
@@ -32,17 +32,17 @@ In order to successfully complete this guide, you need:
 
 </SwitchTech>
 
-> See [System requirements](../../../../reference/system-requirements) for exact version requirements.
+> 具体的版本需求请参见[系统需求](../../../../reference/system-requirements)。
 
-Make sure you have your database [connection URL](../../../../reference/database-reference/connection-urls) at hand. If you don't have a database server running and just want to explore Prisma, check out the [Quickstart](../../../quickstart).
+确保已有数据库[连接URL](../../../../reference/database-reference/connection-urls)。如果您没有运行数据库服务器，只想探索Prisma，请查看[快速入门](../../../quickstart)。
 
 <!--
 Alternatively you can [set up a free PostgreSQL database on Heroku](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1) and use it in this guide.
 -->
 
-## Create project setup
+## 创建项目设置
 
-As a first step, create a project directory and navigate into it:
+第一步，创建项目并进入项目目录：
 
 ```terminal copy
 mkdir hello-prisma
@@ -51,16 +51,16 @@ cd hello-prisma
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Next, initialize a TypeScript project and add the Prisma CLI as a development dependency to it:
+接下来，初始化TypeScript项目并将Prisma CLI作为开发依赖项添加到该项目中：
 
 ```terminal copy
 npm init -y
 npm install prisma typescript ts-node @types/node --save-dev
 ```
 
-This creates a `package.json` with an initial setup for your TypeScript app.
+这将为您的TypeScript应用程序创建一个带有初始设置的`package.json`。
 
-Next, create a `tsconfig.json` file and add the following configuration to it:
+接下来，创建一个`tsconfig.json`文件，并向其中添加以下配置：
 
 ```json file=tsconfig.json copy
 {
@@ -78,31 +78,31 @@ Next, create a `tsconfig.json` file and add the following configuration to it:
 
 <SwitchTech technologies={['node', '*']}>
 
-Next, initialize a Node.js project and add the Prisma CLI as a development dependency to it:
+接下来，初始化Node.js项目并将Prisma CLI作为开发依赖项添加到该项目中：
 
 ```terminal copy
 npm init -y
 npm install prisma --save-dev
 ```
 
-This creates a `package.json` with an initial setup for a Node.js app.
+这将创建一个带有Node.js应用程序初始设置的`package.json` 。
 
 </SwitchTech>
 
-You can now invoke the Prisma CLI by prefixing it with `npx`:
+现在你可以通过前缀`npx`来调用Prisma CLI:
 
 ```terminal
 npx prisma
 ```
 
-Next, set up your Prisma project by creating your [Prisma schema](../../../../concepts/components/prisma-schema) file with the following command:
+接下来，通过使用以下命令创建[Prisma schema](../../../../concepts/components/prisma-schema)文件来设置Prisma项目:
 
 ```terminal copy
 npx prisma init
 ```
 
-This command created a new directory called `prisma` which contains a file named `schema.prisma` and a `.env` file in the root of the project. `schema.prisma` contains the Prisma schema with your database connection and the Prisma Client generator.
-`.env` is a [dotenv](https://github.com/motdotla/dotenv) file for defining environment variables (used for your database connection).
+这个命令创建了一个名为`prisma`的新目录，其中包含一个名为`schema.prisma`的文件和一个位于项目根目录中的`.env`文件`schema.prisma`包含prisma模式以及数据库连接和prisma客户端生成器。
+`.env`是一个[dotenv](https://github.com/motdotla/dotenv)用于定义环境变量的文件（用于数据库连接）。
 
 <SwitchTech technologies={['node', 'postgresql']}>
 
@@ -114,7 +114,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./relational-databases/connect-your-database-node-postgres"
   arrow
 >
-  Connect your database
+  连接数据库
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -131,7 +131,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./relational-databases/connect-your-database-node-mysql"
   arrow
 >
-  Connect your database
+  连接数据库
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -148,7 +148,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./relational-databases/connect-your-database-typescript-postgres"
   arrow
 >
-  Connect your database
+  连接数据库
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -165,7 +165,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./relational-databases/connect-your-database-typescript-mysql"
   arrow
 >
-  Connect your database
+  连接数据库
 </ButtonLink>
 
 </NavigationLinksContainer>

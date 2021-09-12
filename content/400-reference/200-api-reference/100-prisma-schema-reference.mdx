@@ -592,7 +592,7 @@ True or false value.
 
 Floating point number.
 
-> `Float` maps to `Double` in [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later - see [release notes](https://github.com/prisma/prisma/releases/tag/2.17.0) and [Video: Changes to the default mapping of Float in Prisma 2.17.0](https://www.youtube.com/watch?v=OsuGP_xNHco&amp%3Bab_channel=Prisma) for more information about this change.
+> `Float` maps to `Double` in [2.17.0](https://github.com/prisma/prisma/releases/tag/2.17.0) and later - see [release notes](https://github.com/prisma/prisma/releases/tag/2.17.0) and [Video: Changes to the default mapping of Float in Prisma 2.17.0](https://www.bilibili.com/video/BV1UM4y1T7QF?p=10&share_source=copy_web) for more information about this change.
 
 #### Default type mappings
 
@@ -2297,9 +2297,9 @@ Defines meta information about the relation. [Learn more](../../concepts/compone
 
 #### Arguments
 
-| Name         | Type               | Required                                                                                                                                           | Description                                                                                                                               | Example                                               |
-| :----------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| `name`       | `String`           | Sometimes (e.g. to disambiguate a relation)                                                                                                        | Defines the name of the relationship. In an m-n-relation, it also determines the name of the underlying relation table.                   | `"CategoryOnPost"`, `"MyRelation"`                    |
+| Name         | Type               | Required                                                                                                                                           | Description                                                                                                                                | Example                                               |
+| :----------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
+| `name`       | `String`           | Sometimes (e.g. to disambiguate a relation)                                                                                                        | Defines the name of the relationship. In an m-n-relation, it also determines the name of the underlying relation table.                    | `"CategoryOnPost"`, `"MyRelation"`                    |
 | `fields`     | `FieldReference[]` | On [annotated](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) relation fields | A list of [fields](../../../concepts/components/prisma-schema/data-model#defining-fields) of the _current_ model                           | `["authorId"]`, `["authorFirstName, authorLastName"]` |
 | `references` | `FieldReference[]` | On [annotated](../../../../../../concepts/components/prisma-schema/relations#annotated-relation-fields-and-relation-scalar-fields) relation fields | A list of [fields](../../../concepts/components/prisma-schema/data-model#defining-fields) of the model on _the other side of the relation_ | `["id"]`, `["firstName, lastName"]`                   |
 

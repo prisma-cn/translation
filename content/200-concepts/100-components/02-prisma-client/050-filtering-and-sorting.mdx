@@ -1,27 +1,27 @@
 ---
-title: 'Filtering and sorting'
-metaTitle: 'Filtering and sorting (Reference)'
-metaDescription: 'Use the Prisma Client API to filter records by any combination of fields or related record fields, and sort the results.'
+title: '过滤和排序'
+metaTitle: '过滤和排序 (参考)'
+metaDescription: '使用 Prisma Client API 按字段或关系记录字段的任意组合过滤记录，并对结果进行排序。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Prisma Client supports filtering and sorting with the `where` and `orderBy` query options respectively.
+Prisma Client 分别支持使用 `where` 和 `orderBy` 查询选项进行过滤和排序。
 
 </TopBlock>
 
-## Filtering
+## 过滤
 
-Prisma Client allows you to filter records on any combination of model fields, [including related models](#filter-on-relations), and supports a variety of [filter conditions](#filter-conditions-and-operators).
+Prisma Client 允许你过滤模型字段任意组合上的记录, [包括关系模型](#filter-on-relations), 并支持各种 [过滤条件](#filter-conditions-and-operators).
 
-The following query:
+以下查询：
 
-- Returns all `User` records with:
-  - an email address that ends with `prisma.io` _and_
-  - at least one published post (a relation query)
-- Returns all `User` fields
-- Includes all related `Post` records where `published` equals `true`
+- 返回包含以下内容的所有 `User` 记录：
+  - 以 `prisma.io` 结尾的电子邮件地址，_以及_
+  - 至少一篇已发布的文章（关系查询）
+- 返回所有 `User` 字段
+- 包括所有相关的 `Post` 记录，其中 `published` 等于 `true`
 
 <CodeWithResult>
 <cmd>
@@ -79,13 +79,13 @@ const result = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### Filter conditions and operators
+### 过滤条件和运算符 {#filter-conditions-and-operators}
 
-Refer to the Prisma Client reference documentation for [a full list of operators](../../../reference/api-reference/prisma-client-reference#filter-conditions-and-operators) <span class="api"></span>, such as `startsWith` and `contains`.
+请参阅 Prisma Client 参考文档，了解 [运算符的完整列表](../../../reference/api-reference/prisma-client-reference#filter-conditions-and-operators) <span class="api"></span>，例如 `startsWith` 和 `contains`。
 
-#### Combining operators
+#### 合并运算符
 
-You can use operators (such as [`NOT`](../../../reference/api-reference/prisma-client-reference#not) <span class="api"></span> and [`OR`](../../../reference/api-reference/prisma-client-reference#or) <span class="api"></span>) to filter by a combination of conditions. The following query returns all users with an `email` that ends in `"prisma.io"` or `"gmail.com"`, but not `"hotmail.com"`:
+你可以使用运算符（例如 [`NOT`](../../../reference/api-reference/prisma-client-reference#not) <span class="api"></span>和[`OR`](../../../reference/api-reference/prisma-client-reference#or) <span class="api"></span>）根据条件组合进行过滤。以下查询返回所有用户的 `email` 以 `"prisma.io"` 或 `"gmail.com"` 结尾，但不以 `"hotmail.com"` 结尾：
 
 <CodeWithResult>
 <cmd>
@@ -123,16 +123,16 @@ const result = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### Filter on relations
+### 过滤关系 {#filter-on-relations}
 
-Prisma Client supports [filtering on related records](relation-queries#relation-filters). For example, in the following schema, a user can have many blog posts:
+Prisma Client 支持 [过滤关系记录](relation-queries#relation-filters)。 例如，在以下 schema 中，用户可以有许多博客帖子：
 
 ```prisma highlight=5,12-13;normal
 model User {
   id    Int     @id @default(autoincrement())
   name  String?
   email String  @unique
-  posts Post[] // User can have many posts
+  posts Post[] // 用户可以有很多帖子
 }
 
 model Post {
@@ -144,7 +144,7 @@ model Post {
 }
 ```
 
-The one-to-many relation between `User` and `Post` allows you to query users based on their posts - for example, the following query returns all users where _at least one_ post (`some`) has more than 10 views:
+`User` 和 `Post` 之间的一对多关系允许你根据用户的帖子查询用户 - 例如，以下查询返回所有用户，其中至少有一个帖子（`some`）具有 10 个以上的浏览：
 
 ```ts
 const result = await prisma.user.findMany({
@@ -160,7 +160,7 @@ const result = await prisma.user.findMany({
 })
 ```
 
-You can also query posts based on the properties of the author. For example, the following query returns all posts where the author's `email` contains `"prisma.io"`:
+你还可以根据作者的属性查询文章。例如，以下查询返回作者的 `email` 包含 `"prisma.io"` 的所有帖子：
 
 ```ts
 const res = await prisma.post.findMany({
@@ -174,9 +174,9 @@ const res = await prisma.post.findMany({
 })
 ```
 
-### Filter on scalar lists / arrays
+### 过滤 scalar 列表 / 数组
 
-Scalar lists (for example, `String[]`) have a special set of [filter conditions](../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - for example, the following query returns all posts where the `tags` array contains `databases`:
+Scalar 列表（例如，`String[]`）有一组特殊的 [过滤条件](../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - 例如，以下查询返回 `tags` 数组包含 `databases` 的所有帖子：
 
 ```ts
 const posts = await client.post.findMany({
@@ -188,11 +188,11 @@ const posts = await client.post.findMany({
 })
 ```
 
-### Case-insensitive filtering
+### 不区分大小写的过滤
 
-Case-insensitive filtering [is available as a feature for the PostgreSQL and MongoDB providers](case-sensitivity#options-for-case-insensitive-filtering). MySQL and MariaDB are case-insensitive by default, and do not require a Prisma Client feature to make case-insensitive filtering possible.
+不区分大小写过滤 [是为 PostgreSQL 和 MongoDB 提供的一项功能](case-sensitivity#options-for-case-insensitive-filtering)。默认情况下，MySQL 和 MariaDB 和 Microsoft SQL Server 不区分大小写，并且不需要 Prisma Client 功能来实现不区分大小写的过滤。
 
-To use case-insensitive filtering, add the `mode` property to a particular filter and specify `insensitive`:
+要使用不区分大小写的过滤，请将 `mode` 属性添加到特定过滤器并指定 `insensitive`：
 
 ```ts highlight=5;normal
 const users = await prisma.user.findMany({
@@ -210,9 +210,9 @@ const users = await prisma.user.findMany({
 
 See also: [Case sensitivity](case-sensitivity)
 
-## Sorting
+## 排序
 
-Use [`orderBy`](../../../reference/api-reference/prisma-client-reference#orderby) <span class="api"></span> to sort a list of records or a nested list of records by a particular field or set of fields. For example, the following query returns all `User` records sorted by `role` and `name`, **and** each user's posts sorted by `title`:
+使用 [`orderBy`](../../../reference/api-reference/prisma-client-reference#orderby) <span class="api"></span> 按特定字段或字段集对记录列表或嵌套记录列表进行排序。例如，以下查询返回按 `role` 和 `name` 排序的所有 `User` 记录，**和** 每个用户的帖子按 `title` 排序：
 
 <CodeWithResult>
 
@@ -285,28 +285,21 @@ const usersWithPosts = await prisma.user.findMany({
 
 </CodeWithResult>
 
-> **Note**: You can also [sort lists of nested records](relation-queries#filter-a-list-of-relations)
-> to retrieve a single record by ID.
+> **注意**：你还可以 [对嵌套记录的列表进行排序](relation-queries#filter-a-list-of-relations)
+> 按 ID 检索单个记录。
 
-### Sort by relation (Preview)
+### 按关系排序
 
-In [2.16.0](https://github.com/prisma/prisma/releases/2.16.0) and later, you can sort by properties of a relation. To enable this feature, add `orderByRelation` to `previewFeatures` in your schema:
-
-```prisma highlight=3;normal
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["orderByRelation"]
-}
-```
+在 [2.16.0](https://github.com/prisma/prisma/releases/2.16.0) 和更高版本中，你可以根据关系的属性进行排序。
 
 <Admonition type="warning">
 
-**MongoDB not supported**<br />
-You cannot currently use `orderByRelation` with the MongoDB connector.
+**不支持 MongoDB**<br />
+你当前无法对 MongoDB 连接器使用 `orderByRelation`。
 
 </Admonition>
 
-For example, the following query sorts all posts by the author's email address:
+例如，以下查询按作者的电子邮件地址对所有帖子进行排序：
 
 ```ts
 const posts = await prisma.post.findMany({
@@ -318,32 +311,11 @@ const posts = await prisma.post.findMany({
 })
 ```
 
-### Sort by relation aggregate value (Preview)
+### 按关系排序聚合值
 
-<div class="videoWrapper">
+在 [2.19.0](https://github.com/prisma/prisma/releases/2.19.0)和更高版本中，你可以按照 **相关记录计数** 进行排序。
 
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/vmVUeZny73o"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen
-></iframe>
-
-</div>
-
-In [2.19.0](https://github.com/prisma/prisma/releases/2.19.0) and later, you can sort by the **count of related records**. To enable this feature, add `orderByRelation` to `previewFeatures` in your schema:
-
-```prisma highlight=3;normal
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["orderByRelation"]
-}
-```
-
-For example, the following query sorts users by the number of related posts:
+例如，以下查询按相关帖子的数量对用户进行排序：
 
 ```ts
 const getActiveusers = await prisma.user.findMany({
@@ -356,10 +328,10 @@ const getActiveusers = await prisma.user.findMany({
 })
 ```
 
-> **Note**: It is not currently possible to [return the count of a relation](https://github.com/prisma/prisma/issues/5079).
+> **注意**：当前无法 [返回关系的计数]](https://github.com/prisma/prisma/issues/5079).
 
-### Sorting FAQs
+### 排序 常见问题
 
-#### Can I perform case-insensitive sorting?
+#### 我可以执行不区分大小写的排序吗？
 
-Follow [issue #841 on GitHub](https://github.com/prisma/prisma-client-js/issues/841).
+请看 [在 GitHub 上的 issue #841](https://github.com/prisma/prisma-client-js/issues/841).

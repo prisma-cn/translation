@@ -1,12 +1,12 @@
 ---
-title: 'Session data middleware'
-metaTitle: 'Session Data Middleware (Reference)'
-metaDescription: 'How to use middleware to set the value taken from session state.'
+title: '会话数据中间件'
+metaTitle: '会话数据中间件 (参考)'
+metaDescription: '如何使用中间件设置从会话状态获取的值。'
 ---
 
 <TopBlock>
 
-The following example sets the `language` field of each `Post` to the context language (taken, for example, from session state):
+以下示例将每个 `Post` 的 `language` 字段设置为上下文语言（例如，从会话状态中获取）：
 
 ```ts
 const prisma = new PrismaClient()
@@ -28,7 +28,7 @@ const create = await prisma.post.create({
 })
 ```
 
-The example is based on the following sample schema:
+该示例基于以下 schema 样本：
 
 ```prisma
 generator client {

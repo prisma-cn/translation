@@ -1,38 +1,40 @@
 ---
 title: 'TypeORM'
-metaTitle: 'Prisma vs TypeORM'
-metaDescription: 'Learn how Prisma compares to TypeORM.'
+metaTitle: 'Prisma 对比 TypeORM'
+metaDescription: '了解 Prisma 和 TypeORM 的对比情况。'
 ---
 
 <TopBlock>
 
-This page compares Prisma and [TypeORM](https://typeorm.io/#/). If you want to learn how to migrate from TypeORM to Prisma, check out this [guide](../../../guides/migrate-to-prisma/migrate-from-typeorm).
+本文比较了 Prisma 和 [TypeORM](https://typeorm.io/#/)。如果你想了解如何从 TypeORM 迁移到 Prisma，请查看这个 [指南](../../../guides/migrate-to-prisma/migrate-from-typeorm)。
 
 </TopBlock>
 
-## TypeORM vs Prisma
+## TypeORM 对比 Prisma
 
-While Prisma and TypeORM solve similar problems, they work in very different ways.
+虽然 Prisma 和 TypeORM 解决了类似的问题，但它们的工作方式并不相同。
 
-**TypeORM** is a traditional ORM which maps _tables_ to _model classes_. These model classes can be used to generate SQL migrations. Instances of the model classes then provide an interface for CRUD queries to an application at runtime.
+**TypeORM** 是一个传统的 ORM，它将 _数据表_ 映射到 _模型类_。这些模型类可以被用来生成 SQL 迁移（migration）。然后模型类的实例在运行时提供了一个接口，供应用程序进行 CRUD 查询。
 
-**Prisma** is a new kind of ORM that mitigates many problems of traditional ORMs, such as bloated model instances, mixing business with storage logic, lack of type-safety or unpredictable queries caused e.g. by lazy loading.
+**Prisma** 是一种新的 ORM，它解决了传统 ORM 的许多问题，如臃肿的模型实例、业务与存储逻辑的混合、缺乏类型安全或由懒加载引起的不可预测的查询等。
 
-It uses the [Prisma schema](../../components/prisma-schema) to define application models in a declarative way. Prisma Migrate then allows to generate SQL migrations from the Prisma schema and executes them against the database. CRUD queries are provided by Prisma Client, a lightweight and entirely type-safe database client for Node.js and TypeScript.
+它使用 [Prisma schema](../../components/prisma-schema) 以声明式的方式来定义应用模型。然后 Prisma Migrate 允许从 Prisma schema 中生成 SQL 迁移（migration），并针对数据库执行这些迁移（migration）。CRUD 查询由 Prisma Client 提供，这是一个轻量级的、完全类型安全的 Node.js 和 TypeScript 数据库客户端。
 
-## API design & Level of abstraction
+## API 设计 & 抽象程度
 
-TypeORM and Prisma operate on different levels of abstraction. TypeORM is closer to mirroring SQL in its API while Prisma Client provides a higher-level abstraction that was carefully designed with the common tasks of application developers in mind. Prisma's API design heavily leans on the idea of [making the right thing easy](https://lengstorf.com/right-thing-easy-thing/).
+TypeORM 和 Prisma 处于不同的抽象程度上。TypeORM 的 API 更接近于 SQL 的镜像，而 Prisma Client 提供了一个更高层次的抽象，它是在考虑到应用开发者共同协作的情况下精心设计的。Prisma 的 API 设计在很大程度上依赖于 [让正确的事情变得简单](https://lengstorf.com/right-thing-easy-thing/) 的理念。
 
 While Prisma Client operates on a higher-level of abstraction, it strives to expose the full power of the underlying database and lets you drop down to [raw SQL](../../components/prisma-client/raw-database-access) at any time if your use case requires it.
 
-The following sections examine a few examples for how Prisma's and TypeORM's APIs differ in certain scenarios and what the rationale of Prisma's API design is in these cases.
+尽管 Prisma Client 处于更高的抽象程度上，但它还是努力暴露出底层数据库的全部功能，并让你在任何时候降级到 [原生 SQL](../../components/prisma-client/raw-database-access)，如果你需要的话。
 
-### Filtering
+下面几节中剖析了几个例子，说明 Prisma 和 TypeORM 的 API 在某些情况下有什么不同，以及在这些情况下 Prisma 的 API 设计原理是什么。
 
-TypeORM primarily leans on SQL operators for filtering lists or records, e.g. with the `find` method. Prisma on the other hand, provides a more [generic set of operators](../../components/prisma-client/filtering-and-sorting#filter-conditions-and-operators) that are intuitive to use. It should also be noted that, as explained in the type-safety section [below](#filtering-1), TypeORM looses type-safety in for filter queries in many scenarios.
+### 过滤（Filtering）
 
-A good example of how the filtering APIs of both TypeORM and Prisma differ is by looking at `string` filters. While TypeORM primarily provides the filter based on the `ILike` operator which comes directly from SQL, Prisma provides more specific operators that developers can use, e.g.: `contains`, `startsWith` and `endsWith`.
+TypeORM 主要依靠 SQL 操作来过滤列表或记录，例如使用 `find` 方法。Prisma 提供了一个更加 [通用的操作集](../../components/prisma-client/filtering-and-sorting#filter-conditions-and-operators)，可以直观的使用。另外还应该注意，正如在 [下面]((#filtering-1)) 的类型安全部分解释的那样，TypeORM 在许多情况下对过滤查询失去了类型安全。
+
+要查看 TypeORM 和 Prisma 的过滤 API 有什么不同，有个很好的例子是通过查看 `string` 过滤器。TypeORM 主要提供基于 `ILite` 操作符的过滤器，它直接来自于 SQL，而 Prisma 提供了更具体的操作符，开发者可以使用例如 `contains`、`startsWith` 和 `endsWith`。
 
 <ParallelBlocks>
 
@@ -146,29 +148,29 @@ const posts = await postRepository.find({
 
 </ParallelBlocks>
 
-### Pagination
+### 分页（Pagination）
 
-TypeORM only offers limit-offset pagination while Prisma conveniently provides dedicated APIs for both limit-offset but also cursor-based. You can learn more about both approaches in the [Pagination](../../components/prisma-client/pagination) section of the docs or in the API comparison [below](#pagination-1).
+TypeORM 只提供基于 limit-offset 的分页，而 Prisma 则为基于 limit-offset 和基于游标的两种分页方式提供了专门的 API。你可以在文档 [分页（Pagination）](../../components/prisma-client/pagination) 或在 [下面](#pagination-1) 了解更多。
 
-### Relations
+### 关联（Relations）
 
-Working with records that are connected via foreign keys can become very complex in SQL. Prisma's concept of [virtual relation field](../../components/prisma-schema/relations#relation-fields) enables an intuitive and convenient way for application developers to work with related data. Some benefits of Prisma's approach are:
+在 SQL 中处理通过外键关联的记录会变得非常复杂。Prisma 的 [虚拟关联字段](../../components/prisma-schema/relations#relation-fields) 概念使应用开发者能够以直观和方便的方式处理相关数据。使用 Prisma 的方法有以下好处：
 
-- traversing relationships via the fluent API ([docs](../../components/prisma-client/relation-queries#fluent-api))
-- nested writes that enable updating/creating connected records ([docs](../../components/prisma-client/relation-queries#nested-writes))
-- applying filters on related records ([docs](../../components/prisma-client/relation-queries#relation-filters))
-- easy and type-safe querying of nested data without worrying about JOINs ([docs](../../components/prisma-client/relation-queries#nested-reads))
-- creating nested TypeScript typings based on models and their relations ([docs](../../components/prisma-client/advanced-type-safety))
-- intuitive modeling of relations in the data model via relation fields ([docs](../../components/prisma-schema/relations))
-- implicit handling of relation tables (also sometimes called JOIN, link, pivot or junction tables) ([docs](../../components/prisma-schema/relations/many-to-many-relations#implicit-many-to-many-relations))
+- 通过 fluent API 遍历关联关系 ([文档](../../components/prisma-client/relation-queries#fluent-api))
+- 通过嵌套写入更新/创建关联的记录 ([文档](../../components/prisma-client/relation-queries#nested-writes))
+- 在关联的记录上使用过滤器 ([文档](../../components/prisma-client/relation-queries#relation-filters))
+- 对嵌套数据进行简单和类型安全的查询，而不用担心 JOIN ([文档](../../components/prisma-client/relation-queries#nested-reads))
+- 基于模型及其关联关系创建嵌套的 TypeScript 类型 ([文档](../../components/prisma-client/advanced-type-safety))
+- 通过关联字段对数据模型中的关联关系进行直观的建模 ([文档](../../components/prisma-schema/relations))
+- 隐式处理关联表（有时也称为 JOIN、连接、枢纽或节点表） ([文档](../../components/prisma-schema/relations/many-to-many-relations#implicit-many-to-many-relations))
 
-### Data modeling and migrations
+### 数据建模和迁移
 
-Prisma models are defined in the [Prisma schema](../../components/prisma-schema) while TypeORM uses classes and experimental TypeScript decorators for model definitions. With the Active Record ORM pattern, TypeORM's approach often leads to complex model instances that are becoming hard to maintain as an application grows.
+Prisma 模型在 [Prisma schema] (../../components/prisma-schema) 中定义，而 TypeORM 使用类和实验性的 TypeScript 装饰器来定义模型。通过 Active Record ORM 模式，TypeORM 的方法经常导致复杂的模型实例，随着应用程序的增长，这些实例变得难以维护。
 
-Prisma on the other hand generates a lightweight database client that exposes a tailored and fully type-safe API to read and write data for the models that are defined in the Prisma schema, following the DataMapper ORM pattern rather than Active Record.
+另一方面，Prisma 生成了一个轻量级的数据库客户端，它暴露了一个定制的、完全类型安全的 API，用于读写 Prisma schema 中定义的模型的数据，遵循 DataMapper ORM 模式而不是 Active Record 模式。
 
-Prisma's DSL for data modeling is lean, simple and intuitive to use. When modeling data in VS Code, you can further take advantage of Prisma's powerful VS Code extension with features like autocompletion, quick fixes, jump to definition and other benefits that increase developer productivity.
+Prisma 用于数据建模的 DSL 是精炼、简单和直观的。在 VS Code 中进行数据建模时，你可以进一步利用 Prisma 强大的 VS Code 扩展功能，如自动完成、快速修复、跳转到定义和其他提高开发者生产力的好处。
 
 <ParallelBlocks>
 
@@ -243,21 +245,21 @@ export class Post {
 
 </ParallelBlocks>
 
-Migrations work in similar fashions in TypeORM and Prisma. Both tools follow the approach of generating SQL files based on the provided model definitions and provide a CLI to execute them against the database. The SQL files can be modified before the migrations are executed so that any custom database operation can be performed with either migration system.
+数据库迁移在 TypeORM 和 Prisma 中以类似的方式工作。这两个工具都遵循基于所提供的模型定义生成 SQL 文件的方法，并提供一个 CLI 来对数据库执行这些文件。SQL 文件可以在迁移执行前被修改，这样任何自定义的数据库操作都可以在任何一个迁移系统中执行。
 
-## Type safety
+## 类型安全
 
-TypeORM has been one of the first ORMs in the Node.js ecosystem to fully embrace TypeScript and has done a great job in enabling developers to get a certain level of type safety for their database queries.
+TypeORM 是 Node.js 生态系统中最早完全接受 TypeScript 的 ORM 之一，并且在使开发者为他们的数据库查询获得一定程度的类型安全方面做得很好。
 
-However, there are numerous situations where the type safety guarantees of TypeORM fall short. The following sections describe the scenarios where Prisma can provide stronger guarantees for the types of query results.
+然而，在许多情况下，TypeORM 的类型安全保证是不够的。下面的章节描述了 Prisma 可以为查询结果的类型提供更强的保证的情况。
 
-### Selecting fields
+### 选择字段（Selecting fields）
 
-This section explains the differences in type safety when selecting a subset of a model's fields in a query.
+本节解释了在查询中选择一个模型字段的子集时，类型安全的差异。
 
 #### TypeORM
 
-TypeORM provides a `select` option for its [`find`](https://typeorm.io/#/find-options) methods (e.g. `find`, `findByIds`, `findOne`, ...), for example:
+TypeORM 为其 [`find`](https://typeorm.io/#/find-options) 方法（例如：`find`、`findByIds`、`findOne`...）提供了一个 `select` 选项，例如：
 
 <TabbedContent tabs={[<FileWithIcon text="`find` with `select`" icon="code"/>, <FileWithIcon text="Model" icon="code"/>]}>
 
@@ -299,7 +301,7 @@ export class Post {
 
 </TabbedContent>
 
-While each object in the returned `publishedPosts` array only carries the selected `id` and `title` properties at runtime, the TypeScript compiler doesn't have any knowledge of this. It will allow you to access any other properties defined on the `Post` entity after the query, for example:
+虽然返回的 `publishedPosts` 数组中的每个对象在运行时只携带了选定的 `id` 和 `title` 属性，但 TypeScript 编译器对此并不知情。它将允许你在查询后访问定义在 `Post` 实体上的任何其他属性，比如说：
 
 ```ts
 const post = publishedPost[0]
@@ -310,19 +312,19 @@ if (post.content.length > 0) {
 }
 ```
 
-This code will result in an error at runtime:
+这段代码在运行时会导致一个错误：
 
 ```
 TypeError: Cannot read property 'length' of undefined
 ```
 
-The TypeScript compiler only sees the `Post` type of the returned objects, but it doesn't know about the fields that these objects _actually_ carry at runtime. It therefore can't protect you from accessing fields that have not been retrieved in the database query, resulting in a runtime error.
+TypeScript 编译器只看到返回对象的 `Post` 类型，但它不知道这些对象在运行时 _实际携带的字段_。因此，它不能保护你访问在数据库查询中没有被检索到的字段，从而导致运行时错误。
 
 #### Prisma
 
-Prisma Client can guarantee full type safety in the same situation and protects you from accessing fields that were not retrieved from the database.
+Prisma Client 可以在同样的情况下保证完全的类型安全，并保护你不会访问没有从数据库中检索到的字段。
 
-Consider the same example with a Prisma Client query:
+同样的例子，使用 Prisma Client 进行查询：
 
 <TabbedContent tabs={[<FileWithIcon text="`findMany` with `select`" icon="code"/>, <FileWithIcon text="Model" icon="code"/>]}>
 
@@ -363,7 +365,7 @@ model Post {
 
 </TabbedContent>
 
-In this case, the TypeScript compiler will throw the following error already at compile-time:
+在这个例子中，TypeScript 编译器会在编译时抛出以下错误：
 
 ```
 [ERROR] 14:03:39 ⨯ Unable to compile TypeScript:
@@ -372,7 +374,7 @@ src/index.ts:36:12 - error TS2339: Property 'content' does not exist on type '{ 
 42   if (post.content.length > 0) {
 ```
 
-This is because Prisma Client generates the return type for its queries _on the fly_. In this case, `publishedPosts` is typed as follows:
+这是因为 Prisma Client 会 _实时_ 为它的查询生成返回类型。在这个例子中，`publishedPosts` 的类型如下：
 
 ```ts
 const publishedPosts: {
@@ -381,17 +383,17 @@ const publishedPosts: {
 }[]
 ```
 
-It therefore is impossible for you to accidentally access a property on a model that has not been retrieved in a query.
+因此，你不能意外地访问一个在查询中没有被检索的模型上的一个属性。
 
-### Loading relations
+### 加载关联关系（Loading relations）
 
-This section explains the differences in type safety when loading relations of a model in a query. In traditional ORMs, this is sometimes called _eager loading_.
+本节解释了在查询中加载模型的关联关系时，两者在类型安全上的不同。在传统的 ORM 中，这有时也被称为 _eager loading_。
 
 #### TypeORM
 
-TypeORM allows to eagerly load relations from the database via the `relations` option that can be passed to its [`find`](https://typeorm.io/#/find-options) methods.
+TypeORM 允许通过一个能传递给 [`find`](https://typeorm.io/#/find-options) 方法的 `relations` 选项来从数据库中加载关联关系。
 
-Consider this example:
+如下面这个例子：
 
 <TabbedContent tabs={[<FileWithIcon text="`find` with `relations`" icon="code"/>, <FileWithIcon text="Models" icon="code"/>]}>
 
@@ -450,7 +452,7 @@ export class User {
 
 </TabbedContent>
 
-Unlike with `select`, TypeORM does _not_ provide autocompletion, nor any type-safety for the strings that are passed to the `relations` option. This means, the TypeScript compiler is not able to catch any typos that are made when querying these relations. For example, it would allow for the following query:
+与 `select` 不同，TypeORM 不提供自动补全，也不能为传递给 `relations` 选项的字符串提供任何类型安全保护。这意味着，TypeScript 编译器不能捕获在查询这些关联关系时出现的任何类型错误。例如，它将允许以下查询：
 
 ```ts
 const publishedPosts: Post[] = await postRepository.find({
@@ -460,7 +462,7 @@ const publishedPosts: Post[] = await postRepository.find({
 })
 ```
 
-This subtle typo would now lead to the following runtime error:
+这个微小的错别字将会导致以下的运行时错误：
 
 ```
 UnhandledPromiseRejectionWarning: Error: Relation "authors" was not found; please check if it is correct and really exists in your entity.
@@ -468,7 +470,7 @@ UnhandledPromiseRejectionWarning: Error: Relation "authors" was not found; pleas
 
 #### Prisma
 
-Prisma protects you from mistakes like this and thus eliminates a whole class of errors that can occur in your application at runtime. When using `include` to load a relation in a Prisma Client query, you can not only take advantage of autocompletion to specify the query, but the result of the query will also be properly typed:
+Prisma 保护你不犯这样的错误，从而消除了你的应用程序在运行时可能出现的类型错误。当使用 `include` 在 Prisma Client 查询中加载一个关联关系时，你不仅可以利用自动补全来完善查询，而且查询结果的类型也将被正确推导。
 
 <TabbedContent tabs={[<FileWithIcon text="`find` with `relations`" icon="code"/>, <FileWithIcon text="Models" icon="code"/>]}>
 
@@ -507,7 +509,7 @@ model Post {
 
 </TabbedContent>
 
-Again, the type of `publishedPosts` is generated on the fly and looks as follows:
+同样，`publishedPosts` 的类型是实时生成的：
 
 ```ts
 const publishedPosts: (Post & {
@@ -515,7 +517,7 @@ const publishedPosts: (Post & {
 })[]
 ```
 
-For reference, this is what the `User` and `Post` types look like that Prisma Client generates for your Prisma models:
+作为参考，这是 Prisma Client 为你的 Prisma 模型生成的 `User` 和 `Post` 类型的样子：
 
 <TabbedContent tabs={[<FileWithIcon text="`User`" icon="code"/>, <FileWithIcon text="`Post`" icon="code"/>]}>
 
@@ -549,17 +551,17 @@ export type Post = {
 
 </TabbedContent>
 
-### Filtering
+### 过滤（Filtering）
 
-This section explains the differences in type safety when filtering a list of records using `where`.
+本节解释了使用 `where` 过滤数据时的类型安全差异。
 
 #### TypeORM
 
-TypeORM allows to pass a `where` option to its [`find`](https://typeorm.io/#/find-options) methods to filter the list of returned records according to specific criteria. These criteria can be defined with respect to a model's properties.
+TypeORM 允许给它的 [`find`](https://typeorm.io/#/find-options) 方法传递一个 `where` 选项，来根据特定的标准过滤返回的数据列表。这些标准可以根据模型的属性来定义。
 
-##### Loosing type-safety using operators
+##### 松散的类型安全（Loosing type-safety using operators）
 
-Consider this example:
+考虑下面这个例子：
 
 <TabbedContent tabs={[<FileWithIcon text="`find` with `select`" icon="code"/>, <FileWithIcon text="Model" icon="code"/>]}>
 
@@ -607,9 +609,9 @@ export class Post {
 
 </TabbedContent>
 
-This code runs properly and produces a valid query at runtime. However, the `where` option is not really type-safe in various different scenarios. When using a `FindOperator` like `ILike` or `MoreThan` that only work for specific types (`ILike` works for strings, `MoreThan` for numbers), you're losing the guarantee of providing the correct type for the model's field.
+这段代码正常运行，并在运行时产生一个有效的查询。然而，在各种不同情况下，`where` 选项并不是真正类型安全的。当使用像 `ILike` 或 `MoreThan` 这样的 `FindOperator` 时，只对特定的类型有效（`ILike` 对字符串有效，`MoreThan` 对数字有效），你将失去为模型的字段提供正确类型的保证。
 
-For example, you can provide a string to the `MoreThan` operator. The TypeScript compiler will not complain and your application will only fail at runtime:
+例如，你可以为 `MoreThan` 操作符提供一个字符串。TypeScript 编译器会忽略掉错误，你的应用只会在运行时失败。
 
 ```ts
 const postRepository = getManager().getRepository(Post)
@@ -622,15 +624,15 @@ const publishedPosts: Post[] = await postRepository.find({
 })
 ```
 
-The code above results in a runtime error that the TypeScript compiler doesn't catch for you:
+上面的代码导致了一个运行时错误，TypeScript 编译器并没有为你捕获到。
 
 ```
 error: error: invalid input syntax for type integer: "test"
 ```
 
-##### Specifying non-existing properties
+##### 指定不存在的属性
 
-Also note that the TypeScript compiler allows you to specify properties on the `where` option that don't exist on your models – again resulting in runtime errors:
+还要注意的是，TypeScript 编译器允许你在 `where` 选项上指定你的模型上不存在的属性 - 这同样会导致运行时错误：
 
 ```ts
 const publishedPosts: Post[] = await postRepository.find({
@@ -642,7 +644,7 @@ const publishedPosts: Post[] = await postRepository.find({
 })
 ```
 
-In this case, your application again fails at runtime with the following error:
+在这种情况下，你的应用程序在运行时同样会失败并抛出以下错误：
 
 ```
 EntityColumnNotFound: No entity column "viewCount" was found.
@@ -650,11 +652,11 @@ EntityColumnNotFound: No entity column "viewCount" was found.
 
 #### Prisma
 
-Both filtering scenarios that are problematic with TypeORM in terms of type-safety are covered by Prisma in a fully type-safe way.
+Prisma 以一种完全类型安全的方式涵盖了 TypeORM 在类型安全方面存在的问题。
 
-##### Type-safe usage of operators
+##### 操作符的类型安全（Type-safe usage of operators）
 
-With Prisma, the TypeScript compiler enforces the correct usage of an operator per field:
+在使用 Prisma 时，TypeScript 编译器会强制要求操作符的每个字段都正确使用：
 
 ```ts
 const publishedPosts = await prisma.post.findMany({
@@ -666,7 +668,7 @@ const publishedPosts = await prisma.post.findMany({
 })
 ```
 
-It would not be allowed to specify the same problematic query shown above with Prisma Client:
+上面例子中的那些问题，在使用 Prisma Client 时将不被允许：
 
 ```ts
 const publishedPosts = await prisma.post.findMany({
@@ -678,7 +680,7 @@ const publishedPosts = await prisma.post.findMany({
 })
 ```
 
-The TypeScript compiler would catch this and throw the following error to protect you from a runtime failure of the app:
+TypeScript 编译器将会捕获到这个问题，并抛出错误，以避免运行时错误：
 
 ```
 [ERROR] 16:13:50 ⨯ Unable to compile TypeScript:
@@ -690,11 +692,11 @@ src/index.ts:39:5 - error TS2322: Type '{ gt: string; }' is not assignable to ty
 42     views: { gt: "test" }
 ```
 
-##### Type-safe definition of filters as model properties
+##### 模型属性的类型安全
 
-With TypeORM, you are able to specify a property on the `where` option that doesn't map to a model's field. In the above example, filtering for `viewCount` therefore led to a runtime error because the field actually is called `views`.
+通过 TypeORM，你能够在 `where` 选项上指定一个属性，而这个属性并没有映射到模型的字段。在上面的例子中，过滤 `viewCount` 导致了一个运行时错误，因为这个字段实际上是 `views`。
 
-With Prisma, the TypeScript compiler will not allow to reference any properties inside of `where` that don't exist on the model:
+使用 Prisma 时，TypeScript 编译器将不允许在 `where` 中引用任何不存在于模型中的属性：
 
 ```ts
 const publishedPosts = await prisma.post.findMany({
@@ -706,7 +708,7 @@ const publishedPosts = await prisma.post.findMany({
 })
 ```
 
-Again, the TypeScript compiler complains with the following message to protect your from your own mistakes:
+同样，TypeScript 会抛出以下错误信息来保护你不犯错误。
 
 ```ts
 [ERROR] 16:16:16 ⨯ Unable to compile TypeScript:
@@ -716,15 +718,15 @@ src/index.ts:39:5 - error TS2322: Type '{ published: boolean; title: { contains:
 42     viewCount: { gt: 0 }
 ```
 
-### Creating new records
+### 创建新记录
 
-This section explains the differences in type safety when creating new records.
+本节解释了创建新记录时的类型安全差异。
 
 #### TypeORM
 
-With TypeORM, there are two main ways to create new records in the database: `insert` and `save`. Both methods allow developers to submit data that can lead to runtime errors when _required_ fields are not provided.
+在 TypeORM 中，有两种主要方式在数据库中创建新记录。`insert` 和 `save`。这两种方法都允许开发人员提交数据，当 _必要的_ 字段没有提供时，可能会导致运行时的错误。
 
-Consider this example:
+考虑下面这个例子：
 
 <TabbedContent tabs={[<FileWithIcon text="Create with `save`" icon="code"/>, <FileWithIcon text="Create with `insert`" icon="code"/>, <FileWithIcon text="Model" icon="code"/>]}>
 
@@ -773,19 +775,19 @@ export class User {
 
 </TabbedContent>
 
-No matter if you're using `save` or `insert` for record creation with TypeORM, you will get the following runtime error if you forget to provide the value for a required field:
+不管你是使用 `save` 还是  `insert` 来创建 TypeORM 的记录，如果你忘记了提供一个必填字段的值，你会看到以下运行时错误：
 
 ```
 QueryFailedError: null value in column "email" of relation "user" violates not-null constraint
 ```
 
-The `email` field is defined as required on the `User` entity (which is enforced by a `NOT NULL` constraint in the database).
+在 `User` 实体中，`email` 字段被定义为必填字段（这是由数据库的 `NOT NULL` 约束来确保的）
 
 ### Prisma
 
-Prisma protects you from these kind of mistakes by enforcing that you submit values for _all_ required fields of a model.
+Prisma 通过强制你提交 _所有_ 必填字段的值来避免此类错误。
 
-For example, the following attempt to create a new `User` where the required `email` field is missing would be caught by the TypeScript compiler:
+例如，下面试图创建一个新的 `User`，但缺少必填的 `email` 字段，会被 TypeScript 编译器发现：
 
 <TabbedContent tabs={[<FileWithIcon text="Create with `create`" icon="code"/>, <FileWithIcon text="Model" icon="code"/>]}>
 
@@ -815,16 +817,16 @@ model User {
 
 </TabbedContent>
 
-It would lead to the following compile-time error:
+这将导致以下的编译时错误：
 
 ```
 [ERROR] 10:39:07 ⨯ Unable to compile TypeScript:
 src/index.ts:39:5 - error TS2741: Property 'email' is missing in type '{ name: string; }' but required in type 'UserCreateInput'.
 ```
 
-## API comparison
+## API 对比
 
-### Fetching single objects
+### 获取单个对象
 
 **Prisma**
 
@@ -843,7 +845,7 @@ const userRepository = getRepository(User)
 const user = await userRepository.findOne(id)
 ```
 
-### Fetching selected scalars of single objects
+### 获取单个对象的选定字段
 
 **Prisma**
 
@@ -867,7 +869,7 @@ const user = await userRepository.findOne(id, {
 })
 ```
 
-### Fetching relations
+### 获取关联关系
 
 **Prisma**
 
@@ -896,7 +898,7 @@ const posts = await prisma.user
 
 </CodeBlock>
 
-> **Note**: `select` return a `user` object that includes a `post` array, whereas the fluent API only returns a `post` array.
+> **注意**：`select` 返回一个包含 `post` 数组的 `user` 对象，而 fluent API 只返回一个 `post` 数组。
 
 **TypeORM**
 
@@ -928,7 +930,7 @@ const user = await userRepository.findOne(id)
 
 </CodeBlock>
 
-### Filtering for concrete values
+### 对具体值进行过滤
 
 **Prisma**
 
@@ -953,23 +955,23 @@ const users = await userRepository.find({
 })
 ```
 
-### Other filter criteria
+### 其他过滤场景
 
 **Prisma**
 
-Prisma generates many [additional filters](../../components/prisma-client/filtering-and-sorting) that are commonly used in modern application development.
+Prisma 生成了许多 [额外的过滤器](../../components/prisma-client/filtering-and-sorting)，这些过滤器在现代应用开发中经常用到。
 
 **TypeORM**
 
-TypeORM provides [built-in operators](https://typeorm.io/#/find-options/advanced-options) that can be used to create more complex comparisons
+TypeORM 提供了很多 [内置操作符](https://typeorm.io/#/find-options/advanced-options) 来创建更复杂的操作。
 
-### Relation filters
+### 过滤关联关系
 
 **Prisma**
 
-Prisma lets you filter a list based on a criteria that applies not only to the models of the list being retrieved, but to a _relation_ of that model.
+Prisma 让你根据一个标准来过滤一个列表，这个标准不仅适用于被检索的列表的模型，而且适用于该模型的 _关联对象_。
 
-For example, the following query returns users with one or more posts with "Hello" in the title:
+例如，下面的查询返回一个或多个标题为 `"Hello" 的帖子的用户。
 
 ```ts
 const posts = await prisma.user.findMany({
@@ -987,13 +989,13 @@ const posts = await prisma.user.findMany({
 
 **TypeORM**
 
-TypeORM doesn't offer a dedicated API for relation filters. You can get similar functionality by using the `QueryBuilder` or writing the queries by hand.
+TypeORM 并没有为关系过滤器提供专门的 API。你可以通过 `QueryBuilder` 或手工编写查询来获得类似的功能。
 
-### Pagination
+### 分页（Pagination）
 
 **Prisma**
 
-Cursor-style pagination:
+基于游标的分页：
 
 ```ts
 const page = prisma.post.findMany({
@@ -1004,7 +1006,7 @@ const page = prisma.post.findMany({
 })
 ```
 
-Offset pagination:
+基于 limit-offset 的分页：
 
 ```ts
 const cc = prisma.post.findMany({
@@ -1023,7 +1025,7 @@ const posts = await postRepository.find({
 })
 ```
 
-### Creating objects
+### 新建
 
 **Prisma**
 
@@ -1065,7 +1067,7 @@ await userRepository.insert({
 
 </CodeBlock>
 
-### Updating objects
+### 更新
 
 **Prisma**
 
@@ -1090,7 +1092,7 @@ const updatedUser = await userRepository.update(id, {
 })
 ```
 
-### Deleting objects
+### 删除
 
 **Prisma**
 
@@ -1118,7 +1120,7 @@ const deletedUser = await userRepository.remove(user)
 
 </CodeBlock>
 
-### Batch updates
+### 批量更新
 
 **Prisma**
 
@@ -1141,7 +1143,7 @@ const user = await prisma.user.updateMany({
 
 You can use the [query builder to update entities in your database](https://typeorm.io/#/update-query-builder).
 
-### Batch deletes
+### 批量删除
 
 **Prisma**
 
@@ -1171,7 +1173,7 @@ const deleteUsers = await userRepository.remove([user1, user2, user3])
 
 </CodeBlock>
 
-### Transactions
+### 事务（Transactions）
 
 **Prisma**
 

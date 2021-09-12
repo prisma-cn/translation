@@ -1,21 +1,21 @@
 ---
-title: Self-relations
-metaDescription: How to define and work with self-relations in Prisma.
+title: 自引用关系
+metaDescription: Prisma 中如何定义和处理自引用关系。
 ---
 
 <TopBlock>
 
-A relation field can also reference its own model, in this case the relation is called a _self-relation_. Self-relations can be of any cardinality, 1-1, 1-n and m-n.
+关系字段也可以引用其所在的模型，这种关系被称为 _自引用关系_。自引用关系可以具有任何基数，一对一、一对多和多对多。
 
-Note that self-relations always require the `@relation` attribute.
+注意自引用关系始终需要 `@relation` 属性。
 
 </TopBlock>
 
-## One-to-one self-relations
+## 一对一自引用关系
 
-The following example models a one-to-one self-relation:
+以下示例构建了一个一对一自引用关系：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -44,24 +44,24 @@ model User {
 </tab>
 </TabbedContent>
 
-This relation expresses the following:
+此关系传达了以下内涵：
 
-- "a user can have one or zero predecessors" (for example, Sarah is Mary's predecessor as blog owner)
-- "a user can have one or zero successors" (for example, Mary is Sarah's successor as blog owner)
+- "一个用户可以有一个或零个前任" (例如，Sarah 是 Mary 的前任博客所有者)
+- "一个用户可以有一个或零个继任" (例如，Mary 是 Sarah 的继任博客所有者)
 
-> **Note**: One-to-one self-relations cannot be made required on both sides. One or both sides must be optional, otherwise it becomes impossible to create the first `User` record.
+> **注**：一对一自引用关系两侧不能都是必填。至少一侧应是选填，否则将不可能创建第一个 `User`。
 
-To create a one-to-one self-relation:
+为了创建一个一对一自引用关系：
 
-- Both sides of the relation must define a `@relation` attribute that share the same name - in this case, **BlogOwnerHistory**.
-- One relation field must be a [fully annotated](../relations#annotated-relation-fields-and-relation-scalar-fields). In this example, the `successor` field defines both the `field` and `references` arguments.
-- One relation field must be backed by a foreign key. The `successor` field is backed by the `successorId` foreign key, which references a value in the `id` field.
+- 关系两侧必须定义采用相同名称的 `@relation` 属性 - 此例中， 为 **BlogOwnerHistory**。
+- 其中一个关系字段必须为 [完整标注](../relations#annotated-relation-fields-and-relation-scalar-fields)此例中，`successor` 字段定义了 `field` 和 `references` 参数。
+- 其中一个关系字段必须依赖一个外键。`successor` 字段依赖 `successorId` 外键，该外键引用 `id` 字段的值。
 
-> **Note**: One-to-one self relations require two sides even if both sides are equal in the relationship. For example, to model a 'best friends' relation, you would need to create two relation fields: `bestfriend1` and a `bestfriend2`.
+> **注**：一对一自引用关系需要有两侧定义，即使关系两侧是等价的。例如，为了构建‘最好的朋友’关系，你需要创建两个关系字段：`bestfriend1` 和 `bestfriend2`。
 
-Either side of the relation can be backed by a foreign key. In the following example, `successor` is backed by `successorId`:
+关系中的任一侧都可以依赖外键。以下示例中，`successor` 依赖 `successorId`：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma highlight=4;normal
@@ -90,9 +90,9 @@ model User {
 </tab>
 </TabbedContent>
 
-In the following example, `predecessor` is backed by `predecessorId`:
+以下示例中，`predecessor` 依赖 `predecessorId`：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅关系型数据库" icon="database"/>]}>
 <tab>
 
 ```prisma highlight=5,6;normal
@@ -121,7 +121,7 @@ model User {
 </tab>
 </TabbedContent>
 
-No matter which side is backed by a foreign key, the Prisma Client surfaces both the `predecessor` and `successor` fields:
+无论哪一侧依赖外键，Prisma Client 同时暴露 `predecessor` 和 `successor` 字段：
 
 ```ts line-number
 const x = await prisma.user.create({
@@ -141,13 +141,13 @@ const x = await prisma.user.create({
 });
 ```
 
-## One-to-one self relations in the database
+## 数据库一对一自引用关系
 
-### Relational databases
+### 关系型数据库
 
-In relational databases, a one-to-one self-relation is represented by the following SQL:
+关系型数据库中，一个一对一自引用关系由以下 SQL 构建：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅关系型数据库" icon="database"/>]}>
 <tab>
 
 ```sql
@@ -169,9 +169,9 @@ ALTER TABLE "User" ADD CONSTRAINT successor_unique UNIQUE ("successorId");
 
 ### MongoDB
 
-For MongoDB, Prisma currently uses a [normalized data model design](https://docs.mongodb.com/manual/core/data-model-design/), which means that documents reference each other by ID in a similar way to relational databases.
+对于 MongoDB，Prisma 目前采用一种 [标准化的数据模型设计](https://docs.mongodb.com/manual/core/data-model-design/)，意味着文件之间通过 ID 互相引用，类似关系型数据库。
 
-The following MongoDB documents represent a one-to-one self-relation between two users:
+以下 MongoDB 文件构建了两个用户间的一对一自引用关系：
 
 ```json
 { "_id": { "$oid": "60d97df70080618f000e3ca9" }, "name": "Elsa the Elder" }
@@ -185,11 +185,11 @@ The following MongoDB documents represent a one-to-one self-relation between two
 }
 ```
 
-## One-to-many self relations
+## 一对多自引用关系
 
-A one-to-many self-relation looks as follows:
+一个一对多自引用关系如下所示：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -218,18 +218,18 @@ model User {
 </tab>
 </TabbedContent>
 
-This relation expresses the following:
+此关系传达了以下内涵：
 
-- "a user has zero or one _teachers_ "
-- "a user can have zero or more _students_"
+- "一个用户有零或一个 _老师_ "
+- "一个用户可能有零或多个 _学生_"
 
-Note that you can also require each user to have a teacher by making the `teacher` field [required](../data-model#optional-and-mandatory-fields).
+注意，你可以要求每个用户都有一个老师，只需将 `teacher` 字段设为 [必填](../data-model#optional-and-mandatory-fields).
 
-### One-to-many self-relations in the database
+### 数据库一对多自引用关系
 
-### Relational databases
+### 关系型数据库
 
-In relational databases, a one-to-many self-relation is represented by the following SQL:
+关系型数据库中，一个一对多自引用关系由以下 SQL 构建：
 
 ```sql
 CREATE TABLE "User" (
@@ -241,13 +241,13 @@ CREATE TABLE "User" (
 ALTER TABLE "User" ADD CONSTRAINT fk_teacherid_user FOREIGN KEY ("teacherId") REFERENCES "User" (id);
 ```
 
-Notice the lack of `UNIQUE` constraint on `teacherId` - multiple students can have the same teacher.
+注意 `teacherId` 字段没有 `UNIQUE` 约束 - 多个学生可能有同一个老师。
 
 ### MongoDB
 
-For MongoDB, Prisma currently uses a [normalized data model design](https://docs.mongodb.com/manual/core/data-model-design/), which means that documents reference each other by ID in a similar way to relational databases.
+对于 MongoDB，Prisma 目前采用一种 [标准化的数据模型设计](https://docs.mongodb.com/manual/core/data-model-design/)，意味着文件之间通过 ID 互相引用，类似关系型数据库。
 
-The following MongoDB documents represent a one-to-many self-relation between three users - one teacher and two students with the same `teacherId`:
+以下 MongoDB 文件构建了三个用户间的一对多自引用关系 - 一个老师和两个有相同 `teacherId` 的学生：
 
 ```json
 {
@@ -272,11 +272,11 @@ The following MongoDB documents represent a one-to-many self-relation between th
 }
 ```
 
-## Many-to-many self relations
+## 多对多自引用关系
 
-A many-to-many self-relation looks as follows:
+一个多对多自引用关系如下所示：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -305,18 +305,18 @@ model User {
 </tab>
 </TabbedContent>
 
-This relation expresses the following:
+此关系传达了如下内涵：
 
-- "a user can be followed by zero or more users"
-- "a user can follow zero or more users"
+- "一个用户可能被零或多个用户关注"
+- "一个用户可能关注零或多个用户"
 
-Note that this n-n-relation is [implicit](many-to-many-relations#implicit-many-to-many-relations). This means Prisma maintains a [relation table](../relations/many-to-many-relations#relation-tables) for it in the underlying database:
+注意此多对多关系是 [隐式的](many-to-many-relations#implicit-many-to-many-relations)。这意味着 Prisma 在底层数据库中维护了一个 [关系表](../relations/many-to-many-relations#relation-tables)：
 
-### Many-to-many self-relations in the database
+### 数据库多对多关系
 
-### Relational databases
+### 关系型数据库
 
-In relational databases, a many-to-many self-relation (implicit) is represented by the following SQL:
+在关系型数据库中，一个多对多关系（隐式）由以下 SQL 构建：
 
 ```sql
 CREATE TABLE "User" (
@@ -331,9 +331,9 @@ CREATE TABLE "_UserFollows" (
 
 ### MongoDB
 
-For MongoDB, Prisma currently uses a [normalized data model design](https://docs.mongodb.com/manual/core/data-model-design/), which means that documents reference each other by ID in a similar way to relational databases.
+对于 MongoDB，Prisma 目前采用一种 [标准化的数据模型设计](https://docs.mongodb.com/manual/core/data-model-design/)，意味着文件之间通过 ID 互相引用，类似关系型数据库。
 
-The following MongoDB documents represent a many-to-many self-relation between five users - two users that follow `"Bob"`, and two users that follow him:
+以下 MongoDB 文件构建了五个用户间的多对多自引用关系 - 两个关注 `"Bob"` 的用户，和两个他关注的用户：
 
 ```json
 {
@@ -382,11 +382,11 @@ The following MongoDB documents represent a many-to-many self-relation between f
 }
 ```
 
-## Defining multiple self-relations on the same model
+## 在同一模型上定义多个自引用关系
 
-You can also define multiple self-relations on the same model at once. Taking all relations from the previous sections as example, you could define a `User` model as follows:
+你还可以在同一模型上同时定义多个自引用关系。取所有前述关系作为示例，你可以如下定义一个 `User` 模型：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma

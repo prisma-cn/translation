@@ -1,17 +1,17 @@
 ---
-title: 'Cyclic referential actions with Microsoft SQL Server'
-metaTitle: 'Cyclic referential actions with Microsoft SQL Server'
-metaDescription: 'Circular references can occur between models when each model references another creating a closed loop. Since Microsoft SQL Server does not handle these situations out of the box, learn how to solve this problem.'
+title: 'Microsoft SQL Server 中的循环参照动作'
+metaTitle: 'Microsoft SQL Server 中的循环参照动作'
+metaDescription: '当模型参照构成一个闭环时，有可能发生循环参照动作。因为 Microsoft SQL Server 没有原生的解决方法，所以需要学习如何解决它。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Circular references can occur between models when each model references another, creating a closed loop. Most SQL databases handle these references out of the box.
+当模型间相互参照构成一个闭环时，有可能发生循环参照动作。大多数 SQL 数据库都可以原生地处理此类问题。
 
-With Microsoft SQL Server however, if the [referential actions](./) on the foreign key are set to something other than `NO ACTION`, it will check for cycles or multiple cascade paths and return an error when executing the SQL.
+然而在 Microsoft SQL Server 中，如果外键上的 [参照动作](./) 被设置为 `NO ACTION` 以外的动作，执行 SQL 时数据库会检查循环或多条级联路径并报错。
 
-Given the SQL:
+如下 SQL：
 
 ```sql
 CREATE TABLE [dbo].[Employee] (
@@ -26,43 +26,43 @@ ALTER TABLE [dbo].[Employee]
     ON DELETE CASCADE ON UPDATE CASCADE;
 ```
 
-When the SQL is run, the database would throw the following error:
+执行该 SQL 时，数据库会抛出如下错误：
 
 ```terminal
 Introducing FOREIGN KEY constraint 'FK__Employee__managerId' on table 'Employee' may cause cycles or multiple cascade paths. Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
 ```
 
-In more complicated data models, finding the cycles can get complex. Therefore in Prisma, the data model is validated _before_ generating any SQL to be run during any migrations, highlighting relations that are part of the cycle. This makes it much easier to find and break these cyclic referential actions.
+在更复杂的数据模型中寻找循环会更加困难。因此在 Prisma 中， 数据模型在生成迁移 SQL _前_ 即被验证，重点标出构成循环的关系。这使得发现并打破循环参照动作变得更容易。
 
 </TopBlock>
 
-## Self-relation
+## 自引用关系
 
-The following model describes a self-relation where an `Employee` can have a manager and managees, referencing entries of the same model.
+以下模型描述了一个自引用关系，其中一个 `Employee` 可能有一个经理和多个下属，参照同模型的记录。
 
 ```prisma
 model Employee {
-  id         Int        @id @default(autoincrement())
-  manager    Employee?  @relation(name: "management", fields: [managerId], references: [id])
-  managees   Employee[] @relation(name: "management")
-  managerId  Int?
+  id        Int        @id @default(autoincrement())
+  manager   Employee?  @relation(name: "management", fields: [managerId], references: [id])
+  managees  Employee[] @relation(name: "management")
+  managerId Int?
 }
 ```
 
-This will result in the following error:
+这会导致如下错误：
 
 ```terminal
 Error parsing attribute "@relation": A self-relation must have `onDelete` and `onUpdate` referential actions set to `NoAction` in one of the @relation attributes. Implicit default `onDelete` and `onUpdate` values: `SetNull` and `Cascade`.
 ```
 
-By not defining any actions, Prisma will use the following default values depending if the underlying [scalar fields](../../data-model#scalar-fields) are set to be optional or required.
+不定义任何动作时，Prisma 会根据 [标量字段](../../data-model#scalar-fields) 是否必填来使用以下默认值。
 
 | Clause     | All of the scalar fields are optional | At least one scalar field is required |
 | :--------- | :------------------------------------ | :------------------------------------ |
 | `onDelete` | `SetNull`                             | `NoAction`                            |
 | `onUpdate` | `Cascade`                             | `Cascade`                             |
 
-Since the default referential action for `onUpdate` in the above relation would be `Cascade` and for `onDelete` it would be `SetNull`, it creates a cycle and the solution is to explicitly set the `onUpdate` and `onDelete` values to `NoAction`.
+因为上述关系中 `onUpdate` 的默认参照动作是 `Cascade` 且 `onDelete` 的默认参照动作是 `SetNull`，这会形成循环，解决方法是显式地将 `onUpdate` and `onDelete` 的值设为 `NoAction`。
 
 ```prisma highlight=3;delete|4;add
 model Employee {
@@ -74,9 +74,9 @@ model Employee {
 }
 ```
 
-## Cycle relation between three tables
+## 三表间的循环关系
 
-The following models describe a cyclic relation between a `Chicken`, an `Egg` and a `Fox`, where each model references the other.
+以下模型描述了一个 `Chicken`、`Egg` 和 `Fox` 间的循环关系，其中每个模型都参照另外两个。
 
 ```prisma
 model Chicken {
@@ -101,27 +101,27 @@ model Fox {
 }
 ```
 
-This will result in three validation errors in every relation field that is part of the cycle.
+这会导致该循环中每个关系字段出现验证错误。
 
-The first one is in the relation `egg` in the `Chicken` model:
+第一个是 `Chicken` 模型的 `egg` 关系：
 
 ```terminal
 Error parsing attribute "@relation": Reference causes a cycle or multiple cascade paths. One of the @relation attributes in this cycle must have `onDelete` and `onUpdate` referential actions set to `NoAction`. Cycle path: Chicken.egg → Egg.predator → Fox.meal. Implicit default `onUpdate` value: `Cascade`.
 ```
 
-The second one is in the relation `predator` in the `Egg` model:
+第二个是 `Egg` 模型的 `predator` 关系：
 
 ```terminal
 Error parsing attribute "@relation": Reference causes a cycle or multiple cascade paths. One of the @relation attributes in this cycle must have `onDelete` and `onUpdate` referential actions set to `NoAction`. Cycle path: Egg.predator → Fox.meal → Chicken.egg. Implicit default `onUpdate` value: `Cascade`.
 ```
 
-And the third one is in the relation `meal` in the `Fox` model:
+第三个是 `Fox` 模型的 `meal` 关系：
 
 ```terminal
 Error parsing attribute "@relation": Reference causes a cycle or multiple cascade paths. One of the @relation attributes in this cycle must have `onDelete` and `onUpdate` referential actions set to `NoAction`. Cycle path: Fox.meal → Chicken.egg → Egg.predator. Implicit default `onUpdate` value: `Cascade`.
 ```
 
-As the relation fields are required, the default referential action for `onDelete` is `NoAction` but for `onUpdate` it is `Cascade`, which causes a referential action cycle. The solution is to set the `onUpdate` value to `NoAction` in any one of the relations.
+因为这些关系字段是必填的，`onDelete` 的默认参照动作是 `NoAction` 但是 `onUpdate` 的默认参照动作是 `Cascade`，会导致参照动作循环。解决方法是将这些关系中的任一个的 `onUpdate` 值设为 `NoAction`。
 
 ```prisma highlight=3;delete|4;add
 model Chicken {

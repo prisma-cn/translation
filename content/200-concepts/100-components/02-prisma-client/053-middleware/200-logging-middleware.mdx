@@ -1,12 +1,12 @@
 ---
-title: 'Logging middleware'
-metaTitle: 'Logging middleware (Reference)'
-metaDescription: 'How to use middleware to log the time taken to perform any query.'
+title: '日志中间件'
+metaTitle: '日志中间件 (参考)'
+metaDescription: '如何使用中间件记录执行任何查询所花费的时间。'
 ---
 
 <TopBlock>
 
-The following example logs the time taken for a Prisma Query to run:
+以下示例记录运行 Prisma 查询所用的时间：
 
 ```ts
 const prisma = new PrismaClient()
@@ -36,14 +36,14 @@ const createAgain = await prisma.post.create({
 })
 ```
 
-Example output:
+示例输出：
 
 ```no-lines
 Query Post.create took 92ms
 Query Post.create took 15ms
 ```
 
-The example is based on the following sample schema:
+该示例基于以下 schema 样本：
 
 ```prisma
 generator client {

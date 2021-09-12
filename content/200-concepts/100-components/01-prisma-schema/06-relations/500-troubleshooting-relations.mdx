@@ -1,19 +1,19 @@
 ---
-title: Troubleshooting relations
-metaDescriptions: Common problems and solutions when defining relations in the Prisma schema.
+title: 关系诊断
+metaDescriptions: 定义 Prisma schema 关系时的常见问题和解决方法
 ---
 
 <TopBlock>
 
-Modelling your schema can sometimes offer up some unexpected results. This section aims to cover the most prominent of those.
+构建 schema 时偶尔会出现一些意外结果。本页旨在涵盖其中最突出的部分。
 
 </TopBlock>
 
-## Implicit many-to-many self-relations return incorrect data if order of relation fields change
+## 关系字段变化导致隐式多对多自引用关系返回错误数据
 
-### Problem
+### 问题
 
-In the following implicit many-to-many self-relation, the lexicographic order of relation fields in `a_eats` (1) and `b_eatenBy` (2):
+以下隐式多对多自引用关系中，关系字段的字典顺序是 `a_eats` (1) 和 `b_eatenBy` (2)：
 
 ```prisma highlight=4,5;normal
 model Animal {
@@ -24,14 +24,14 @@ model Animal {
 }
 ```
 
-The resulting relation table in SQL looks as follows, where `A` represents prey (`a_eats`) and `B` represents predators (`a_eatenBy`):
+构建的关系表如下所示，其中 `A` 代表猎物 (`a_eats`) 且 `B` 代表捕猎者 (`b_eatenBy`):
 
 | A            | B          |
 | :----------- | :--------- |
 | 8 (Plankton) | 7 (Salmon) |
 | 7 (Salmon)   | 9 (Bear)   |
 
-The following query returns a salmon's prey and predators:
+以下查询返回鲑鱼的猎物和捕猎者：
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -42,8 +42,8 @@ const getAnimals = await prisma.animal.findMany({
     name: 'Salmon',
   },
   include: {
-    b_eats: true,
-    a_eatenBy: true,
+    a_eats: true,
+    b_eatenBy: true,
   },
 })
 ```
@@ -55,13 +55,13 @@ const getAnimals = await prisma.animal.findMany({
 {
       "id": 7,
       "name": "Salmon",
-      "b_eats": [
+      "a_eats": [
          {
             "id": 8,
             "name": "Plankton"
          }
       ],
-      "a_eatenBy": [
+      "b_eatenBy": [
          {
             "id": 9,
             "name": "Bear"
@@ -73,7 +73,7 @@ const getAnimals = await prisma.animal.findMany({
 </cmdResult>
 </CodeWithResult>
 
-Now change the order of the relation fields:
+现在修改关系字段顺序：
 
 ```prisma highlight=4,5;normal
 model Animal {
@@ -84,7 +84,7 @@ model Animal {
 }
 ```
 
-Migrate your changes and re-generate the client. When you run the same query with the updated field names, Prisma Client returns incorrect data (salmon now eats bears and gets eaten by plankton):
+迁移修改并重新生成客户端。当你使用更新后的字段名执行相同查询时，Prisma Client 返回错误数据 (现在浮游生物吃鲑鱼，鲑鱼吃熊)：
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -126,35 +126,35 @@ const getAnimals = await prisma.animal.findMany({
 </cmdResult>
 </CodeWithResult>
 
-Although the lexicographic order of the relation fields in the Prisma schema changed, columns `A` and `B` in the database **did not change** (they were not renamed and data was not moved). Therefore, `A` now represents predators (`a_eatenBy`) and `B` represents prey (`b_eats`):
+尽管 Prisma schema 中的关系字段字典顺序变了，但是数据库列 `A` 和 `B` **没有改变** (列没有重命名且数据没有移动)。因此，`A` 现在代表捕猎者 (`a_eatenBy`) 且 `B` 代表猎物 (`b_eats`)：
 
 | A            | B          |
 | :----------- | :--------- |
 | 8 (Plankton) | 7 (Salmon) |
 | 7 (Salmon)   | 9 (Bear)   |
 
-### Solution
+### 解决方法
 
-If you rename relation fields in an implicit many-to-many self-relations, make sure that you maintain the alphabetic order of the fields - for example, by prefixing with `a_` and `_b`.
+如果你在隐式多对多自引用关系中重命名关系字段，请确保始终保持字段的字母顺序 - 例如，用 `a_` 和 `b_` 作前缀。
 
-## How to use a relation table with a many-to-many relationship
+## 如何使用多对多关系的关系表
 
-There are a couple of ways to define a m-n relationship, implicitly or explicitly. Implicitly means letting Prisma handle the relation table (JOIN table) under the hood, all you have to do is define an array/list for the non scalar types on each model, see [implicit many-to-many relations](many-to-many-relations#implicit-many-to-many-relations).
+有两种定义多对多关系的方法，隐式或显式。隐式意味着交由 Prisma 在底层处理关系表 (JOIN 表)，你需要做的只是定义每个模型上的非标量类型列表，查阅 [隐式多对多关系](many-to-many-relations#implicit-many-to-many-relations)。
 
-Where you might run into trouble is when creating an [explicit m-n relationship](many-to-many-relations#explicit-many-to-many-relations), that is, to create and handle the relation table yourself. **It can be overlooked that Prisma requires both sides of the relation to be present**.
+可能出现问题的情况是创建 [显式多对多关系](many-to-many-relations#explicit-many-to-many-relations)，即自行创建和处理关系表。**Prisma 对关系两侧的要求可能被忽视**。
 
-Take the following example, here a relation table is created to act as the JOIN between the `Post` and `Category` tables. This will not work however as the relation table (`PostCategories`) must form a 1-to-many relationship with the other two models respectively.
+以下示例中，关系表扮演了 `Post` 和 `Category` 表间 JOIN 的角色。然而这不会生效，因为关系表 (`PostCategories`) 必须分别与其他两个模型建立一对多关系。
 
-The back relation fields are missing from the `Post` to `PostCategories` and `Category` to `PostCategories` models.
+`Post` 到 `PostCategories` 及 `Category` 到 `PostCategories` 的关系字段缺失了。
 
 <!-- prettier-ignore-start -->
 ```prisma
-// This example schema shows how NOT to define an explicit m-n relation
+// 此例展示了定义显式多对多关系的错误方法
 
 model Post {
   id             Int              @id @default(autoincrement())
   title          String
-  categories     Category[] // This should refer to PostCategories
+  categories     Category[] // 此处应参照 PostCategories
 }
 
 model PostCategories {
@@ -168,14 +168,14 @@ model PostCategories {
 model Category {
   id             Int              @id @default(autoincrement())
   name           String
-  posts          Post[] // This should refer to PostCategories
+  posts          Post[] // 此处应参照 PostCategories
 }
 ```
 <!-- prettier-ignore-end -->
 
-To fix this the `Post` model needs to have a many relation field defined with the relation table `PostCategories`. The same applies to the `Category` model.
+要解决此问题，`Post` 模型需要有一个对应 `PostCategories` 的一对多字段。`Category` 模型同理。
 
-This is because the relation model forms a 1-to-many relationship with the other two models its joining.
+这是因为该关系模型与其连接的两个模型建立了一对多关系。
 
 ```prisma highlight=5,21;add|4,20;delete
 model Post {
@@ -202,9 +202,9 @@ model Category {
 }
 ```
 
-## Using the <inlinecode>@relation</inlinecode> attribute with a many-to-many relationship
+## 在多对多关系中使用 <inlinecode>@relation</inlinecode> 属性
 
-It might seem logical to add a `@relation("Post")` annotation to a relation field on your model when composing an implicit many-to-many relationship.
+当构建隐式多对多关系时，向关系字段添加 `@relation("Post")` 标注看起来似乎合乎逻辑。
 
 ```prisma
 model Post {
@@ -224,27 +224,25 @@ model Category {
 }
 ```
 
-This however tells Prisma to expect **two** separate many-to-many relationships. See [disambiguating relations](../relations#disambiguating-relations) for more information on using the `@relation` attribute.
+然而这会让 Prisma 尝试寻找 **两个** 不相关的多对多关系。查阅 [消除关系歧义](../relations#消除关系歧义) 获取更多关于使用 `@relation` 属性的信息。
 
-The following example is the correct way to define an implicit many-to-many relationship.
+以下示例展示了正确定义隐式多对多关系的方法。
 
 ```prisma highlight=4,11;delete|5,12;add
 model Post {
   id         Int        @id @default(autoincrement())
   title      String
-  categories Category[] @relation("Category")
   categories Category[]
 }
 
 model Category {
   id    Int    @id @default(autoincrement())
   name  String
-  posts Post[] @relation("Post")
   posts Post[]
 }
 ```
 
-The `@relation` annotation can also be used to name the underlying relation table created on a implicit m-n relationship.
+`@relation` 标注还可以用来命名隐式多对多关系创建的底层关系表。
 
 ```prisma
 model Post {
