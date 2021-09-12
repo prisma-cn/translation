@@ -1,7 +1,7 @@
 ---
 title: 'REST'
 metaTitle: '使用 Prisma 构建 REST 风格 API 服务'
-metaDescription: '文本概述了使用 Prisma 构建 REST 风格 API 服务时最重要的部分。并提供了实际的例子和其支持的库'
+metaDescription: '本文概述了使用 Prisma 构建 REST 风格 API 服务时最重要的部分。并提供了实际的例子和其支持的库'
 ---
 
 <TopBlock>
