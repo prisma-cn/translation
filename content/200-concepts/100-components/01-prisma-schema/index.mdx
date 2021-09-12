@@ -1,38 +1,38 @@
 ---
 title: 'Prisma schema'
-metaTitle: 'Prisma schema (Reference)'
-metaDescription: 'The Prisma schema is the main configuration file when using Prisma. It is typically called schema.prisma and contains your database connection and data model.'
+metaTitle: 'Prisma schema (参考)'
+metaDescription: '使用 Prisma 时，Prisma schema 是主要的配置文件。 此文件通常被命名为 schema.prisma，它包含你的数据库连接和数据模型。'
 ---
 
 <TopBlock>
 
-The Prisma schema file (short: _schema file_, _Prisma schema_ or _schema_) is the main configuration file for your Prisma setup. It is typically called `schema.prisma` and consists of the following parts:
+Prisma schema 文件（简写：_schema file_, _Prisma schema_ 或 _schema_）是你的 Primsa 组织结构中主要的配置文件。它通常被命名为 `schema.prisma`，其中包含以下几部分：
 
-- [**Data sources**](data-sources): Specify the details of the data sources Prisma should connect to (e.g. a PostgreSQL database)
-- [**Generators**](generators): Specifies what clients should be generated based on the data model (e.g. Prisma Client)
-- [**Data model definition**](data-model): Specifies your application [models](data-model#defining-models) (the shape of the data per data source) and their [relations](relations)
+- [**数据源**](data-sources)：指明 Prisma 连接的数据源的细节 (例如一个 PostgreSQL 数据库)
+- [**生成器**](generators)：指明基于数据模型生成的客户端 (例如 Prisma Client)
+- [**数据模型定义**](data-model): 指明你的应用 [模型](data-model#defining-models) (每个数据源的数据形状) 和他们之间的 [关系](relations)
 
-See the [Prisma schema API reference](../../../reference/api-reference/prisma-schema-reference) <span class="api"></span> for detailed information about each section of the schema.
+查阅 [Prisma schema API 参考](../../../reference/api-reference/prisma-schema-reference) <span class="api"></span> 以获取 schema 每个部分的详细信息。
 
-Whenever a `prisma` command is invoked, the CLI typically reads some information from the schema file, e.g.:
+每次调用 `prisma` 命令，CLI 通常会从 schema 文件读取一些信息，例如：
 
-- `prisma generate`: Reads _all_ above mentioned information from the Prisma schema to generate the correct data source client code (e.g. Prisma Client).
-- `prisma migrate dev`: Reads the data sources and data model definition to create a new migration.
+- `prisma generate`：从 Prisma schema 读取 _所有_ 上述信息以生成正确的数据源客户端代码（例如 Prisma Client）。
+- `prisma migrate dev`：读取数据源和数据模型定义以创建一个新的迁移。
 
-You can also [use environment variables](#accessing-environment-variables-from-the-schema) inside the schema file to provide configuration options when a CLI command is invoked.
+你还可以在 schema 文件内 [使用环境变量](#accessing-environment-variables-from-the-schema) 来为调用的 CLI 命令提供配置选项。
 
 </TopBlock>
 
-## Example
+## 例子
 
-The following is an example of a Prisma schema file that specifies:
+以下是一个 Prisma schema 文件的例子，其指明了：
 
-- A data source (PostgreSQL or MongoDB)
-- A generator (Prisma Client)
-- A data model definition with two models (with one relation) and one `enum`
-- Several [native data type attributes](data-model#native-type-mapping) (`@db.VarChar(255)`, `@db.ObjectId`)
+- 一个数据源（PostgreSQL 或 MongoDB）
+- 一个生成器（Prisma Client）
+- 一个带有两个模型的数据模型定义（带有一个关系）和一个 `enum`
+- 几个 [原生数据类型属性](data-model#native-type-mapping) (`@db.VarChar(255)`, `@db.ObjectId`)
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -112,27 +112,27 @@ enum Role {
 </tab>
 </TabbedContent>
 
-## Naming
+## 命名
 
-The default name for the schema file is `schema.prisma`. When your schema file is named like this, the Prisma CLI will detect it automatically in the directory where you invoke the CLI command (or any of its subdirectories).
+schema 文件的默认名称是 `schema.prisma`。当你以此命名 schema 文件时，Prisma CLI 会在你调用 CLI 命令的目录下自动查找到此文件（或该目录下的任意子目录）。
 
-If the file is named differently, you can provide the `--schema` argument to the Prisma CLI with the path to the schema file, e.g.:
+如果以其他名称命名此文件，你可以向 Prisma CLI 传入带有 schema 文件路径的 `--schema` 参数，例如：
 
 ```
 prisma generate --schema ./database/myschema.prisma
 ```
 
-## Syntax
+## 语法
 
-The schema file is written in Prisma Schema Language (PSL).
+使用 Prisma Schema Language (PSL) 编写 schema 文件。
 
 ### VS Code
 
-Syntax highlighting for PSL is available via a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) (which also lets you auto-format the contents of your Prisma schema and indicates syntax errors with red squiggly lines). Learn more about [setting up Prisma in your editor](../../more/editor-setup).
+PSL 语法高亮可通过一个 [VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) 实现（该扩展还可以自动格式化 Prisma schema 内容并且用红色波浪线标示出语法错误）。学习 [在编辑器中配置 Prisma](../../more/editor-setup)。
 
 ### GitHub
 
-PSL code snippets on GitHub can be rendered with syntax highlighting as well by using the `.prisma` file extension or annotating fenced code blocks in Markdown with `prisma`:
+通过使用 `.prisma` 文件扩展名或使用 `prisma` 为 Markdown 代码块添加注释，也可以为 Github 上的 PSL 代码片段渲染添加语法高亮：
 
 ````
 ```prisma
@@ -145,17 +145,17 @@ model User {
 ```
 ````
 
-## Prisma schema file location
+## Prisma schema 文件位置
 
-The Prisma CLI looks for the Prisma schema file in the following locations, in the following order:
+Prisma CLI 在以下位置查找 Prisma schema 文件，顺序如下：
 
-1.  The location specified by the [`--schema` flag](../../../reference/api-reference/command-reference), which is available when you `introspect`, `generate`, `migrate`, and `studio`:
+1.  [`--schema` flag](../../../reference/api-reference/command-reference) 指明的位置，当你调用 `introspect`，`generate`，`migrate` 和 `studio` 时可用：
 
     ```terminal
     prisma generate --schema=./alternative/schema.prisma
     ```
 
-2.  The location specified in the `package.json` file (version 2.7.0 and later):
+2.  `package.json` 文件指明的位置（2.7.0 及更高版本）：
 
     ```json
     "prisma": {
@@ -163,12 +163,12 @@ The Prisma CLI looks for the Prisma schema file in the following locations, in t
     }
     ```
 
-3.  Default locations:
+3.  默认位置：
 
     - `./prisma/schema.prisma`
     - `./schema.prisma`
 
-The Prisma CLI outputs the path of the schema file that will be used. The following example shows the terminal output for `prisma db pull`:
+Prisma CLI 会输出将要使用的 schema 文件的路径。以下例子展示了 `prisma db pull` 的终端输出：
 
 ```no-lines
 Environment variables loaded from prisma/.env
@@ -181,13 +181,13 @@ Introspecting based on datasource defined in prisma/schema.prisma …
 Run prisma generate to generate Prisma Client.
 ```
 
-## Accessing environment variables from the schema
+## 在 schema 中获取环境变量
 
-You can use environment variables to provide configuration options when a CLI command is invoked, or a Prisma Client query is run.
+调用 CLI 命令或执行 Prisma Client 查询时，你可以使用环境变量来为其提供配置选项。
 
-Using environment variables in the schema allows you to **keep secrets out of the schema file** which in turn **improves the portability of the schema** by allowing you to use it in different environments
+在 schema 中使用环境变量使你可以**把机密信息置于 schema 文件外**，进而使你可以在不同环境中使用它，**提高了 schema 的可移植性**。
 
-Environment variables can be accessed using the `env()` function:
+环境变量可以通过调用 `env()` 函数获取：
 
 ```prisma
 datasource db {
@@ -196,7 +196,7 @@ datasource db {
 }
 ```
 
-In version 2.7.0 and later, you can expand variables using the format specified by [dotenv-expand](https://github.com/motdotla/dotenv-expand). This is useful when dealing with PaaS or similar products. such as Heroku):
+在 2.7.0 及更高版本中，你可以使用 [dotenv-expand](https://github.com/motdotla/dotenv-expand) 指明的格式展开变量。这个功能在处理 PaaS 或类似产品时很有用。
 
 ```
 # .env
@@ -204,53 +204,53 @@ DATABASE_URL=postgresql://test:test@localhost:5432/test
 DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=public
 ```
 
-The `env()` function can be used in the following places:
+`env()` 函数可以在以下位置使用：
 
-- A datasource url
-- Generator binary targets
+- A datasource url（数据源 url）
+- Generator binary targets（生成器二进制目标）
 
-See [Environment variables](../../../../guides/development-environment/environment-variables) from more information.
+查阅 [环境变量](../../../../guides/development-environment/environment-variables) 获取更多信息。
 
-## Comments
+## 注释
 
-There are two types of comments that are supported in the schema file:
+schame 文件支持两种类型的注释：
 
-- `// comment`: This comment is for the reader's clarity and is not present in the abstract syntax tree (AST) of the schema file.
-- `/// comment`: These comments will show up in the abstract syntax tree (AST) of the schema file as descriptions to AST nodes. Tools can then use these comments to provide additional information. All comments are attached to the next available node - [free-floating comments](https://github.com/prisma/prisma/issues/3544) are not supported and are not included in the AST.
+- `// comment`：此类注释仅用作阐明代码意图，不会出现在 schema 文件的抽象语法树（AST）中。
+- `/// comment`：此类注释会作为 AST 节点描述出现在 schema 文件的抽象语法树（AST）中。一些工具可以利用这些注释提供额外的信息。所有注释都附属于相邻的可用节点 - AST 不支持也不包含 [浮动注释](https://github.com/prisma/prisma/issues/3544)。
 
-> **Note**: `///` comments are **not** present of the generated Prisma Client, but are present in the internal Data Model Meta Format (DMMF).
+> **注**：`///` 注释 **不** 出现在生成的 Prisma Client 中，但是会出现在内部 Data Model Meta Format (DMMF) 中。
 
-Here are some different examples:
+以下是一些不同的例子：
 
 ```prisma
-/// This comment will get attached to the `User` node in the AST
+/// 这条注释在 AST 中会附属于 `User` 节点
 model User {
-  /// This comment will get attached to the `id` node in the AST
+  /// 这条注释在 AST 中会附属于 `id` 节点
   id     Int   @default(autoincrement())
-  // This comment is just for you
-  weight Float /// This comment gets attached to the `weight` node
+  // 这条注释仅供你阅读
+  weight Float /// 这条注释在 AST 中会附属于 `weight` 节点
 }
 
-// This comment is just for you. It will not
-// show up in the AST.
+// 这条注释仅供你阅读。它不会
+// 出现在 AST 中。
 
-/// This comment will get attached to the
-/// Customer node.
+/// 这条注释会附属于
+/// Customer 节点。
 model Customer {}
 ```
 
-## Auto formatting
+## 自动格式化
 
-Prisma supports formatting `.prisma` files automatically. There are two ways to format `.prisma` files:
+Prisma 支持自动格式化 `.prisma` 文件。有两种格式化 `.prisma` 文件的方法：
 
-- Run the [`prisma format`](../../../reference/api-reference/command-reference#forma) <span class="api"></span> command.
-- Install the [Prisma VS Code extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) and invoke the [VS Code format action](https://code.visualstudio.com/docs/editor/codebasics#_formatting) - manually or on save.
+- 执行 [`prisma format`](../../../reference/api-reference/command-reference#forma) <span class="api"></span> 命令。
+- 安装 [Prisma VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) 并启用 [VS Code format action](https://code.visualstudio.com/docs/editor/codebasics#_formatting) - 手动执行或在保存时自动执行。
 
-There are no configuration options - [formatting rules](#formatting-rules) are fixed (similar to Golang's `gofmt` but unlike Javascript's `prettier`):
+自动格式化没有配置选项 - [格式化规则](#formatting-rules) 是固定的（类似于 Golang 的 `gofmt` 但与 Javascript 的 `prettier` 不同）：
 
-### Formatting rules
+### 格式化规则
 
-#### Configuration blocks are aligned by their `=` sign.
+#### 配置块按他们的  `=`  符号对齐：
 
 ```
 block _ {
@@ -260,7 +260,7 @@ block _ {
 }
 ```
 
-A newline resets block alignment:
+换行重置块对齐：
 
 ```
 block _ {
@@ -293,7 +293,7 @@ block _ {
 ```
 -->
 
-#### Field definitions are aligned into columns separated by 2 or more spaces
+#### 字段定义对齐成列，列间距为 2 个或更多空格
 
 ```
 block _ {
@@ -302,7 +302,7 @@ block _ {
 }
 ```
 
-#### Multiline field attributes are properly aligned with the rest of the field attributes
+#### 多行字段属性与剩余的字段属性适当对其：
 
 ```
 block _ {
@@ -312,7 +312,7 @@ block _ {
 }
 ```
 
-A newline resets formatting rules:
+换行重置格式化规则：
 
 ```
 block _ {

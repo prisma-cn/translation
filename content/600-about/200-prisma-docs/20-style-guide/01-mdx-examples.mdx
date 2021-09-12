@@ -1,31 +1,31 @@
 ---
-title: 'MDX components'
-metaTitle: 'MDX components in the Prisma docs'
-metaDescription: 'MDX components components available on the Prisma documentation site.'
-navTitle: 'MDX components'
+title: 'MDX 组件'
+metaTitle: 'Prisma文档中的MDX组件'
+metaDescription: 'Prisma文档站点上提供了MDX组件。'
+navTitle: 'MDX 组件'
 ---
 
 <TopBlock>
 
-This page describes how to use [MDX](https://mdxjs.com/) components (e.g. code blocks) in the Prisma docs.
+本页介绍如何在 PRISMA 文档中使用[mdx](https://mdxjs.com/)组件(例如代码块)。
 
 </TopBlock>
 
-## <inlinecode>TopBlock</inlinecode>
+## <inlinecode>顶块</inlinecode>
 
-Required at the top of the page to avoid styling issues:
+需要位于页面顶部，以避免样式问题：
 
 ```md
 <TopBlock>
 
-This page describes how to use [MDX](https://mdxjs.com/) components (e.g. code blocks) in the Prisma docs.
+本页介绍如何在 PRISMA 文档中使用[mdx](https://mdxjs.com/)组件(例如代码块)。
 
 </TopBlock>
 ```
 
-## Code blocks
+## 代码块
 
-Example:
+举例:
 
 ```js
 async function main() {
@@ -47,7 +47,7 @@ console.log(allUsers)
 
 ### Prisma schema
 
-Example:
+举例:
 
 ```prisma
 datasource db {
@@ -107,9 +107,9 @@ model User {
 ```
 ````
 
-### Code block with file icon
+### 带文件图标的代码块
 
-Example:
+举例:
 
 ```prisma file=schema.prisma
 datasource db {
@@ -169,9 +169,9 @@ model User {
 ```
 ````
 
-### Code block with copy
+### 带副本的代码块
 
-Example:
+举例:
 
 ```js copy
 async function main() {
@@ -191,9 +191,9 @@ async function main() {
 ```
 ````
 
-### Code block without line numbers
+### 没有行号的代码块
 
-Example:
+举例:
 
 ```js no-lines
 async function main() {
@@ -213,9 +213,9 @@ async function main() {
 ```
 ````
 
-### Code block with highlighted code
+### 带有高亮的代码块
 
-Example:
+举例:
 
 ```js file=test.ts highlight=2;add|4;delete|6,7;edit|9-12;normal
 async function main() {
@@ -253,9 +253,9 @@ async function main() {
 ```
 ````
 
-## File icons
+## 文件图标
 
-There are 4 icons available:
+4 个可用图标:
 
 - <FileWithIcon text="file.pdf" icon="file" />
 - <FileWithIcon text="dev.db" icon="database" />
@@ -271,9 +271,9 @@ There are 4 icons available:
 <FileWithIcon text="prisma.schema" icon="prisma"/>
 ```
 
-## Tabbed blocks
+## 选项卡式块
 
-Example:
+举例:
 
 <TabbedContent tabs={[<FileWithIcon text="schema.ts" icon="file"/>, <FileWithIcon text="dev.db" icon="database"/>]}>
 
@@ -321,17 +321,17 @@ npm run dev
 </TabbedContent>
 ````
 
-## Subsections
+## 分段
 
-Lists all child pages of the current page to the specified depth:
+列出指定深度的当前页面的所有子页面：
 
 ```
 <Subsections depth="3" />
 ```
 
-## Expand/Collapse section
+## 展开/折叠部分
 
-Example:
+举例:
 
 <details><summary>Expand if you want to view more</summary>
 
@@ -347,9 +347,9 @@ Here's more!
 </details>
 ```
 
-## Button link
+## 按钮链接
 
-Example:
+举例:
 
 <ButtonLink color="dark" type="primary" href="https://www.prisma.io/docs">
   Button text
@@ -363,9 +363,9 @@ Code:
 </ButtonLink>
 ```
 
-## Code with output
+## 带输出的代码
 
-Example:
+举例:
 
 <CodeWithResult expanded={true}>
 
@@ -441,9 +441,9 @@ https://pris.ly/d/getting-started
 </CodeWithResult>
 ````
 
-## Quiz component
+## 测验组件
 
-Example:
+举例:
 
 <Quiz
   question="Can Prisma be used with Node.js?"
@@ -493,13 +493,13 @@ Code:
 />
 ```
 
-## Tip component
+## 提示组件
 
-Example:
+举例:
 
 <Tip>
 
-To find out if Prisma is the right fit for your project, head on over to [What is Prisma](../../concepts/overview/what-is-prisma) and read all about what makes Prisma, Prisma!
+要找出 Prisma 是否适合您的项目，请访问[Prisma 是什么](../../concepts/overview/what-is-prisma)]并阅读有关 Prisma 的所有相关信息！
 
 </Tip>
 

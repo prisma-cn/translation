@@ -1,20 +1,20 @@
 ---
-title: 'Microsoft SQL Server connector'
-metaTitle: 'Microsoft SQL Server Connector (Preview)'
-metaDescription: 'Preview content for the Microsoft SQL Server Connector.'
+title: 'Microsoft SQL Server Connector'
+metaTitle: 'Microsoft SQL Server Connector (预览)'
+metaDescription: '预览Microsoft SQL Server Connector的内容。'
 ---
 
 <TopBlock>
 
-The Microsoft SQL Connector is available as a Preview feature in [2.10.0](https://github.com/prisma/prisma/releases/tag/2.10.0).
+Microsoft SQL Connector 在[2.10.0](https://github.com/prisma/prisma/releases/tag/2.10.0)中作为预览功能提供。
 
 </TopBlock>
 
-## Enable SQL Server Preview feature
+## 启用 SQL Server 预览功能
 
-To enable the Microsoft SQL Server Preview feature:
+启用 Microsoft SQL Server 预览功能:
 
-1. Update the `client` and `datasource` blocks in your schema as shown:
+1. 更新架构中的 `client` 和 `datource` 块，如下所示:
 
    ```prisma file=prisma/schema.prisma highlight=3,7;normal
    generator client {
@@ -28,37 +28,37 @@ To enable the Microsoft SQL Server Preview feature:
    }
    ```
 
-1. Generate Prisma Client:
+1. 生成 Prisma Client:
 
    ```terminal
    npx prisma generate
    ```
 
-Alternatively, follow the [Microsoft SQL Server tutorial](sql-server-start-from-scratch-typescript).
+或者，按照[Microsoft SQL Server 教程](sql-server-start-from-scratch-typescript)。
 
-## Type mapping between Microsoft SQL Server to Prisma schema
+## Microsoft SQL Server 到 Prisma 架构之间的类型映射
 
-For type mappings organized by Prisma type, refer to the [Prisma schema reference](../../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types) documentation.
+有关按 Prisma 类型组织的类型映射，请参考[Prisma 架构参考](../../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types)文档。
 
-## Supported versions
+## 支持的版本
 
-See [Supported databases](../../../../reference/database-reference/supported-databases#preview).
+请查看 [支持的数据库](../../../../reference/database-reference/supported-databases#preview)。
 
-## Limitations and known issues
+## 限制和已知问题
 
-### Prisma Migrate caveats
+### Prisma Migrate 警告
 
-Prisma Migrate is supported in [2.13.0](https://github.com/prisma/prisma/releases/tag/2.13.0) and later with the following caveats:
+[2.13.0](https://github.com/prisma/prisma/releases/tag/2.13.0)和更高版本支持 Prisma Migrate，但有以下注意事项:
 
-#### Database schema names
+#### 数据库架构名称
 
-SQL Server does not have an equivalent to the PostgreSQL `SET search_path` command familiar from PostgreSQL. This means that when you create migrations, you must define the same schema name in the connection URL that is used by the production database. For most of the users this is `dbo` (the default value). However, if the production database uses another schema name, all the migration SQL must be either edited by hand to reflect the production _or_ the connection URL must be changed before creating migrations (for example: `schema=name`).
+SQL Server 没有类似于 PostgreSQL 的 `SET search_path` 命令。 这意味着在创建迁移时，必须在生产数据库使用的连接 URL 中定义相同的架构名。对于大多数用户，这是`dbo`(默认值)。但是，如果生产数据库使用的是其他架构名称，那么在创建迁移之前，必须手动编辑所有迁移的 SQL 以反映生产环境，_或者_ 更改连接 URL(例如: `schema=name`)。
 
-#### Cascading rules
+#### 级联规则
 
-SQL Server follows the same cascading rules as other database providers - for most relations (with certain restrictions), Prisma runs `ON DELETE CASCADE ON UPDATE CASCADE` (delete all children from a parent automatically).
+SQL Server 遵循与其他数据库提供程序相同的级联规则 - 对于大多数关系(有一定的限制)，Prisma 会运行 `ON DELETE CASCADE ON UPDATE CASCADE` (自动从父节点删除所有子节点)。
 
-However, SQL Server cascading has certain restrictions that do not allow us to create certain kinds of relations. Consider the following schema:
+但是，SQL Server 级联会有某些限制，不允许我们创建某些类型的关系。请考虑以下架构：
 
 ```prisma file=schema.prisma
 model Album {
@@ -73,7 +73,7 @@ model Artist {
 }
 ```
 
-Next, add a favorite album to every artist:
+接下来，为每位艺人添加一张最喜欢的专辑:
 
 ```prisma file=schema.prisma highlight=4;normal
 model Artist {
@@ -84,19 +84,19 @@ model Artist {
 }
 ```
 
-This results in an error:
+这将导致一个错误:
 
 ```
 Introducing FOREIGN KEY constraint `FK__Artist__album_id__2D3D91F9` on table `Artist` may cause cycles or multiple cascade paths. Specify `ON DELETE NO ACTION` or `ON UPDATE NO ACTION`, or modify other FOREIGN KEY constraints.
 ```
 
-SQL Server does not allow cyclic cascading, and in our example our relations go from `Album` to `Artist` and through another relation from `Artist` back to `Album`. In [Microsoft's words](https://support.microsoft.com/en-us/help/321843/error-message-1785-occurs-when-you-create-a-foreign-key-constraint-tha), the cause for this is:
+SQL Server 不允许循环级联，在我们的示例中，我们的关系从 `Alum` 转到 `Artist`，并通过另一个关系从 `Artist` 返回到 `Alum`。用[微软的话说](https://support.microsoft.com/en-us/help/321843/error-message-1785-occurs-when-you-create-a-foreign-key-constraint-tha)，原因是:
 
 ```
 You receive this error message because in SQL Server, a table cannot appear more than one time in a list of all the cascading referential actions that are started by either a DELETE or an UPDATE statement. For example, the tree of cascading referential actions must only have one path to a particular table on the cascading referential actions tree.
 ```
 
-Another, simpler example that is not possible in the first version of Prisma Migrate for SQL Server is a self-reference:
+另一个更简单的例子是自我引用，这在第一版的 Prisma Migrate for SQL Server 中是不可能的:
 
 ```prisma file=schema.prisma
 model Artist {
@@ -106,21 +106,21 @@ model Artist {
 }
 ```
 
-If you want to use relations as described here, you must:
+如果您想使用这里描述的关系，您必须:
 
-- Create the migration using the `--create-only` flag
-- Modify the cascading rules manually before writing to the database
+- 使用 `--create-only` 标志创建迁移
+- 在写入数据库之前，手动修改级联规则
 
-#### Destructive changes
+#### 破坏性变化
 
-Certain migrations will cause more changes than you might expect. For example:
+Cert 某些迁移将导致比您预期的更多的更改。例如:
 
-- Adding or removing `autoincrement()`. This cannot be achieved by modifying the column, but requires recreating the table (including all constraints, indices, and foreign keys) and moving all data between the tables.
-- Additionally, it is not possible to delete all the columns from a table (possible with PostgreSQL or MySQL). If a migration needs to recreate all table columns, it will also re-create the table.
+- 添加或删除 `autoincreate()`。这不能通过修改列来实现，而是需要重新创建表(包括所有约束、索引和外键)，并在表之间移动所有数据。
+- 此外，不可能从一个表中删除所有的列(但 PostgreSQL 或 MySQL 可以)。如果迁移需要重新创建所有表列，它也将重新创建表。
 
-#### Shared default values are not supported
+#### 不支持共享默认值
 
-In some cases, user might want to define default values as shared objects:
+在某些情况下，用户可能希望将默认值定义为共享对象:
 
 ```sql file=default_objects.sql
 CREATE DEFAULT catcat AS 'musti';
@@ -133,7 +133,7 @@ CREATE TABLE cats (
 sp_bindefault 'catcat', 'dbo.cats.name';
 ```
 
-Using the stored procedure `sp_bindefault`, the default value `catcat` can be used in more than one table. The way Prisma manages default values is per table:
+使用存储过程 `sp_bindefault`，这样可以在多个表中使用默认值 `catcat`。Prisma 中管理默认值的方式是按表进行的：
 
 ```sql file=default_per_table.sql
 CREATE TABLE cats (
@@ -142,7 +142,7 @@ CREATE TABLE cats (
 );
 ```
 
-The last example, when introspected, leads to the following model:
+最后一个例子经过反思后，得出了以下模型:
 
 ```prisma file=schema.prisma
 model cats {
@@ -151,7 +151,7 @@ model cats {
 }
 ```
 
-And the first doesn't get the default value introspected:
+第一个没有得到默认值:
 
 ```prisma file=schema.prisma
 model cats {
@@ -160,18 +160,18 @@ model cats {
 }
 ```
 
-If using Prisma Migrate together with shared default objects, changes to them must be done manually to the SQL.
+如果将 Prisma Migrate 与共享的默认对象一起使用，则必须手动对 SQL 进行更改。
 
-### Data model limitations
+### 数据模型的限制
 
-#### Cannot use column with `UNIQUE` constraint and filtered index as foreign key
+#### 不能将具有 `UNIQUE` 约束和筛选索引的列用作外键
 
-Microsoft SQL Server [only allows one `NULL` value in a column that has a `UNIQUE` constraint](https://docs.microsoft.com/en-us/sql/relational-databases/tables/unique-constraints-and-check-constraints?view=sql-server-ver15#Unique). For example:
+Microsoft SQL Server[在具有 `UNIQUE` 约束的列中只允许有一个 `NULL` 值](https://docs.microsoft.com/en-us/sql/relational-databases/tables/unique-constraints-and-check-constraints?view=sql-server-ver15#Unique)。例如:
 
-- A table of users has a column named `license_number`
-- The `license_number` field has a `UNIQUE` constraint
-- The `license_number` field only allows **one** `NULL` value
+- 用户表有一个名为 `license_number` 的列
+- `license_number` 字段有一个 `UNIQUE` 约束
+- `license_number` 字段只允许 **一个** `NULL` 值
 
-The standard way to get around this issue is to create a filtered unique index that excludes `NULL` values. This allows you to insert multiple `NULL` values. If you do not create an index in the database, you will get an error if you try to insert more than one `null` value into a column with Prisma Client.
+解决这个问题的标准方法是创建一个过滤过的唯一索引，排除 `NULL` 值。这将允许您插入多个 `NULL` 值。如果您没有在数据库中创建索引，并试图用 Prisma Client 在一个列中插入多个 `null` 值，这将会得到一个错误。
 
-_However_, creating an index makes it impossible to use `license_number` as a foreign key in the database (or a relation scalar field in corresponding Prisma Schema)
+_然而_，创建索引会导致无法使用`license_number`作为数据库中的外键(或对应 Prisma Schema 中的关系标量字段)

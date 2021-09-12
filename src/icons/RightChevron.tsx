@@ -5,9 +5,9 @@ export default (props: any) => (
     <path
       d="M1 12.1324L7 6.57353L0.999999 1.01471"
       stroke="#718096"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )

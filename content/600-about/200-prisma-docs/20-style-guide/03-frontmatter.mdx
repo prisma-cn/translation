@@ -1,57 +1,57 @@
 ---
-title: Frontmatter
-metaDescription: 'Supported frontmatter variables.'
+title: 前端格式
+metaDescription: '支持前端格式属性'
 ---
 
 <TopBlock></TopBlock>
 
-## <inlinecode>title</inlinecode>
+## <inlinecode>标题</inlinecode>
 
-The `<h1>` title of the page.
+页面的`<h1>` 标题。
 
-## <inlinecode>metaTitle</inlinecode>
+## <inlinecode>网页标题</inlinecode>
 
-The `<title>` of the page - falls back to `title` (`h1`)
+页面的 `<title>` - 调为 `title` (`h1`)
 
-## <inlinecode>navTitle</inlinecode>
+## <inlinecode>导航标题</inlinecode>
 
-Allows you to specify a different, usually shorter title for the left-hand navigation.
+允许你为左侧导航指定不同的、通常较短的标题。
 
-## <inlinecode>metaDescription</inlinecode>
+## <inlinecode>元描述</inlinecode>
 
-The `<meta name="description" content="" />` of the page.
+页面的 `<meta name="description" content="" />` 。
 
-## <inlinecode>staticLink</inlinecode>
+## <inlinecode>静态链接</inlinecode>
 
-Turns the page into a non-linked heading in the left-hand navigation. For example: https://www.prisma.io/docs/concepts/overview
+在左侧导航中将页面转换为未链接的标题。例如: https://www.prisma.io/docs/concepts/overview
 
-> **Note**: The page still exists, but you can only navigate to it via the breadcrumb.
+> **注意**: 该页面仍然存在，但你只能通过面包屑导航到该页面。
 
-## <inlinecode>preview</inlinecode>
+## <inlinecode>预览</inlinecode>
 
-Adds a `preview` label to a page in the left-hand navigation.
+在左侧导航的页面中添加`preview`标签。
 
-## <inlinecode>toc</inlinecode>
+## <inlinecode>目录</inlinecode>
 
-Enable or disable table of contents navigation on the page (defaults to `false`). For example:
+开启或关闭页面目录导航(默认为`false`)。例如：:
 
 ```
 toc: true
 ```
 
-## <inlinecode>tocDepth</inlinecode>
+## <inlinecode>目录层级</inlinecode>
 
-Controls the depth of headings to show in the ToC:
+控制标题在目录中显示的层级：
 
 ```
 tocDepth: 2
 ```
 
-> **Note**: Currently limited to 2 levels - `h2` and `h3`
+> **注意**: 目前仅限`h2`和`h3`两个级别
 
-## <inlinecode>hidePage</inlinecode>
+## <inlinecode>隐藏页面</inlinecode>
 
-Hides page from all navigation (still visible through search). For example:
+对所有导航隐藏页面(通过搜索仍可见)。例如:
 
 ```
 hidePage: true

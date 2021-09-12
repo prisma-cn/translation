@@ -1,14 +1,14 @@
 ---
-title: 'Autocompletion in GraphQL resolvers with JavaScript'
-metaTitle: 'Autocompletion in GraphQL resolvers with JavaScript'
-metaDescription: 'Learn how you can get autocompletion for Prisma Client queries in GraphQL resolvers with plain JavaScript'
+title: '用JavaScript实现GraphQL解析器的自动完成'
+metaTitle: '用JavaScript实现GraphQL解析器的自动完成'
+metaDescription: '了解如何用JavaScript在GraphQL解析器中自动完成Prisma客户端查询'
 ---
 
-## Problem
+## 问题
 
-When using GraphQL with TypeScript, you always get autocompletion for the Prisma Client instance in your GraphQL resolvers because then the `context` object can be typed – no matter if folks are using Nexus, TypeGraphQL or SDL first. This immensely helps with autocompletion and preventing unwanted errors.
+将 GraphQL 与 TypeScript 一起使用时，你会在 GraphQL 解析器中自动完成 Prisma 客户端实例，因为这样就可以键入`context`对象--无论用户首先使用的是 Nexus，TypeGraphQL 或者 SDL。这极大地帮助了自动完成和防止不必要的错误。
 
-Unfortunately, this needs a little more effort when you're working in plain JavaScript. Suppose we have a resolver like this:
+不幸的是，当你使用纯的 JavaScript 时，你需要更多的工作。 假设我们有这样一个解析器:
 
 ```js
 filterPosts: (parent, args, ctx) => {
@@ -23,15 +23,15 @@ filterPosts: (parent, args, ctx) => {
 }
 ```
 
-Now whenever you type `ctx.` VS Code will provide unnecessary options in the autocomplete which is undesirable.
+现在当你在 VS Code 中输入`ctx.`会自动提供不必要的选项，这是不可取的。
 
-![Unwanted autocomplete values by VSCode](https://res.cloudinary.com/prismaio/image/upload/v1628765455/docs/pqTTXdi_xzwkse.png)
+![VS Code中不需要的自动补全值](https://res.cloudinary.com/prismaio/image/upload/v1628765455/docs/pqTTXdi_xzwkse.png)
 
-VS Code doesn't know the _type_ of the `context` object so it can't provide any intellisense for it, which is why unwanted suggestions are displayed.
+VS Code 不知道`context`对象的类型，因此无法提供任何智能感知，这就是无法正确匹配的原因。
 
-## Solution
+## 解决方法
 
-To overcome this, you need to add a [JSDoc](https://jsdoc.app/) comment named `typedef` to "import" the correct type of your `PrismaClient` instance.
+要克服这点, 你需要用[JSDoc](https://jsdoc.app/) 注解 `typedef` "导入" `PrismaClient`正确的类型实例。
 
 ```js
 // Add this to the top of the file
@@ -41,9 +41,9 @@ To overcome this, you need to add a [JSDoc](https://jsdoc.app/) comment named `t
  */
 ```
 
-> **Note**: You can learn more about JSDoc [here](https://devhints.io/jsdoc).
+> **注意**: 你可以在[这里](https://devhints.io/jsdoc)学习更多 JSDoc 知识。
 
-Finally, you need to type your resolver arguments. For simplicity, ignore the `parent` and `args` parameters. So the resolver should now look like this:
+最后,你需要输入解析器参数。 简单起见，忽略 `parent` 和 `args` 参数. 因此解析器应该看起来像这样:
 
 ```js
 /**
@@ -63,13 +63,13 @@ filterPosts: (parent, args, ctx) => {
 }
 ```
 
-This will tell VS Code that the `context` has a property named `prisma` and the type is `Prisma` which was defined in the `@typedef` above.
+这将告诉 VS Code `context` 有一个叫 `prisma` 的属性以及这个 `Prisma` 类型已经在上面的 `@typedef` 定义。
 
-And voilà, autocompletion in plain JavaScript.
+这就是纯 JavaScript 的自动补全功能。
 
-![The correct parameters for context are obtained](https://res.cloudinary.com/prismaio/image/upload/v1628765514/docs/Mp9AMvf_yrairm.png)
+![获得当前上下文规范](https://res.cloudinary.com/prismaio/image/upload/v1628765514/docs/Mp9AMvf_yrairm.png)
 
-The final file should look something like:
+最终文件如下:
 
 ```js
 /**
@@ -259,4 +259,4 @@ module.exports = {
 }
 ```
 
-So here's a simple method to get autocompletion for your all Prisma's methods in JavaScript. You can find a practical example of this approach in the [`prisma-examples`](https://github.com/prisma/prisma-examples/) repo [here](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-sdl-first).
+因此，这里有一个简单的方法可以在 JavaScript 中自动完成所有 Prisma 方法。你可以在[`prisma-示例`](https://github.com/prisma/prisma-examples/) 库中 [这里](https://github.com/prisma/prisma-examples/tree/latest/javascript/graphql-sdl-first)找到示例。

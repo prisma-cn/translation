@@ -1,38 +1,38 @@
 ---
-title: 'Configuring error formatting'
-metaTitle: 'Configuring error formatting (Concepts)'
-metaDescription: 'This page explains how to configure the formatting of errors when using Prisma Client.'
+title: '配置错误格式化'
+metaTitle: '配置错误格式化 (概念)'
+metaDescription: '本页说明如何配置使用 Prisma Client 时的错误格式化。'
 ---
 
 <TopBlock>
 
-By default, Prisma Client uses [ANSI escape characters](https://en.wikipedia.org/wiki/ANSI_escape_code) to pretty print the error stack and give recommendations on how to fix a problem. While this is very useful when using Prisma Client from the terminal, in contexts like a GraphQL API, you only want the minimal error without any additional formatting.
+默认情况下，Prisma Client 使用 [ANSI 转义字符](https://en.wikipedia.org/wiki/ANSI_escape_code) 来漂亮地打印错误堆栈并提供有关如何修复问题的建议。虽然这对于在终端使用 Prisma Client 时非常有用，但在 GraphQL API 之类的 contexts 中，你只需要最少错误而不需要任何额外的格式化信息。
 
-This page explains how error formatting can be configured with Prisma Client.
+本页解释了如何使用 Prisma Client 配置错误格式化。
 
 </TopBlock>
 
-## Formatting levels
+## 格式化级别
 
-There are 3 error formatting levels:
+有 3 个错误格式化级别：
 
-1. **Pretty Error** (default): Includes a full stack trace with colors, syntax highlighting of the code and extended error message with a possible solution for the problem.
-2. **Colorless Error**: Same as pretty errors, just without colors.
-3. **Minimal Error**: The raw error message.
+1. **Pretty Error** (默认): 包括带有颜色的完整堆栈跟踪、代码的语法突出显示和扩展错误消息以及问题的可能解决方案。
+2. **Colorless Error**: 与 Pretty Error 相同，只是没有颜色。
+3. **Minimal Error**: 最少错误消息。
 
-In order to configure these different error formatting levels, there are two options:
+为了配置这些不同的错误格式化级别，有两个选项：
 
-- Setting the config options via environment variables
-- Providing the config options to the `PrismaClient` constructor
+- 通过 环境变量 设置配置选项
+- 为 `PrismaClient` 构造函数提供配置选项
 
-## Formatting via environment variables
+## 通过 环境变量 格式化
 
-- [`NO_COLOR`](../../../../reference/api-reference/environment-variables-reference/#no_color): If this env var is provided, colors are stripped from the error messages. Therefore you end up with a **colorless error**. The `NO_COLOR` environment variable is a standard described [here](https://no-color.org/).
-- `NODE_ENV=production`: If the env var `NODE_ENV` is set to `production`, only the **minimal error** will be printed. This allows for easier digestion of logs in production environments.
+- [`NO_COLOR`](../../../../reference/api-reference/environment-variables-reference/#no_color): 如果提供了此环境变量，则会从错误消息中去除颜色。因此，你最终会得到一个无颜色错误。该 `NO_COLOR` 环境变量的标准在 [这](https://no-color.org/)。
+- 如果环境变量 `NODE_ENV` 设置为 `production`，则只会打印 **minimal error** 。这有助于更容易地在生产环境中生成日志。
 
-### Formatting via the `PrismaClient` constructor
+### 通过 `PrismaClient` 构造函数格式化
 
-Alternatively, use the `PrismaClient` [`errorFormat`](../../../../reference/api-reference/prisma-client-reference#errorformat) <span class="api"></span> parameter to set the error format:
+或者，使用 `PrismaClient` [`errorFormat`](../../../../reference/api-reference/prisma-client-reference#errorformat) <span class="api"></span> 参数来设置错误格式化：
 
 ```ts
 const prisma = new PrismaClient({

@@ -1,13 +1,13 @@
 ---
-title: 'Working with Json fields'
-metaTitle: 'Working with Json fields (Concepts)'
-metaDescription: 'How to read, write, and filter by Json fields.'
+title: '使用 json 字段'
+metaTitle: '使用 json 字段 (概念)'
+metaDescription: '如何按 json 字段读取、写入和过滤。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Use the [`Json`](../../../../reference/api-reference/prisma-schema-reference#json) <span class="api"></span> Prisma field type to read, write, and perform basic filtering on JSON types in the underlying database. In the following example, the `User` model has an optional `Json` field named `extendedPetsData`:
+使用 [`Json`](../../../../reference/api-reference/prisma-schema-reference#json) <span class="api"></span> Prisma 字段类型，用于读取、写入和对底层数据库中的 JSON 类型执行基本过滤。在以下示例中， `User` 模型有一个可选的 `Json` 字段 `extendedPetsData`：
 
 ```prisma highlight=6;normal
 model User {
@@ -19,7 +19,7 @@ model User {
 }
 ```
 
-Example field value:
+示例字段值：
 
 ```json
 {
@@ -34,9 +34,9 @@ Example field value:
 }
 ```
 
-> **Note**: The `Json` field is only supported if the [underlying database](../../../database-connectors) has a corresponding JSON data type.
+> **注意**： `Json` 仅当 [底层数据库](../../../database-connectors) 具有相应的 JSON 数据类型时才支持该字段。
 
-The `Json` field supports a few additional types, such as `string` and `boolean`. These additional types exist to match the types supported by [`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse):
+`Json` 字段支持一些其他类型，例如 `string` 和 `boolean`。这些类型和 [`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) 支持的类型相匹配：
 
 ```ts
 export declare type JsonValue =
@@ -50,16 +50,16 @@ export declare type JsonValue =
 
 </TopBlock>
 
-## Use cases for JSON fields
+## JSON 字段的用例
 
-Reasons to store data as JSON rather than representing data as related models include:
+将数据存储为 JSON 而不是将数据表示为关系模型的原因包括：
 
-- You need to store data that does not have a consistent structure
-- You are importing data from another system and do not want to map that data to Prisma models
+- 你需要存储结构不一致的数据
+- 你正在从另一个系统导入数据，并且不想将该数据映射到 Prisma 模型
 
-## Reading a <inlinecode>Json</inlinecode> field
+## 读取 <inlinecode>Json</inlinecode> 字段
 
-You can use the `Prisma.JsonArray` and `Prisma.JsonObject` utility classes to work with the contents of a `Json` field:
+你可以使用 `Prisma.JsonArray` 和 `Prisma.JsonObject` 工具类来处理 `Json` 字段的内容：
 
 ```ts
 const { PrismaClient, Prisma } = require('@prisma/client')
@@ -70,7 +70,7 @@ const user = await prisma.user.findFirst({
   },
 })
 
-// Example extendedProfile data:
+// 扩展档案数据示例:
 // [{ name: 'Bob the dog' }, { name: 'Claudine the cat' }]
 
 if (user?.pets && typeof user?.pets === 'object' && Array.isArray(user?.pets)) {
@@ -80,11 +80,11 @@ if (user?.pets && typeof user?.pets === 'object' && Array.isArray(user?.pets)) {
 }
 ```
 
-See also: [Advanced example: Update a nested JSON key value](#advanced-example-update-a-nested-json-key-value)
+另请参阅：[高级示例：更新嵌套的 JSON 键值](#advanced-example-update-a-nested-json-key-value)
 
-## Writing to a <inlinecode>Json</inlinecode> field
+## 写入 <inlinecode>Json</inlinecode> 字段
 
-The following example writes a JSON object to the `extendedPetsData` field:
+以下示例将 JSON 对象写入 `extendedPetsData` 字段：
 
 ```ts
 var json = [
@@ -100,65 +100,42 @@ const createUser = await prisma.user.create({
 })
 ```
 
-> **Note**: JavaScript objects (for example, `{ extendedPetsData: "none"}`) are automatically converted to JSON.
+> **注意**：JavaScript 对象（例如，`{ extendedPetsData: "none"}`）会自动转换为 JSON。
 
-See also: [Advanced example: Update a nested JSON key value](#advanced-example-update-a-nested-json-key-value)
+另请参阅：[高级示例：更新嵌套的 JSON 键值](#advanced-example-update-a-nested-json-key-value)
 
-## Filtering on a <inlinecode>Json</inlinecode> field
+## 过滤 <inlinecode>Json</inlinecode> 字段
 
-Advanced `Json` filtering is available as a Preview feature in [2.23.0 and later](https://github.com/prisma/prisma/releases/tag/2.23.0). In earlier versions, you can [filter on the exact `Json` field value](#filter-on-exact-field-value).
-
-<div class="videoWrapper">
-
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/SUQ5vem9KdM"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen
-></iframe>
-
-</div>
+高级 `Json` 过滤在 [2.23.0 及更高版本](https://github.com/prisma/prisma/releases/tag/2.23.0) 中作为预览功能提供。在早期版本中，你可以 [过滤精确的 `Json` 字段值](#filter-on-exact-field-value)。
 
 <Admonition type="warning">
 
-Advanced `Json` filtering is supported by [PostgreSQL](../../../database-connectors/postgresql) and [MySQL](../../../database-connectors/mysql) only with different syntaxes for the `path` option. PostgreSQL does not support [filtering on object key values in arrays](#filtering-on-object-key-value-inside-array).
+[PostgreSQL](../../../database-connectors/postgresql) 和 [MySQL](../../../database-connectors/mysql) 仅 `Json` 支持高级过滤，但 `path` 选项的语法不同。PostgreSQL 不支持 [对数组中的对象键值进行过滤](#filtering-on-object-key-value-inside-array) 。
 
 </Admonition>
 
-To enable advanced filtering, add `filterJson` to `previewFeatures` in your schema:
+### 数据库连接器实现差异
 
-```prisma
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["filterJson"]
-}
-```
+`Json` 过滤器的实现因连接器而异：
 
-### Database connector implementation differences
+- 在 [MySQL 的连接器](../../../database-connectors/mysql) 使用 [MySQL 的执行 JSON 路径](https://dev.mysql.com/doc/refman/8.0/en/json.html#json-path-syntax)
+- 在 [PostgreSQL 的连接器](../../../database-connectors/postgresql) 使用自定义 JSON 功能和操作 [支持 12 和 _更早_ 的版本](https://www.postgresql.org/docs/11/functions-json.html)
 
-The implementation of `Json` filtering differs between connectors:
-
-- The [MySQL connector](../../../database-connectors/mysql) uses [MySQL's implementation of JSON path](https://dev.mysql.com/doc/refman/8.0/en/json.html#json-path-syntax)
-- The [PostgreSQL connector](../../../database-connectors/postgresql) uses the custom JSON functions and operators [supported in version 12 _and earlier_](https://www.postgresql.org/docs/11/functions-json.html)
-
-This means that `path` option syntax differs between database connectors - for example, the following is a valid MySQL `path` value:
+这意味着 `path` 选项语法因数据库连接器而异 - 例如，以下是有效的 MySQL `path` 值：
 
 ```
 $petFeatures.petName
 ```
 
-The following is a valid PostgreSQL `path` value:
+以下是有效的 PostgreSQL `path` 值：
 
 ```
 ["petFeatures", "petName"]
 ```
 
-### Filter on exact field value
+### 过滤精确的字段值 {#filter-on-exact-field-value}
 
-The following query returns all users where the value of `extendedPetsData` matches the `json` variable exactly:
+以下查询 `extendedPetsData` 等于 `json` 条件的所有用户结果：
 
 ```ts
 var json = { [{ name: 'Bob the dog' }, { name: 'Claudine the cat' }] }
@@ -172,7 +149,7 @@ const getUsers = await prisma.user.findMany({
 })
 ```
 
-The following query returns all users where the value of `extendedPetsData` does **not** match the `json` variable exactly:
+以下查询返回所有 `extendedPetsData` **不** 等于 `json` 的用户结果：
 
 ```ts
 var json = {
@@ -188,9 +165,9 @@ const getUsers = await prisma.user.findMany({
 })
 ```
 
-### Filter on object property
+### 过滤对象属性
 
-In [2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) and later, you can filter on a specific property inside a block of JSON. In the following examples, the value of `extendedPetsData` is a one-dimensional, unnested JSON object:
+在 [2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) 及更高版本中，你可以过滤 JSON 块内的特定属性。在以下示例中， `extendedPetsData` 是一个一层、未嵌套的 JSON 对象：
 
 ```json highlight=11;normal
 {
@@ -199,7 +176,7 @@ In [2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) and later, you
 }
 ```
 
-The following query returns all users where the value of `petName` is `"Claudine"`:
+以下查询返回所有 `petName` 为 `"Claudine"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -233,7 +210,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-The following query returns all users where the value of `petType` _contains_ `"cat"`:
+下面是查询条件 `petType` _包含_ `"cat"` 的所有用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -266,15 +243,15 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-The following string filters are available:
+以下字符串过滤器可用：
 
 - [`string_contains`](../../../../reference/api-reference/prisma-client-reference#string_contains) <span class="api"></span>
 - [`string_starts_with`](../../../../reference/api-reference/prisma-client-reference#string_starts_with) <span class="api"></span>
 - [`string_ends_with`](../../../../reference/api-reference/prisma-client-reference#string_ends_with) <span class="api"></span>.
 
-### Filter on nested object property
+### 过滤嵌套对象属性
 
-You can filter on nested JSON properties. In the following examples, the value of `extendedPetsData` is a JSON object with several levels of nesting.
+你可以过滤嵌套的 JSON 属性。在以下示例中， `extendedPetsData` 的值是具有多个嵌套级别的 JSON 对象。
 
 ```json
 {
@@ -293,7 +270,7 @@ You can filter on nested JSON properties. In the following examples, the value o
 }
 ```
 
-The following query returns all users where `"pet2"` &rarr; `"petName"` is `"Sunny"`:
+以下查询返回所有 `"pet2"` . `"petName"` 等于 `"Sunny"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -326,10 +303,10 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-The following query returns all users where:
+以下查询返回所有用户结果，条件如下：
 
-- `"pet2"` &rarr; `"petName"` is `"Sunny"`
-- `"pet2"` &rarr; `"features"` &rarr; `"furColor"` contains `"black"`
+- `"pet2"` &rarr; `"petName"` 等于 `"Sunny"`
+- `"pet2"` &rarr; `"features"` &rarr; `"furColor"` 包含 `"black"`
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -383,15 +360,15 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### Filtering on an array value
+### 过滤数组值
 
-You can filter on the presence of a specific value in a scalar array (strings, integers). In the following example, the value of `extendedPetsData` is an array of strings:
+你可以过滤 scalar 数组（字符串、整数）中是否存在特定值。在以下示例中，`extendedPetsData` 的值是一个字符串数组：
 
 ```json
 ["Claudine", "Sunny"]
 ```
 
-The following query returns all users with a pet named `"Claudine"`:
+以下查询返回所有 pet 名为 `"Claudine"` 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -408,7 +385,7 @@ const getUsers = await prisma.user.findMany({
 
 <Admonition type="info">
 
-**Note**: In PostgresSQL, the value of `array_contains` must be an array and not a string, even if the array only contains a single value.
+**注意**：在 PostgresSQL 中， `array_contains` 的值必须是一个数组而不是一个字符串，即使该数组只包含一个值。
 
 </Admonition>
 
@@ -429,15 +406,15 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-The following array filters are available:
+以下数组过滤器可用：
 
 - [`array_contains`](../../../../reference/api-reference/prisma-client-reference#array_contains) <span class="api"></span>
 - [`array_starts_with`](../../../../reference/api-reference/prisma-client-reference#array_starts_with) <span class="api"></span>
 - [`array_ends_with`](../../../../reference/api-reference/prisma-client-reference#array_ends_with) <span class="api"></span>
 
-### Filtering on nested array value
+### 过滤嵌套数组值
 
-You can filter on the presence of a specific value in a scalar array (strings, integers). In the following examples, the value of `extendedPetsData` includes nested scalar arrays of names:
+你可以过滤 scalar 数组（字符串、整数）中是否存在特定值。在以下示例中， `extendedPetsData` 的值包括名称的嵌套 scalar 数组：
 
 ```json
 {
@@ -446,9 +423,9 @@ You can filter on the presence of a specific value in a scalar array (strings, i
 }
 ```
 
-#### Scalar value arrays
+#### Scalar 值数组
 
-The following query returns all users that foster a cat named `"Fido"`:
+以下查询返回所有 养了一只名为 `"Fido"` 的猫 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -466,7 +443,7 @@ const getUsers = await prisma.user.findMany({
 
 <Admonition type="info">
 
-**Note**: In PostgresSQL, the value of `array_contains` must be an array and not a string, even if the array only contains a single value.
+**注意**：在 PostgresSQL 中， `array_contains` 的值必须是一个数组而不是一个字符串，即使该数组只包含一个值。
 
 </Admonition>
 
@@ -487,7 +464,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-The following query returns all users that foster cats named `"Fido"` _and_ `"Bob"`:
+以下查询返回所有 养了名为 `"Fido"` 和 `"Bob"` 的猫 的用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -520,7 +497,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-#### JSON object arrays
+#### JSON 对象数组 {#json-object-arrays}
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -557,35 +534,35 @@ const checkJson = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-- If you are using PostgreSQL, you must pass in an array of objects to match, even if that array only contains one object:
+- 如果使用 PostgreSQL，则必须传入要匹配的对象数组，即使该数组仅包含一个对象：
 
   ```json5
   [{ status: 'expired', insuranceID: 92 }] // PostgreSQL
   ```
 
-  If you are using MySQL, you must pass in a single object to match:
+如果你使用 MySQL，必须传入单个对象才能匹配:
 
-  ```json5
-  { status: 'expired', insuranceID: 92 } // MySQL
-  ```
+```json5
+{ status: 'expired', insuranceID: 92 } // MySQL
+```
 
-- If your filter array contains multiple objects, PostgreSQL will only return results if _all_ objects are present - not if at least one object is present.
+- 如果你的过滤器数组包含多个对象，PostgreSQL 只会在所有对象都存在的情况下返回结果 - 如果至少存在一个对象，则不会。
 
-- You must set `array_contains` to a JSON object, not a string. If you use a string, Prisma escapes the quotation marks and the query will not return results. For example:
+- 你必须设置 `array_contains` 为 JSON 对象，而不是字符串。如果你使用字符串，Prisma 会转义引号并且查询将不会返回结果。例如：
 
   ```ts
   array_contains: '[{"status": "expired", "insuranceID": 92}]'
   ```
 
-  is sent to the database as:
+被发送到数据库：
 
-  ```
-  [{\"status\": \"expired\", \"insuranceID\": 92}]
-  ```
+```
+[{\"status\": \"expired\", \"insuranceID\": 92}]
+```
 
-### Targeting an array element by index
+### 按索引定位数组元素
 
-You can filter on the value of an element in a specific position.
+你可以过滤特定位置中元素的值。
 
 ```json
 { "owned": ["Bob", "Sunny"], "fostering": ["Fido"] }
@@ -624,17 +601,17 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### Filtering on object key value inside array
+### 过滤数组内的对象键值 {#filtering-on-object-key-value-inside-array}
 
-Depending on your provider, you can filter on the key value of an object inside an array.
+根据你提供的选项，可以过滤数组内对象的键值。
 
 <Admonition type="warning">
 
-Filtering on object key values within an array is **only** supported by the [MySQL database connector](../../../database-connectors/mysql). However, you can still [filter on the presence of entire JSON objects](#json-object-arrays).
+**只有** [MySQL 数据库连接器](../../../database-connectors/mysql) 支持对数组中的对象键值进行过滤。但是，你仍然可以 [过滤整个 JSON 对象的实体](#json-object-arrays)。
 
 </Admonition>
 
-In the following example, the value of `extendedPetsData` is an array of objects with a nested `insurances` array, which contains two objects:
+在下面的例子中，`extendedPetsData` 的值是一个带有嵌套 `insurances` 数组的对象数组，其中包含两个对象：
 
 ```json
 [
@@ -661,7 +638,7 @@ In the following example, the value of `extendedPetsData` is an array of objects
 ]
 ```
 
-The following query returns all users where at least one pet is a moose:
+以下查询返回至少有一只 pet 是 moose 的所有用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="MySQL" icon="database"/>]}>
 
@@ -684,10 +661,10 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-- `$[*]` is the root array of pet objects
-- `petType` matches the `petType` key in any pet object
+- `$[*]` 是 pet 对象的根数组
+- `petType` 匹配 `petType` 任何 pet 对象中的键
 
-The following query returns all users where at least one pet has an expired insurance:
+以下查询返回至少有一只 pet 的 insurances 是 expired 的所有用户结果：
 
 <TabbedContent tabs={[<FileWithIcon text="MySQL" icon="database"/>]}>
 
@@ -712,13 +689,13 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-- `$[*]` is the root array of pet objects
-- `insurances[*]` matches any `insurances` array inside any pet object
-- `status` matches any `status` key in any insurance object
+- `$[*]` 是 pet 对象的根数组
+- `insurances[*]` 匹配 `insurances` 任何 pet 对象内的任何数组
+- `status` 匹配 `status` 任何 insurance 对象中的任何键
 
-## Advanced example: Update a nested JSON key value
+## 高级示例：更新嵌套的 JSON 键值 {#advanced-example-update-a-nested-json-key-value}
 
-The following example assumes that the value of `extendedPetsData` is some variation of the following:
+以下示例假设 `extendedPetsData` 的值是以下内容的一些变量：
 
 ```json
 {
@@ -731,11 +708,11 @@ The following example assumes that the value of `extendedPetsData` is some varia
 }
 ```
 
-The following example:
+下面的例子：
 
-1. Gets all users
-1. Change the `"status"` of each insurance object to `"expired"`
-1. Get all users that have an expired insurance where the ID is `92`
+1. 获取所有用户
+1. 将每个 insurance 对象的 `"status"` 改为 `"expired"`
+1. 获取 insuranceID 为 `92` 并且 status 为 `"expired"` 的所有用户结果
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 <tab>
@@ -869,16 +846,57 @@ console.log(checkJson.length)
 </tab>
 </TabbedContent>
 
+## 按空值筛选
+
+SQL 数据库中的 Json 字段可能有两种类型的空值。
+
+- 数据库 NULL：数据库中的值为 NULL。
+- JSON null：数据库中的值包含一个为 null 的 JSON 值。
+
+为了区分这些可能性，我们引入了三个可用于筛选的空枚举：
+
+- `JsonNull`：选择 JSON 中的空值。
+- `DbNull`：选择数据库中的空值。
+- `AnyNull`：选择空 JSON 值和空数据库值。
+
+例如：
+
+```prisma
+model Log {
+  id   Int  @id
+  meta Json
+}
+```
+
+```ts
+import { Prisma } from '@prisma/client'
+
+prisma.log.findMany({
+  where: {
+    data: {
+      meta: Prisma.AnyNull,
+    },
+  },
+})
+```
+
+<Admonition type="info">
+
+这些 null 枚举不适用于 MongoDB，因为 JSON null 和数据库 null 之间没有区别。
+它们也不适用于 `array_contains` 运算符，因为 JSON 数组中只能有 JSON null。由于 JSON 数组中不能有数据库 NULL，`{ array_contains: null }` 并不明确。
+
+</Admonition>
+
 ## <inlinecode>Json</inlinecode> FAQs
 
-### Can you select a subset of JSON key/values to return?
+### 你可以选择要返回的 JSON 键/值的子集吗？
 
-No - it is not yet possible to [select which JSON elements to return](https://github.com/prisma/prisma/issues/2431). Prisma Client returns the entire JSON object.
+不可以 - 尚无法 [选择要返回的 JSON 元素](https://github.com/prisma/prisma/issues/2431)。Prisma Client 会返回整个 JSON 对象实体。
 
-### Can you filter on the presence of a specific key?
+### 你可以在 presence 上过滤特定键吗？
 
-No - it is not yet possible to filter on the presence of a specific key.
+不可以 - 尚无法在 presence 上过滤特定键。
 
-### Is case insensitive filtering supported?
+### 是否支持不区分大小写的过滤？
 
-No - [case insensitive filtering](https://github.com/prisma/prisma/issues/7390) is not yet supported.
+不可以 - 尚不支持 [不区分大小写的过滤](https://github.com/prisma/prisma/issues/7390)。

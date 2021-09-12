@@ -1,7 +1,7 @@
 ---
 title: 'Prisma Migrate'
-metaTitle: 'Prisma Migrate | Database, Schema, SQL Migration Tool'
-metaDescription: 'Prisma Migrate is a database migration tool available via the Prisma CLI that integrates with Prisma schema for data modeling.'
+metaTitle: 'Prisma Migrate | 数据库、架构、SQL迁移工具'
+metaDescription: 'Prisma Migrate是一个数据库迁移工具，可通过Prisma CLI获得，它与Prisma架构集成用于数据建模。'
 tocDepth: 3
 ---
 
@@ -9,33 +9,33 @@ tocDepth: 3
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../database-connectors/mongodb).
+**未支持 MongoB** <br />
+Prisma Migrate 目前不支持[MongoDB 连接](../../database-connectors/mongodb).
 
 </Admonition>
 
-Prisma Migrate is an **imperative database schema migration tool** that enables you to:
+Prisma Migrate 是一个**命令式数据库架构迁移工具**，它使您能够:
 
-- Keep your database schema in sync with your [Prisma schema](../prisma-schema) as it evolves _and_
-- Maintain existing data in your database
+- 保持数据库架构与[Prisma 架构](../prisma-schema)的同步
+- 维护数据库中的现有数据
 
-Prisma Migrate generates [a history of `.sql` migration files](#migration-history), and plays a role in both [development](#development-environments) and [deployment](#production-and-testing-environments).
+Prisma Migrate 会生成[一个`.sql`迁移文件的历史记录](#migration-history)，能在[开发](#development-environments)或和[部署](#production-and-testing-environments)中发挥作用。
 
 <Tip>
 
-If you are prototyping, consider using the [`db push` command](db-push) - see [Schema prototyping with `db push`](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span> for examples.
+如果您正在进行原型设计，请考虑使用[`db push` 命令] - 参见[使用 `db push` 进行架构原型设计](../../../guides/database/prototyping-schema-db-push)的示例。
 
 </Tip>
 
 </TopBlock>
 
-## Getting started with Prisma Migrate
+## 开始使用 Prisma Migrate
 
-> See [Developing with Prisma Migrate](../../../guides/database/developing-with-prisma-migrate) <span class="guide"></span> for a more in-depth development workflow.
+> 有关更深入的开发工作流程，请参见[使用 Prisma Migrate 进行开发](../../../guides/database/developing-with-prisma-migrate)。
 
-To get started with Prisma Migrate in a development environment:
+在开发环境中使用 Prisma Migrate:
 
-1. Create a Prisma schema:
+1. 创建 Prisma 架构:
 
    ```prisma file=schema.prisma
    datasource db {
@@ -60,13 +60,13 @@ To get started with Prisma Migrate in a development environment:
 
 <Tip>
 
-You can use [native type mapping attributes](supported-types-and-db-features#mapping-fields-to-a-specific-native-type) in your schema to decide which exact database type to create (for example, `String` can map to `varchar(100)` or `text`).
+您可以在架构中使用[原生类型映射属性](supported-types-and-db-features#mapping-fields-to-a-specific-native-type)来决定要创建的具体数据库类型 (例如，`String` 可以映射到 `varchar（100)` 或 `text`)。
 
 </Tip>
 
 <!-- prettier-ignore-start -->
 
-1. Create the first migration:
+2. 创建第一个迁移:
 
    <CodeWithResult showText="Show migration SQL" hideText="Hide migration SQL">
    <cmd>
@@ -103,7 +103,7 @@ You can use [native type mapping attributes](supported-types-and-db-features#map
    </cmdResult>
    </CodeWithResult>
 
-   Your Prisma schema is now in sync with your database schema and you have initialized a migration history:
+现在您的Prisma架构与数据库架构已同步，并且已初始化了迁移历史记录：
 
    ```
    migrations/
@@ -111,7 +111,7 @@ You can use [native type mapping attributes](supported-types-and-db-features#map
        └─ migration.sql
    ```
 
-1. Evolve your schema by introducing additional fields:
+1. 通过引入其他字段来改进架构:
 
    ```prisma highlight=3;add
    model User {
@@ -122,7 +122,7 @@ You can use [native type mapping attributes](supported-types-and-db-features#map
    }
    ```
 
-1. Create the second migration:
+1. 创建第二次迁移:
 
    <CodeWithResult showText="Show migration SQL" hideText="Hide migration SQL">
    <cmd>
@@ -142,7 +142,7 @@ You can use [native type mapping attributes](supported-types-and-db-features#map
    </cmdResult>
    </CodeWithResult>
 
-   Your Prisma schema is once again in sync with your database schema, and your migration history contains two migrations:
+   Prisma架构再次与数据库架构同步，迁移历史记录里包含了两次迁移：
 
    ```
    migrations/
@@ -154,13 +154,13 @@ You can use [native type mapping attributes](supported-types-and-db-features#map
 
 <!-- prettier-ignore-end -->
 
-You now have a migration history that you can [source control](#source-controlling-the-migration-history) and use to [deploy changes to test environments and production](#production-and-testing-environments).
+您现在有了迁移历史，可以对它进行[源代码管理](#source-controlling-the-migration-history)或[将更改部署到测试环境和生产环境](#production-and-testing-environments)。
 
-## Migration history
+## 迁移历史
 
-Your migration history is the story of the changes to your data model, and is represented by:
+您的迁移历史记录记录了对数据模型的更改，并由以下内容表示:
 
-- A `prisma/migrations` folder with a sub-folder and `migration.sql` file for each migration:
+- 每一次迁移都有一个`prisma/migrations`文件夹及其子文件夹和`migration.sql`文件:
 
   ```
   migrations/
@@ -170,32 +170,32 @@ Your migration history is the story of the changes to your data model, and is re
       └─ migration.sql
   ```
 
-  This folder is the **source of truth** for the history of your data model.
+  这个文件夹是数据模型历史的**来源**。
 
-- A `_prisma_migrations` table in the database, which is used to check:
+- 数据库中的`_prisma_migrations` 表，用于检查:
 
-  - If a migration has been run against the database
-  - If an applied migration has been deleted
-  - If an applied migration has been changed
+  - 如果对数据库运行了迁移
+  - 如果应用的迁移已删除
+  - 如果应用的迁移已改变
 
-  If you change or delete a migration (**not** recommended), the next steps depend on whether you are in a [development environment](#development-environments) (and therefore using `migrate dev`) or a [production / testing environment](#production-and-testing-environments) (and therefore using `migrate deploy`).
+  如果您更改或删除了迁移(**不推荐**)，那接下来的步骤取决于您所处的环境。如果是在[开发环境](#development-environments)则使用`migrate dev`；如果是在[生产/测试环境](#production-and-testing-environments)则使用`migrate deploy`。
 
-### Do not edit or delete migrations that have been applied
+### 不要对已应用的迁移进行编辑或删除
 
-In general, you **should not edit or delete** a migration that has already been applied. Doing so can lead to inconsistencies between development and production environment migration histories, which may have unforeseen consequences - even if the change does not _appear_ to break anything at first.
+一般来说，不应在已应用的迁移上进行**编辑或删除**。这么做会导致开发环境和生产环境的迁移历史不一致，这可能会产生不可预见的后果 — 即使这种变化一开始不会破坏任何东西。
 
-The following scenario simulates a change that creates a seemingly harmless inconsistency:
+下面的场景模拟了一种看似无害的不一致变化:
 
-1. Modify an **existing migration** that has **already been applied** in a development environment by changing the value of `VARCHAR(550)` to `VARCHAR(560)`:
+1. 通过将 `VARCHAR(550)` 的值更改为 `VARCHAR(560)` 来修改一个已经在开发环境中应用的迁移:
 
    ```sql file=./prisma/migrations/20210310143435_default_value/migrations.sql
      -- AlterTable
     ALTER TABLE "Post" ALTER COLUMN "content" SET DATA TYPE VARCHAR(560);
    ```
 
-   After making this change, the end state of the migration history no longer matches the Prisma schema, which still has `@db.VarChar(550)`.
+   修改后，迁移历史的结束状态不再与 Prisma 架构匹配，该架构仍为`@db.VarChar(550)`。
 
-1. Run `prisma migrate dev` - Prisma Migrate detects that a migration has changed, and asks to `reset` the database:
+1. 运行 `prisma migrate dev` - Prisma Migrate 检测到迁移已更改，并要求 `重置` 数据库:
 
    ```bash
    ? The migration `20210310143435_change_type` was modified after it was applied.
@@ -204,16 +204,16 @@ The following scenario simulates a change that creates a seemingly harmless inco
     Do you want to continue? All data will be lost. » (y/N)
    ```
 
-1. If you accept resetting, Prisma Migrate resets the database and replays all migrations, including the migration you edited.
+1. 如果您接受重置，Prisma Migrate 则重置数据库并重新运行所有迁移，包括您编辑的迁移。
 
-1. After applying all existing migrations, Prisma Migrate compares the end state of the migration history to the Prisma schema and detects a discrepancy:
+1. 在应用全部现有迁移后，Prisma Migrate 会将迁移历史的结束状态与 Prisma 架构进行比较，并检测差异:
 
-   - Prisma schema has `@db.VarChar(550)`
-   - Database schema has `VARCHAR(560)`
+   - Prisma 架构有 `@db.VarChar(550)`
+   - 数据库架构有 `VARCHAR(560)`
 
-1. Prisma Migrate generates a new migration to change the value back to `550`, because the end state of the migration history should match the Prisma schema.
+1. Prisma Migrate 会生成一个新的迁移，并将值改回 `550`，因为迁移历史的结束状态应该与 Prisma 架构匹配。
 
-1. From now on, when you use `prisma migrate deploy` to deploy migrations to production and test environments, Prisma Migrate will always **warn you** that migration histories do not match (and continue to warn you each time you run the command ) - even though the schema end states match:
+1. 当您使用 `prisma migrate deploy` 将迁移部署到生产和测试环境时，Prisma Migrate 将会一直**警告您**迁移历史记录不匹配 (并在您每次运行命令时继续警告) - 即使架构的结束状态与其匹配也会如此:
 
 ```bash
 6 migrations found in prisma/migrations
@@ -221,157 +221,157 @@ WARNING The following migrations have been modified since they were applied:
 20210310143435_change_type
 ```
 
-A change that does not appear to break anything after a `migrate reset` can hide problems - you may end up with a bug in production that you cannot replicate in development, or the other way around - particularly if the change concerns a highly customized migration.
+在 `迁移重置` 之后，一个看似没有破坏任何东西的更改可能会隐藏着问题——您可能会在生产环境中出现开发环境里无法复现的 bug，亦或者反过来 — 特别是变更涉及到高度定制化的迁移。
 
-If Prisma Migrate reports a missing or edited migration that has already been applied, we recommend fixing the **root cause** (restoring the file or reverting the change) rather than resetting.
+如果 Prisma Migrate 报告了已应用的缺失或已编辑的迁移，我们建议修复 **根本原因** (恢复文件或恢复更改)，而不是重置。
 
-### Source-controlling the migration history
+### 源码-控制迁移历史
 
-You must commit the entire `prisma/migrations` folder to source control. This includes the `prisma/migrations/migration_lock.toml` file, which is used to detect if you have [attempted to change providers](prisma-migrate-limitations-issues#you-cannot-automatically-switch-database-providers).
+您必须将整个 `prisma/migrations` 文件夹提交给源代码管理。这包括 `prisma/migrations/migration_lock.toml` 文件，它用于检测您是否[试图更改提供者](prisma-migrate-limitations-issues#you-cannot-automatically-switch-database-providers)。
 
-Source-controlling the `schema.prisma` file is not enough - you must include your migration history. This is because:
+仅控制 `schema.prisma` 文件的源代码是不够的，您必须包括您的迁移历史记录。这是因为:
 
-- As you start to [customize migrations](#customizing-migrations), your migration history contains **information that cannot be represented in the Prisma schema**. For example, you can customize a migration to mitigate data loss that would be caused by a breaking change.
-- The `prisma migrate deploy` command, which is used to deploy changes to staging, testing, and production environments, _only_ runs migration files. It does not use the Prisma schema file to fetch the models.
+- 当您开始[自定义迁移](#customizing-migrations)时，您的迁移历史记录包含**无法在 Prisma 架构中表示的信息**。例如，您可以自定义迁移，以减轻突发更改可能导致的数据丢失。
+- `prisma migrate deploy` 命令用于将更改部署到暂存、测试和生产环境，它只运行迁移文件。它不会使用 Prisma 架构文件来获取模型。
 
-## Development environments
+## 开发环境
 
-In a development environment, use the `migrate dev` command to generate and apply migrations:
+在开发环境中，使用 `migrate dev` 命令来生成和应用迁移:
 
 ```terminal
 npx prisma migrate dev
 ```
 
-### Create and apply migrations
+### 创建并应用迁移
 
 <Admonition type="alert">
 
-`migrate dev` is a development command and should never be used in a production environment.
+`migration dev` 是开发命令，切勿在生产环境中使用。
 
 </Admonition>
 
-This command:
+此命令:
 
-1. Replays the existing migration history in the [shadow database](shadow-database) in order to detect schema drift (edited or deleted migration file, or a manual changes to the database schema)
-1. Applies pending migrations to the shadow database (for example, new migrations created by colleagues)
-1. Generates a new migration from any changes you made to the Prisma schema before running `migrate dev`
-1. Applies all unapplied migrations to the development database and updates the `_prisma_migrations` table
-1. Triggers the generation of artifacts (for example, the Prisma Client)
+1. 在[影子数据库](shadow-database)中回放现有的迁移历史，以检测模式漂移 (编辑或删除迁移文件，或手动更改数据库模式)。
+1. 将挂起的迁移应用到影子数据库 (例如，同事创建的新迁移)。
+1. 在运行 `migrate dev` 之前，会根据您对 Prisma 架构所做的任何更改生成新的迁移。
+1. 将所有未应用的迁移应用到开发数据库并更新 `_prisma_migrations` 表。
+1. 触发工件的生成 (例如，Prisma Client)。
 
-The `migrate dev` command will prompt you to reset the database in the following scenarios:
+`migrate dev` 命令会在以下情况下提示您重置数据库:
 
-- Migration history conflicts caused by [modified or missing migrations](#do-not-edit-or-delete-migrations-that-have-been-applied)
-- The database schema has drifted away from the end-state of the migration history
+- 由[修改或丢失的迁移](#do-not-edit-or-delete-migrations-that-have-been-applied)引起的迁移历史冲突
+- 数据库架构已偏离了迁移历史记录的结束状态
 
-You can also `reset` the database yourself to undo manual changes or `db push` experiments by running:
+您还可以通过运行以下命令自行 `重置` 数据库以撤消手动更改或 `db push` 的实验:
 
 ```terminal
 npx prisma migrate reset
 ```
 
-### Reset the development database
+### 重置开发数据库
 
 <Admonition type="alert">
 
-`migrate reset` is a development command and should never be used in a production environment.
+`migrate reset` 是开发命令，切勿在生产环境中使用。
 
 </Admonition>
 
-This command:
+此命令:
 
-1. Drops the database if possible, or performs a soft reset if the environment does not allow deleting databases
-1. Creates a new database with the same name if the database was dropped
-1. Applies all migrations
-1. Runs seed scripts
+1. 如果环境允许，则删除数据库；如果环境不允许删除数据库，则执行软重置。
+1. 如果数据库被删除，则创建相同名称的新数据库。
+1. 适用于所有迁移。
+1. 运行种子脚本。
 
-> **Note**: For a simple and integrated way to re-create data in your development database as often as needed, check out our [seeding guide](../../../guides/database/seed-database).
+> **请注意**: 有关在开发数据库中经常重新创建数据库的简单而集成的方法，请查看我们的[种子指南](../../../guides/database/seed-database)。
 
-### Customizing migrations
+### 自定义迁移
 
-Sometimes, you need to modify a migration **before applying it**. For example:
+有时，您需要在应用迁移前**对其进行修改**。例如:
 
-- You want to introduce a significant refactor, such as changing blog post tags from a `String[]` to a `Tag[]`
-- You want to [rename a field](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#renaming-a-field) (by default, Prisma Migrate will drop the existing field)
-- You want to [change the direction of a 1-1 relationship](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#changing-the-direction-of-a-1-1-relation)
-- You want to add features that cannot be represented in Prisma Schema Language - such as a partial index or a stored procedure.
+- 您希望进行重要的重构，例如将博客帖子标签从 `String[]` 更改为 `Tag[]`
+- 您想要[重命名字段](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#renaming-a-field) (默认情况下，Prisma Migrate 将删除现有字段)
+- 您想要[更改 1 对 1 关系的方向](../../../guides/database/developing-with-prisma-migrate/customizing-migrations#changing-the-direction-of-a-1-1-relation)
+- 您希望添加无法用 Prisma Schema 语言表示的功能，如部分索引或存储过程。
 
-The `--create-only` command allows you to create a migration without applying it:
+`--create-only` 命令允许您在不应用迁移的情况下创建迁移:
 
 ```terminal
 npx prisma migrate dev --create-only
 ```
 
-To apply the edited migration, run `prisma migrate dev` again.
+若要应用编辑后的迁移，请再次运行 `prisma migrate dev`。
 
-Refer to [Customizing migrations](../../../guides/database/developing-with-prisma-migrate/customizing-migrations) <span class="guide"></span> for examples.
+有关示例，请参阅[自定义迁移](../../../guides/database/developing-with-prisma-migrate/customizing-migrations)
 
-### Team development
+### 团队开发
 
-See: [Team development with Prisma Migrate](../../../guides/database/developing-with-prisma-migrate/team-development) <span class="guide"></span>.
+参见: [使用 Prisma Migrate 进行团队开发](../../../guides/database/developing-with-prisma-migrate/team-development) <span class="guide"></span>.
 
-## Production and testing environments
+## 生产和测试环境
 
-In production and testing environments, use the `migrate deploy` command to apply migrations:
+在生产和测试环境中，使用 `migrate deploy` 命令来应用迁移:
 
 ```terminal
 npx prisma migrate deploy
 ```
 
-> **Note**: `migrate deploy` should generally be part of an automated CI/CD pipeline, and we do not recommend running this command locally to deploy changes to a production database.
+> **请注意**: `migrate deploy` 通常应该是自动化 CI/CD 管道的一部分，我们不建议在本地运行此命令来将更改部署到生产的数据库。
 
-This command:
+此命令:
 
-1. Compares applied migrations against the migration history and **warns** if any migrations have been modified:
+1. 将应用的迁移与迁移历史进行比较，并在任何迁移被修改时发出**警告**:
 
    ```bash
    WARNING The following migrations have been modified since they were applied:
    20210313140442_favorite_colors
    ```
 
-1. Applies pending migrations
+1. 应用挂起的迁移
 
-The `migrate deploy` command:
+`migrate deploy` 命令:
 
-- **Does not** issue a warning if an already applied migration is _missing_ from migration history
-- **Does not** detect drift (production database schema differs from migration history end state - for example, due to a hotfix
-- **Does not** reset the database or generate artifacts (such as Prisma Client)
-- **Does not** rely on a shadow database
+- **不会做：** 如果已应用的迁移在迁移历史中 _缺失_，则发出警告
+- **不会做：** 检测漂移 (生产数据库架构不同于迁移历史结束状态 - 例如，由于热修复程序)
+- **不会做：** 重置数据库或生成工件 (如 Prisma Client)
+- **不会做：** 依赖影子数据库
 
-See also:
+请参见:
 
-- [Prisma Migrate in deployment](../../../guides/deployment/deploy-database-changes-with-prisma-migrate) <span class="guide"></span>
-- [Production troubleshooting](../../../guides/database/production-troubleshooting) <span class="guide"></span>
+- [Prisma 在部署中迁移](../../../guides/deployment/deploy-database-changes-with-prisma-migrate) <span class="guide"></span>
+- [生产故障排除](../../../guides/database/production-troubleshooting) <span class="guide"></span>
 
-### Advisory locking
+### 建议锁定
 
-Prisma Migrate makes use of advisory locking when you run production commands like:
+Prisma Migrate 在运行以下生产命令时建议锁定:
 
 - `prisma migrate deploy`
 - `prisma migrate resolve`
 
-This safeguard ensures that multiple commands cannot run at the same time - for example, if you merge two pull requests in quick succession.
+这种保护措施能确保多个命令不能同时运行 — 例如， 如果您连续合并两个请求。
 
-Advisory locking has a **10 second timeout** (not configurable), and uses the default advisory locking mechanism available in the underlying provider:
+建议锁定为**10 秒超时** (不可配置)，并使用底层提供程序中的默认锁定机制:
 
 - [PostgreSQL](https://www.postgresql.org/docs/9.4/explicit-locking.html#ADVISORY-LOCKS)
 - [MySQL](https://dev.mysql.com/doc/refman/5.7/en/locking-functions.html)
 - [SQL server](https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-getapplock-transact-sql?view=sql-server-ver15)
 
-Prisma Migrate's implementation of advisory locking is purely to avoid catastrophic errors - if your command times out, you will need to run it again.
+Prisma Migrate 的建议锁定纯粹是为了避免灾难性错误 — 如果命令超时，则需要再次运行它。
 
-## Commands
+## 命令
 
-See [Prisma Migrate CLI reference](../../../reference/api-reference/command-reference#prisma-migrate) <span class="api"></span> for all available Prisma Migrate commands.
+有关所有可用的 Prisma Migrate 命令，请参阅[Prisma Migrate CLI 参考](../../../reference/api-reference/command-reference#prisma-migrate)<span class="api"></span>。
 
 <!-- ## FAQ
 
 ### When should I use <inlinecode>migrate deploy</inlinecode> and when should I use <inlinecode>migrate dev</inlinecode>? -->
 
-## Troubleshooting
+## 故障排除
 
-Prisma detects when CLI commands are run in non-interactive environments, such as Docker, from Node scripts or in bash shells. When this happens a warning is displayed indicating that the environment is non-interactive and the `migrate dev` command is not supported.
+Prisma 从 Node 脚本或 bash shells 中检测到 CLI 命令在非交互环境 (如 Docker) 中运行时，将会显示一条警告，指示环境是非交互式的，并且不支持 `migrate dev` 命令。
 
-To ensure the Docker environment picks up the command, run the image in `interactive` mode so that it can react to the `migrate dev` command.
+为了确保 Docker 环境接收到该命令，请在 `交互` 模式下运行该映像，以便它能够对 `migrate dev` 命令做出反应。
 
 ```terminal
 docker run --interactive --tty <image name>

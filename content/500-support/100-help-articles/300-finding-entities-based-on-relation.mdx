@@ -1,23 +1,23 @@
 ---
-title: 'Querying models based on their relations existence'
-metaTitle: 'Querying models based on their relations existence'
-metaDescription: 'Learn how you can query for entities where their relation exists or not'
+title: '基于关系存在的模型查询'
+metaTitle: '基于关系存在的模型查询'
+metaDescription: '了解图和查询存在或者不存在关系的实体'
 ---
 
-## Problem
+## 问题
 
-Common use cases when querying for relations from a database are:
+从数据库查询关系时常用的案例是：
 
-- finding all the entities for table X where the relation Y doesn't exist
-- finding all the entities for table X where the relation Y has at least one item
+- 查找表 X 中不存在关系 Y 的所有实体
+- 查找表 X 中至少一个项目关系 Y 的所有实体
 
-Taking a concrete example of users and posts as entities, this would translate to _"find the users that haven't created any posts"_ and _"find the users that have created at least one post"_.
+以 users 和 posts 为实体的具体示例来说，这将转化为”查找尚未创建任何 posts 的 users“和“查找至少创建了一个 post 的 users”。
 
-Read below to learn how this can be achieved with Prisma.
+请阅读以下内容了解如何使用 Prisma 实现。
 
-## Solution
+## 解决方法
 
-Consider this Prisma schema:
+考虑以下 Prisma schema:
 
 ```prisma
 model User {
@@ -33,7 +33,7 @@ model Post {
 }
 ```
 
-You can now query for the **users that do not have any posts** as follows:
+你能查询**没有任何 posts 的 users**，如下所示：
 
 ```js
 await prisma.user.findMany({
@@ -41,9 +41,8 @@ await prisma.user.findMany({
 })
 ```
 
-This query returns all the users that haven't created any posts yet.
-
-In a similar way, you can query for **users that created at least one post** as follows:
+此查询返回所有没有创建 posts 的所有 users。
+同样的方法，你可以查询**至少创建了一个 post**的 users，如下所示：
 
 ```js
 await prisma.user.findMany({
@@ -51,6 +50,5 @@ await prisma.user.findMany({
 })
 ```
 
-This query returns all the users that created at least one post.
-
-This article showed how you can query for entities based on if the relation exists.
+此查询返回至少创建了一个 post 的所有用户。
+本文展示了如何基于关系存在与否的实体查询。

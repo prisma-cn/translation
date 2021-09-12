@@ -1,22 +1,22 @@
 ---
 title: 'REST'
-metaTitle: 'Building REST APIs with Prisma'
-metaDescription: 'This page gives an overview of the most important things when building REST APIs with Prisma. It shows practical examples and the supported libraries.'
+metaTitle: '使用 Prisma 构建 REST 风格 API 服务'
+metaDescription: '本文概述了使用 Prisma 构建 REST 风格 API 服务时最重要的部分。并提供了实际的例子和其支持的库'
 ---
 
 <TopBlock>
 
-When building REST APIs, Prisma Client can be used inside your _route controllers_ to send databases queries.
+当构建 REST 风格 API 服务时，Prisma Client 可以在你的 _路由控制器（route controller）_ 中使用，用来发送数据库查询。
 
 ![REST APIs with Prisma Client](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/5NwAOMt.png)
 
 </TopBlock>
 
-## Supported libraries
+## 支持的库
 
-As Prisma Client is "only" responsible for sending queries to your database, it can be combined with any HTTP server library or web framework of your choice.
+由于 Prisma Client 仅仅 "只" 负责向你的数据库发送查询，所以你可以选择在任意 HTTP 服务库或 Web 框架中使用它。
 
-Here's a non-exhaustive list of libraries and frameworks you can use with Prisma:
+你可以在以下库或者框架中使用 Prisma：
 
 - [Express](https://expressjs.com/)
 - [koa](https://koajs.com/)
@@ -31,9 +31,9 @@ Here's a non-exhaustive list of libraries and frameworks you can use with Prisma
 - [Micro](https://github.com/zeit/micro)
 - [Feathers](https://feathersjs.com/)
 
-## REST API server example
+## REST 风格 API 服务例子
 
-Assume you have a Prisma schema that looks similar to this:
+假设你有一个类似下面这样的 Prisma schema：
 
 ```prisma
 datasource db {
@@ -62,7 +62,7 @@ model User {
 }
 ```
 
-You can now implement route controller (e.g. using Express) that use the generated [Prisma Client API](../../../concepts/components/prisma-client) to perform a database operation when an incoming HTTP request arrives. This page only shows few sample code snippets, if you want to run these code snippets, you can use the [REST API example](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express).
+现在你可以实现一个路由控制器（route controller）（例如使用 Express），并在其中使用生成的 [Prisma Client API](../../../concepts/components/prisma-client) 执行数据库操作。本文中仅仅演示了几个代码示例片段，如果你想要执行这些代码片段，可以参考 [REST API example](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express)。
 
 #### `GET`
 
@@ -76,7 +76,7 @@ app.get('/feed', async (req, res) => {
 })
 ```
 
-Note that the `feed` endpoint in this case returns a nested JSON response of `Post` objects that _include_ an `author` object. Here's a sample response:
+注意，在上面代码这种情况下， `feed` 接口会返回一个由 `Post` 对象包含 `author` 对象而组成的嵌套对象。下面是一个响应的例子：
 
 ```json
 [
@@ -139,13 +139,14 @@ app.delete(`/post/:id`, async (req, res) => {
 })
 ```
 
-## Ready-to-run example projects
+## 示例项目
 
-You can find several ready-to-run examples that show how to implement a REST API with Prisma Client in the [`prisma-examples`](https://github.com/prisma/prisma-examples/) repository.
+你可以在 [`prisma-examples`](https://github.com/prisma/prisma-examples/) 仓库中找到几个可以运行的例子，展示了如何用 Prisma Client 实现 REST 风格 API。
+
 
 | Example                                                                                                             | Language   | Stack        | Description                                                       |
 | :------------------------------------------------------------------------------------------------------------------ | :--------- | ------------ | ----------------------------------------------------------------- |
-| [`rest-nextjs-api-routes`](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-api-routes) | TypeScript | Fullstack    | Simple [Next.js](https://nextjs.org/) app (React) with a REST API |
-| [`rest-express`](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express)                     | TypeScript | Backend only | Simple REST API with Express                                      |
-| [`rest-nextjs`](https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-nextjs)                       | JavaScript | Fullstack    | Simple [Next.js](https://nextjs.org/) app (React) with a REST API |
-| [`rest-express`](https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-express)                     | JavaScript | Backend only | Simple REST API with Express                                      |
+| [`rest-nextjs-api-routes`](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-api-routes) | TypeScript | 全栈    | Simple [Next.js](https://nextjs.org/) app (React) with a REST API |
+| [`rest-express`](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express)                     | TypeScript | 只有后端 | Simple REST API with Express                                      |
+| [`rest-nextjs`](https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-nextjs)                       | JavaScript | 全栈    | Simple [Next.js](https://nextjs.org/) app (React) with a REST API |
+| [`rest-express`](https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-express)                     | JavaScript | 只有后端 | Simple REST API with Express                                      |

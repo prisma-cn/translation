@@ -1,54 +1,54 @@
 ---
-title: Connection pool
-metaDescription: Prisma's query engine creates a connection pool to store and manage database connections.
+title: 连接池
+metaDescription: Prisma　查询引擎创建一个连接池来存储和管理数据库连接。
 tocDepth: 3
 ---
 
 <TopBlock>
 
-The query engine manages a **connection pool** of database connections. The pool is created when Prisma Client opens the _first_ connection to the database, which can happen in one of two ways:
+查询引擎维护一个数据库连接的　**连接池**。当 Prisma Client 　*第一次*　连接到数据库时会创建池，可以通过以下两种方式之一触发：
 
-- By [explicitly calling `$connect()`](connection-management#connect) _or_
-- By running the first query, which calls `$connect()` under the hood
+- 通过 [显式调用 `$connect()`](connection-management#connect) _或_
+- 通过 运行第一次查询, `$connect()` 在后台被调用
 
-Relational database connectors use Prisma's own connection pool, and the MongoDB connectors uses the [MongoDB driver connection pool](https://github.com/mongodb/specifications/blob/master/source/connection-monitoring-and-pooling/connection-monitoring-and-pooling.rst).
+关系型数据库连接器使用 Prisma 自己的连接池，MongoDB 连接器使用　[MongoDB 驱动连接池](https://github.com/mongodb/specifications/blob/master/source/connection-monitoring-and-pooling/connection-monitoring-and-pooling.rst)。
 
 </TopBlock>
 
-## Relational databases
+## 关系型数据库
 
-The relational database connectors use Prisma's connection pool. The connection pool has a **connection limit** and a **pool timeout**, which are controlled by connection URL parameters.
+关系型数据库连接器使用 Prisma 的连接池。连接池有　**连接限制**　和　**池超时时间**，它们被连接 URL 参数控制。
 
-### How the connection pool works
+### 连接池的工作原理
 
-The following steps describe how the query engine uses the connection pool:
+以下步骤描述了查询引擎如何使用连接池：
 
-1. The query engine instantiates a connection pool with a [configurable pool size](#setting-the-connection-pool-size) and [pool timeout](#setting-the-connection-pool-timeout).
-1. The query engine creates on connection and adds it to the connection pool.
-1. When a query comes in, the query engine reserves a connection from the pool to process query.
-1. If there are no idle connections available in the connection pool, the query engine opens additional database connections and adds them to the connection pool until the the number of database connections reaches the limit defined by `connection_limit`.
-1. If the query engine cannot reserve a connection from the pool, queries are added to a FIFO (First In First Out) queue in memory. FIFO means that queries are processed in the order they enter the queue.
-1. If the query engine cannot process a query in the queue for **before the [time limit](#default-pool-timeout)**, it throws an exception with error code `P2024` for that query and moves on to the next one in the queue.
+1. 查询引擎使用　[可配置的池大小](#setting-the-connection-pool-size)　和　[池超时时间](#setting-the-connection-pool-timeout)　来实例化连接池。
+2. 查询引擎创建一个连接并将其添加到连接池中。
+3. 当查询触发时，查询引擎从池中预定一个连接来处理查询。
+4. 如果连接池中没有空闲连接可用，查询引擎会打开额外的数据库连接并将它们添加到连接池中，直到数据库连接数达到给定的 `connection_limit` 限制。
+5. 如果查询引擎无法从池中预定连接，则会将查询添加到内存中的 FIFO（先进先出）队列。FIFO 意味着查询按照它们进入队列的顺序进行处理。
+6. 如果查询引擎在 **[默认超时时间限制](#default-pool-timeout) 之前** 无法处理队列中的查询，它会抛出带有该查询 `P2024` 错误代码的异常并继续处理队列中的下一个查询。
 
-If you consistently experience pool timeout errors, you need to [optimize the connection pool](../../../../guides/performance-and-optimization/connection-management#optimizing-the-connection-pool) <span class="guide"></span> .
+如果你一直遇到池超时错误，则需要 [优化连接池](../../../../guides/performance-and-optimization/connection-management#optimizing-the-connection-pool) <span class="guide"></span>。
 
-### Connection pool size
+### 连接池大小
 
-#### Default connection pool size
+#### 默认连接池大小
 
-The default number of connections (pool size) is calculated with the following formula:
+默认连接数（池大小）使用以下公式计算：
 
 ```bash
-num_physical_cpus * 2 + 1
+num_physical_cpus * 2 + 1   #物理 cpu 数 * 2 + 1
 ```
 
-`num_physical_cpus` represents the number of physical CPUs on your machine. If your machine has **four** physical CPUs, your connection pool will contain **nine** connections (`4 * 2 + 1 = 9`).
+`num_physical_cpus` 代表机器上物理 CPU 的数量。如果你的机器有 **4** 个物理 CPU，则你的连接池将包含 **9** (`4 * 2 + 1 = 9`)个连接。
 
-Although the formula represents a good starting point, the [recommended connection limit](../../../../guides/performance-and-optimization/connection-management#recommended-connection-pool-size) <span class="guide"></span> also depends on your deployment paradigm - particularly if you are using serverless.
+虽然公式代表了一个很好的起点，但 [推荐的连接限制](../../../../guides/performance-and-optimization/connection-management#recommended-connection-pool-size) <span class="guide"></span> 还取决于你的部署范例 - 特别是如果你使用 serverless。
 
-#### Setting the connection pool size
+#### 设置连接池大小　{#setting-the-connection-pool-size}
 
-You can specify the number of connections by explicitly setting the `connection_limit` parameter in your database connection URL. For example, with the following `datasource` configuration in your [Prisma schema](../../prisma-schema) the connection pool will have exactly five connections:
+你可以通过在数据库连接 URL 中显式设置 `connection_limit` 参数来指定连接数量。例如，使用如下 [Prisma schema](../../prisma-schema) 中的 `数据库` 配置，你的连接池会精准地使用 5 个连接：
 
 ```prisma
 datasource db {
@@ -57,15 +57,15 @@ datasource db {
 }
 ```
 
-### Connection pool timeout
+### 连接池超时
 
-#### Default pool timeout
+#### 默认池超时 {#default-pool-timeout}
 
-The default connection pool timeout is 10 seconds. If the query engine does not process a particular query within that time, it throws an exception and moves on to the next query in the queue.
+默认连接池超时为 10 秒。如果查询引擎在该时间内未处理特定查询，则会抛出异常并继续执行队列中的下一个查询。
 
-#### Setting the connection pool timeout
+#### 设置连接池超时 {#setting-the-connection-pool-timeout}
 
-You can specify the pool timeout by explicitly setting the `pool_timeout` parameter in your database connection URL. In the following example, the pool times out after `2` seconds:
+你可以在数据库连接 URL 中显式设置 `pool_timeout` 参数来指定池超时。在以下示例中，池在 2 秒钟后超时：
 
 ```prisma
 datasource db {
@@ -74,9 +74,9 @@ datasource db {
 }
 ```
 
-#### Disabling the connection pool timeout
+#### 禁用连接池超时
 
-You disable the connection pool timeout by setting the `pool_timeout` parameter to `0`:
+你可以通过将 `pool_timeout` 参数设置为 `0` 来禁用连接池超时：
 
 ```prisma
 datasource db {
@@ -85,14 +85,14 @@ datasource db {
 }
 ```
 
-You can choose to [disable the connection pool timeout if queries **must** remain in the queue](../../../../guides/performance-and-optimization/connection-management#disabling-the-pool-timeout) <span class="guide"></span> - for example, if you are importing a large number of records in parallel and are confident that the queue will not use up all available RAM before the job is complete.
+如果查询必须保留在队列中，你可以选择 [禁用连接池超时](../../../../guides/performance-and-optimization/connection-management#disabling-the-pool-timeout) <span class="guide"></span> - 例如，如果你并行导入大量记录并且确信在作业完成之前队列不会用完所有可用 RAM。
 
 ## MongoDB
 
-The MongoDB connector does not use the Prisma connection pool. The connection pool is managed internally by the MongoDB driver and [configured via connection string parameters](https://docs.mongodb.com/manual/reference/connection-string/#connection-pool-options).
+MongoDB 连接器不使用 Prisma 连接池。连接池由 MongoDB 驱动程序内部管理，并 [通过连接字符串参数进行配置](https://docs.mongodb.com/manual/reference/connection-string/#connection-pool-options)。
 
-## External connection poolers
+## 外部连接池
 
-You cannot increase the `connection_limit` beyond what the underlying database can support. This is a particular challenge in serverless environments, where each function manages an instance of `PrismaClient` - and its own connection pool.
+你设置的 `connection_limit` 值不能超出底层数据库可以支持的范围。这在 serverless 环境中是一个特殊的挑战，其中每个函数管理一个 `PrismaClient` 实例 - 以及它自己的连接池。
 
-Consider introducing [an external connection pooler like PgBouncer](../../../../guides/performance-and-optimization/connection-management#pgbouncer) <span class="guide"></span> to prevent your application or functions from exhausting the database connection limit.
+考虑引入 [一个像 PgBouncer 这样的外部连接池](../../../../guides/performance-and-optimization/connection-management#pgbouncer) <span class="guide"></span> 来防止你的应用程序或函数耗尽数据库连接限制。

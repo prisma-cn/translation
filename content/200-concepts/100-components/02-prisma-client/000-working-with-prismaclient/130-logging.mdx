@@ -1,29 +1,29 @@
 ---
-title: 'Configuring logging'
-metaTitle: 'Configuring logging (Concepts)'
-metaDescription: 'Learn how to configure Prisma Client to log the raw SQL queries it sends to the database and other information.'
+title: '配置日志记录'
+metaTitle: '配置日志记录 (概念)'
+metaDescription: '了解如何配置 Prisma Client 来记录它发送到数据库的原始 SQL 查询和其他信息。'
 ---
 
 <TopBlock>
 
-Use the `PrismaClient` [`log`](../../../../../reference/api-reference/prisma-client-reference#log) <span class="api"></span> parameter to configure [log levels](../../../../../reference/api-reference/prisma-client-reference#log-levels) <span class="api"></span>, including warnings, errors, and information about the queries sent to the database.
+使用 `PrismaClient` [`log`](../../../../../reference/api-reference/prisma-client-reference#log) <span class="api"></span> 参数来配置 [日志级别](../../../../../reference/api-reference/prisma-client-reference#log-levels) <span class="api"></span>, 包含了警告、错误和有关发 ​​ 送到数据库的查询的信息。
 
-Prisma supports two types of logging:
+Prisma 支持两种类型的日志记录：
 
-- Logging to [stdout](https://en.wikipedia.org/wiki/Standard_streams) (default)
-- Event-based logging (use [`$on()`](../../../../../reference/api-reference/prisma-client-reference#on) <span class="api"></span> method to [subscribe to events](#event-based-logging))
+- 记录到 [标准输出](https://en.wikipedia.org/wiki/Standard_streams) (默认)
+- 基于事件的日志记录 (使用 [`$on()`](../../../../../reference/api-reference/prisma-client-reference#on) <span class="api"></span> 方法来 [订阅事件](#event-based-logging))
 
 <Admonition type="info">
 
-You can also use the `DEBUG` environment variable to enable debugging output in the Prisma Client. See [Debugging](../debugging) for more information.
+你可以使用 `DEBUG` 环境变量在 Prisma Client 中启用 DEBUG 输出。有关更多信息，请参阅 [DEBUG](../debugging)。
 
 </Admonition>
 
 </TopBlock>
 
-## Log to stdout
+## 记录到标准输出
 
-The simplest way to print _all_ log levels to stdout is to pass in an array `LogLevel` objects:
+将所有日志级别打印到标准输出的最简单方法是传入一个数组 `LogLevel` 对象：
 
 ```ts
 const prisma = new PrismaClient({
@@ -31,7 +31,7 @@ const prisma = new PrismaClient({
 })
 ```
 
-This is the short form of passing in an array of `LogDefinition` objects where the value of `emit` is always `stdout`:
+这是传入一个 `LogDefinition` 对象数组的简短形式，其中的值 `emit` 始终为 `stdout`：
 
 ```ts
 const prisma = new PrismaClient({
@@ -56,14 +56,14 @@ const prisma = new PrismaClient({
 })
 ```
 
-## Event-based logging
+## 基于事件的日志记录 {#event-based-logging}
 
-To use event-based logging:
+要使用基于事件的日志记录：
 
-1. Set `emit` to `event` for a specific log level, such as query
-2. Use the `$on()` method to subscribe to the event
+1. 设置 `emit` 到 `event` 特定的日志级别，如查询
+2. 使用 `$on()` 方法来订阅事件
 
-The following example subscribes to all `query` events and write the `duration` and `query` to console:
+下面的例子订阅的所有 `query` 事件并将 `声明周期` 和 `查询语句` 输出给控制台：
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -109,4 +109,4 @@ Duration: 2ms
 </cmdResult>
 </CodeWithResult>
 
-The exact [event (`e`) type and the properties available](/reference/api-reference/prisma-client-reference#event-types) <span class="api"></span> depends on the log level.
+[事件 (`e`) 类型和可用的属性](/reference/api-reference/prisma-client-reference#event-types) <span class="api"></span> 取决于相应日志级别。

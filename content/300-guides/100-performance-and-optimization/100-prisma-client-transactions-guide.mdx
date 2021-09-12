@@ -1,58 +1,58 @@
 ---
-title: Transactions
-metaDescription: 'Explore techniques for handling transactions with Prisma Client.'
+title: 事务
+metaDescription: '探索Prisma Client事务处理的技巧'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-A **transaction** is a unit of work that only succeeds if every operation within that transaction succeeds. For example, if you update 200 users within a transaction, each update must succeed - if not, all changes are rolled back and the transaction fails as a whole.
+**事务**是一系列的操作，只有每个操作处理成功才会成功。比如，如果你在一个事务中更新 200 个用户，每个更新得必须成功，否则所有的更新就会回滚，事务就算失败了。
 
-<details><summary>The safety guarantees afforded by transactions are often summarized by the ACID acronym.</summary>
+<details><summary>事务所提供的安全保证通常由ACID缩写来概括。</summary>
 
-Developers take advantage of the safety guarantees provided by the database by wrapping the operations in a transaction. These guarantees are often summarized using the ACID acronym:
+开发人员利用数据库提供的安全保障，将操作放在事务中。这些特性通常用 ACID 的缩写来概括。
 
-- **Atomic**: Ensures that either _all_ or _none_ operations of the transactions succeed. The transaction is either _committed_ successfully or _aborted_ and _rolled back_.
-- **Consistent**: Ensures that the states of the database before and after the transaction are _valid_ (i.e. any existing invariants about the data are maintained).
-- **Isolated**: Ensures that concurrently running transactions have the same effect as if they were running in serial.
-- **Durability**: Ensures that after the transaction succeeded, any writes are being stored persistently.
+- **原子化**: 确保一个事务中的所有操作，或者全部完成，或者全部不完成。事务要么被成功提交，要么被中止和回滚。
+- **一致性**: 确保事务前后的数据库状态是有效的（即任何关于数据的现有完整性都被保持）。
+- **隔离性**: 确保同时运行的事务具有相同的效果，就像它们是串行运行的一样。
+- **持久性**: 确保在事务成功后，任何写入的数据都被持久性地存储。
 
-While there's a lot of of ambiguity and nuance to each of these properties (for example, consistency could actually be considered an _application-level responsibility_ rather than a database property or isolation is typically guaranteed in terms of stronger and weaker _isolation levels_), overall they serve as a good high-level guideline for expectations developers have when thinking about database transactions.
+虽然上面的特性每一个都有很多模糊和细微的差别（例如，一致性实际上可以被认为是一个应用层的，而不是一个数据库特性，或者隔离通常是以更强和更弱的隔离级别来保证的），但总的来说，它们可以作为开发人员在考虑数据库事务时的一个很好的高级准则。
 
-> "Transactions are an abstraction layer that allows an application to pretend that certain concurrency problems and certain kinds of hardware and software faults don’t exist. A large class of errors is reduced down to a simple transaction abort, and the application just needs to try again." **[Designing Data-Intensive Applications](https://dataintensive.net/), [Martin Kleppmann](https://twitter.com/martinkl)**
+> "事务是一个抽象层，允许应用程序假设某些并发问题、某些类型的硬件、软件故障不存在。一大类错误被简化为一个简单的事务中止，应用程序只需要再试一次即可" **[设计数据密集型应用](https://dataintensive.net/), [Martin Kleppmann](https://twitter.com/martinkl)**
 
 </details>
 
-Prisma Client supports six different ways of handling transactions for three different scenarios:
+Prisma Client 支持六种不同的事务处理方式，用于三种不同的场景:
 
-| Scenario            | Available techniques                                                                                            |
-| :------------------ | :-------------------------------------------------------------------------------------------------------------- |
-| Dependent writes    | <ul><li>Nested writes</li></ul>                                                                                 |
-| Independent writes  | <ul><li>`$transaction` API</li><li>Batch operations</li></ul>                                                   |
-| Read, modify, write | <ul><li>Idempotent operations</li><li>Optimistic concurrency control</li><li>Interactive transactions</li></ul> |
+| 场景       | 可用技术                                                             |
+| :--------- | :------------------------------------------------------------------- |
+| 依赖写入   | <ul><li>嵌套写法</li></ul>                                           |
+| 独立写入   | <ul><li>`$transaction` API</li><li>批量处理</li></ul>                |
+| 读、改、写 | <ul><li>异步操作</li><li>乐观的并发控制</li><li>交互式事务</li></ul> |
 
-The technique you choose depends on your particular use case.
+你选择的技术取决于你的特定用例。
 
-> **Note**: For the purposes of this guide, _writing_ to a database encompasses creating, updating, and deleting data.
+> **Note**: 在本指南中，对数据库的写入包括创建、更新和删除数据。
 
 </TopBlock>
 
-## Dependent writes
+## 依赖写入
 
-Writes are considered **dependent** on each other if:
+在以下情况下，写入被认为是相互**依赖**的。
 
-- Operations depend on the result of a preceding operation (for example, the database generating an ID)
+- 操作依赖于前一个操作的结果（例如，数据库生成一个 ID)
 
-The most common scenario is creating a record and using the generated ID to create or update a related record. Examples include:
+最常见的情况是创建一条记录并使用生成的 ID 来创建或更新相关的记录, 比如：
 
-- Creating a user and two related blog posts (a one-to-many relationship) - the author ID must be known before creating blog posts
-- Creating a team and assigning members (a many-to-many relationship) - the team ID must be known before assigning members
+- 创建一个用户和两个相关的博客文章（一对多关系）--在创建博客文章之前必须知道作者 ID
+- 创建一个团队并分配成员（多对多的关系）--在分配成员之前必须知道团队 ID
 
-Dependent writes must succeed together in order to maintain data consistency and prevent unexpected behavior, such as blog post without an author or a team without members.
+依赖性的写入必须一起成功，以保持数据的一致性，并防止意外的行为，如没有作者的博客文章或没有成员的团队。
 
-### Nested writes
+### 嵌套写法
 
-Prisma's solution to dependent writes is the **nested writes** feature, which is supported by `create` and `update`. The following nested write creates one user and two blog posts:
+Prisma 对依赖写入的解决方案是**嵌套写法**，通过`create`、 `update`实现。下面的嵌套写法创建一个用户和两个博客文章：
 
 ```ts
 const nestedWrite = await prisma.user.create({
@@ -68,29 +68,27 @@ const nestedWrite = await prisma.user.create({
 })
 ```
 
-If any operation fails, Prisma rolls back the entire transaction. Nested writes are not currently supported by top-level bulk operations like `client.user.deleteMany` and `client.user.updateMany`.
+如果任何操作失败，Prisma 将回滚整个事务。嵌套写法目前不支持顶级的批量操作，如`client.user.deleteMany`和`client.user.updateMany`。
 
-#### When to use nested writes
+#### 什么时候用嵌套写法
 
-Consider using nested writes if:
-
-- ✔ You want to create two or more records related by ID at the same time (for example, create a blog post and a user)
-- ✔ You want to update and create records related by ID at the same time (for example, change a user's name and create a new blog post)
+- ✔ 你想同时创建两条或更多与 ID 相关的记录（例如，创建一个博客文章和一个用户）
+- ✔ 你想同时更新和创建与 ID 相关的记录（例如，改变一个用户的名字并创建一个新的博客文章）
 
 <Tip>
 
-If you [pre-compute your IDs, you can choose between a nested write or using the `$transaction` API](#scenario-pre-computed-ids-and-the-transaction-api).
+如果你[提前计算]IDs, 你可以选择嵌套写法或使用[`$transaction` API](#scenario-pre-computed-ids-and-the-transaction-api).
 
 </Tip>
 
-#### Scenario: Sign-up flow
+#### 情景：注册流程
 
-Consider the Slack sign-up flow, which:
+考虑 Slack 注册流程:
 
-1. Creates a team
-2. Adds one user to that team, which automatically becomes that team's administrator
+1. 创建一个团队
+2. 为该团队添加一个用户，该用户自动成为该团队的管理员
 
-This scenario can be represented by the following schema - note that users can belong to many teams, and teams can have many users (a many-to-many relationship):
+这种情况可以用以下模式表示--用户可以属于许多团队，而团队可以有许多用户（多对多的关系）：
 
 ```prisma
 model Team {
@@ -106,17 +104,17 @@ model User {
 }
 ```
 
-The most straightforward approach is to create a team, then create and attach a user to that team:
+最直接的方法是创建一个团队，然后创建一个用户并关联到该团队：
 
 ```ts
-// Create a team
+// 创建team
 const team = await prisma.team.create({
   data: {
     name: 'Aurora Adventures',
   },
 })
 
-// Create a user and assign them to the team
+// 创建user，并关联到team
 const user = await prisma.user.create({
   data: {
     email: 'alice@prisma.io',
@@ -129,15 +127,15 @@ const user = await prisma.user.create({
 })
 ```
 
-However, this code has a problem - consider the following scenario:
+然而，这段代码有一个问题--考虑以下情况:
 
-1. Creating the team succeeds - "Aurora Adventures" is now taken
-2. Creating and connecting the user fails - the team "Aurora Adventures" exists, but has no users
-3. Going through the sign-up flow again and attempting to recreate "Aurora Adventures" fails - the team already exists
+1. 创建团队成功 - "Aurora Adventures"现在已被占用
+2. 创建和连接用户失败 - "Aurora Adventures"团队存在，但没有用户
+3. 再次经历注册流程并试图重新创建 "Aurora Adventures"失败 - 该团队已经存在
 
-Creating a team and adding a user should be one atomic operation that **succeeds or fails as a whole**.
+创建团队和添加用户应该是一个原子操作，作为一个**整体成功或失败**。
 
-To implement atomic writes in a low-level database clients, you must wrap your inserts in `BEGIN`, `COMMIT` and `ROLLBACK` statements. Prisma Client solves the problem with [nested writes](../../concepts/components/prisma-client/relation-queries#nested-writes). The following query creates a team, creates a user, and connects the records in a single transaction:
+为了在低级别的数据库客户端中实现原子写入，你必须用`BEGIN`、`COMMIT`和`ROLLBACK`语句来包裹你的插入。Prisma Client 用嵌套写法解决了这个问题。下面的查询创建了一个团队，创建了一个用户，并在一个事务中关联了记录:
 
 ```ts
 const team = await prisma.team.create({
@@ -152,13 +150,13 @@ const team = await prisma.team.create({
 })
 ```
 
-Furthermore, if an error occurs at any point, Prisma Client rolls back the entire transaction.
+此外，如果在任何时候发生错误，Prisma Client 将回滚整个事务。
 
-#### Nested writes FAQs
+#### 嵌套写法 FAQs
 
-##### Why can't I use the `$transaction` API to solve the same problem?
+##### 为什么我不能使用`$transaction` API 来解决同样的问题？
 
-The `$transaction` API does not allow you to pass IDs between distinct operations. In the following example, `createUserOperation.id` is not available yet:
+`$transaction` API 不允许你在不同的操作之间传递 ID。在下面的例子中，`createUserOperation.id`还不能使用:
 
 ```ts highlight=12;delete
 const createUserOperation = prisma.user.create({
@@ -172,7 +170,7 @@ const createTeamOperation = prisma.team.create({
     name: 'Aurora Adventures',
     members: {
       connect: {
-        id: createUserOperation.id, // Not possible, ID not yet available
+        id: createUserOperation.id, // 不可行, 因为ID还不存在
       },
     },
   },
@@ -181,22 +179,22 @@ const createTeamOperation = prisma.team.create({
 await prisma.$transaction([createUserOperation, createTeamOperation])
 ```
 
-##### Are cascading deletes supported by the Prisma Client nested writes?
+##### Prisma Client 嵌套写法是否支持级联删除?
 
 <Admonition type="warning">
 
-In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later it is possible to do cascading deletes using the **preview feature** [referential actions](../../concepts/components/prisma-schema/relations/referential-actions).
+在 [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) 及以后的版本中，可以使用**preview feature** [referential actions](../../concepts/components/prisma-schema/relations/referential-actions)进行级联删除。
 
 </Admonition>
 
-- Use the `$transaction` API to perform a cascading delete. Deleting a team and deleting the team's members are not dependent writes - if you know the ID of the team, you can [perform both operations within a `$transaction`](#scenario-privacy-legislation).
-- [Configure cascading deletes at the database level](../database/advanced-database-tasks/cascading-deletes).
+- 使用`$transaction` API 来执行级联删除。删除一个团队和删除该团队的成员并不是依赖性的写法 - 如果你知道该团队的 ID，你可以在[一个`$transaction`中执行这两个操作](#scenario-privacy-legislation)
+- [在数据库层面上配置级联删除](../database/advanced-database-tasks/cascading-deletes).
 
-> **Note**: We are a looking into [cascading deletes support at a schema level](https://github.com/prisma/prisma/issues/2810).
+> **Note**: 我们正在研究在[schema 层面上级联删除](https://github.com/prisma/prisma/issues/2810)的支持。
 
-##### Nested writes support nested updates, but updates are not dependent writes - should I use the `$transaction` API?
+##### 嵌套写法支持嵌套更新，但更新不是依赖写入 - 我应该使用`$transaction` API 吗？
 
-It is correct to say that because you know the ID of the team, you can update the team and its team members independently within a `$transaction`. The following example performs both operations in a `$transaction`:
+正确的说法是，因为你知道团队的 ID，你可以在一个`$transaction`中独立地更新团队和它的团队成员。下面的例子在一个`$transaction`中执行这两个操作:
 
 ```ts
 const updateTeam = prisma.team.update({
@@ -227,7 +225,7 @@ const updateUsers = prisma.user.updateMany({
 await prisma.$transaction([deleteUsers, updateTeam])
 ```
 
-However, you can achieve the same result with a nested write:
+然而，你可以用嵌套写法达到同样的效果:
 
 ```ts
 const updateTeam = await prisma.team.update({
@@ -235,10 +233,10 @@ const updateTeam = await prisma.team.update({
     id: 1,
   },
   data: {
-    name: 'Aurora Adventures Ltd', // Update team name
+    name: 'Aurora Adventures Ltd', // 更新 team 名称
     members: {
       updateMany: {
-        // Update team members that do not have a name
+        // 更新没有名字的团队成员
         data: {
           name: 'Unknown User',
         },
@@ -255,15 +253,15 @@ const updateTeam = await prisma.team.update({
 
 <!-- Performance optimization? -->
 
-##### Can I perform multiple nested writes - for example, create two new teams and assign users?
+##### 我能否进行多次嵌套写法 - 例如，创建两个新的团队并分配用户?
 
-Yes, but this is a combination of scenarios and techniques:
+是的，但这是一个场景和技术的组合:
 
-- Creating a team and assigning users is a dependent write - use nested writes
-- Creating all teams and users at the same time is an independent write because team/user combination #1 and team/user combination #2 are unrelated writes - use the `$transaction` API
+- 创建一个团队并分配用户是一个依赖性的写入 - 使用嵌套写法
+- 同时创建所有的团队和用户是一个独立的写入，因为团队/用户组合#1 和团队/用户组合#2 是不相关的写入 - 使用`$transaction` API
 
 ```ts
-// Nested write
+// 嵌套写法
 const createOne = prisma.team.create({
   data: {
     name: 'Aurora Adventures',
@@ -275,7 +273,7 @@ const createOne = prisma.team.create({
   },
 })
 
-// Nested write
+// 嵌套写法
 const createTwo = prisma.team.create({
   data: {
     name: 'Cool Crew',
@@ -291,37 +289,35 @@ const createTwo = prisma.team.create({
 await prisma.$transaction([createTwo, createOne])
 ```
 
-## Independent writes
+## 独立写入
 
-Writes are considered **independent** if they do not rely on the result of a previous operation. The following groups of independent writes can occur in any order:
+如果写操作不依赖于前一个操作的结果，则被认为是**独立**的。以下几组独立的写操作可以以任何顺序发生
 
-- Updating the status field of a list of orders to "Dispatched"
-- Marking a list of emails as "Read"
+- 将一个订单列表的状态字段更新为 "已发送"
+- 将一个电子邮件列表标记为 "已读"
 
-> **Note**: Independent writes may have to occur in a specific order if constraints are present - for example, you must delete blog posts before the blog author if the post have a mandatory `authorId` field. However, they are still still considered independent writes because no operations depend on the _result_ of a previous operation, such as the database returning a generated ID.
+> **Note**: 如果存在约束条件，独立写入可能必须以特定的顺序发生 - 例如，如果帖子有一个强制性的`authorId`字段，你必须在博客作者之前删除博客帖子。然而，它们仍然被认为是独立的写入，因为没有任何操作依赖于先前操作的结果，例如数据库返回一个生成的 ID。
 
-Depending on your requirements, Prisma Client has four options for handling independent writes that should succeed or fail together.
+根据你的要求，Prisma Client 有四个选项来处理应该一起成功或失败的独立写入。
 
-### Bulk operations
+### 批量操作
 
-Bulk writes allow you to write multiple records of the same type in a single transaction - if any operation fails, Prisma rolls back the entire transaction. Prisma currently supports:
+批量写入允许你在一个事务中写入多个相同类型的记录- 如果任何操作失败，Prisma 会回滚整个事务，Prisma 目前支持：
 
 - `updateMany`
 - `deleteMany`
 
-The ability to [create and upsert in bulk](https://github.com/prisma/prisma-client-js/issues/332) is being considered: feel free to chime in with your use case and upvote if you're interested.
+正在考虑 [create and upsert in bulk](https://github.com/prisma/prisma-client-js/issues/332) 的能力: f 如果你有兴趣，请随时提出你的使用案例并加注。
 
-#### When to use bulk operations
+#### 何时使用批量操作
 
-Consider bulk operations as a solution if:
+- ✔ 你想更新一批相同类型的记录，如一批电子邮件
 
-- ✔ You want to update a batch of the _same type_ of record, like a batch of emails
+#### 场景：将电子邮件标记为已读
 
-#### Scenario: Marking emails as read
+你正在建立一个类似于 gmail.com 的服务，你的客户想要一个 "标记为已读 "的功能，允许用户将所有的电子邮件标记为已读。对邮件状态的每一次更新都是独立的写入，因为邮件之间并不相互依赖 - 例如，"生日快乐 🍰"的邮件与宜家的促销邮件没有关系。
 
-You are building a service like gmail.com, and your customer wants a **"Mark as read"** feature that allows users to mark all emails as read. Each update to the status of an email is an independent write because the emails do not depend on one another - for example, the "Happy Birthday! 🍰" email from your aunt is unrelated to the promotional email from IKEA.
-
-In the following schema, a `User` can have many received emails (a one-to-many relationship):
+在下面的模式中，一个`User`可以有很多收到的邮件（一对多的关系）:
 
 ```ts
 model User {
@@ -340,7 +336,7 @@ model Email {
 }
 ```
 
-Based on this schema, you can use `updateMany` to mark all unread emails as read:
+基于这个模式，你可以使用`updateMany`来标记所有未读邮件为已读:
 
 ```ts
 await prisma.email.updateMany({
@@ -356,9 +352,9 @@ await prisma.email.updateMany({
 })
 ```
 
-#### Can I use nested writes with bulk operations?
+#### 我是否可以在批量操作中使用嵌套写法?
 
-No - neither `updateMany` nor `deleteMany` currently supports nested writes. For example, you cannot delete multiple teams and all of their members (a cascading delete):
+不行 - `updateMany` 和 `deleteMany` 目前都不支持嵌套写法。例如，你不能删除多个团队和他们所有的成员（级联删除）：:
 
 ```ts highlight=8;delete
 await prisma.team.deleteMany({
@@ -368,42 +364,40 @@ await prisma.team.deleteMany({
     },
   },
   data: {
-    members: {}, // Cannot access members here
+    members: {}, // 无法访问这里的members
   },
 })
 ```
 
-You an use the [`$transaction` API to perform a cascading delete](#are-cascading-deletes-supported-by-the-prisma-client-nested-writes).
+可以使用 [`$transaction` API 执行级联删除](#are-cascading-deletes-supported-by-the-prisma-client-nested-writes).
 
-#### Can I use bulk operations with the `$transaction` API?
+#### 我可以通过`$transaction` API 来使用批量操作吗?
 
-Yes - for example, you can include multiple `deleteMany` operations inside a `$transaction`.
+可以 - 例如，你可以在一个`$transaction`中包含多个`deleteMany`操作
 
 <!-- prettier-ignore -->
 ### <inlinecode>$transaction</inlinecode> API
 
-The `$transaction` API is generic solution to independent writes that allows you to run multiple operations as a single, atomic operation - if any operation fails, Prisma rolls back the entire transaction.
+`$transaction` API 是独立写入的通用解决方案, 允许你将多个操作作为一个单一的原子操作来运行 - 如果任何操作失败，Prisma 会回滚整个事务。
 
-Its also worth noting that operations are executed according to the order they are placed in the transaction.
+还值得注意的是，操作是根据它们在事务中的顺序来执行的。
 
 ```ts
 await prisma.$transaction([iRunFirst, iRunSecond, iRunThird])
 ```
 
-> **Note**: Using a query in a transaction does not influence the order of operations in the query itself.
+> **Note**: 在事务中使用一个查询并不影响查询本身的操作顺序。
 
-As the Prisma Client evolves, use cases for the `$transaction` API will increasingly be replaced by more specialized bulk operations (such as `createMany`) and nested writes.
+随着 Prisma Client 的发展，`$transaction` API 的使用情况将越来越多地被更专业的批量操作（如 createMany）和嵌套写法所取代
 
-#### When to use the `$transaction` API
+#### 何时用`$transaction` API
 
-Consider the `$transaction` API if:
+- ✔ 您想更新一个包括不同类型记录（如电子邮件和用户）的批次。这些记录不需要以任何方式进行关联。
+- ✔ 您想批处理原始 SQL 查询 (`$executeRaw`) - 例如，用于 Prisma Client 尚不支持的功能。
 
-- ✔ You want to update a batch that includes different types of records, such as emails and users. The records do not need to be related in any way.
-- ✔ You want to batch raw SQL queries (`$executeRaw`) - for example, for features that Prisma Client does not yet support.
+#### 场景: 隐私法
 
-#### Scenario: Privacy legislation
-
-GDPR and other privacy legislation give users the right to request that an organization deletes all of their personal data. In the following example schema, a `User` can have many posts and private messages:
+GDPR 和其他隐私法规赋予用户要求一个组织删除其所有个人数据的权利。在以下示例模式中，一个用户可以有许多帖子和私人信息：
 
 ```prisma
 model User {
@@ -428,10 +422,10 @@ model PrivateMessage {
 }
 ```
 
-If a user invokes the right to be forgotten, we must delete three records: the user record, private messages, and posts. It is critical that _all_ delete operations succeed together or not at all, which makes this a use case for a transaction. However, using a single bulk operation like `deleteMany` is not possible in this scenario because we need to delete across three models. Instead, we can use the `$transaction` API to run three operations together - two `deleteMany` and one `delete`:
+如果用户想删掉使用记录, 我们必须删除三个记录：用户记录、私人信息和帖子。关键是所有的删除操作要么一起成功，或者根本不成功，这就变成了一个事务。然而，在这种情况下，使用像`deleteMany`这样的单一批量操作是不可能的，因为我们需要跨三个模型进行删除。相反，我们可以使用`$transaction` API 来一起运行三个操作 - 两个 deleteMany 和一个 delete:
 
 ```ts
-const id = 9 // User to be deleted
+const id = 9 // 需要删除的user
 
 const deletePosts = prisma.post.deleteMany({
   where: {
@@ -454,9 +448,9 @@ const deleteUser = prisma.user.delete({
 await prisma.$transaction([deletePosts, deleteMessages, deleteUser]) // Operations succeed or fail together
 ```
 
-#### Scenario: Pre-computed IDs and the `$transaction` API
+#### 场景: 预先计算 ID 和 `$transaction` API
 
-Dependent writes are not supported by the `$transaction` API - if operation A relies on the ID generated by operation B, use [nested writes](#nested-writes). However, if you _pre-computed_ IDs (for example, by generating GUIDs), your writes become independent. Consider the sign-up flow from the nested writes example:
+`$transaction` API 不支持依赖写入 - 如果操作 A 依赖于操作 B 生成的 ID，请使用[嵌套写法](#nested-writes)。然而，如果你预先计算了 ID（例如，通过生成 GUID），你的写入就变得独立了。考虑一下嵌套写的例子中的注册流程：
 
 ```ts
 await prisma.team.create({
@@ -471,7 +465,7 @@ await prisma.team.create({
 })
 ```
 
-Instead of auto-generating IDs, change the `id` fields of `Team` and `User` to a `String` (if you do not provide a value, a UUID is generated automatically). This example uses UUIDs:
+相反的，不自动生成 ID，把`Team`和`User`的`id`字段改成一个字符串（如果你不提供一个值，会自动生成一个 UUID）。这个例子使用 UUIDs:
 
 ```prisma highlight=2,9;delete|3,10;add
 model Team {
@@ -489,7 +483,7 @@ model User {
 }
 ```
 
-Refactor the sign-up flow example to use the `$transaction` API instead of nested writes:
+重构注册流程的例子，使用`$transaction` API 而不是`嵌套写法`:
 
 ```ts
 import { v4 } from 'uuid'
@@ -516,7 +510,7 @@ await prisma.$transaction([
 ])
 ```
 
-Technically you can still use nested writes with pre-computed APIs if you prefer that syntax:
+从技术上讲，如果你喜欢这种语法，你仍然可以使用带有预计算 API 的嵌套写法:
 
 ```ts
 import { v4 } from 'uuid'
@@ -541,37 +535,37 @@ await prisma.team.create({
 })
 ```
 
-There's no compelling reason to switch to manually generated IDs and the `$transaction` API if you are already using auto-generated IDs and nested writes.
+如果你已经在使用自动生成的 ID 和嵌套写法，就没必要改用手动生成的 ID 和`$transaction` API 了。
 
-## Read, modify, write
+## 读、改、写
 
-In some cases you may need to perform custom logic as part of an atomic operation - also known as the [read-modify-write pattern](https://en.wikipedia.org/wiki/Read%E2%80%93modify%E2%80%93write). The following is an example of the read-modify-write pattern:
+在某些情况下，你可能需要执行自定义逻辑作为原子操作的一部分 - 也称为[读-修改-写模式](https://en.wikipedia.org/wiki/Read%E2%80%93modify%E2%80%93write)。下面是一个读-修改-写模式的例子：
 
-- Read a value from the database
-- Run some logic to manipulate that value (for example, contacting an external API)
-- Write the value back to the database
+- 从数据库中读取一个值
+- 运行一些逻辑来操作该值（例如，联系一个外部 API)
+- 写值到数据库
 
-All operations should **succeed or fail together** without making unwanted changes to the database, but you do not necessarily need to use an actual database transaction. This section of the guide describes two ways to work with Prisma Client and the read-modify-write pattern:
+所有的操作都应该**一起成功或失败**，而不会对数据库进行不必要的改变，但你不一定需要使用一个实际的数据库事务。本指南的这一节介绍了使用 Prisma Client 和读-改-写模式的两种工作方式：
 
-- Designing idempotent APIs
-- Optimistic concurrency control
+- 设计幂等 API
+- 优化并发控制
 
-### Idempotent APIs
+### 幂等 API
 
-Idempotency is the ability to run the same logic with the same parameters multiple times with the same result: the **effect on the database** is the same whether you run the logic once or one thousand times. For example:
+幂等是指用相同的参数多次运行相同的逻辑，并得到相同的结果：无论你运行一次还是一千次，对**数据库的影响**都是一样的。比如说：
 
-- **NOT IDEMPOTENT**: Upsert (update-or-insert) a user in the database with email address `"letoya@prisma.io"`. The `User` table **does not** enforce unique email addresses. The effect on the database is different if you run the logic once (one user created) or ten times (ten users created).
-- **IDEMPOTENT**: Upsert (update-or-insert) a user in the database with the email address `"letoya@prisma.io"`. The `User` table **does** enforce unique email addresses. The effect on the database is the same if you run the logic once (one user created) or ten times (existing user is updated with the same input).
+- **非幂等**: 在数据库中更新或插入一个电子邮件地址为 "letoya@prisma.io "的用户。用户表并不强制执行唯一的电子邮件地址。如果你运行该逻辑一次（创建一个用户）或十次（创建十个用户），对数据库的影响是不同的。
+- **幂等**: 在数据库中更新或插入一个用户，电子邮件地址为 "letoya@prisma.io"。用户表强制要求电子邮件地址唯一。如果你运行该逻辑一次（创建一个用户）或十次（现有用户以相同的输入被更新），对数据库的影响是一样的。
 
-Idempotency is something you can and should actively design into your application wherever possible.
+幂等是你可以而且应该尽可能积极地在你的应用程序中设计的东西。
 
-#### When to design an idempotent API
+#### 何时设计幂等 API
 
-- ✔ You need to be able to retry the same logic without creating unwanted side-effects in the databases
+- ✔ 你需要能够重试相同的逻辑，而不在数据库中产生不必要的副作用
 
-#### Scenario: Upgrading a Slack team
+#### 场景: 升级 Slack 团队
 
-You are creating an upgrade flow for Slack that allows teams to unlock paid features. Teams can choose between different plans and pay per user, per month. You use Stripe as your payment gateway, and extend your `Team` model to store a `stripeCustomerId`. Subscriptions are managed in Stripe.
+你正在为 Slack 创建一个升级流程，允许团队解锁付费功能。团队可以选择不同的计划，按用户每月付费。你使用 Stripe 作为你的支付网关，并扩展你的团队模型以存储`stripeCustomerId`，并在 Stripe 中管理订阅。
 
 ```prisma highlight=5;normal
 model Team {
@@ -582,17 +576,17 @@ model Team {
 }
 ```
 
-The upgrade flow looks like this:
+升级的流程是这样的:
 
-1. Count the number of users
-2. Create a subscription in Stripe that includes the number of users
-3. Associate the team with the Stripe customer ID to unlock paid features
+1. 计算用户的数量
+2. 在 Stripe 中创建一个包括用户数量的订阅号
+3. 将团队与 Stripe 的客户 ID 联系起来，以解锁付费功能
 
 ```ts
 const teamId = 9
 const planId = 'plan_id'
 
-// Count team members
+// 统计team member数量
 const numTeammates = await prisma.user.count({
   where: {
     teams: {
@@ -603,15 +597,15 @@ const numTeammates = await prisma.user.count({
   },
 })
 
-// Create a customer in Stripe for plan-9454549
+// 在Stripe中为plan-9454549创建一个customer
 const customer = await stripe.customers.create({
   externalId: teamId,
   plan: planId,
   quantity: numTeammates,
 })
 
-// Update the team with the customer id to indicate that they are a customer
-// and support querying this customer in Stripe from our application code.
+// 用customer ID更新team，表明他们是一个customer
+// 并支持从我们的应用程序代码在Stripe中查询该customer
 await prisma.team.update({
   data: {
     customerId: customer.id,
@@ -622,22 +616,22 @@ await prisma.team.update({
 })
 ```
 
-This example has a problem: you can only run the logic _once_. Consider the following scenario:
+这个例子有一个问题：你只能运行一次这个逻辑。考虑下面的情况:
 
-1. Stripe creates a new customer and subscription, and returns a customer ID
-2. Updating the team **fails** - the team is not marked as a customer in the Slack database
-3. The customer is charged by Stripe, but paid features are not unlocked in Slack because the team lacks a valid `customerId`
-4. Running the same code again either:
+1. Stripe 创建了一个新的客户和订阅，并返回一个客户 ID
+2. 更新团队**失败** - 该团队在 Slack 数据库中未被标记为客户
+3. 客户被 Stripe 收取费用，但付费功能在 Slack 中没有被解锁，因为该团队缺乏有效的`customerId`
+4. 再次运行相同的代码也是如此:
 
-   - Results in an error because the team (defined by `externalId`) already exists - Stripe never returns a customer ID
-   - If `externalId` is not subject to a unique constraint, Stripe creates yet another subscription (**not idempotent**)
+   - 导致错误是因为团队（由 externalId 定义）已经存在 - Stripe 从未返回一个客户 ID
+   - 如果 externalId 不受唯一约束，Stripe 就会创建另一个订阅（**非幂等**）
 
-You cannot re-run this code in case of an error and you cannot change to another plan without being charged twice.
+在出现错误的情况下，您不能重新运行这段代码，而且您只能付费两次才能改变其他订阅计划。
 
-The following refactor (highlighted) introduces a mechanism that checks if a subscription already exists, and either creates the description or updates the existing subscription (which will remain unchanged if the input is identical):
+下面的重构（突出显示）引入了一个机制，该机制会检查订阅是否已经存在，并创建描述或更新现有的订阅（如果输入相同，将保持不变）：
 
 ```ts highlight=12-27;normal
-// Calculate the number of users times the cost per user
+// 计算用户数乘以每个用户的成本
 const numTeammates = await prisma.user.count({
   where: {
     teams: {
@@ -667,8 +661,8 @@ if (customer) {
   })
 }
 
-// Update the team with the customer id to indicate that they are a customer
-// and support querying this customer in Stripe from our application code.
+// 用customer ID更新team，表明他们是一个customer
+// 并支持从我们的应用程序代码在Stripe中查询该customer
 await prisma.team.update({
   data: {
     customerId: customer.id,
@@ -679,32 +673,32 @@ await prisma.team.update({
 })
 ```
 
-You can now retry the same logic multiple times with the same input without adverse effect. To further enhance this example, you can introduce a mechanism whereby the subscription is cancelled or temporarily deactivated if the update does not succeed after a set number of attempts.
+现在你可以用相同的输入多次重试相同的逻辑，而不会产生不良影响。为了进一步加强这个例子，你可以引入一个机制，如果更新在设定的次数后没有成功，订阅会被取消或暂时停用。
 
-### Optimistic concurrency control
+### 优化并发控制
 
-Optimistic concurrency control (OCC) is a model for handling concurrent operations on a single entity that does not rely on 🔒 locking. Instead, we **optimistically** assume that a record will remain unchanged in between reading and writing, and use a concurrency token (a timestamp or version field) to detect changes to a record.
+优化并发控制（OCC）是一种处理单个实体上并发操作的模型，它不依赖于 🔒 锁定。相反，我们**乐观**地假设一条记录在读写之间保持不变，并使用一个并发标记（一个时间戳或版本字段）来检测记录的变化。
 
-If a ❌ conflict occurs (someone else has changed the record since you read it), you cancel the transaction. Depending on your scenario, you can then:
+如果发生 ❌ 冲突（在你读取记录后，其他人改变了该记录），你就取消该事务。根据你的情况，你可以：
 
-- Re-try the transaction (book another cinema seat)
-- Throw an error (alert the user that they are about to overwrite changes made by someone else)
+- 重试该事务（预订另一个电影院的座位）
+- 抛出一个错误（提醒用户他们即将覆盖别人所做的改变）
 
-This section describes how to build your own optimistic concurrency control. See also: Plans for [application-level optimistic concurrency control on GitHub](https://github.com/prisma/prisma/issues/4988)
+本节介绍了如何建立你自己的乐观并发控制。也请参见：[GitHub 上的应用级乐观并发控制](https://github.com/prisma/prisma/issues/4988)的计划
 
-#### When to use optimistic concurrency control
+#### 何时使用乐观并发控制
 
-- ✔ You anticipate a high number of concurrent requests (multiple people booking cinema seats)
-- ✔ You anticipate that conflicts between those concurrent requests will be rare
+- ✔ 预计会有大量的并发请求（多人预订电影院座位）
+- ✔ 预计这些并发请求之间的冲突将是罕见的
 
-Avoiding locks in a application with a high number of concurrent requests makes the application more resilient to load and more scalable overall. Although locking is not inherently bad, locking in a high concurrency environment can lead to unintended consequences - even if you are locking individual rows, and only for a short amount of time. For more information, see:
+在有大量并发请求的应用程序中避免加锁，可以使应用程序对负载的适应性更强，总体上更具有可扩展性。尽管锁本身并不是坏事，但在高并发环境下的锁可能会导致意想不到的后果 - 即使你只是锁定个别行，而且只是锁定很短的时间。欲了解更多信息，请参见：
 
-- [Why ROWLOCK Hints Can Make Queries Slower and Blocking Worse in SQL Server](https://littlekendra.com/2016/02/04/why-rowlock-hints-can-make-queries-slower-and-blocking-worse-in-sql-server/)
-- [The High Concurrency strategy](https://www.ibm.com/developerworks/library/j-ts5/index.html)
+- [为什么 ROLLOCK 提示会使 SQL Server 中的查询变慢，阻塞变严重？](https://littlekendra.com/2016/02/04/why-rowlock-hints-can-make-queries-slower-and-blocking-worse-in-sql-server/)
+- [高并发策略](https://www.ibm.com/developerworks/library/j-ts5/index.html)
 
-#### Scenario: Reserving a seat at the cinema
+#### 场景: 在电影院预订座位
 
-You are creating a booking system for a cinema. Each movie has a set number of seats. The following schema models movies and seats:
+你正在为一家电影院开发一个预订系统。每部电影都有一定数量的座位。下面的模式是电影和座位的模型：
 
 ```ts
 model Seat {
@@ -722,12 +716,12 @@ model Movie {
 }
 ```
 
-The following sample code finds the first available seat and assigns that seat to a user:
+下面的示例代码找到第一个可用的座位并将该座位分配给一个用户:
 
 ```ts
 const movieName = 'Hidden Figures'
 
-// Find first available seat
+// 找到首个可用座位
 const availableSeat = await prisma.seat.findFirst({
   where: {
     movie: {
@@ -737,12 +731,12 @@ const availableSeat = await prisma.seat.findFirst({
   },
 })
 
-// Throw an error if no seats are available
+// 如果座位不存在，抛出异常
 if (!availableSeat) {
   throw new Error(`Oh no! ${movieName} is all booked.`)
 }
 
-// Claim the seat
+// 认领座位
 await prisma.seat.update({
   data: {
     claimedBy: userId,
@@ -753,14 +747,14 @@ await prisma.seat.update({
 })
 ```
 
-However, this code suffers from the "double-booking problem" - it is possible for two people to book the same seats:
+然而，这个代码存在 "重复预订问题”- 两个人有可能预订相同的座位:
 
-1. Seat 3A returned to Sorcha (`findFirst`)
-2. Seat 3A returned to Ellen (`findFirst`)
-3. Seat 3A claimed by Sorcha (`update`)
-4. Seat 3A claimed by Ellen (`update` - overwrites Sorcha's claim)
+1. 座位 3A 返回给 Sorcha (`findFirst`)
+2. 座位 3A 返还给 Ellen (`findFirst`)
+3. 座位 3A 由 Sorcha 认领 (`update`)
+4. 座位 3A 由 Ellen 认领（`update` - 覆盖 Sorcha 的认领）
 
-Even though Sorcha has successfully booked the seat, the system ultimately stores Ellen's claim. To solve this problem with optimistic concurrency control, add a `version` field to the seat:
+尽管 Sorcha 已经成功预订了座位，但系统最终还是存储了 Ellen 的请求。为了用乐观的并发控制解决这个问题，给座位添加一个`version`字段:
 
 ```prisma highlight=7;normal
 model Seat {
@@ -779,8 +773,8 @@ Next, adjust the code to check the `version` field before updating:
 const userEmail = 'alice@prisma.io'
 const movieName = 'Hidden Figures'
 
-// Find the first available seat
-// availableSeat.version might be 0
+// 找到首个可用座位
+// availableSeat.version 可能为 0
 const availableSeat = await client.seat.findFirst({
   where: {
     Movie: {
@@ -794,10 +788,9 @@ if (!availableSeat) {
   throw new Error(`Oh no! ${movieName} is all booked.`)
 }
 
-// Only mark the seat as claimed if the availableSeat.version
-// matches the version we're updating. Additionally, increment the
-// version when we perform this update so all other clients trying
-// to book this same seat will have an outdated version.
+// 只有当availableSeat.version与我们要更新的版本相匹配时，才会将该座位标记为已申请。
+// 此外，当我们执行这个更新时，version会递增，
+// 这样所有其他试图预订同一座位的客户将有一个过时的版本。
 const seats = await client.seat.updateMany({
   data: {
     claimedBy: userEmail,
@@ -807,7 +800,7 @@ const seats = await client.seat.updateMany({
   },
   where: {
     id: availableSeat.id,
-    version: availableSeat.version, // This version field is the key; only claim seat if in-memory version matches database version, indicating that the field has not been updated
+    version: availableSeat.version, // 这个version字段是关键；只有当内存中的版本与数据库的版本相匹配时，才会认领座位，它表明该字段没有被更新。
   },
 })
 
@@ -816,18 +809,18 @@ if (seats.count === 0) {
 }
 ```
 
-It is now impossible for two people to book the same seat:
+现在不可能有两个人预订同一个座位:
 
-1. Seat 3A returned to Sorcha (`version` is 0)
-2. Seat 3A returned to Ellen (`version` is 0)
-3. Seat 3A claimed by Sorcha (`version` is incremented to 1, booking succeeds)
-4. Seat 3A claimed by Ellen (in-memory `version` (0) does not match database `version` (1) - booking does not succeed)
+1. 座位 3A 归属 Sorcha(`version` is 0)
+2. 座位 3A 返还给 Ellen (`version` is 0)
+3. 座位 3A 由 Sorcha 认领(`version`递增为 1，预订成功)
+4. 座位 3A 由 Ellen 认领 (内存`version` (0) 与数据库`version` (1) 不匹配 - 预订不成功)
 
-### Interactive Transactions (in Preview)
+### 交互式事务（预览版)
 
-If you have an existing application, it can be a significant undertaking to refactor your application to use optimistic concurrency control. Interactive Transactions offers a useful escape hatch for cases like this.
+如果你有一个现有的应用程序，重构你的应用程序以使用乐观的并发控制可能是一项重要的工作。交互式事务为这样的情况提供了一个有用的避风港。
 
-To support this use case and more, you can enable interactive transactions by adding `interactiveTransactions` in the generator of your Prisma Schema:
+为了支持这种用例和更多的用例，你可以通过在你的 Prisma Schema 的生成器中添加`interactiveTransactions`来启用交互式事务:
 
 ```prisma
 generator client {
@@ -836,18 +829,18 @@ generator client {
 }
 ```
 
-Then you can pass an async function into [$transaction](https://www.prisma.io/docs/guides/performance-and-optimization/prisma-client-transactions-guide/#transaction-api).
+然后你可以把一个异步函数传入[$transaction](https://www.prisma.io/docs/guides/performance-and-optimization/prisma-client-transactions-guide/#transaction-api).
 
-The following is an example of purchasing a movie ticket online. This is a good use case for an interactive transactions because you don't want to sell the same ticket twice.
+下面是一个在线购买电影票的例子。这是一个交互式交易的好用例，因为你不想把同一张票卖两次：
 
 ```ts highlight=6,8,25;normal
 import { Seat } from 'prisma'
 const userEmail = 'alice@prisma.io'
 const movieName = 'HiddenFigures'
 
-// Start a transaction
+// 开始事务
 const seat: Seat = await prisma.$transaction(async (prisma) => {
-  // Find an available seat
+  // 找到一个可用座位
   const availableSeat = await prisma.seat.findFirst({
     where: {
       claimedBy: null,
@@ -857,14 +850,13 @@ const seat: Seat = await prisma.$transaction(async (prisma) => {
     },
   })
 
-  // Throw an error if no seats are available
+  // 如果座位不存在抛异常
   if (!availableSeat) {
-    // This will rollback the transaction
+    // 这将会滚事务
     throw new Error(`Oh no! ${movieName} is all booked.`)
   }
 
-  // Claim the seat, commit the transaction, and return
-  // the result
+  // 认领座位，提交事务，返回结果
   return prisma.seat.update({
     data: {
       claimedBy: userEmail,
@@ -876,19 +868,16 @@ const seat: Seat = await prisma.$transaction(async (prisma) => {
 })
 ```
 
-In the example above, both the `findFirst` and `update` queries run within a database transaction. When your application reaches the end of the function, the transaction is **committed** to the database.
+在上面的例子中，`findFirst`和`update`都在一个数据库事务中运行。当你的应用程序到达函数的末尾时，事务被提交到数据库中。
 
-If your application encounters an error along the way, the async function will throw an exception and automatically **rollback** the transaction. To catch the exception, you can wrap `$transaction` in a try-catch block.
+如果你的应用程序在运行过程中遇到错误，异步函数将抛出一个异常并自动回滚事务。为了捕捉这个异常，你可以把`$transaction`包在一个 try-catch 块中。
 
 <Admonition type="warning">
 
-**Use interactive transactions with caution**. Keeping transactions
-open for a long time hurts database performance and can even cause deadlocks.
-Try to avoid performing network requests and executing slow queries inside your
-transaction functions. We recommend you get in and out as quick as possible!
+**需谨慎地使用交互式事务**. 谨慎地使用交互式事务。长时间保持事务开放会损害数据库性能，甚至会导致死锁。尽量避免在你的事务函数中执行网络请求和执行缓慢的查询。我们建议你尽可能快地进入和退出!
 
 </Admonition>
 
-## Conclusion
+## 总结
 
-Prisma supports multiple ways of handling transactions, either directly through the API or by supporting your ability to introduce optimistic concurrency control and idempotency into your application. If you feel like you have use cases in your application that are not covered by any of the suggested options, please open a [GitHub issue](https://github.com/prisma/prisma/issues/new/choose) to start a discussion.
+Prisma 支持多种处理事务的方式，可以直接通过 API，也可以通过支持在你的应用程序中引入乐观的并发控制和幂等的能力。如果你觉得你的应用程序中的用例没有被任何建议的选项所覆盖，请在 GitHub 上开一个[GitHub issue](https://github.com/prisma/prisma/issues/new/choose) 来开始讨论。

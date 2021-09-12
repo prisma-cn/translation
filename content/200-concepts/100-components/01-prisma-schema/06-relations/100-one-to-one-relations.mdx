@@ -1,14 +1,14 @@
 ---
-title: One-to-one relations
-metaDescription: How to define and work with one-to-one relations in Prisma.
+title: 一对一关系
+metaDescription: Prisma 中如何定义和处理一对一关系。
 tocDepth: 2
 ---
 
 <TopBlock>
 
-One-to-one (1-1) relations refer to relations where at most **one** record can be connected on both sides of the relation. In the example below, there's one 1-1-relation between `User` and `Profile`:
+一对一 (1-1) 关系指两侧最多可以关联 **一条** 记录的关系。在以下示例中，`User` 和 `Profile` 间有一对一关系：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -20,7 +20,7 @@ model User {
 model Profile {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
-  userId Int // relation scalar field (used in the `@relation` attribute above)
+  userId Int // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 ```
 
@@ -36,25 +36,25 @@ model User {
 model Profile {
   id     String @id @default(dbgenerated()) @map("_id") @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId // relation scalar field (used in the `@relation` attribute above)
+  userId String @db.ObjectId // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 ```
 
 </tab>
 </TabbedContent>
 
-The `userId` relation scalar is a direct representation of the foreign key in the underlying database.This 1-1-relation expresses the following:
+`userId` 关系标量是底层数据库中外键的直接体现。此一对一关系传达了如下内涵：
 
-- "a user can have zero or one profiles" (because the `profile` field is [optional](../data-model#type-modifiers) on `User`)
-- "a profile must always be connected to one user"
+- "一个用户可以有零或一个配置文件" (因为 `User` 的 `profile` 字段是 [选填的](../data-model#type-modifiers))
+- "一个配置文件必需关联一个用户"
 
 </TopBlock>
 
-## Multi-field relations in relational databases
+## 关系型数据库中的多字段关系
 
-In **relational databases only**, you can also define use [multi-field IDs](../../../../../../reference/api-reference/prisma-schema-reference#id-1) to define a 1-1 relation:
+**仅在关系型数据库中**，你还可以使用 [多字段 ID](../../../../../../reference/api-reference/prisma-schema-reference#id-1) 定义一对一关系：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="仅限关系型数据库" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -69,8 +69,8 @@ model User {
 model Profile {
   id            Int    @id @default(autoincrement())
   user          User   @relation(fields: [userFirstName, userLastName], references: [firstName, lastName])
-  userFirstName String // relation scalar field (used in the `@relation` attribute above)
-  userLastName  String // relation scalar field (used in the `@relation` attribute above)
+  userFirstName String // 关系标量字段 (在上述 `@relation` 属性中使用)
+  userLastName  String // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 ```
 
@@ -79,11 +79,11 @@ model Profile {
 </tab>
 </TabbedContent>
 
-## 1-1 relations in the database
+## 数据库中的一对一关系
 
-### Relational databases
+### 关系型数据库
 
-The following example demonstrates how to create a 1-1 relation in SQL:
+以下示例展示了如何用 SQL 创建一对一关系：
 
 ```sql
 CREATE TABLE "User" (
@@ -96,9 +96,9 @@ CREATE TABLE "Profile" (
 );
 ```
 
-Notice that there is a `UNIQUE` constraint on the foreign key `userId`. If this `UNIQUE` constraint was missing, the relation would be considered a [1-n relation](one-to-many-relations).
+注意外键 `userId` 上有 `UNIQUE` 约束。如果 `UNIQUE` 约束缺失，则该关系会被视作 [一对多关系](one-to-many-relations).
 
-The following example demonstrates how to create a 1-1 relation in SQL using a composite key (`firstName` and `lastName`):
+以下示例展示了如何在 SQL 中使用复合键 (`firstName` 和 `lastName`)创建一对一关系：
 
 ```sql
 CREATE TABLE "User" (
@@ -117,15 +117,15 @@ CREATE TABLE "Profile" (
 
 ### MongoDB
 
-For MongoDB, Prisma currently uses a [normalized data model design](https://docs.mongodb.com/manual/core/data-model-design/), which means that documents reference each other by ID in a similar way to relational databases.
+对于 MongoDB，Prisma 目前采用一种 [标准化的数据模型设计](https://docs.mongodb.com/manual/core/data-model-design/)，意味着文件之间通过 ID 互相引用，类似关系型数据库：
 
-The following MongoDB document represents a `User`:
+以下 MongoDB 文件代表一个 `User`：
 
 ```json
 { "_id": { "$oid": "60d58e130011041800d209e1" }, "name": "Bob" }
 ```
 
-The following MongoDB document represents a `Profile` - notice the `userId` field, which references the `User` document's `$oid`:
+以下 MongoDB 文件代表一个 `Profile` - 注意 `userId` 字段，引用了 `User` 文件的 `$oid`：
 
 ```json
 {
@@ -135,26 +135,26 @@ The following MongoDB document represents a `Profile` - notice the `userId` fiel
 }
 ```
 
-## Required and optional 1-1 relation fields
+## 必填和选填的一对一关系字段
 
-In a one-to-one relation, the side of the relation _without_ a relation scalar (the field representing the foreign key in the database) _must_ be optional:
+在一对一关系中，_没有_ 关系标量 (在数据库中储存外键的字段) 的一侧 _必须_ 是选填的：
 
 ```prisma highlight=3;normal
 model User {
   id      Int      @id @default(autoincrement())
-  profile Profile? // No relation scalar - must be optional
+  profile Profile? // 无关系标量 - 必须为选填
 }
 ```
 
-This restriction was introduced in 2.12.0.
+2.12.0 版本引入了此项限制。
 
-However, you can choose if the side of the relation _with_ a relation scalar should be optional or mandatory. In the following example, `profile` and `profileId` are mandatory. This means that you cannot create a `User` without connecting or creating a `Profile`:
+然而，你可以选择 _带有_ 关系标量的一侧是否为必填。以下示例中，`profile` 和 `profileId` 是必填的。这意味着你在创建 `User` 时，必须选择一个已有的 `Profile` 或创建一个新的 `Profile` 与之关联：
 
 ```prisma
 model User {
   id        Int     @id @default(autoincrement())
-  profile   Profile @relation(fields: [profileId], references: [id]) // references `id` of `Profile`
-  profileId Int // relation scalar field (used in the `@relation` attribute above)
+  profile   Profile @relation(fields: [profileId], references: [id]) // 引用 `Profile` 的 `id`
+  profileId Int // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 
 model Profile {
@@ -163,13 +163,13 @@ model Profile {
 }
 ```
 
-In the following example, `profile` and `profileId` are optional. This means that you can create a user without connecting or creating a `Profile`:
+在以下示例中，`profile` 和 `profileId` 是选填的。这意味着你可以直接创建一个用户，而不必关联或创建一个 `Profile`：
 
 ```prisma
 model User {
   id        Int      @id @default(autoincrement())
-  profile   Profile? @relation(fields: [profileId], references: [id]) // references `id` of `Profile`
-  profileId Int? // relation scalar field (used in the `@relation` attribute above)
+  profile   Profile? @relation(fields: [profileId], references: [id]) // 引用 `Profile` 的 `id`
+  profileId Int? // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 
 model Profile {
@@ -178,13 +178,13 @@ model Profile {
 }
 ```
 
-## Choosing which side should store the foreign key in a 1-1 relation
+## 选择在哪一侧储存一对一关系外键
 
-In **1-1 relations**, you can decide yourself which side of the relation you want to annotate with the `@relation` attribute (and therefore holds the foreign key).
+在 **一对一关系** 中，你可以自行决定在关系的哪一侧标注 `@relation` 属性 (从而在这一侧储存外键)。
 
-In the following example, the relation field on the `Profile` model is annotated with the `@relation` attribute. `userId` is a direct representation of the foreign key in the underlying database:
+以下示例中，`Profile` 模型的关系字段标注了 `@relation` 属性。`userId` 是底层数据库中外键的直接体现：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
@@ -196,7 +196,7 @@ model User {
 model Profile {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
-  userId Int // relation scalar field (used in the `@relation` attribute above)
+  userId Int // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 ```
 
@@ -219,16 +219,16 @@ model Profile {
 </tab>
 </TabbedContent>
 
-You can also annotate the other side of the relation with the `@relation` attribute. The following example annotates the relation field on the `User` model. `profileId` is a direct representation of the foreign key in the underlying database:
+你也可以在关系另一侧标注 `@relation` 属性。以下示例标注了 `User` 模型的关系字段。`profileId` 是底层数据库中外键的直接体现：
 
-<TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
+<TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
 
 ```prisma
 model User {
   id        Int      @id @default(autoincrement())
   profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId Int? // relation scalar field (used in the `@relation` attribute above)
+  profileId Int? // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 
 model Profile {
@@ -244,7 +244,7 @@ model Profile {
 model User {
   id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
   profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?  @db.ObjectId // relation scalar field (used in the `@relation` attribute above)
+  profileId String?  @db.ObjectId // 关系标量字段 (在上述 `@relation` 属性中使用)
 }
 
 model Profile {

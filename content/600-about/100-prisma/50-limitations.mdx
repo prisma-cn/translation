@@ -1,25 +1,25 @@
 ---
-title: 'Limitations'
-metaTitle: 'Limitations'
-metaDescription: 'This page lists a number of current limitations of Prisma.'
+title: '局限性'
+metaTitle: '局限性'
+metaDescription: '本页列出了Prisma当前的一些限制。'
 tocDepth: 2
 ---
 
-## Overview
+## 概述
 
-This page describes features that are currently not supported by Prisma and are not planned to be supported.
+本页介绍了 Prisma 当前不支持和计划不支持的功能。
 
-## Records must be uniquely identifiable
+## 记录必须是唯一可识别的
 
-Prisma currently only supports models that have at least one unique field or combination of fields. In practice, this means that every Prisma model must have either at least one of the following attributes:
+Prisma 目前仅支持至少具有一个唯一字段或字段组合的模型。实际上，这意味着每个 Prisma 模型必须至少具有以下属性之一：
 
-- `@id` or `@@id` for a single- or multi-field primary key constraint (max one per model)
-- `@unique` or `@@unique` for a single- or multi-field unique constraint
+- `@id` or `@@id` 单字段或者多字段主建约束 (最多一个)
+- `@unique` or `@@unique` 对于单字段或多字段唯一约束
 
-## Manual database connection handling
+## 手动数据库连接处理
 
-When using Prisma, the database connections are handled on an [engine](https://github.com/prisma/prisma-engines)-level. This means they're not exposed to the developer and it's not possible to manually access them.
+使用 PRISMA 时，数据库连接在[引擎](https://github.com/prisma/prisma-engines)上处理。这意味着它们不会向开发人员公开，也不可能手动访问它们。
 
-## Prisma Migrate limitations
+## Prisma 迁移限制
 
-See: [Prisma Migrate limitations and known issues](../concepts/components/prisma-migrate/prisma-migrate-limitations-issues)
+查看: [Prisma 迁移限制和已知问题](../concepts/components/prisma-migrate/prisma-migrate-limitations-issues)

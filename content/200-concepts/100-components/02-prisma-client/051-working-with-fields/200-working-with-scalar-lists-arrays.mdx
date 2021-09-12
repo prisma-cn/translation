@@ -1,13 +1,13 @@
 ---
-title: 'Working with scalar lists'
-metaTitle: 'Working with scalar lists/arrays (Concepts)'
-metaDescription: 'How to read, write, and filter by scalar lists / rrays.'
+title: '使用 scalar 列表'
+metaTitle: '使用 scalar 列表/数组 (概念)'
+metaDescription: '如何按 scalar 列表/数组 读取、写入和过滤。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-[Scalar lists](../../../../../reference/api-reference/prisma-schema-reference#-modifier) <span class="api"></span> are represented by the `[]` modifier and are only available if the underlying database supports scalar lists. The following example has one scalar `String` list named `pets`:
+[Scalar 列表](../../../../../reference/api-reference/prisma-schema-reference#-modifier) <span class="api"></span> 由 `[]` 修饰符表示，并且仅当底层数据库支持时才可用。以下示例有一个名为 `pets` 的 `String` scalar 列表：
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
@@ -34,7 +34,7 @@ model User {
 </tab>
 </TabbedContent>
 
-Example field value:
+示例字段值：
 
 ```json5
 ['Fido', 'Snoopy', 'Brian']
@@ -42,9 +42,9 @@ Example field value:
 
 </TopBlock>
 
-## Setting the value of a scalar list
+## 设置 scalar 列表的值
 
-The following example demonstrates how to [`set`](../../../../reference/api-reference/prisma-client-reference#set-1) <span class="api"></span> the value of a scalar list (`coinflips`) when you create a model:
+下面的例子演示了如何在创建模型时 [`设置`](../../../../reference/api-reference/prisma-client-reference#set-1) <span class="api"></span> scalar 列表 (`coinflips`) 的值：
 
 ```ts
 const createdUser = await prisma.user.create({
@@ -55,9 +55,9 @@ const createdUser = await prisma.user.create({
 })
 ```
 
-## Adding items to a scalar list
+## 为 scalar 列表添加元素
 
-In [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later (PostgreSQL only), you can use the atomic [`push`](../../../../reference/api-reference/prisma-client-reference#push) <span class="api"></span> method to add a single value to a scalar list:
+在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 及更高版本（仅限 PostgreSQL）中，你可以使用原子性的 [`push`](../../../../reference/api-reference/prisma-client-reference#push) <span class="api"></span> 方法将单个元素添加到 scalar 列表中：
 
 ```ts
 const userUpdate = await prisma.user.update({
@@ -72,7 +72,7 @@ const userUpdate = await prisma.user.update({
 })
 ```
 
-In earlier versions, you have to overwrite the entire value. The following example retrieves user, uses `push()` to add three new coin flips, and overwrites the `coinflips` field in an `update`:
+在早期版本中，你必须覆盖整个值。以下示例查询用户，用 `push()` 添加三个新的 coinflips 值，并在 `update` 中覆盖 `coinflips` 字段 ：
 
 ```ts
 const user = await prisma.user.findUnique({
@@ -99,9 +99,9 @@ if (user) {
 }
 ```
 
-## Filtering scalar lists
+## 过滤 scalar 列表
 
-In [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) and later (Postgres only), you can [filter scalar lists](../../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - for example, a list of `String` or `Enum` types. The following example returns all posts where the tags list includes `databases` _and_ `typescript`:
+在 [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) 及更高版本（仅限 Postgres）中，你可以 [过滤 scalar 列表](../../../../reference/api-reference/prisma-client-reference#scalar-list-filters) <span class="api"></span> - 例如， `String` 或 `Enum` 类型的列表。以下示例返回包含 `databases` _和_ `typescript` 的 posts 列表：
 
 ```ts
 const posts = await prisma.post.findMany({
@@ -113,16 +113,16 @@ const posts = await prisma.post.findMany({
 })
 ```
 
-### <inlinecode>NULL</inlinecode> values in arrays
+### <inlinecode>NULL</inlinecode> 数组中的值
 
-Array fields with a `NULL` value are not considered by following conditions:
+以下条件不考虑具有 `NULL` 值的数组字段：
 
-- `NOT` (array does not contain X)
-- `isEmpty` (array is empty)
+- `NOT` (数组不包含 X)
+- `isEmpty` (数组为空)
 
-This means that records you might expect to see are not returned. Consider the following examples:
+这意味着不会返回你可能希望看到的记录。考虑以下示例：
 
-- The following query returns all posts where the `tags` **do not** include `databases`:
+- 以下查询返回 `tags` **不包含** `databases` 的所有 posts 结果：
 
   ```ts
   const posts = await prisma.post.findMany({
@@ -136,14 +136,14 @@ This means that records you might expect to see are not returned. Consider the f
   })
   ```
 
-  - ✔ Arrays that do not contain `"databases"`, such as `{"typescript", "graphql"}`
-  - ✔ Empty arrays, such as `{}`
+  - ✔ 数组要不包含 `"databases"`，例如 `{"typescript", "graphql"}`
+  - ✔ 空数组, 例如 `{}`
 
-  The query does not return:
+  查询不返回：
 
-  - ✘ `NULL` arrays, even though they do not contain `"databases"`
+  - ✘ `NULL` 数组， 即使它们不包含 `"databases"`
 
-The following query returns all posts where `tags` is empty:
+以下查询返回所有 `tags` 为空的 posts：
 
 ```ts
 const posts = await prisma.post.findMany({
@@ -155,12 +155,12 @@ const posts = await prisma.post.findMany({
 })
 ```
 
-The query returns:
+查询返回：
 
-- ✔ Empty arrays, such as `{}`
+- ✔ 空数组，例如 `{}`
 
-The query does not return:
+查询不返回:
 
-- ✘ `NULL` arrays, even though they could be considered empty
+- ✘ `NULL` 数组，即使它们可以被认为是空的
 
-To work around this issue, you can set the default value of array fields to `{}` at a database level (Prisma schema does not currently support default values for arrays.)
+要解决此问题，你可以将数组字段的默认值设置为数据库级别的 `{}`（Prisma schema 当前不支持数组的默认值。）

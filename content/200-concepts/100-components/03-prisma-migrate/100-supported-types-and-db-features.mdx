@@ -1,48 +1,48 @@
 ---
-title: Supported database types and features
+title: 支持的数据库类型与特性
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../database-connectors/mongodb).
+**未支持 MongoDB ** <br />
+Prisma Migrate 目前不支持[MongoDB 连接](../../database-connectors/mongodb)。
 
 </Admonition>
 
-Prisma Migrate translates the model defined in your [Prisma schema](../prisma-schema) into features in your database.
+Prisma Migrate 将您的 [Prisma 架构](../prisma-schema) 中定义的模型转换为数据库中的功能。
 
-![A diagram that shows a Prisma schema on the left (labeled: Prisma schema, models) and a database on the right (labeled: Database, tables). Two parallel arrows connect the schema and the database, showing how '@unique' maps to 'UNIQUE' and '@id' maps to 'PRIMARY KEY'.](migrate-mapping.png)
+![左侧显示Prisma schema（标记为：Prisma schema，models）和右侧显示 database（标记为：Database, tables）的图表。两个平行箭头连接架构和数据库，显示 '@Unique' 如何映射到'Unique'，'@id'如何映射到'PRIMARY KEY'](migrate-mapping.png)
 
-Every¹ feature in your [data model](../prisma-schema/data-model) maps to a corresponding feature in the underlying database. **If you can define a feature in the Prisma schema, it is supported by Prisma Migrate.**
+[数据模型](../prisma-schema/data-model)中的每项功能都会映射成基础数据库中的相应功能。**如果可以在 Prisma 架构中定义功能，Prisma Migrate 将支持该功能。**
 
-For a complete list of Prisma schema features, refer to:
+有关 Prisma 架构功能的完整列表，请参考:
 
-- [Database features matrix](../../../reference/database-reference/database-features) <span class="api"></span> for a list of database features and what they map to in the Prisma schema.
-- [Prisma schema reference](../../../reference/api-reference/prisma-schema-reference) <span class="api"></span> for a list of all Prisma schema features, including field types, attributes, and functions.
+- [数据库功能矩阵](../../../reference/database-reference/database-features) <span class="api"></span> 查看数据库功能列表以及它们在 Prisma 架构中映射的内容。
+- [Prisma 架构参考](../../../reference/api-reference/prisma-schema-reference) <span class="api"></span> 有关所有 Prisma 架构功能的列表，包括字段类型、属性和函数等。
 
-Prisma Migrate also supports mapping each field to a [specific native type](#mapping-fields-to-a-specific-native-type), and there are ways to [include features without a Prisma schema equivalent in your database](#handling-unsupported-database-features).
+Prisma Migrate 还支持将每个字段映射成[特定的原生类型](#mapping-fields-to-a-specific-native-type)，并且还有方法支持您的[数据库中没有的 Prisma 架构对应的功能](#handling-unsupported-database-features)。
 
 <FootNote>
 
-¹ Comments and Prisma-level functions (`uuid()` and `cuid()`) do not map to database features.
+¹ 注释和 Prisma 级函数 (`uuid()` 和 `cuid()`) 都不会映射到数据库功能。
 
 </FootNote>
 
 </TopBlock>
 
-## Mapping fields to a specific native type
+## 将字段映射到特定的本机类型
 
-Each Prisma type maps to a default underlying database type - for example, the PostgreSQL connector maps `String` to `text` by default. [Native database type attributes](../prisma-schema/data-model#native-types-mapping) determines which _specific_ native type should be created in the database.
+每个 Prisma 类型都会映射成默认的基础数据库类型，例如：PostgreSQL 连接器会将 `String` 映射为 `text`。 [原生数据库类型属性](../prisma-schema/data-model#native-types-mapping)会决定应该在数据库中创建哪个 _特定_ 的原生类型。
 
 <Admonition type="info">
 
-**Note**: Some Prisma types only map to a single native type.
+**请注意**: 有些 Prisma 类型只映射到一个原生类型。
 
 </Admonition>
 
-In the following example, the `name` and `title` fields have a `@db.VarChar(X)` type attribute:
+在下面的例子中，`name` 和 `title` 字段具有 `@db.VarChar(X)` 类型属性:
 
 ```prisma highlight=8,14;normal
 datasource db {
@@ -65,7 +65,7 @@ model Post {
 }
 ```
 
-Prisma Migrate uses the specified types when it creates a migration:
+Prisma Migrate 在创建迁移时会使用特定的类型:
 
 ```sql highlight=4,11;normal
   -- CreateTable
@@ -87,23 +87,23 @@ CREATE TABLE "Post" (
 ALTER TABLE "Post" ADD FOREIGN KEY("authorId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ```
 
-### Mappings by Prisma type
+### Prisma 类型的映射
 
-For type mappings organized by Prisma type, refer to the [Prisma schema reference](../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types) documentation.
+对于由 Prisma 类型组织的映射，请参阅[Prisma 架构参考](../../../reference/api-reference/prisma-schema-reference#model-field-scalar-types)文档。
 
-### Mappings by database provider
+### 数据库提供程序的映射
 
-For type mappings organized by database provider, see:
+有关按数据库提供程序组织的类型映射，请参见:
 
-- [PostgreSQL mappings](../../database-connectors/postgresql#prisma-migrate)
-- [MySQL mappings](../../database-connectors/mysql#prisma-migrate)
-- [SQL Server mappings](../preview-features/sql-server#type-mapping-between-microsoft-sql-server-to-prisma-schema)
-- [SQLite mappings](../../database-connectors/sqlite#data-model-mapping)
+- [PostgreSQL 映射](../../database-connectors/postgresql#prisma-migrate)
+- [MySQL 映射](../../database-connectors/mysql#prisma-migrate)
+- [SQL Server 映射](../preview-features/sql-server#type-mapping-between-microsoft-sql-server-to-prisma-schema)
+- [SQLite 映射](../../database-connectors/sqlite#data-model-mapping)
 
-## Handling unsupported database features
+## 处理不支持的数据库功能
 
-Prisma Migrate cannot automatically create database features that have no equivalent in Prisma Schema Language (PSL). For example, there is currently no way to define a stored procedure or a partial index in PSL. However, there are ways to add unsupported features to your database with Prisma Migrate:
+Prisma Migrate 无法自动创建在 Prisma Schema Language(PSL)中没有等效项的数据库功能。例如，无法在 PSL 中定义存储过程或部分索引。但可以使用 Prisma Migrate 将不支持的功能添加到数据库中:
 
-- [Handle unsupported field types](../prisma-schema/features-without-psl-equivalent#unsupported-field-types) (like `circle`)
-- [Handle unsupported features](../prisma-schema/features-without-psl-equivalent#unsupported-database-features), like stored procedures
-- [How to use native database functions](../prisma-schema/features-without-psl-equivalent#native-database-functions)
+- [处理不支持的字段类型](../prisma-schema/features-without-psl-equivalent#unsupported-field-types) (类似 `circle`)
+- [处理不支持的功能](../prisma-schema/features-without-psl-equivalent#unsupported-database-features)，类似于存储过程
+- [如何使用原生数据库函数](../prisma-schema/features-without-psl-equivalent#native-database-functions)

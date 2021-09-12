@@ -1,27 +1,27 @@
 ---
-title: 'Deploying migrations from a local environment'
-metaTitle: 'Deploying migrations from a local environment'
-metaDescription: 'Learn how to deploy Node.js and TypeScript applications that are using Prisma Client locally.'
+title: '从本地环境部署迁移工作'
+metaTitle: '从本地环境部署迁移工作'
+metaDescription: '了解如何在本地部署使用Prisma客户端的Node.js和TypeScript应用程序。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-There are two scenarios where you might consider deploying migrations directly from a local environment to a production environment.
+在两种情况下，你可以考虑直接从本地环境向生产环境部署迁移。
 
-- You have a local CI/CD pipeline
-- You are [baselining](../../database/developing-with-prisma-migrate/add-prisma-migrate-to-a-project#baseline-your-production-environment) a production environment
+- 你有一个本地的 CI/CD 管道
+- 你正在[标准化](.../.../database/developing-with-prisma-migrate/add-prisma-migrate-to-a-project#baseline-your-production-environment)一个生产环境
 
-This page outlines some examples of how you can do that and **why we would generally not recommend it**.
+本页概述了一些例子，说明你可以如何做到这一点，以及 **为什么我们一般不建议这样做**.
 
 </TopBlock>
 
-## Local CI/CD pipeline
+## 本地的 CI/CD 管道
 
-If you do not have an automated CI/CD process, you can technically deploy new migrations from your local environment to production in the following ways:
+如果你没有一个自动化的 CI/CD 流程，在技术上你可以通过以下方式将新的迁移从本地环境部署到生产环境:
 
-1. Make sure your migration history is up to date. You can do this through running `prisma migrate dev`, which will generate a migration history from the latest changes made.
-2. Swap your local connection URL for your production connection URL
+1. 确保你的迁移历史是最新的。你可以通过运行`prisma migrate dev`来做到这一点，它将从最新的改动中生成一个迁移历史。
+2. 将本地连接的 URL 换成生产连接的 URL
 
 ```bash file=.env highlight=1;delete|3;add
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/my_local_database"
@@ -32,23 +32,20 @@ DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/my_production_d
 3. Run `prisma migrate deploy`
 
 <div style={{ margin: '2.5rem auto' }}>
-  ⛔{' '}
-  <strong>
-    We strongly discourage this solution due to the following reasons
-  </strong>
+  ⛔ <strong>由于以下原因，我们强烈不赞成这种解决方案</strong>
 </div>
 
-- You risk exposing your production database connection URL to version control.
-- You may accidentally use your production connection URL instead and in turn **override or delete your production database**.
+- 你有可能将你的生产数据库连接 URL 暴露给版本控制。
+- 你可能会意外地使用你的生产连接网址，而反过来**覆盖或删除你的生产数据库**.
 
 <div style={{ margin: '2.5rem auto' }}>
-  ✅ <strong>We recommend setting up an automated CI/CD pipeline</strong>
+  ✅ <strong>我们建议建立一个自动化的CI/CD管道</strong>
 </div>
 
-The pipeline should handle deployment to staging and production environments, and use `migrate deploy` in a pipeline step. See the [deployment guides](./) for examples.
+该管道应处理部署到暂存和生产环境，并在管道步骤中使用`migrate deploy`。参见[部署指南](./)中的例子。
 
-## Baselining a production database
+## 标准化一个生产环境数据库
 
-When you add Prisma Migrate to an **existing database**, you must [baseline](../../database/developing-with-prisma-migrate/add-prisma-migrate-to-a-project#baseline-your-production-environment) the production database. Baselining is performed **once**, and can be done from a local instance.
+当你将 Prisma Migrate 添加到一个**存在的数据库时，你必须对生产数据库进行[标准化](././database/developing-with-prisma-migrate/add-prisma-migrate-to-a-project#baseline-your-production-environment) 。标准化是**次执行的，并且可以从本地实例中进行。
 
 ![](../../../doc-images/baseline-production-from-local.png)

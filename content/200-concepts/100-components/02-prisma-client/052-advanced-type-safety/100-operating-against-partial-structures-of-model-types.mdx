@@ -1,12 +1,12 @@
 ---
-title: 'Operating against partial structures of your model types'
-metaTitle: 'Operating against partial structures of your model types'
-metaDescription: 'This page documents various scenarios for using the generated types from the Prisma namespace'
+title: '针对模型类型的部分结构进行操作'
+metaTitle: '针对模型类型的部分结构进行操作'
+metaDescription: '此页面记录使用 Prisma 命名空间生成的类型的各种场景'
 ---
 
 <TopBlock>
 
-When using Prisma Client, every model from your [Prisma schema](../../prisma-schema) is translated into a dedicated TypeScript type. For example, assume you have the following `User` and `Post` models:
+使用 Prisma Client 时，[Prisma schema](../../prisma-schema) 中的每个模型都会转换为专用的 TypeScript 类型。例如，假设你有以下 `User` 和 `Post` 模型：
 
 ```prisma
 model User {
@@ -25,7 +25,7 @@ model Post {
 }
 ```
 
-The Prisma Client code that's generated from this schema contains this representation of the `User` type:
+此 schema 生成的 Prisma Client 代码包含以下 `User` 类型的表示：
 
 ```ts
 export declare type User = {
@@ -37,24 +37,24 @@ export declare type User = {
 
 </TopBlock>
 
-## Problem: Using variations of the generated model type
+## 问题: 使用生成的模型类型的变体
 
-### Description
+### 描述
 
-In some scenarios, you may need a _variation_ of the generated `User` type. For example, when you have a function that expects an instance of the `User` model that carries the `posts` relation. Or when you need a type to pass only the `User` model's `email` and `name` fields around in your application code.
+在某些情况下，你可能需要生成的 `User` 类型的 _变体_。例如，当你有一个函数需要一个带有 `posts` 关系的 `User` 模型实例时。或者，当你需要一个类型在应用程序代码中只传递 `User` 模型的 `email` 和 `name` 字段时。
 
-### Solution
+### 解决方案
 
-As a solution, you can customize the generated model type using Prisma Client's helper types.
+作为解决方案，你可以使用 Prisma Client 的帮助器类型自定义生成的模型类型。
 
-The `User` type only contains the model's [scalar](../../prisma-schema/data-model#scalar-fields) fields, but doesn't account for any relations. That's because [relations are not included by default](../select-fields#return-the-default-selection-set) in Prisma Client queries.
+`User` 类型仅包含模型的 [scalar](../../prisma-schema/data-model#scalar-fields) 字段，但不考虑任何关系。这是因为在 Prisma Client 查询中 [默认情况下不包括关系](../select-fields#return-the-default-selection-set) 返回默认选择集）。
 
-However, sometimes it's useful to have a type available that **includes a relation** (i.e. a type that you'd get from an API call that uses [`include`](../select-fields#include-relations-and-select-relation-fields)). Similarly, another useful scenario could be to have a type available that **includes only a subset of the model's scalar fields** (i.e. a type that you'd get from an API call that uses [`select`](../select-fields#select-specific-fields)).
+但是，有时使用 **包含关系** 的可用类型（即，从使用[`include`](../select-fields#include-relations-and-select-relation-fields) 的 API 调用中获得的类型）很有用。类似地，另一个有用的场景可能是提供一个 **仅包含模型 scalar 字段** 子集的类型（即，从使用 [`select`](../select-fields#select-specific-fields) 的 API 调用中获得的类型）。
 
-One way of achieving this would be to define these types manually in your application code:
+实现这一点的一种方法是在应用程序代码中手动定义这些类型：
 
 ```ts
-// 1: Define a type that includes the relation to `Post`
+// 1: 定义包含 `Post` 的关系的类型
 type UserWithPosts = {
   id: string
   email: string
@@ -62,73 +62,74 @@ type UserWithPosts = {
   posts: Post[]
 }
 
-// 2: Define a type that only contains a subset of the scalar fields
+// 2: 定义仅包含 scalar 字段子集的类型
 type UserPersonalData = {
   email: string
   name: string | null
 }
 ```
 
-While this is certainly feasible, this approach increases the maintenance burden upon changes to the Prisma schema as you need to manually maintain the types. A cleaner solution to this is to use the `UserGetPayload` type that is generated and exposed by Prisma Client under the `Prisma` namespace in combination with the [`validator`](prisma-validator).
+虽然这当然是可行的，但这种方法增加了更改 Prisma schema 时的维护负担，因为你需要手动维护类型。一个更简洁的解决方案是使用由 Prisma Client 在 `Prisma` 名称空间下生成并公开的 `UserGetPayload` 类型与 [`validator`](prisma-validator) 组合使用。
 
-The following example uses the `Prisma.validator` to create two type-safe objects and then uses the `Prisma.UserGetPayload` utility function to create a type that can be used to return all users and their posts.
+下面的示例使用 `Prisma.validator` 创建两个类型安全对象，然后使用 `Prisma.UserGetPayload` 实用程序函数创建一个可用于返回所有用户及其 Post 的类型。
 
 ```ts
 import { Prisma } from '@prisma/client'
 
-// 1: Define a type that includes the relation to `Post`
+// 1:定义包含 `Post` 的关系的类型
 const userWithPosts = Prisma.validator<Prisma.UserArgs>()({
   include: { posts: true },
 })
 
-// 2: Define a type that only contains a subset of the scalar fields
+// 2: 定义仅包含 scalar 字段子集的类型
 const userPersonalData = Prisma.validator<Prisma.UserArgs>()({
   select: { email: true, name: true },
 })
 
-// 3: This type will include a user and all their posts
+// 3: 此类型将包括一个用户及其所有 post
 type UserWithPosts = Prisma.UserGetPayload<typeof userWithPosts>
 ```
 
-The main benefits of the latter approach are:
+后一种方法的主要好处是：
 
-- Cleaner approach as it leverages Prisma Client's generated types
-- Reduced maintenance burden and improved type safety when the schema changes
+- 更干净的方法，因为它利用了 Prisma Client 生成的类型
 
-## Problem: Getting access to the return type of a function
+- 减少了维护负担，提高了模式更改时的类型安全性
 
-### Description
+## 问题：获取方法返回值的类型
 
-When doing [`select`](../../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> or [`include`](../../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> operations on your models and returning these variants from a function, it can be difficult to gain access to the return type, e.g:
+### 描述
+
+在对模型执行 [`select`](../../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> 或 [`include`](../../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> 操作并从函数返回这些变量时，很难访问返回类型，例如：
 
 ```ts
-// Function definition that returns a partial structure
+// 返回部分结构的函数定义
 async function getUsersWithPosts() {
   const users = await prisma.user.findMany({ include: { posts: true } })
   return users
 }
 ```
 
-Extracting the type that represents "users with posts" from the above code snippet requires some advanced TypeScript usage:
+从上述代码段中提取表示 “有 post 的用户” 的类型需要一些高级 TypeScript 用法：
 
 ```ts
-// Function definition that returns a partial structure
+// 返回部分结构的函数定义
 async function getUsersWithPosts() {
   const users = await prisma.user.findMany({ include: { posts: true } })
   return users
 }
 
-// Extract `UsersWithPosts` type with
+// 提取 `UsersWithPosts` 类型
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T
 type UsersWithPosts = ThenArg<ReturnType<typeof getUsersWithPosts>>
 
-// run inside `async` function
+//  在 `异步` 函数内运行
 const usersWithPosts: UsersWithPosts = await getUsersWithPosts()
 ```
 
-### Solution
+### 解决方案
 
-With the `PromiseReturnType` that is exposed by Prisma namespace, you can solve this more elegantly:
+通过 Prisma 命名空间公开的 `PromiseReturnType`，你可以更优雅地解决此问题：
 
 ```ts
 import { Prisma } from '@prisma/client'
