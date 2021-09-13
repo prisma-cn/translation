@@ -1,6 +1,6 @@
 ---
-title: 定制迁移
-metaDescription: 如何在应用迁移文件之前编辑该文件以避免生产环境中的数据丢失。
+title: 定制迁移流程
+metaDescription: 为了避免生产环境中的数据丢失在应用迁移文件之前需要修改迁移文件。
 ---
 
 <TopBlock>
@@ -12,9 +12,9 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 </Admonition>
 
-在某些情况下，需要在应用迁移文件之前编辑它。例如，[修改 1 对 1 关系的指向](#changing-the-direction-of-a-1-1-relation)(将外键从一边移到另一边)，为了避免数据丢失，需要移动数据作为迁移的一部分 - 这 SQL 不是默认迁移的一部分，必须手动编写。
+在某些情况下，您需要在应用迁移之前对其进行编辑。例如，[修改 1 对 1 关系的指向](#changing-the-direction-of-a-1-1-relation)(将外键从一边移到另一边)，为了避免数据丢失，需要将迁移数据作为迁移的一部分 -  此 SQL 不是默认迁移的一部分，并且必须手写。
 
-要在应用迁移文件之前编辑该文件:
+要在应用迁移之前编辑该文件:
 
 1. 做一个需要自定义 SQL 的 schema 改变（例如，保留现有数据）。
 1. 创建一个预迁移：
@@ -34,10 +34,10 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 ## 重命名字段
 
-默认情况下，迁移结果中 schema 重命名一个字段会导致:
+默认情况下，schema 重命名schema中的一个字段会导致:
 
 - `CREATE` 一新的列 (例如, `fullname`)
-- `DROP` 存在的一列 (for example, `name`) 和其中的数据
+- `DROP` 现有列 (for example, `name`) 和该列中的数据
 
 要真正**重命名**一个字段，且在生产中运行迁移时避免数据丢失，需要在将迁移 SQL 应用到数据库之前修改生成的迁移 SQL 语句。考虑下面的 schema 片段 - `biograpy`字段是拼写错误的。
 
@@ -64,13 +64,13 @@ model Profile {
    }
    ```
 
-1. 运行下面的指令，创建可以在应用到数据库前先编辑的**预迁移**:
+2. 运行以下命令以创建可以在应用到数据库之前编辑的：**草稿迁移**:
 
    ```terminal
    npx prisma migrate dev --name rename-migration --create-only
    ```
 
-1. 如下编辑预编译, `DROP` / `DELETE` 改为 `RENAME COLUMN`:
+3. 如图所示编辑迁移草案, 将`DROP` / `DELETE` 改为 `RENAME COLUMN`:
 
    <TabbedContent tabs={[<FileWithIcon text="Before" icon="code"/>, <FileWithIcon text="After" icon="code" />]}>
 
@@ -94,17 +94,17 @@ model Profile {
 
    </TabbedContent>
 
-1. 保存和应用该迁移：
+4. 保存和应用该迁移：
 
    ```terminal
    npx prisma migrate dev
    ```
 
-可以使用同样的技术来重命名一个 `model` - 将 drop 和重建的 SQL 语句修改为 _rename_。
+可以使用同样的技术来重命名一个 `model` - 编辑生成的SQL用于重命名表，而不是删除再重新创建。
 
 ## 应用 expand 和 contract 模式，在不停机的情况下改进 schema
 
-对现有字段进行修改，例如重命名，会导致停机状况。停机时间即为应用迁移和部署完成的时间差。
+对现有字段进行架构更改（例如，重命名字段）可能会导致停机。它发生在应用修改现有字段的迁移和部署使用修改后的字段的应用程序代码的新版本之间的时间范围内。
 
 可以将修改字段分解为一系列不连续的步骤，从而避免停机。 这种模式叫作 _expand 和 contract 模式_。
 
@@ -182,7 +182,7 @@ model Profile {
    }
    ```
 
-1. 运行下面的指令，创建可以在应用到数据库前先编辑的**预迁移**:
+2. 运行下面的指令，创建可以在应用到数据库前先编辑的**预迁移**:
 
    <CodeWithResult expanded={true}>
 
@@ -206,7 +206,7 @@ model Profile {
 
    </CodeWithResult>
 
-1. 如下所示，编辑预迁移:
+3. 如下所示，编辑预迁移:
 
   <TabbedContent tabs={[<FileWithIcon text="Before" icon="code"/>, <FileWithIcon text="After" icon="code"/>]}>
 
@@ -267,7 +267,7 @@ model Profile {
 
   </TabbedContent>
 
-1. 保存并应用迁移:
+4. 保存并应用迁移:
 
    ```terminal
    npx prisma migrate dev
