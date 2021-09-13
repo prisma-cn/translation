@@ -21,12 +21,12 @@ Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-co
 
 ## 处理迁移历史冲突
 
-当文件系统中的**migrations 文件夹**和`_prisma_migrations`数据库表之间存在差异时，就会发生迁移历史冲突。
+当文件系统中的**migrations 文件夹**和`_prisma_migrations`数据库中的表之间存在差异时，就会发生迁移历史冲突。
 
 #### 开发环境中迁移历史冲突的原因
 
 - 已经应用的迁移，之后被修改了
-- 已经应用的迁移，之后文件系统中找不到了
+- 文件系统中缺少已应用的迁移
 
 在开发环境中，在特性分支之间切换可能会导致历史冲突，因为`_prisma_migrations` 表包含 `branch-1`的迁移, 切换到 `branch-2`可能会造成那些迁移消失。
 
@@ -46,11 +46,11 @@ Schema 偏移(drift) 产生原因:
 
 - 在*没有*使用迁移的情况下改变了数据库 schema - 例如, 通过使用[`prisma db push`](../../../reference/api-reference/command-reference#db-push)或者手动改了 schema.
 
-> **注意**: [影子数据库](../../../concepts/components/prisma-migrate/shadow-database)需要检测 Schema 偏移(drift)，因此只能在开发环境中进行。
+> **注意**: 检测 Schema 偏移(drift)需要[影子数据库](../../../concepts/components/prisma-migrate/shadow-database)，因此只能在开发环境中进行。
 
-#### 在开发环境中修复 Schema 偏移(drift)
+#### 修复开发环境的 Schema 偏移(drift)
 
-如果对数据库做了不想保留的，或者可以在 schema 中轻松复制的手动修改：
+如果对数据库做的修改不想保留，可以复制一份副本：
 
 1. 重置数据库:
 
@@ -58,7 +58,7 @@ Schema 偏移(drift) 产生原因:
    npx prisma migrate reset
    ```
 
-1. 复制 Prisma schema 中的变化，并生成一个新的迁移:
+2. 复制 Prisma schema 中的变化，并生成一个新的迁移:
 
    ```terminal
    npx prisma migrate dev
@@ -74,7 +74,7 @@ Schema 偏移(drift) 产生原因:
 
    Prisma 将直接用数据库中的变化来更新 schema。
 
-1. 生成一个新的迁移，以包括迁移历史中的自省(introspect)变化:
+2. 生成一个新的迁移，以包括迁移历史中的自省(introspect)变化:
 
    ```terminal
    npx prisma migrate dev --name introspected_change
@@ -127,7 +127,7 @@ Schema 偏移(drift) 产生原因:
 
 ## Prisma Migrate 和 PgBouncer
 
-如果试图在一个连接池使用 PgBouncer 的环境中运行 Prisma Migrate 命令，可能会看到以下错误：
+如果您尝试在使用 PgBouncer 进行连接池的环境中运行 Prisma Migrate 命令，您可能会看到以下错误：
 
 ```bash
 Error: undefined: Database error
