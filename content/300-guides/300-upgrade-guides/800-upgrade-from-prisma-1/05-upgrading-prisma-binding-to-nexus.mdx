@@ -8,7 +8,7 @@ metaDescription: '了解如何从现有的使用prisma-binding的Prisma 1项目�
 
 >**注意**：本指南不是完全最新的，因为它目前使用的是[`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma)的[已弃用](https://github.com/graphql-nexus/nexus-plugin-prisma/issues/1039)版本，虽然这仍然可以使用，但建议以后使用新的[`nexus-prisma`](https://github.com/prisma/nexus-prisma/)库。本指南将很快更新，以使用新方法。如果您有任何问题，请随时在[Prisma Slack](https://slack.prisma.io)的[`#graphql-nexus`](https://prisma.slack.com/archives/CM2LEN7JL)频道中反馈。
 
-本升级指南介绍了如何迁移基于[Prisma 1](https://github.com/prisma/prisma1)的Node.js项目并使用`prisma-binding`实现GraphQL服务。
+本升级指南介绍了如何迁移基于[Prisma 1](https://github.com/prisma/prisma1)并使用`prisma-binding`实现GraphQL服务的Node.js项目。
 
 代码将被迁移到[`@nexus/schema`](https://github.com/graphql-nexus/schema)和[`nexus-plugin-prisma`](https://github.com/graphql-nexus/nexus-plugin-prisma)，与`prisma-binding`使用的_SDL-first_方法不同，Nexus采用code-first的方法来构造GraphQL模式，您可以在本文中了解这两种方法的主要区别，如果您想继续使用SDL-first的方法，您可以按照[指南](./upgrading-prisma-binding-to-sdl-first)从`prisma-binding`升级SDL-first设置。
 
@@ -18,7 +18,7 @@ metaDescription: '了解如何从现有的使用prisma-binding的Prisma 1项目�
 
 - 已安装Prisma 2 CLI
 - 已创建Prisma 2 schema
-- 检查了数据库并解决了潜在的schema不兼容问题
+- 检查了数据库并解决了潜在的schema[不兼容问题](./schema-incompatibilities-postgres/)
 - 已安装和生成的Prisma Client
 
 本指南进一步假设您的文件设置与此类似：
@@ -39,7 +39,7 @@ metaDescription: '了解如何从现有的使用prisma-binding的Prisma 1项目�
     └── schema.graphql
 ```
 
-以下部分请注意：
+重要的部分：
 
 - 一个包含你的Prisma 2.0 schema的`prisma`文件夹 
 - 一个`src`文件夹，其中包含你的应用程序代码和名为`schema.graphql`的schema
@@ -219,11 +219,11 @@ Server ready at: http://localhost:4000
 }
 ```
 
-在以下步骤中，我们将解释如何使用Nexus将使用`prisma-binding`实现的现有SDL-first GraphQL schema迁移到等效设置。
+在以下步骤中，我们将解释如何使用Nexus将现有的使用`prisma-binding`实现的SDL-first GraphQL schema迁移到等效设置。
 
 ## 2. 创建GraphQL types
 
-升级过程的下一步是创建_GraphQL types_。在本例中，GraphQL类型将映射Prisma模型（就像`prisma-binding`设置中一样）。如果GraphQL types与Prisma模型不同，则可以使用Nexus API轻松地相应地调整公开的GraphQL类型。
+升级过程的下一步是创建_GraphQL types_。在本例中，GraphQL类型将映射Prisma模型（就像`prisma-binding`设置中一样）。如果GraphQL types与Prisma模型不同，则可以使用Nexus API相应轻松地调整公开的GraphQL类型。
 
 在本指南中，您将把所有代码保存在一个文件中。但是，您可以根据自己的喜好分类文件并相应地`import`。
 
