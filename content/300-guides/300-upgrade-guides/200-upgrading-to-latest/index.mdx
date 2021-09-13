@@ -1,41 +1,41 @@
 ---
-title: 'Upgrading to latest'
-metaTitle: 'Upgrading to latest (Guides)'
-metaDescription: 'Upgrading your project to the latest version of Prisma.'
+title: '升级到最新版本'
+metaTitle: '升级到最新版本 (Guides)'
+metaDescription: '将你的Prisma项目升级到最新版本'
 ---
 
 <TopBlock>
 
-To upgrade to the latest version of Prisma:
+为了升级到最新版本的 Prisma，你需要:
 
-1. Review [release notes](https://github.com/prisma/prisma/releases) on GitHub for breaking changes and new features.
-1. Upgrade **both** of the following packages to the same version:
+1. 在 GitHub 上查阅包含破坏性更新和新功能的的[版本发布说明](https://github.com/prisma/prisma/releases)。
+2. **同时**升级下面这两个包的版本为统一版本:
 
    - [`prisma`](https://www.npmjs.com/package/prisma)
    - [`@prisma/client`](https://www.npmjs.com/package/@prisma/client)
 
-1. Upgrade your codebase where applicable. Breaking changes may require you to change your Prisma schema or the way you use Prisma Client.
+3. 在合适的情况下升级。破坏性更新可能会要求你修改 Prisma schema 和部分使用 Prisma client 的代码。
 
 <Tip>
 
-[codemods](codemods) help you refactor your code to account for breaking changes - for example, the 2.12.0 codemod automatically renames `findOne` to `findUnique`.
+[codemods](codemods) 会在有破坏性更新的情况下帮助你重构代码，比如 codemod 的 2.12.0 版本会自动将 `findOne` 重命名为 `findUnique`。
 
 </Tip>
 
 </TopBlock>
 
-## Enabling preview features
+## 开启预览性功能
 
-Some releases include Preview features that are not considered production-ready, and must be enabled before you can use them. For more information about enabling Preview features, refer to the following documentation:
+某些版本包含暂时没有生产版本的预览性功能，需要先开启才能使用。详细信息请查看下面的文档：
 
-- [Enable Prisma Client preview features](../../../concepts/components/preview-features/client-preview-features)
-- [Enable Prisma CLI preview features](../../../concepts/components/preview-features/cli-preview-features)
+- [开启 Prisma Client preview features](../../../concepts/components/preview-features/client-preview-features)
+- [开启 Prisma CLI preview features](../../../concepts/components/preview-features/cli-preview-features)
 
-## <inlinecode>dev</inlinecode> distribution tag
+## <inlinecode>dev</inlinecode> 版本
 
-The `dev` [Npm distribution tag](http://npm.github.io/publishing-pkgs-docs/updating/using-tags.html) points to the most recent development version of the package, which is published for each commit to the main branch of `prisma/prisma`. You can use the `dev` distribution tag to verify a fix or test a feature before it is officially released.
+标记为`dev`的 [Npm 版本](http://npm.github.io/publishing-pkgs-docs/updating/using-tags.html) 是该包的最新开发版本，就是最新的 github 主分支版本。
 
-To install the latest `dev` distribution tag:
+安装 `dev` 版本:
 
 ```terminal
 npm install @prisma/client@dev prisma@dev
@@ -43,6 +43,6 @@ npm install @prisma/client@dev prisma@dev
 
 <Admonition type="alert">
 
-Do not use the `dev` distribution tag in production - wait until the official release that contains the features and fixes you are interested in is released. For example, fixes present `@prisma/client@2.23.0-dev.25` will eventually be released as part of `@prisma/client@2.23.0`.
+不要在生产环境中使用 `dev` 版本 - 直到你想使用的功能或 bug 修复发布正式版本。例如某 bug 修复版本 `@prisma/client@2.23.0-dev.25` 会包括在 `@prisma/client@2.23.0`内。
 
 </Admonition>
