@@ -1,6 +1,6 @@
 ---
-title: Developing with Prisma Migrate
-metaDescription: Learn how to add Prisma Migrate to an existing project.
+title: Prisma Migrate的开发流程
+metaDescription: 了解如何将Prisma Migrate添加到现有项目中。
 tocDepth: 2
 ---
 
@@ -8,31 +8,31 @@ tocDepth: 2
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-This guide takes you through a typical **development workflow** with [Prisma Migrate](), from defining a schema to committing migrations to source control. This guide starts with an empty database, but you can also [add Prisma Migrate to an existing project](add-prisma-migrate-to-a-project).
+本指南包含从定义 schema，直到提交迁移到版本控制的一系列典型的**开发流程**, 你可以从该流程学习[Prisma Migrate]()的用法。本指南以空数据库开始教学,但你也可以[将 Prisma Migrate 添加到现有项目](add-prisma-migrate-to-a-project)。
 
-In a development environment, you use the `migrate dev` command to create and apply migrations:
+在开发环境中，可以使用`migrate dev`命令来创建和应用迁移：
 
 ```terminal
 npx prisma migrate dev
 ```
 
-> **Prototyping?** Use the [`db push`](../../../reference/api-reference/command-reference#db-push) command if you are [prototyping](../prototyping-schema-db-push) and are not concerned with data loss or replicating your changes in other environments. You can start or continue your migration history when you are happy with your changes.
+> **设计 schema?** 若只是在[设计 schema](../prototyping-schema-db-push)，并且不担心数据丢失或其他环境无需同步执行时，可使用[`db push`](../../../reference/api-reference/command-reference#db-push)命令然后查看结果，满意后再开始迁移或继续迁移历史。
 
-When you are comfortable with using Prisma Migrate in development, consider the following more advanced guides:
+下面是一些 Prisma Migrate 的高级指南，可作为熟系使用后的参考：
 
 - [How to use Prisma Migrate as a team](team-development)
 - [Advanced migration techniques](customizing-migrations)
 
 </TopBlock>
 
-## Create a schema
+## 创建 schema
 
-This guide uses the following schema as a starting point:
+下面的 schema 是本指南的初始 schema
 
 ```prisma
 generator client {
@@ -77,13 +77,13 @@ model Category {
 }
 ```
 
-### Refine your schema with native type attributes
+### 用原生类型属性(native type attributes)完善 schema
 
-Prisma Migrate supports [native field type attributes](../../../concepts/components/prisma-schema/data-model#native-types-mapping) <span class="concept"></span>, which allow you to specify which underlying database type should be created.
+Prisma Migrate 支持[原生字段类型属性](../../../concepts/components/prisma-schema/data-model#native-types-mapping) <span class="concept"></span>, 允许你指定创建的数据库字段类型。
 
-For example, the PostgreSQL provider maps `String` to `text` by default. To change the default mapping:
+举个例子，PostgreSQL 默认将 `String` 对应为 `text`。要修改的话：
 
-1. Add a native type annotation to make the `title` field a `varchar(200)` in the underlying database:
+1. 给 `title` 字段添加数据库的原生字段类型注释 `varchar(200)`：
 
    ```prisma highlight=5;normal;
    // ...
@@ -101,26 +101,26 @@ For example, the PostgreSQL provider maps `String` to `text` by default. To chan
    // ...
    ```
 
-## Configure the shadow database
+## 配置影子数据库
 
-In a **development environment only**, Prisma Migrate uses a [temporary shadow database](../../../concepts/components/prisma-migrate/shadow-database) to perform tasks such as detecting schema drift.
+**仅在开发环境**, Prisma Migrate 使用[临时影子数据库](../../../concepts/components/prisma-migrate/shadow-database)进行检测 schema 偏移(drift)等工作.
 
-- If you are developing against a locally hosted database, [make sure your user has sufficient privileges](../../../concepts/components/prisma-migrate/shadow-database#shadow-database-user-permissions)
-- If you are developing against a cloud-hosted database, you need to [provision a shadow database and set the `shadowDatabaseUrl` field](../../../concepts/components/prisma-migrate/shadow-database#cloud-hosted-shadow-databases-must-be-created-manually)
+- 针对本地数据库, [确保有足够的权限](../../../concepts/components/prisma-migrate/shadow-database#shadow-database-user-permissions)
+- 针对云数据库, 需要[提供一个影子数据库，且设定`shadowDatabaseUrl`字段](../../../concepts/components/prisma-migrate/shadow-database#cloud-hosted-shadow-databases-must-be-created-manually)
 
-## Create migrations
+## 创建迁移
 
-To create a migration, make a change to your schema and run the following command to create and apply migrations:
+修改 schema，然后运行下面命令来创建和应用迁移：
 
 ```terminal
 npx prisma migrate dev
 ```
 
-The following example results in a migration history with three migrations.
+下面的例子产生了一个包含三次迁移的迁移历史。
 
-### First migration: Initialize migration history
+### 第一次迁移： 初始化迁移历史
 
-Run the following command to initialize a migration history and get started with Prisma Migrate:
+运行以下命令来初始化迁移历史并开始使用 Prisma Migrate：
 
 <CodeWithResult>
 <cmd>
@@ -144,11 +144,11 @@ migrations/
 </cmdResult>
 </CodeWithResult>
 
-> **Note**: If you do not provide a `--name`, the CLI will prompt you for a name.
+> **注意**: 若省略`--name`，CLI 会提示让你输入名字。
 
-When you run the `migrate dev` command for the first time, Prisma Migrate:
+当第一次运行`migrate dev`命令时，Prisma Migrate 会：
 
-- Creates a `./prisma/migrations` folder with your initial migration:
+- 创建包含初始迁移的文件夹 `./prisma/migrations`:
 
   ```
   migrations/
@@ -156,15 +156,15 @@ When you run the `migrate dev` command for the first time, Prisma Migrate:
     └─ migration.sql
   ```
 
-- Creates a table named `_prisma_migrations` in the database with an entry for the first migration:
+- 创建`_prisma_migrations`表，其中包含第一次迁移的记录:
 
   | id                                   | checksum                                                      | finished_at                | migration_name                 | logs | rolled_back_at | started_at                 | applied_steps_count |
   | :----------------------------------- | :------------------------------------------------------------ | :------------------------- | :----------------------------- | :--- | :------------- | :------------------------- | :------------------ |
   | 5f285eeb-3714-461c-bb3a-03a7adad6aad | 1beaf4ec9e8cfdc1f fa546aa0b0d94ba2b382293d 7b7237619202f2372c | 2021-03-09 14:55:38.712883 | 20210305110829_first_migration | NULL | NULL           | 2021-03-09 14:55:38.542458 | 1                   |
 
-### Second migration: Add new fields
+### 第二次迁移: 添加新的字段
 
-1. Add two fields to your schema:
+1. 在 schema 中添加两个新字段：
 
    ```prisma highlight=4,16;add
    model User {
@@ -187,20 +187,20 @@ When you run the `migrate dev` command for the first time, Prisma Migrate:
    }
    ```
 
-1. Generate a migration:
+1. 创建迁移：
 
    ```terminal
    npx prisma migrate dev --name add-fields
    ```
 
-   Your `_prisma_migrations` table now has two entries:
+   `_prisma_migrations`表现在有两条记录:
 
    | id                                   | checksum                                                         | finished_at                | migration_name                 | logs | rolled_back_at | started_at                 | applied_steps_count |
    | :----------------------------------- | :--------------------------------------------------------------- | :------------------------- | :----------------------------- | :--- | :------------- | :------------------------- | :------------------ |
    | 5f285eeb-3714-461c-bb3a-03a7adad6aad | 1beaf4ec9e8cfdc1ffa 546aa0b0d94ba2b382293d 7b7237619202f2372c    | 2021-03-09 14:55:38.712883 | 20210305110829_first_migration | NULL | NULL           | 2021-03-09 14:55:38.542458 | 1                   |
    | 034e198c-dd9f-482a-afdc-26437708ed1e | b12be494d0f81 716d6732ae221b02a65677c6 2aafbb76f6e3fea4929f77f3d | 2021-03-09 14:55:38.767893 | 20210305120829_add_fields      | NULL | NULL           | 2021-03-09 14:55:38.724587 | 1                   |
 
-   Your `migrations` folder now has two migrations:
+   `migrations`文件夹现在有两个迁移文件:
 
    ```
    migrations/
@@ -210,9 +210,9 @@ When you run the `migrate dev` command for the first time, Prisma Migrate:
      └─ migration.sql
    ```
 
-### Third migration: Change a field type to a compatible type
+### 第三次迁移：修改字段类型
 
-1. Change the `name` field to a `varchar(50)` (default is `text`):
+1. 修改 `name` 字段类型为 `varchar(50)` (原本是 `text`):
 
 ```prisma highlight=3;delete|4;add
 model Category {
@@ -225,13 +225,13 @@ model Category {
 }
 ```
 
-1. Generate a migration:
+1. 创建迁移：
 
    ```terminal
    npx prisma migrate dev --name type-change
    ```
 
-   Your `_prisma_migrations` table now has three entries:
+   `_prisma_migrations`表现在有三条记录：
 
    | id                                   | checksum                                                         | finished_at                | migration_name                 | logs | rolled_back_at | started_at                 | applied_steps_count |
    | :----------------------------------- | :--------------------------------------------------------------- | :------------------------- | :----------------------------- | :--- | :------------- | :------------------------- | :------------------ |
@@ -239,7 +239,7 @@ model Category {
    | 034e198c-dd9f-482a-afdc-26437708ed1e | b12be494d0f81 716d6732ae221b02a65677c6 2aafbb76f6e3fea4929f77f3d | 2021-03-09 14:55:38.767893 | 20210305120829_add_fields      | NULL | NULL           | 2021-03-09 14:55:38.724587 | 1                   |
    | 932e198c-2d9f-182a-afdc-26437708ed1e | cd14e494d0f81 216d3732ae221b02a65677c6 fddfbb76f6e3fea4929f77f3d | 2021-03-09 14:55:38.767893 | 20210308102042_type_change     | NULL | NULL           | 2021-03-09 14:55:38.724587 | 1                   |
 
-   Your `migrations` folder now has three migrations:
+   `migrations`文件夹现在有三个迁移文件：
 
    ```
    migrations/
@@ -251,14 +251,14 @@ model Category {
      └─ migration.sql
    ```
 
-### Advanced scenarios
+### 高级场景
 
-Schema changes are often **additive**, such as adding a new field, model, or relation. If you move, rename, or significantly refactor a part of your schema, you will most likely need to edit the generated SQL before applying it to preserve existing data.
+修改 Schema，例如添加新字段，模型和关系，往往具有**累加性**。如果深度重构了 schema，通常伴随着修改 SQL 的必要，才能保留现有数据。
 
-See [Advanced migration scenarios](customizing-migrations) for examples.
+更多例子，参考[高级迁移场景](customizing-migrations).
 
-## Write a seed script
+## 编写种子脚本
 
-You should expect to reset your database in a development environment - for example, if you regularly switch between branches that have different migration histories, Prisma Migrate will prompt you to `migrate reset` when you run `prisma migrate dev`. If a seed script is available, Prisma Migrate runs that script after resetting the database.
+开发环境中经常需要重置数据库 - 例如，切换具有不同迁移历史的代码分支之后, 当运行`prisma migrate dev`时，会提示`migrate reset`。种子脚本可以帮你在重置数据库后填充初始数据。
 
-See [Seeding your database](../seed-database) for examples.
+更多例子，参考[数据库 Seeding](../seed-database)。
