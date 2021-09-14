@@ -1,12 +1,12 @@
 ---
 title: '唯一约束和索引 (PostgreSQL)'
 metaTitle: 'Prisma 和 PostgreSQL 的唯一约束和索引'
-metaDescription: '按照本实用指南中的分步说明，学习如何使用 Prisma 和 PostgreSQL 配置唯一约束和索引。'
+metaDescription: '按照本指南，一步一步学习如何使用 Prisma 和 PostgreSQL 配置唯一约束和索引。'
 ---
 
 ## 概览
 
-本文解释了如何在 PostgreSQL 数据库中配置唯一[约束](https://www.postgresql.org/docs/9.1/ddl-constraints.html#AEN2496)/[index](https://www.postgresql.org/docs /9.1/indexes-unique.html)。PostgreSQL 中的约束和索引非常相似（了解更多 [在这里](https://medium.com/flatiron-engineering/uniqueness-in-postgresql-constraints-versus-indexes-4cf957a472fd)）：当向一个或更多列添加唯一约束时，PostgreSQL 始终创建相应的唯一索引。
+本文解释如何在 PostgreSQL 数据库中配置唯一[约束](https://www.postgresql.org/docs/9.1/ddl-constraints.html#AEN2496)/[index](https://www.postgresql.org/docs /9.1/indexes-unique.html)。PostgreSQL 中的约束和索引非常相似（了解更多 [在这里](https://medium.com/flatiron-engineering/uniqueness-in-postgresql-constraints-versus-indexes-4cf957a472fd)）：当向一个或更多列添加唯一约束时，PostgreSQL 始终创建相应的唯一索引。
 
 本指南将配置唯一约束（也会自动配置唯一索引）。
 
@@ -16,7 +16,7 @@ metaDescription: '按照本实用指南中的分步说明，学习如何使用 P
 
 ## 先决条件
 
-你需要准备:
+需要准备:
 
 - 运行的 [PostgreSQL](https://www.postgresql.org/) 数据库服务器
 - [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html) 命令行实用程序
@@ -32,7 +32,7 @@ mkdir unique-demo
 cd unique-demo
 ```
 
-接下来，确认PostgreSQL 数据库服务器正在运行。 在终端中执行以下命令以创建一个名为 `UniqueDemo` 的新数据库：
+接下来，确认 PostgreSQL 数据库服务器正在运行。 在终端中执行以下命令以创建一个名为 `UniqueDemo` 的新数据库：
 
 ```terminal copy
 createdb UniqueDemo
@@ -135,7 +135,7 @@ ALTER TABLE "public"."OneMoreUser" ADD CONSTRAINT "OneMoreUser_email_unique_cons
 psql UniqueDemo < add-single-unique-constraint-later.sql
 ```
 
-该表有一个名为 `email` 的列，在第二个 SQL 语句中添加了一个唯一约束。 PostgreSQL 还自动添加了相应的唯一索引（请**不要**运行此代码）：
+在数据库中创建了名为 `OneMoreUser` 的表。 该表有一个 `id` 列和一个名为 `email` 的列，在第二个 SQL 语句中添加了一个唯一约束。 PostgreSQL 还自动添加了相应的唯一索引（请**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX "OneMoreUser_email_unique_constraint" ON "OneMoreUser"(email text_ops);
@@ -280,13 +280,13 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行命令安装和生成 Prisma Client：
 
 ```terminal copy
 npx prisma generate
 ```
 
-运行以下命令在项目中安装和生成 Prisma Client
+现在可以使用 Prisma Client 在 Node.js 中发送数据库查询。
 
 ## 8. 验证 Node.js 脚本中的唯一约束
 
