@@ -1,35 +1,35 @@
 ---
-title: 'Migrate from Sequelize'
+title: '从 Sequelize 迁移到 Prisma'
 metaTitle: 'How to migrate from Sequelize to Prisma'
 metaDescription: 'Learn how to migrate from Sequelize to Prisma'
 ---
 
 <TopBlock>
 
-This guide describes how to migrate from Sequelize to Prisma. It uses an extended version of the [Sequelize Express example](https://github.com/sequelize/express-example) as a [sample project](https://github.com/prisma/migrate-from-sequelize-to-prisma) to demonstrate the migration steps. You can find the example used for this guide on [GitHub](https://github.com/prisma/migrate-from-sequelize-to-prisma).
+本文指导如何从 Sequelize 迁移到 Prisma。 使用[Sequelize Express 示例](https://github.com/sequelize/express-example) 的扩展版本作为[示例项目](https://github.com/prisma/migrate-from-sequelize- to-prisma) 来演示迁移步骤。 您可以在 [GitHub](https://github.com/prisma/migrate-from-sequelize-to-prisma) 上找到示例。
 
-This migration guide uses PostgreSQL as as an example database, but it equally applies to any other relational database that's [supported by Prisma](../../reference/database-reference/supported-databases).
+本文使用 PostgreSQL 作为示例数据库，同样适用于 [Prisma 支持](../../reference/database-reference/supported-databases) 的其他关系数据库。
 
-You can learn how Prisma compares to Sequelize on the [Prisma vs Sequelize](../../concepts/more/comparisons/prisma-and-sequelize) page.
+Prisma 与 Sequelize 的对比具体看 [Prisma vs Sequelize](../../concepts/more/comparisons/prisma-and-sequelize)。
 
 </TopBlock>
 
-## Overview of the migration process
+## 迁移过程概述
 
-Note that the steps for migrating from Sequelize to Prisma are always the same, no matter what kind of application or API layer you're building:
+注意，无论构建何种类型的应用程序或 API 层，从 Sequelize 迁移到 Prisma 的步骤始终相同：
 
-1. Install the Prisma CLI
-1. Introspect your database
-1. Install Prisma Client
-1. Gradually replace your Sequelize queries with Prisma Client
+1. 安装 Prisma CLI
+1. 内省(Introspect)数据库
+1. 安装 Prisma Client
+1. 用 Prisma Client 逐步替换 Sequelize 查询
 
-These steps apply, no matter if you're building a REST API (e.g. with Express, koa or NestJS), a GraphQL API (e.g. with Apollo Server, TypeGraphQL or Nexus) or any other kind of application that uses Sequelize for database access.
+无论是构建 REST API（例如 Express、koa 或 NestJS）、GraphQL API（例如 Apollo Server、TypeGraphQL 或 Nexus）还是使用 Sequelize 进行数据库访问的任何其他类型的应用程序，这些步骤都适用。
 
-Prisma lends itself really well for **incremental adoption**. This means, you don't have migrate your entire project from Sequelize to Prisma at once, but rather you can _step-by-step_ move your database queries from Sequelize to Prisma.
+Prisma 非常适合 **增量替换**。 你不必一次将整个项目从 Sequelize 迁移到 Prisma，而是可以一步步将数据库查询从 Sequelize 迁移到 Prisma。
 
-## Overview of the sample project
+## 示例项目
 
-For this guide, we'll use a REST API built with Express as a [sample project](https://github.com/prisma/migrate-from-sequelize-to-prisma) to migrate to Prisma. It has four models/entities:
+无论是在构建 REST API（例如使用 Express、koa 或 NestJS）、GraphQL API（例如使用 Apollo Server、TypeGraphQL 或 Nexus）还是使用 Sequelize 进行数据库访问其他类型的应用程序，这些步骤都适用。
 
 <TabbedContent tabs={[<FileWithIcon text="User.js" icon="file"/>, <FileWithIcon text="Post.js" icon="file"/>, <FileWithIcon text="Profile.js" icon="file"/>, <FileWithIcon text="Category.js" icon="file"/>]}>
 
@@ -143,15 +143,15 @@ module.exports = (sequelize, DataTypes) => {
 
 </TabbedContent>
 
-The models have the following relations:
+模型（models）有以下关系：
 
 - 1-1: `User` ↔ `Profile`
 - 1-n: `User` ↔ `Post`
 - m-n: `Post` ↔ `Category`
 
-The corresponding tables have been created using a generated Sequelize migration.
+相应的表已使用生成的 Sequelize 迁移创建。
 
-In this guide, the route handlers are located in the `src/controllers` directory. The models are located in the `src/models` directory. From there, they are pulled into a central `src/routes.js` file which is used to set up the required routes in `src/index.js`:
+本指南路由处理程序位于 `src/controllers` 目录中。 模型位于 `src/models` 目录中。 从那里，它们被引入 `src/routes.js` 文件，该文件用于在 `src/index.js` 中设置所需的路由：
 
 ```
 └── blog-sequelize
@@ -169,30 +169,30 @@ In this guide, the route handlers are located in the `src/controllers` directory
         └── routes.js
 ```
 
-## Step 1. Install the Prisma CLI
+## 步骤 1. 安装 Prisma CLI
 
-The first step to adopt Prisma is to [install the Prisma CLI](../../concepts/components/prisma-cli/installation#local-installation-recommended) in your project:
+第一步是在项目中 [安装 Prisma CLI](../../concepts/components/prisma-cli/installation#local-installation-recommended):
 
 ```terminal copy
 npm install prisma --save-dev
 ```
 
-## Step 2. Introspect your database
+## 步骤 2. 内省数据库
 
-### 2.1. Set up Prisma
+### 2.1. 配置 Prisma
 
-Before you can introspect your database, you need to set up your [Prisma schema](../../concepts/components/prisma-schema) and connect Prisma to your database. Run the following command in your terminal to create a basic Prisma schema file:
+在内省数据库之前，需要配置 [Prisma schema](../../concepts/components/prisma-schema) 并将 Prisma 连接到您的数据库。 在终端中运行以下命令以创建基本的 Prisma 模式文件：
 
 ```terminal copy
 npx prisma init
 ```
 
-This command created a new directory called `prisma` with the following files for you:
+创建了一个名为 `prisma` 的新目录，其中包含以下文件：
 
-- `schema.prisma`: Your Prisma schema file that specifies your database connection and models
-- `.env`: A [`dotenv`](https://github.com/motdotla/dotenv) to configure your database connection URL as an environment variable
+- `schema.prisma`: 指定数据库连接和模型的 Prisma schema
+- `.env`: [`dotenv`](https://github.com/motdotla/dotenv) 将您的数据库连接 URL 配置为环境变量
 
-The Prisma schema file currently looks as follows:
+Prisma schema 文件内容目前是这样的：
 
 ```prisma file=prisma/schema.prisma
 // This is your Prisma schema file,
@@ -210,13 +210,13 @@ generator client {
 
 <Tip>
 
-If you're using VS Code, be sure to install the [Prisma VS Code extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) for syntax highlighting, formatting, auto-completion and a lot more cool features.
+如果您使用 VS Code，请安装 [Prisma VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) 用于语法高亮、格式化、自动完成等更酷的功能。
 
 </Tip>
 
-### 2.2. Connect your database
+### 2.2. 连接数据库
 
-If you're not using PostgreSQL, you need to adjust the `provider` field on the `datasource` block to the database you currently use:
+如果您没有使用 PostgreSQL，则需要将 `datasource` 块上的 `provider` 字段调整为您当前使用的数据库：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>, <FileWithIcon text="SQL Server" icon="database"/>, <FileWithIcon text="SQLite" icon="database"/>]}>
 
@@ -266,13 +266,13 @@ datasource db {
 
 </TabbedContent>
 
-Once that's done, you can configure your [database connection URL](../../reference/database-reference/connection-urls) in the `.env` file. Here's how the database connection from Sequelize maps to the connection URL format used by Prisma:
+完成后，您可以在 `.env` 文件中配置 [数据库连接 URL](../../reference/database-reference/connection-urls)。 以下是 Sequelize 的数据库连接如何映射到 Prisma 使用的连接 URL 格式：
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>, <FileWithIcon text="SQL Server" icon="database"/>, <FileWithIcon text="SQLite" icon="database"/>]}>
 
 <tab>
 
-Assume you have the following database connection details in `src/models/index.js`:
+例如在 `src/models/index.js` 中有配置以下数据库连接信息：
 
 ```js file=src/models/index.js
 const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
@@ -281,25 +281,25 @@ const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
 })
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-sequelize"
 ```
 
-Note that you can optionally configure the PostgreSQL [schema](https://www.postgresql.org/docs/9.1/ddl-schemas.html) by appending the `schema` argument to the connection URL:
+请注意，您可以通过将 `schema` 参数附加到连接 URL 来选择配置 PostgreSQL [schema](https://www.postgresql.org/docs/9.1/ddl-schemas.html)：
 
 ```sh file=.env
 DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-sequelize?schema=myschema"
 ```
 
-If not provided, the default schema called `public` is being used.
+如果未提供，则使用名为 `public` 的默认架构。
 
 </tab>
 
 <tab>
 
-Assume you have the following database connection details in `src/models/index.js`:
+假设在 `src/models/index.js` 中有以下数据库连接信息：
 
 ```js file=src/models/index.js
 const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
@@ -308,7 +308,7 @@ const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
 })
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="mysql://alice:myPassword42@localhost:3306/blog-sequelize"
@@ -318,7 +318,7 @@ DATABASE_URL="mysql://alice:myPassword42@localhost:3306/blog-sequelize"
 
 <tab>
 
-Assume you have the following database connection details in `src/models/index.js`:
+假设在 `src/models/index.js` 中有以下数据库连接信息：
 
 ```js file=src/models/index.js
 const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
@@ -327,13 +327,13 @@ const sequelize = new Sequelize('blog-sequelize', 'alice', 'myPassword42', {
 })
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="sqlserver://localhost:1433;database=blog-sequelize;user=alice;password=myPassword42;trustServerCertificate=true"
 ```
 
-Note that if you are running on macOS **and a version of Prisma before 2.15.0**, you must use `encrypt=DANGER_PLAINTEXT` to work around the current [TLS limitation](https://github.com/prisma/prisma/issues/4075):
+请注意，如果您在 macOS **[和 2.15.0 之前的 Prisma 版本](https://github.com/prisma/tiberius/issues/65)** 上运行，则必须使用 `encrypt=DANGER_PLAINTEXT` 来处理 [TLS 限制](https://github.com/prisma/prisma/issues/4075)：
 
 ```
 DATABASE_URL="sqlserver://localhost:1433;database=blog-sequelize;user=alice;password=myPassword42;trustServerCertificate=true;encrypt=DANGER_PLAINTEXT" // DANGER_PLAINTEXT not needed in 2.15.0 and later
@@ -343,7 +343,7 @@ DATABASE_URL="sqlserver://localhost:1433;database=blog-sequelize;user=alice;pass
 
 <tab>
 
-Assume you have the following database connection details in `src/models/index.js`:
+假设在 `src/models/index.js` 中有以下数据库连接信息：
 
 ```js file=src/models/index.js
 const sequelize = new Sequelize({
@@ -352,7 +352,7 @@ const sequelize = new Sequelize({
 })
 ```
 
-The respective connection URL would look as follows in Prisma:
+相应的连接 URL 在 Prisma 中如下所示：
 
 ```sh file=.env
 DATABASE_URL="file:./blog-sequelize.db"
@@ -362,15 +362,15 @@ DATABASE_URL="file:./blog-sequelize.db"
 
 </TabbedContent>
 
-### 2.3. Run Prisma's introspection
+### 2.3. 执行 Prisma 内省
 
-With your connection URL in place, you can [introspect](../../concepts/components/introspection) your database to generate your Prisma models:
+连接 URL 后，您可以 [内省](../../concepts/components/introspection) 您的数据库以生成您的 Prisma 模型：
 
 ```terminal copy
 npx prisma db pull
 ```
 
-This creates the following Prisma models:
+创建以下 Prisma 模型：
 
 ```prisma file=prisma/schema.prisma
 model Categories {
@@ -428,13 +428,14 @@ model Users {
 }
 ```
 
-### 2.4. Adjust `createdAt` and `updatedAt` fields
+### 2.4. 调整 `createdAt` 和 `updatedAt` 字段
 
-The generated Prisma models represent your database tables and are the foundation for your programmatic Prisma Client API which allows you to send queries to your database.
-You'll adjust the `createdAt` and `updatedAt` fields in our models. Sequelize doesn't add the `DEFAULT` constraint to `createdAt` when creating the tables in the database.
-Therefore, you'll add `@default(now())` and `@updatedAt` attributes to the `createdAt` and `updatedAt` columns respectively.
-To learn more how Prisma does this, you can read more [`@default(now())`](../../reference/api-reference/prisma-schema-reference#now) and [`@updatedAt`](../../reference/api-reference/prisma-schema-reference#updatedat) here.
-Our updated schema will be as follows:
+生成的 Prisma 模型展示了数据库表，并且是程序化 Prisma Client API 的基础，它允许将查询发送到数据库。
+调整模型中的 `createdAt` 和 `updatedAt` 字段。 在数据库中创建表时，Sequelize 不会默认将约束添加到 `createdAt`。
+因此，需要分别向 `createdAt` 和 `updatedAt` 列添加 `@default(now())` 和 `@updatedAt` 属性。
+详细了解 Prisma 如何做到这一点，您可以阅读 [`@default(now())`](../../reference/api-reference/prisma-schema-reference#now) 和 [`@updatedAt` ](../../reference/api-reference/prisma-schema-reference#updatedat)。
+
+更新后的架构如下：
 
 ```prisma file=prisma/schema.prisma
 model Categories {
@@ -492,24 +493,24 @@ model Users {
 }
 ```
 
-### 2.5. Adjust the Prisma schema (optional)
+### 2.5. 调整 Prisma schema (可选)
 
-The models that were generated via introspection currently _exactly_ map to your database tables. In this section, you'll learn how you can adjust the naming of the Prisma models to adhere to [Prisma's naming conventions](../../reference/api-reference/prisma-schema-reference#naming-conventions).
+通过内省生成的模型精确的映射到了数据库表。在本节，将介绍如何调整 Prisma 模型的命名以符合 [Prisma 的命名约定](../../reference/api-reference/prisma-schema-reference#naming-conventions)。
 
-All of these adjustment are entirely optional and you are free to skip to the next step already if you don't want to adjust anything for now. You can go back and make the adjustments at any later point.
+所有调整都是可选的，不想调整任何内容，可以跳到下一步。 后续随时返回调整。
 
-As opposed to the current snake_case notation of Prisma models, Prisma's naming conventions are:
+Prisma 的命名与当前 `snake_case` 的命名约定不同：
 
-- PascalCase for model names
-- camelCase for field names
+- 模型命名遵守 `PascalCase`
+- 字段命名遵守 `camelCase`
 
-You can adjust the naming by _mapping_ the Prisma model and field names to the existing table and column names in the underlying database using `@@map` and `@map`.
+可以使用 `@@map` 和 `@map` 映射的模型和字段名称到已有的数据表和列名来调整命名。
 
-Also note that you can rename [relation fields](../../concepts/components/prisma-schema/relations#relation-fields) to optimize the Prisma Client API that you'll use later to send queries to your database. For example, the `post` field on the `user` model is a _list_, so a better name for this field would be `posts` to indicate that it's plural.
+注意，可以重命名 [关联字段](../../concepts/components/prisma-schema/relations#relation-fields) 以优化稍后将用于向数据库发送查询的 Prisma Client API。 例如，`user` 模型上的 `post` 字段是数组格式，因此这个字段的更好名称是 `posts` 以表明它是复数形式。
 
-Sequelize generates a `SequelizeMeta` model that is used internally by the library that is not needed. Therefore, you'll manually delete it from the schema.
+Sequelize 生成一个不需要内部使用的 `SequelizeMeta` 模型，从 schema 中删除它。
 
-Here's an adjusted version of the Prisma schema that addresses these points:
+调整后 Prisma 模式的版本：
 
 ```prisma file=prisma/schema.prisma
 generator client {
@@ -581,25 +582,25 @@ model User {
 }
 ```
 
-## Step 3. Install Prisma Client
+## 步骤 3. 安装 Prisma Client
 
-As a next step, you can install Prisma Client in your project so that you can start replacing the database queries in your project that are currently made with Sequelize:
+下一步，在项目中安装 Prisma Client，开始替换项目中使用 Sequelize 的数据库查询：
 
 ```terminal
 npm install @prisma/client
 ```
 
-## Step 4. Replace your Sequelize queries with Prisma Client
+## 步骤 4. 用 Prisma Client 替换你的 Sequelize 查询
 
-In this section, we'll show a few sample queries that are being migrated from Sequelize to Prisma Client based on the example routes from the sample REST API project. For a comprehensive overview of how the Prisma Client API differs from Sequelize, check out the [API comparison](../../concepts/more/comparisons/prisma-and-sequelize#api-comparison) page.
+本节展示一些查询示例，基于 REST API 项目的路由从 Sequelize 迁移到 Prisma Client。 详细了解 Prisma client API 与 Sequelize 的区别，请查看 [API 比较](../../concepts/more/comparisons/prisma-and-sequelize#api-comparison)。
 
-First, to set up the `PrismaClient` instance that you'll use to send database queries from the various route handlers. Create a new file named `prisma.js` in the `src` directory:
+首先，设置 `PrismaClient` 实例，使用该实例从路由上发送数据库查询。 在 `src` 目录中创建一个名为 `prisma.js` 的新文件：
 
 ```terminal copy
 touch src/prisma.js
 ```
 
-Now, instantiate `PrismaClient` and export it from the file so you can use it in your route handlers later:
+现在，实例化 PrismaClient 并将其从文件中导出，后续可以在路由中使用它：
 
 ```js copy file=src/prisma.js
 const { PrismaClient } = require('@prisma/client')
@@ -609,7 +610,7 @@ const prisma = new PrismaClient()
 module.exports = prisma
 ```
 
-The imports in our controller files are as follows:
+控制器文件中的导入如下：
 
 ```js file=src/controllers/post.js
 const { Post, User, Category } = require('../models')
@@ -620,7 +621,7 @@ const { Op } = require('sequelize')
 const { User } = require('../models')
 ```
 
-You'll update the controller imports as you migrate from Sequelize to Prisma:
+从 Sequelize 迁移到 Prisma 时，更新控制器导入：
 
 ```js file=src/controllers/post.js
 const prisma = require('../prisma')
@@ -630,20 +631,20 @@ const prisma = require('../prisma')
 const prisma = require('../prisma')
 ```
 
-### 4.1. Replacing queries in `GET` requests
+### 4.1. 替换 `GET` 请求中的查询
 
-The REST API has four routes that accept `GET` requests:
+REST API 有 4 个接受 `GET` 请求的路由：
 
-- `/feed`: Return all published posts
-- `/filterPosts?searchString=SEARCH_STRING`: Filter returned posts by `SEARCH_STRING`
-- `/post/:postId`: Returns a specific post
-- `/authors`: Returns a list of authors
+- `/feed`: 返回所有已发布的帖子
+- `/filterPosts?searchString=SEARCH_STRING`: 通过关键字 `SEARCH_STRING` 过滤返回帖子
+- `/post/:postId`: 返回一篇帖子的详细信息
+- `/authors`: 返回用户列表
 
-Let's dive into the route handlers that implement these requests.
+让我们深入研究实现这些请求的路由处理程序。
 
 #### `/feed`
 
-The `/feed` handler is currently implemented as follows:
+`/feed` 实现如下：
 
 ```js file=src/controllers/post.js
 const feed = async (req, res) => {
@@ -659,9 +660,9 @@ const feed = async (req, res) => {
 }
 ```
 
-Note that each returned `Post` object includes the relation to the `author` and `category` it's associated with. With Sequelize, including the relation is not type-safe. For example, if there was a typo in the relation that is retrieved, your database query would fail only at _runtime_ – the JavaScript compiler does not provide any safety here.
+注意，每个返回的 `Post` 对象都包含与它关联的 `author` 和 `category` 的关系。 使用 Sequelize，包含关系不是类型安全的。 例如，如果检索到的关系中存在拼写错误，您的数据库查询只会在运行阶段失败，JavaScript 编译器在此处不提供任何安全性。
 
-Here is how the same route is implemented using Prisma Client:
+使用 Prisma Client 实现相同路由：
 
 ```js file=src/controllers/post.js
 const feed = async (req, res) => {
@@ -677,11 +678,11 @@ const feed = async (req, res) => {
 }
 ```
 
-Note that the way how Prisma Client includes the `author` relation is absolutely type-safe. The JavaScript compiler would throw an error if you were trying to include a relation that does not exist on the `User` model.
+注意，Prisma Client 包含 `author` 关系的方式是绝对类型安全的。 如果您尝试包含 `User` 模型中不存在的关系，TypeScript 编译器会抛出错误。
 
 #### `/filterPosts?searchString=SEARCH_STRING`
 
-The `/filterPosts` handler is currently implemented as follows:
+`/filterPosts` 实现如下：
 
 ```js file=src/controllers/post.js
 const filterPosts = async (req, res) => {
@@ -713,7 +714,7 @@ const filterPosts = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/post.js
 const filterPosts = async (req, res) => {
@@ -740,11 +741,12 @@ const filterPosts = async (req, res) => {
 }
 ```
 
-Note that Sequelize provides [Operator symbols](https://sequelize.org/master/variable/index.html#static-variable-Op) - `Op` - to be used when querying data. Prisma on the other hand [combines several `where` conditions with an implicit `AND` operator](../../concepts/components/prisma-client/filtering-and-sorting#retrieve-all-post-records-where-the-content-field-contains-prisma-and-published-is-false), so in this case the Prisma query needs to make the `OR` explicit.
+注意，Sequelize 提供了 [运算符号](https://sequelize.org/master/variable/index.html#static-variable-Op) - `Op` - 在查询数据时使用。 同时，Prisma [将 `where` 条件与隐含的 `AND` 运算符结合起来](../../concepts/components/prisma-client/filtering-and-sorting#retrieve-all-post-records-where -the-content-field-contains-prisma-and-published-is-false)，这种情况下，Prisma 查询需要明确地显示 `OR`。
+
 
 #### `/post/:postId`
 
-The `/post/:postId` handler is currently implemented as follows:
+`/post/:postId` 实现如下：
 
 ```js file=src/controllers/post.js
 const getPostById = async (req, res) => {
@@ -763,7 +765,7 @@ const getPostById = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/post.js
 const getPostById = async (req, res) => {
@@ -782,17 +784,17 @@ const getPostById = async (req, res) => {
 }
 ```
 
-### 4.2. Replacing queries in `POST` requests
+### 4.2. 替换 `POST` 请求中的查询
 
-The REST API has three routes that accept `POST` requests:
+REST API 有 3 个接受 `POST` 请求的路由：
 
-- `/user`: Creates a new `User` record
-- `/post`: Creates a new `User` record
-- `/user/:userId/profile`: Creates a new `Profile` record for a `User` record with a given ID
+- `/user`: 创建一个新的 `User` 记录
+- `/post`: 创建一个新的 `Post` 记录
+- `/user/:userId/profile`: 为特定 ID 的 `User` 记录创建一个新的 `Profile` 记录
 
 #### `/user`
 
-The `/user` handler is currently implemented as follows:
+`/user` 实现如下：
 
 ```js file=src/controllers/user.js
 const createUser = async (req, res) => {
@@ -811,7 +813,7 @@ const createUser = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/user.js
 const createUser = async (req, res) => {
@@ -834,7 +836,7 @@ const createUser = async (req, res) => {
 
 #### `/post`
 
-The `/post` handler is currently implemented as follows:
+`/post` 实现如下：
 
 ```js file=src/controllers/post.js
 const createDraft = async (req, res) => {
@@ -856,7 +858,7 @@ const createDraft = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/post.js
 const createDraft = async (req, res) => {
@@ -880,11 +882,11 @@ const createDraft = async (req, res) => {
 }
 ```
 
-Note that Prisma Client's nested write here save an initial query where first the `User` record needs to be retrieved by its `email`. That's because, with Prisma you can connect records in relations using any unique property.
+注意，Prisma Client 嵌套写入在此处保存了一个初始查询，其中首先需要通过其 `email` 检索 `User` 记录。使用 Prisma，您可以使用任何唯一属性连接关系中的记录。
 
 #### `/user/:userId/profile`
 
-The `/user/:userId/profile` handler is currently implemented as follows:
+`/user/:userId/profile` 实现如下：
 
 ```js file=src/controllers/user.js
 const setUserBio = async (req, res) => {
@@ -907,7 +909,7 @@ const setUserBio = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/user.js
 const setUserBio = async (req, res) => {
@@ -931,17 +933,17 @@ const setUserBio = async (req, res) => {
 }
 ```
 
-### 4.3. Replacing queries in `PUT` requests
+### 4.3. 替换 `PUT` 请求中的查询
 
-The REST API has one route that accept a `PUT` request:
+REST API 有一个路由接受 `PUT` 请求:
 
-- `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`: Adds the post with `POST_ID` to the category with `CATEGORY_ID`
+- `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`: 将有 `POST_ID` 的帖子添加到有 `CATEGORY_ID` 的分类中
 
-Let's dive into the route handlers that implement these requests.
+让我们深入研究实现这些请求的路由处理程序。
 
 #### `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID`
 
-The `/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID` handler is currently implemented as follows:
+`/addPostToCategory?postId=POST_ID&categoryId=CATEGORY_ID` 实现如下：
 
 ```js file=src/controllers/post.js
 const addPostToCategory = async (req, res) => {
@@ -965,7 +967,7 @@ const addPostToCategory = async (req, res) => {
 }
 ```
 
-With Prisma, the route is implemented as follows:
+使用 Prisma，路由实现如下：
 
 ```js file=src/controllers/post.js
 const addPostToCategory = async (req, res) => {
@@ -994,7 +996,7 @@ const addPostToCategory = async (req, res) => {
 }
 ```
 
-Note that this Prisma Client can be made less verbose by modeling the relation as an [implicit many-to-many relation](#implicit-many-to-many-relations) instead. In that case, the query would look as follows:
+注意，通过将关系建模为 [隐式多对多关系](#implicit-many-to-many-relations)，可以使这个 Prisma Client 变得不那么冗长。 在这种情况下，查询将如下所示：
 
 ```js file=src/controllers/posts.js
 const post = await prisma.post.update({
@@ -1007,12 +1009,12 @@ const post = await prisma.post.update({
 })
 ```
 
-## More
+## 其他
 
-### Primary key column
+### 主键列
 
-By default, Sequelize defines a `primaryKey` and used `id` with the autoby default if not defined. This is optional.
-If you would like to set your own primary key, you can use the `primaryKey: true` and define your preferred data type in your field of choice:
+如果没有手动指定，Sequelize 默认定义了一个主键并使用自动排序计算的 `id`。
+如果要自己设置主键，使用`primaryKey: true` 并在选择的字段中定义首选数据类型：
 
 ```js
 // changing the primary key column
@@ -1038,11 +1040,11 @@ module.exports = (sequelize, DataTypes) => {
 }
 ```
 
-### Table name inference
+### 表名推断
 
-Sequelize infers table names from the model name. When the name of a table isn't provided Sequelize automatically pluralizes the model name and uses that as the table name using a library called [inflection](https://www.npmjs.com/package/inflection).
-Prisma on the other hand maps the model name to the table name in your database [modelling your data](../../concepts/components/prisma-schema/data-model/).
-If you wish to change this default behaviour in Sequelize, you can either enforce the table name to be equal to the model name or provide the table name directly:
+Sequelize 从模型名称推断表名称。 当未提供表名时，Sequelize 会自动将模型名设置为复数格式，并使用名为 [inflection](https://www.npmjs.com/package/inflection) 的库将其用作表名。
+Prisma 则是将模型名称映射到数据库中的表名称[数据模型](../../concepts/components/prisma-schema/data-model/)。
+如果想在 Sequelize 中更改此默认行为，可以强制表名等于模型名或直接提供表名：
 
 ```js
 // enforcing table name to be equal to model name
@@ -1076,9 +1078,9 @@ module.exports = (sequelize, DataTypes) => {
 }
 ```
 
-### Timestamps
+### 时间戳
 
-Sequelize automatically adds the fields `createdAt` and `updatedAt` to every model using the data type `DataTypes.DATE`, by default. You can disable this for a model with the `timestamps: false` option:
+默认情况下，Sequelize 使用数据类型 `DataTypes.DATE` 自动将字段 `createdAt` 和 `updatedAt` 添加到每个模型中。 您可以使用 `timestamps: false` 选项禁用此功能：
 
 ```js
 sequelize.define(
@@ -1092,8 +1094,8 @@ sequelize.define(
 )
 ```
 
-Prisma offers you the flexibility to define these fields in your model. You add the `createdAt` and [`updatedAt`](../../reference/api-reference/prisma-schema-reference#updatedat) fields by defining them explicitly in your model.
-To set the `createdAt` field in your model, add the `default(now())` attribute to the column. In order to set the `updatedAt` column, update your model by adding the `@updatedAt` attribute to the column.
+Prisma 为您提供了灵活的在模型中定义字段。 明确定义来添加 `createdAt` 和 [`updatedAt`](../../reference/api-reference/prisma-schema-reference#updatedat) 字段。
+要在模型中设置 `createdAt` 字段，将 `default(now())` 属性添加到该列。 要设置 `updatedAt` 列，向该列添加 `@updatedAt` 属性来更新模型。
 
 ```prisma
 model User {
@@ -1105,9 +1107,9 @@ model User {
 }
 ```
 
-### Implicit many-to-many relations
+### 隐式多对多关系
 
-Similar to the `belongsToMany()` association method in Sequelize, Prisma allows you to [model many-to-many relations _implicitly_](../../concepts/components/prisma-schema/relations#implicit-vs-explicit-many-to-many-relations). That is, a many-to-many relation where you do not have to manage the [relation table](../../concepts/components/prisma-schema/relations/many-to-many-relations#relation-tables) (also sometimes called JOIN table) _explicitly_ in your schema. Here is an example with TypeORM:
+与 Sequelize 中的 `belongsToMany()` 关联方法类似，Prisma 允许[隐式与显式多对多关系](../../concepts/components/prisma-schema/relations#implicit-vs-explicit-many-to-many-relations）。多对多关系，不必明确的维护 [关系表](../../concepts/components/prisma-schema/relations/many-to-many-relations#relation-tables )（有时也称为 JOIN 表）。 这是示例：
 
 ```js
 module.exports = (sequelize, DataTypes) => {
@@ -1156,7 +1158,7 @@ module.exports = (sequelize, DataTypes) => {
 }
 ```
 
-When you start your application, Sequelize will create the the tables for you - based on these models:
+当您启动应用程序时，Sequelize 将基于这些模型为您创建表：
 
 ```sql
 Executing (default): CREATE TABLE IF NOT EXISTS "PostCategories"
@@ -1165,7 +1167,7 @@ Executing (default): CREATE TABLE IF NOT EXISTS "PostCategories"
 "PostId" INTEGER  REFERENCES "Posts" ("id") ON DELETE CASCADE ON UPDATE CASCADE, PRIMARY KEY ("CategoryId","PostId"));
 ```
 
-If you introspect the database with Prisma, you'll get the following result in the Prisma schema (note that some relation field names have been adjusted to look friendlier compared to the raw version from introspection):
+如果使用 Prisma 内省数据库，将在 Prisma 模式中获得以下结果（注意，与内省的原始版本相比，某些关系字段名称已调整的更加友好）：
 
 ```prisma
 model Categories {
@@ -1205,9 +1207,9 @@ model Posts {
 }
 ```
 
-In this Prisma schema, the many-to-many relation is modeled explicitly via the relation table `PostCategories`
+在 Prisma 模式中，多对多关系是通过关系表 `PostCategories` 显式建模的
 
-By adhering to the [conventions for Prisma relation tables](), the relation could look as follows:
+遵守 [Prisma 关系表的约定]()，关系如下所示：
 
 ```prisma
 model Categories {
@@ -1231,4 +1233,4 @@ model Posts {
 }
 ```
 
-This would also result in a more ergonomic and less verbose Prisma Client API to modify the records in this relation, because you have a direct path from `Post` to `Category` (and the other way around) instead of needing to traverse the `PostCategories` model first.
+结果是更符合人体工程学、更简洁的 Prisma Client API 来修改关系中的记录，因为您有从 `Post` 到 `Category` 的直接路径（反之亦然），而无需优先遍历 `PostToCategories` 模型。
