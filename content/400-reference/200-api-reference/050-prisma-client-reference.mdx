@@ -73,12 +73,12 @@ enum Role {
 
 #### 备注
 
-- 每次添加或重命名数据源时，都需要重新生成 Prisma Client。数据源名称包含在生成的客户端中。
+- 每次添加或重命名数据源时，都需要重新生成 Prisma Client。数据源名称包含在生成的客户端(Prisma Client)中。
 - 如果你往 schema 中添加了一个新的数据源，那么你需要重新生成客户端。
 
 #### 例子
 
-##### 修改 数据源(datasource) `url`
+##### 通过编程的方式修改数据源(datasource) `url`
 
 ```ts
 import { PrismaClient } from '@prisma/client'
@@ -149,7 +149,7 @@ export type LogDefinition = {
 ```ts file=index.d.ts
 export type QueryEvent = {
   timestamp: Date
-  query: string // 查询发送到数据库
+  query: string // 发送到数据库的查询
   params: string // 查询参数
   duration: number // 客户端发送查询到数据库的时间间隔 - 不仅是执行查询所需的时间
   target: string
@@ -372,18 +372,18 @@ const prisma = new PrismaClient({
 
 ### <inlinecode>rejectOnNotFound</inlinecode>
 
-使用 `rejectOnNotFound` 参数配置 `findUnique` 和/或 `findFirst` 如果记录未找到，则抛出错误。默认情况下。两个操作都返回 `null`。
+如果记录未找到，使用 `rejectOnNotFound` 参数配置 `findUnique` 和/或 `findFirst`来抛出错误。默认情况下。两个操作都返回 `null`。
 
 ### 备注
 
-- 你可以配置 `rejectOnNotFound` 在每个请求级别，对于 [`findUnique`](#findunique) 和 [`findFirst`](#findfirst)
+- 你可以配置 `rejectOnNotFound`作用 [`findUnique`](#findunique) 和 [`findFirst`](#findfirst)的每个请求级别
 
 #### 选项
 
-| 选项                 | 描述                                                                                      |
-| -------------------- | ----------------------------------------------------------------------------------------- |
-| `RejectOnNotFound`   | 全局启用 (`true` / `false`) _或_ 抛出一个自定义错误。                                     |
-| `RejectPerOperation` | 全局启用在操作前开启 (`true` / `false`) _或_ 每个操作前抛出一个自定义错误，按模型(Model). |
+| 选项                 | 描述                                                                           |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `RejectOnNotFound`   | 全局启用 (`true` / `false`) _或_ 抛出一个自定义错误。                          |
+| `RejectPerOperation` | 针对每个操作启用 (`true` / `false`) _或_ 针对每个操作或数据模型抛出自定义错误. |
 
 #### 参考
 
@@ -393,7 +393,7 @@ rejectOnNotFound?: RejectOnNotFound | RejectPerOperation
 
 #### 例子
 
-##### 全局启用 `findUnique` 和 `findFirst`
+##### 对`findUnique` 和 `findFirst`全局启用
 
 ```ts
 const prisma = new PrismaClient({
@@ -411,7 +411,7 @@ const prisma = new PrismaClient({
 })
 ```
 
-##### 如果未找到记录，则为每个模型和操作抛出自定义错误
+##### 如果未找到记录，则为每个数据模型和操作抛出自定义错误
 
 ```ts
 const prisma = new PrismaClient({
@@ -443,7 +443,7 @@ const prisma = new PrismaClient({
 
 #### 备注
 
-- Prisma 的 `dataloader` [自动批处理 `findUnique` 查询](../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader) 具有相同的 `select` 和 `where` 参数
+- 对相同的 `select` 和 `where` 参数， Prisma 的 `dataloader` 可以[自动批处理 `findUnique` 查询](../../guides/performance-and-optimization/query-optimization-performance#solving-n1-in-graphql-with-findunique-and-prismas-dataloader)
 
 #### 选项
 
@@ -559,7 +559,7 @@ const result = await prisma.user.findUnique({
 | 名称               | 示例类型 (`User`)                                            | 必填 | 描述                                                                                                                                                  |
 | ------------------ | ------------------------------------------------------------ | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `distinct`         | `Enumerable<UserDistinct`<br />`FieldEnum>`                  | 否   | 允许您按特定的字段来过滤掉重复的行。 - 例如仅返回不同标题的“帖子”。                                                                                   |
-| `where`            | `UserWhereInput`                                             | 否   | 将模型所有字段包装在一个类型中，以便可以通过任何属性过滤列。表。                                                                                      |
+| `where`            | `UserWhereInput`                                             | 否   | 将模型所有字段包装在一个类型中，以便可以通过任何属性过滤列表。                                                                                        |
 | `cursor`           | `UserWhereUniqueInput`                                       | 否   | 指定列表的位置（该值通常指定一个 `id` 或其他唯一值）。                                                                                                |
 | `orderBy`          | `XOR<Enumerable<User`<br />`OrderByInput>,UserOrderByInput>` | 否   | 允许您按任何属性对返回的列表进行排序。                                                                                                                |
 | `include`          | `XOR<UserInclude, null>`                                     | 否   | [指定急切加载哪些关系](../../concepts/components/prisma-client/relation-queries) 在返回的对象上。                                                     |
@@ -696,7 +696,7 @@ export type UserFindManyArgs = {
 
 参见 [过滤条件和运算符](#filter-conditions-and-operators) 以获取更多示例。
 
-##### 获取所有 `User` 记录，其中 `name` 字段的值为 `Alice`
+##### 获取所有 `name` 字段的值为 `Alice` 的 `User` 记录。
 
 ```ts
 const user = await prisma.user.findMany({
@@ -725,7 +725,7 @@ const user = await prisma.user.findMany({
 
 #### 注意
 
-- 你可以使用 [`create`](#create-1) 来创建一条嵌套的记录。例如，你可以同时创建一条 `User` 和两条 `Post` 记录。
+- 你可以使用 [`create`](#create-1) 来执行嵌套创建。例如，你可以同时创建一条 `User` 和两条 `Post` 记录。
 
 #### 参考
 
@@ -753,7 +753,7 @@ const user = await prisma.user.create({
 
 Prisma Client 不支持在数据库级别批量插入。请查看 [issue #332 on GitHub](https://github.com/prisma/prisma-client-js/issues/332) 更新。
 
-以下示例结果产生 **两个** `INSERT` 方法:
+以下示例结果产生 **两个** `INSERT` 语句:
 
 <CodeWithResult expanded={true}>
 
@@ -4413,7 +4413,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### <inlinecode>字符串包含(string_contains)</inlinecode>
+### <inlinecode>string_contains</inlinecode>
 
 以下查询返回嵌套的 `favorites` > `catBreed` 键值包含 `"Van"` 的所有用户：
 
@@ -4449,7 +4449,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### <inlinecode>字符串起始为(string_starts_with)</inlinecode>
+### <inlinecode>string_starts_with</inlinecode>
 
 以下查询返回嵌套的 `favorites` > `catBreed` 键值以 `"Turkish"` 开头的所有用户：
 
@@ -4486,7 +4486,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### <inlinecode>字符串结束为(string_ends_with)</inlinecode>
+### <inlinecode>string_ends_with</inlinecode>
 
 以下查询返回嵌套的 `favorites` > `catBreed` 键值以 `"Van"` 结尾的所有用户：
 
@@ -4523,7 +4523,7 @@ const getUsers = await prisma.user.findMany({
 
 </TabbedContent>
 
-### <inlinecode>数组包含(array_contains)</inlinecode>
+### <inlinecode>array_contains</inlinecode>
 
 以下查询返回所有在 `sanctuaries` 数组中包含值 `"RSPCA"` 的用户：
 
@@ -4597,7 +4597,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-### <inlinecode>数组起始为(array_starts_with)</inlinecode>
+### <inlinecode>array_starts_with</inlinecode>
 
 以下查询返回所有 `sanctuaries` 数组以 `"RSPCA"` 开头的用户：
 
@@ -4639,7 +4639,7 @@ const getUsers = await prisma.user.findMany({
 </tab>
 </TabbedContent>
 
-### <inlinecode>数组结束为(array_ends_with)</inlinecode>
+### <inlinecode>array_ends_with</inlinecode>
 
 以下查询返回所有以 `"Alley Cat Allies"` 值结尾的 `sanctuaries` 数组的用户：
 
@@ -4722,7 +4722,7 @@ $connect(): Promise<void>
 <!-- prettier-ignore -->
 ### <inlinecode>$use()</inlinecode>
 
-`$use()` 方法添加了 [中间件](../../../concepts/components/prisma-client/middleware) <span class="concept"></span>:
+`$use()` 方法添加了 [中间件](../../../concepts/components/prisma-client/middleware)概念:
 
 ```ts
 prisma.$use(async (params, next) => {
@@ -4805,7 +4805,7 @@ export declare type ModelName = typeof ModelName[keyof typeof ModelName]
 <!-- prettier-ignore -->
 ### <inlinecode>$transaction()</inlinecode>
 
-参见：[事物](../../../concepts/components/prisma-client/transactions).
+参见：[事务](../../../concepts/components/prisma-client/transactions).
 
 ## 辅助类型
 
