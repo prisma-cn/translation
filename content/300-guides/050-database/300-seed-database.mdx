@@ -1,178 +1,146 @@
 ---
-title: Seeding your database
-metaDescription: Learn how to seed your database using Prisma's integrated seeding functionality and Prisma Client
+title: 数据库seeding
+metaDescription: 了解如何使用Prisma的集成seeding功能和Prisma客户端，进行数据库seeding
 ---
 
 <TopBlock>
 
-This guide describes how to seed your database using Prisma Client and Prisma's integrated seeding functionality (Preview). Seeding allows you to consistently re-create the same data in your database and can be used to:
+本指南描述了如何使用 Prisma 客户端和 Prisma 的集成 seeding 功能来 seed 数据库。seeding 允许在数据库中持续地重新创建相同的数据：
 
-- Populate your database with data that is required for your application to start - for example, a default language or a default currency.
-- Provide basic data for validating and using your application in a development environment. This is particularly useful if you are using Prisma Migrate, which sometimes requires resetting your development database.
-
-Watch the following video for an introduction to the `db seed` command:
-
-<div class="videoWrapper">
-
-<iframe
-  width="560"
-  height="315"
-  src="//player.bilibili.com/player.html?aid=931453747&bvid=BV1UM4y1T7QF&cid=403685091&page=8"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen
-></iframe>
-
-</div>
+- 用应用程序启动所需的数据填充你的数据库 - 例如，默认语言或默认货币。
+- 为在开发环境中验证和使用你的应用程序提供基本数据。对于使用 Prisma Migrate 的情景尤其有用，因为其需要经常重置开发时的数据库环境。
 
 </TopBlock>
 
-## Requirements for seeding with TypeScript or JavaScript
+## 如何使用 Prisma seed 数据库
 
-Prisma's integrated seeding functionality expects the following:
+Prisma 的集成 seeding 功能可以写在`package.json`的`scripts`中, `prisma db seed`会立即执行 seeding。本指南推荐在`prisma/`下写一个 seed 脚本：
 
-<!-- prettier-ignore-start -->
+<TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="file"/>, <FileWithIcon text="JavaScript" icon="file"/>]}>
 
-1. A `seed.ts` or `seed.js` file in the [same location as your `schema.prisma` file](../../concepts/components/prisma-schema#prisma-schema-file-location).
-2. **One** of the following inside the `seed.js`/`seed.ts` file:
+<tab>
 
-    - A script inside `seed.ts` / `seed.js`
-    - An export named `seed` ([2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) and later):
+```json
+"prisma": {
+  "seed": "ts-node prisma/seed.ts"
+},
+```
 
-      <TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="code"/>, <FileWithIcon text="JavaScript" icon="code"/>]}>
-      <tab>
+</tab>
 
-      ```ts
-      export async function seed() {
-        // Prisma create query to seed models in database
-      }
-      ```
+<tab>
 
-      </tab>
-      <tab>
+```json
+"prisma": {
+  "seed": "node prisma/seed.js"
+},
+```
 
-      ```js
-      async function seed() {
-        // Prisma create query to seed models in database
-      }
+</tab>
 
-      module.exports = {
-        seed
-      }
-      ```
+</TabbedContent>
 
-      </tab>
-      </TabbedContent>
+## Prisma Migrate 自动进行 seeding
 
-    - A default export ([2.23.0](https://github.com/prisma/prisma/releases/tag/2.23.0) and later):
+数据库 seeding 在两种情况下发生: 一种是`prisma db seed`手动调用，另一种`prisma migrate dev` 或者 `prisma migrate reset`会自动调用。
 
-      <TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="code"/>, <FileWithIcon text="JavaScript" icon="code"/>]}>
-      <tab>
+`prisma db seed` 可以自由控制调用时机。对于测试或者准备开发环境很有用。
 
-      ```ts
-      async function seed() {
-        // Prisma create query to seed models in database
-      }
-      export default seed;
-      ```
+Prisma Migrate 可以无缝衔接 seeding 流程，在重置开发环境的数据库时，会自动运行 seeding，前提是在`package.json`中设置好 seed 脚本
 
-      </tab>
-      <tab>
+以下情况 Prisma Migrate 会触发 seeding:
 
-      ```js
-      async function seed() {
-        // Prisma create query to seed models in database
-      }
+- 手动执行 `prisma migrate reset` 命令
+- 使用`prisma migrate dev`重置数据库 - 例如，迁移历史发生冲突导致的或者数据库 schema 偏移(drift)导致的
+- 传入 --skip-seed 标志可以跳过`prisma migrate dev`和`prisma migrate reset`的 seeding
 
-      module.exports = seed
-      ```
+## seed 脚本示例
 
-      </tab>
-      </TabbedContent>
+这里针对不同情景给出了一些具体的 seed 脚本，可以参考或者按需修改后使用：
 
-<!-- prettier-ignore-end -->
+### 用 TypeScript 或 JavaScript 进行数据库 seeding
 
-3. Optional [compiler options](#compiler-options) if you are using TypeScript.
+<TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="file"/>, <FileWithIcon text="JavaScript" icon="file"/>]}>
 
-## Seeding your database with TypeScript
+<tab>
 
-To seed your database with TypeScript:
+1. 创建一个名为`seed.ts`的新文件。这个文件可以放在项目中的任何地方。下面的例子把它放在`/prisma`文件夹中。
+2. 在`seed.ts`文件中，引入 Prisma 客户端，初始化并填充些记录。
 
-1. Create a new file named `seed.ts` in the same location as your `schema.prisma`.
-2. In the `seed.ts` file, import Prisma Client, instantiate it, and create some records. The following example uses a script, but you can also [use an `export`](#requirements-for-seeding-with-typescript-or-javascript):
+  <details><summary>Expand to view example seed script</summary>
 
-   ```ts
-   import { PrismaClient } from '@prisma/client'
-   const prisma = new PrismaClient()
+    ```js
+    import { PrismaClient } from '@prisma/client'
+    const prisma = new PrismaClient()
 
-   async function main() {
-     const alice = await prisma.user.upsert({
-       where: { email: 'alice@prisma.io' },
-       update: {},
-       create: {
-         email: 'alice@prisma.io',
-         name: 'Alice',
-         posts: {
-           create: {
-             title: 'Check out Prisma with Next.js',
-             content: 'https://www.prisma.io/nextjs',
-             published: true,
-           },
-         },
-       },
-     })
+    async function main() {
+      const alice = await prisma.user.upsert({
+        where: { email: 'alice@prisma.io' },
+        update: {},
+        create: {
+          email: 'alice@prisma.io',
+          name: 'Alice',
+          posts: {
+            create: {
+              title: 'Check out Prisma with Next.js',
+              content: 'https://www.prisma.io/nextjs',
+              published: true,
+            },
+          },
+        },
+      })
 
-     const bob = await prisma.user.upsert({
-       where: { email: 'bob@prisma.io' },
-       update: {},
-       create: {
-         email: 'bob@prisma.io',
-         name: 'Bob',
-         posts: {
-           create: [
-             {
-               title: 'Follow Prisma on Twitter',
-               content: 'https://twitter.com/prisma',
-               published: true,
-             },
-             {
-               title: 'Follow Nexus on Twitter',
-               content: 'https://twitter.com/nexusgql',
-               published: true,
-             },
-           ],
-         },
-       },
-     })
-     console.log({ alice, bob })
-   }
+      const bob = await prisma.user.upsert({
+        where: { email: 'bob@prisma.io' },
+        update: {},
+        create: {
+          email: 'bob@prisma.io',
+          name: 'Bob',
+          posts: {
+            create: [
+              {
+                title: 'Follow Prisma on Twitter',
+                content: 'https://twitter.com/prisma',
+                published: true,
+              },
+              {
+                title: 'Follow Nexus on Twitter',
+                content: 'https://twitter.com/nexusgql',
+                published: true,
+              },
+            ],
+          },
+        },
+      })
+      console.log({ alice, bob })
+    }
 
-   main()
-     .catch((e) => {
-       console.error(e)
-       process.exit(1)
-     })
-     .finally(async () => {
-       await prisma.$disconnect()
-     })
-   ```
+    main()
+      .catch((e) => {
+        console.error(e)
+        process.exit(1)
+      })
+      .finally(async () => {
+        await prisma.$disconnect()
+      })
+    ```
 
-3. Add `typescript`, `ts-node` and `@types/node` development dependencies:
+  </details>
+
+3. 添加 `typescript`, `ts-node` 和 `@types/node` 作为开发依赖：
 
    ```
    npm install -D typescript ts-node @types/node
    ```
 
-<a id="compiler-options"></a>
-
-4. Optionally, add additional `--compiler-options` to the script that Prisma uses to run the seed script ([2.18.0](https://github.com/prisma/prisma/releases/tag/2.18.0) and later). This makes `prisma db seed` work with tools that have specific requirements when used with TypeScript, such as Next.js. The name of the script is `ts-node`:
+4. 修改`package.json`, 添加`prisma.seed`:
 
    ```js highlight=5;normal
    {
      "name": "my-project",
      "version": "1.0.0",
-     "scripts": {
-       "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
+     "prisma": {
+       "seed": "ts-node prisma/seed.ts"
      },
      "devDependencies": {
        "@types/node": "^14.14.21",
@@ -182,84 +150,116 @@ To seed your database with TypeScript:
    }
    ```
 
-5. To seed the database, run the `db seed` CLI command:
+   有些项目可能需要你添加编译选项。例如使用 Next.js 时，需要如下设置:
+
+   ```ts
+   "prisma": {
+     "seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" prisma/seed.ts"
+   },
+   ```
+
+5. 对数据库进行 seeding, 运行 `db seed` 命令:
 
    ```
-   prisma db seed --preview-feature
+   npx prisma db seed
    ```
 
-## Seeding your database with JavaScript
+</tab>
 
-To seed your database with JavaScript:
+<tab>
 
-1. Create a new file named `seed.js` in the same location as your `schema.prisma`.
-2. In the `seed.js` file, import Prisma Client, initialize it and create some records. The following example uses a script, but you can also [use an `export`](#requirements-for-seeding-with-typescript-or-javascript):
+1. 创建一个名为`seed.ts`的新文件。这个文件可以放在项目中的任何地方。下面的例子把它放在`/prisma`文件夹中。
+2. 在`seed.ts`文件中，引入 Prisma 客户端，初始化并填充些记录。
 
-   ```js
-   const { PrismaClient } = require('@prisma/client')
-   const prisma = new PrismaClient()
+  <details><summary>Expand to view example seed script</summary>
 
-   async function main() {
-     const alice = await prisma.user.upsert({
-       where: { email: 'alice@prisma.io' },
-       update: {},
-       create: {
-         email: 'alice@prisma.io',
-         name: 'Alice',
-         posts: {
-           create: {
-             title: 'Check out Prisma with Next.js',
-             content: 'https://www.prisma.io/nextjs',
-             published: true,
-           },
-         },
-       },
-     })
+    ```js
+    const { PrismaClient } = require('@prisma/client')
+    const prisma = new PrismaClient()
 
-     const bob = await prisma.user.upsert({
-       where: { email: 'bob@prisma.io' },
-       update: {},
-       create: {
-         email: 'bob@prisma.io',
-         name: 'Bob',
-         posts: {
-           create: [
-             {
-               title: 'Follow Prisma on Twitter',
-               content: 'https://twitter.com/prisma',
-               published: true,
-             },
-             {
-               title: 'Follow Nexus on Twitter',
-               content: 'https://twitter.com/nexusgql',
-               published: true,
-             },
-           ],
-         },
-       },
-     })
-     console.log({ alice, bob })
+    async function main() {
+      const alice = await prisma.user.upsert({
+        where: { email: 'alice@prisma.io' },
+        update: {},
+        create: {
+          email: 'alice@prisma.io',
+          name: 'Alice',
+          posts: {
+            create: {
+              title: 'Check out Prisma with Next.js',
+              content: 'https://www.prisma.io/nextjs',
+              published: true,
+            },
+          },
+        },
+      })
+
+      const bob = await prisma.user.upsert({
+        where: { email: 'bob@prisma.io' },
+        update: {},
+        create: {
+          email: 'bob@prisma.io',
+          name: 'Bob',
+          posts: {
+            create: [
+              {
+                title: 'Follow Prisma on Twitter',
+                content: 'https://twitter.com/prisma',
+                published: true,
+              },
+              {
+                title: 'Follow Nexus on Twitter',
+                content: 'https://twitter.com/nexusgql',
+                published: true,
+              },
+            ],
+          },
+        },
+      })
+      console.log({ alice, bob })
+    }
+
+    main()
+      .catch((e) => {
+        console.error(e)
+        process.exit(1)
+      })
+      .finally(async () => {
+        await prisma.$disconnect()
+      })
+    ```
+
+  </details>
+
+3. 修改`package.json`, 添加`prisma.seed`:
+
+   ```js highlight=5;normal
+   {
+     "name": "my-project",
+     "version": "1.0.0",
+     "prisma": {
+       "seed": "node prisma/seed.js"
+     }
    }
-
-   main()
-     .catch((e) => {
-       console.error(e)
-       process.exit(1)
-     })
-     .finally(async () => {
-       await prisma.$disconnect()
-     })
    ```
 
-3. To seed the database, run the `db seed` CLI command:
+4. 对数据库进行 seeding, 运行 `db seed` 命令:
 
    ```
-   prisma db seed --preview-feature
+   npx prisma db seed
    ```
 
-## Seeding your database with a Bash script
+</tab>
 
-In addition to TypeScript and JavaScript, you can also use a Bash script (`seed.sh`) to seed your database in another language such as Go, or plain SQL.
+</TabbedContent>
+
+### 使用其他语言进行数据库 seeding (Bash 脚本)
+
+除了 TypeScript 和 JavaScript，还可以用 Bash 脚本调用 Go 或者 SQL 写的 seed 脚本 (`seed.sh`)进行数据库 seeding
+
+<TabbedContent tabs={[<FileWithIcon text="Go" icon="file"/>, <FileWithIcon text="SQL" icon="database"/>]}>
+
+<tab>
 
 The following example runs a Go script in the same folder as `seed.sh`:
 
@@ -272,7 +272,11 @@ set -ex
 go run ./seed/
 ```
 
-The following example uses [psql](https://www.postgresql.org/docs/13/app-psql.html) to run a SQL script in the same folder as `seed.sh`:
+</tab>
+
+<tab>
+
+这是在`seed.sh`中用[psql](https://www.postgresql.org/docs/13/app-psql.html) 运行 SQL 脚本的例子：
 
 ```bash file=seed.sh
 #!/bin/sh
@@ -283,9 +287,6 @@ set -ex
 psql file.sql
 ```
 
-## Integrated seeding with Prisma Migrate
+</tab>
 
-Prisma Migrate integrates seamlessly with your seeds, assuming you follow the steps in the previous section. When Prisma Migrate resets the development database, seeding is triggered automatically. Prisma Migrate resets the database and triggers seeding in the following scenarios:
-
-- You manually run the `prisma migrate reset` CLI command.
-- The database is reset interactively in the context of using `prisma migrate dev` - for example, as a result of migration history conflicts or database drift.
+</TabbedContent>

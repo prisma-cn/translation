@@ -1,86 +1,86 @@
 ---
-title: Migration troubleshooting in production
-navTitle: Migration troubleshooting
-metaDescription: Troubleshooting Prisma Migrate issues in production environments.
+title: 生产环境中的迁移故障排除
+navTitle: 迁移故障排除
+metaDescription: 解决生产环境中Prisma Migrate的问题。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-The following guide describes issues relating to Prisma Migrate that can occur in production, and how to resolve them.
+以下指南描述了与 Prisma Migrate 有关的在生产中可能出现的问题，以及如何解决这些问题。
 
 </TopBlock>
 
-## Failed migration
+## 迁移失败
 
-A migration might fail if:
+迁移失败的可能原因:
 
-- You [modify a migration before running it](../../../concepts/components/prisma-migrate#customizing-migrations) and introduce a syntax error
-- You add a mandatory (`NOT NULL`) column to a table that already has data
-- The migration process stopped unexpectedly
-- The database shut down in the middle of the migration process
+- [运行迁移之前做了修改](../../../concepts/components/prisma-migrate#customizing-migrations)并引入了语法错误
+- 强制添加(`NOT NULL`)到已经有数据的表
+- 迁移过程意外地停止
+- 数据库在迁移过程中关闭了
 
-Each migration in the `_prisma_migrations` table has a `logs` column that stores the error.
+`_prisma_migrations`表中的每个迁移都有一个`logs`列，用来存储错误。
 
-There are two ways to deal with failed migrations in a production environment:
+在生产环境中，有两种方法来处理迁移失败的问题：
 
-- Roll back, optionally fix issues, and re-deploy
-- Manually complete the migration steps and resolve the migration
+- 回滚，选择性地修复问题，并重新部署
+- 手动完成迁移步骤并解决迁移问题
 
-#### Option 1: Mark the migration as rolled back and re-deploy
+#### Option 1: 将迁移标记为回滚并重新部署
 
-The following example demonstrates how to roll back a migration, optionally make changes to fix the issue, and re-deploy:
+下面的例子演示了如何回滚迁移，选择性地进行修改以修复问题，并重新部署:
 
-1. Mark the migration as rolled back - this updates the migration record in the `_prisma_migrations` table to register it as rolled back, allowing it to be applied again:
+1. 将迁移标记为回滚 - 这将更新`_prisma_migrations`表中的迁移记录，将其注册为回滚，允许其再次被应用：
 
    ```terminal
    prisma migrate resolve --rolled-back "20201127134938_added_bio_index"
    ```
 
-1. If the migration was partially run, you can either:
+1. 如果迁移被部分运行，你可以选择:
 
-   - Modify the migration to check if a step was already completed (for example: `CREATE TABLE ... IF NOT EXISTS`) _OR_
-   - Manually revert the steps that were completed (for example, delete created databases)
+   - 修改迁移，以检查某个步骤是否已经完成(例如: `CREATE TABLE ... IF NOT EXISTS`) 或者
+   - 手动恢复已完成的步骤(例如，删除已创建的数据库)
 
-   > If you modify the migration, make sure you copy it back to source control to ensure that state of your production database is reflected exactly in development.
+   > 如果修改了迁移，请确保你把它提交覆盖到源代码仓库，以确保生产数据库的状态在开发中得到准确反映。
 
-1. Fix the root cause of the failed migration, if relevant - for example, if the migration failed due to an issue with the SQL script itself. Make sure that you copy any changed migrations back to source control.
+1. 修复迁移失败 - 例如，如果迁移失败是由于 SQL 脚本本身的问题。请检查是否把修改过的迁移文件提交到源代码仓库中。
 
-1. Re-deploy the migration:
+1. 重新部署迁移:
 
    ```terminal
    prisma migrate deploy
    ```
 
-### Option 2: Manually complete migration and resolve as applied
+### Option 2: 手动完成迁移并标记为已应用
 
-The following example demonstrates how to manually complete the steps of a migration and mark that migration as applied.
+下面的例子演示了如何手动完成一个迁移的步骤，并将该迁移标记为已应用。
 
-1. Manually complete the migration steps on the production database. Make sure that any manual steps exactly match the steps in the migration file, and copy any changes back to source control.
+1. 手动完成生产数据库上的迁移步骤。确保任何手动步骤与迁移文件中的步骤完全一致，并将任何变化复制到源代码仓库。
 
-1. Resolve the migration as applied - this tells Prisma Migrate to consider the migration successfully applied:
+1. 将迁移标记为已应用 - 这告诉 Prisma Migrate 认为迁移已成功应用：
 
    ```terminal
    prisma migrate resolve --applied "20201127134938_my_migration"
    ```
 
-## Migration history conflicts
+## 迁移历史冲突
 
-`prisma migrate deploy` issues a warning if an already applied migration has been edited - however, it does not stop the migration process. To remove the warnings, restore the original migration from source control.
+如果已经应用的迁移被编辑，`prisma migrate deploy`会发出警告 - 但是，它不会停止迁移过程。要消除这些警告，请从源代码仓库中恢复原始迁移。
 
-## Prisma Migrate and PgBouncer
+## Prisma Migrate 和 PgBouncer
 
-You might see the following error if you attempt to run Prisma Migrate commands in an environment that uses PgBouncer for connection pooling:
+如果你试图在使用 PgBouncer 作为连接池的环境中运行 Prisma Migrate 命令，你可能会看到以下错误:
 
 ```bash
 Error: undefined: Database error
 Error querying the database: db error: ERROR: prepared statement "s0" already exists
 ```
 
-See [Prisma Migrate and PgBouncer workaround](../performance-and-optimization/connection-management/configure-pg-bouncer) for further information and a workaround. Follow [GitHub issue #6485](https://github.com/prisma/prisma/issues/6485) for updates.
+有关更多信息和解决方法，请参见[Prisma Migrate 和 PgBouncer 解决方法](../../../guides/performance-and-optimization/connection-management/configure-pg-bouncer)。 关注[GitHub issue #6485](https://github.com/prisma/prisma/issues/6485)以获取更新。

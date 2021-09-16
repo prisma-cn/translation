@@ -1,36 +1,36 @@
 ---
-title: 'Data validation with CHECK constraints (PostgreSQL)'
-metaTitle: 'Data validation with CHECK constraints (PostgreSQL)'
-metaDescription: 'Learn how to configure CHECK constraints for data validation with Prisma and PostgreSQL by following the step-by-step instructions in this practical guide.'
+title: '用CHECK约束进行数据验证 (PostgreSQL)'
+metaTitle: '用CHECK约束进行数据验证 (PostgreSQL)'
+metaDescription: '通过本实用指南中的逐步说明，了解如何为Prisma和PostgreSQL的数据验证配置CHECK约束。'
 ---
 
-## Overview
+## 概述
 
-This page explains how to configure [check constraints](https://www.postgresql.org/docs/9.4/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS) in a PostgreSQL database. A check constraint is a condition that must be satisfied before a value can be saved to a table - for example, the discounted price of a product must always be less than the original price.
+本页说明了如何在 PostgreSQL 数据库中配置[check 约束](https://www.postgresql.org/docs/9.4/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)。check 约束是指在一个值被保存到表中之前必须满足的条件 - 例如，一个产品的折扣价必须总是小于原价。
 
-Check constraints can be added when you create the table (using `CREATE TABLE`) or to a table that already exists (using `ALTER TABLE`). This guide covers all four combinations.
+Check 约束可以在创建表时添加(使用 `CREATE TABLE`) ，也可以添加到已经存在的表中 (使用 `ALTER TABLE`)。下面会介绍所有四种情况。
 
-At the end of the guide, you'll introspect your database, generate a Prisma Client, and write a simple Node.js script to validate the constraints.
+最后，利用数据库自省(introspect)以反映 Prisma schema 中的外键，然后将生成 Prisma 客户端，并编写一个简单的 Node.js 脚本来测试删除行为。
 
-## Prerequisites
+## 前提
 
-In order to follow this guide, you need:
+学习本指南，你需要：
 
-- a [PostgreSQL](https://www.postgresql.org/) database server running
-- the [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html) command line utility
-- the [`psql`]() command line client for PostgreSQL
-- [Node.js](https://nodejs.org/) installed on your machine
+- 一个运行的[PostgreSQL](https://www.postgresql.org/)数据库服务器
+- [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html)命令行工具
+- [`psql`](https://www.postgresql.org/docs/10/app-psql.html)命令行客户端
+- 安装[Node.js](https://nodejs.org/)，一个 JavaScript 运行时
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-Start by creating a project directory for the files that you'll create throughout this guide. Open terminal or command line and run the following commands:
+首先创建一个目录用以存放本指南中的所有文件。在终端或命令行输入以下指令:
 
 ```
 mkdir check-demo
 cd check-demo
 ```
 
-Next, make sure that your PostgreSQL database server is running. Authenticate the default `postgres` user:
+然后, 确认 PostgreSQL 在运行。 验证默认的`postgres`用户:
 
 Unix (bash):
 
@@ -44,7 +44,7 @@ Windows (command line):
 psql -U postgres
 ```
 
-Then execute the following command in your terminal to create a new database called `CheckDemo`:
+运行下面指令创建新数据库`CheckDemo`:
 
 Unix (bash):
 
@@ -61,7 +61,7 @@ create database CheckDemo;
 
 > _Tip_: Remember the trailing `;`! `postgres=#` `postgres-#`
 
-You can validate that the database was created by running the `\dt` command which lists all tables (_relations_) in your database (right now there are none):
+可以通过运行`\dt`命令来验证数据库是否被创建，该命令列出了数据库中的所有表(现在没有表)：
 
 Unix (bash):
 
@@ -75,11 +75,11 @@ Windows (command line):
 -d CheckDemo -c \dt
 ```
 
-## 2. Adding a table with a single check constraint on a single column
+## 2. 在单一列上添加一个具有单一 check 约束的表
 
-In this section, you'll **create a new table with a single check constraint on a single column** in the `CheckDemo` database.
+在这一节中，你将**在`CheckDemo`数据库中创建一个新的表，在一个列上有一个单一的 check 约束**。
 
-Create a new file named `single-column-check-constraint.sql` and add the following code to it:
+新建一个名为`single-column-check-constraint.sql`的文件并添加下面代码:
 
 ```sql
 CREATE TABLE "public"."product" (
@@ -90,7 +90,7 @@ ALTER TABLE "public"."product"
   ADD PRIMARY KEY ("productid");
 ```
 
-Now run the SQL statement against your database to create a new table called `product`:
+在数据库中运行 SQL 文件创建出一张`product`表:
 
 Unix (bash):
 
@@ -104,18 +104,18 @@ Windows (command line):
 \i 'c:/checkdemo/single-column-check-constraint.sql'
 ```
 
-Congratulations, you just created a table called `product` in the database. The table has one column called `price`, which has a single check constraint that ensures price of a product is:
+恭喜你成功在数据库中创建了`product`表，表中有 `price`列, 具有单一 check 约束确保了商品的价格:
 
-- Never less than 0.01
-- Never equal to 1240.00
+- 不少于 0.01
+- 不等于 1240.00
 
-Run the following command to see the a list of check constraints that apply to the `product` table:
+运行下面的命令可以看到适用于`product`表的 check 约束列表:
 
 ```
 \d+ product
 ```
 
-You will see the following output, which includes a list of all check constraints:
+将看到如下输出，包括所有 check 约束列表:
 
 ```
 Table "public.product"
@@ -126,13 +126,13 @@ Check constraints:
     "price_value_check" CHECK (price > 0.01 AND price <> 1240.00)
 ```
 
-Note that PostgreSQL will auto-generate a constraint name if you do not provide one. For example, the constraint created by `price NUMERIC CHECK (price > 0.01 AND price <> 1240.00)` would be `price_check`.
+注意，如果你没有提供约束名称，PostgreSQL 会自动生成一个约束名称。例如, 上面`price NUMERIC CHECK (price > 0.01 AND price <> 1240.00)`产生的约束名为`price_check`.
 
-## 3. Adding a table with a multi-column check constraint
+## 3. 添加一个带有多列 check 约束的表
 
-Next, you'll **create a table with a multi-column check constraint** that compares the values of two columns.
+接下来，将**创建一个带有多列 check 约束的表**，比较两列的值。
 
-Create a new file named `multi-column-check-constraint.sql` and add the following code to it:
+新建一个名为`multi-column-check-constraint.sql`的文件并添加下面代码:
 
 ```sql
 CREATE TABLE "public"."anotherproduct" (
@@ -144,7 +144,7 @@ ALTER TABLE "public"."anotherproduct"
   ADD PRIMARY KEY ("productid");
 ```
 
-Now run the SQL statement against your database to create a new table called `anotherproduct`:
+在数据库中运行 SQL 文件，创建一个名为 `anotherproduct` 的新表:
 
 Unix (bash):
 
@@ -158,13 +158,13 @@ Windows (command line):
 \i 'c:/checkdemo/multi-column-check-constraint.sql'
 ```
 
-Congratulations, you just created a table called `anotherproduct` in the database. The table has two columns called `reducedprice` and `price`. The `reducedprice` column has a check constraint that ensures that the value of `reducedprice` is always less than the value of `price`.
+恭喜你成功在数据库中创建了`anotherproduct`表，表中有`reducedprice`和`price`两列，`reducedprice`具有 check 约束确保了`reducedprice`的值总是小于`price`的值。
 
-## 4. Adding a table with multiple check constraints
+## 4. 添加一个带有多个 check 约束的表
 
-Next, you'll **create a table with multiple check constraint** on different columns.
+接下来，将**创建一个在不同列带有多个 check 约束的表**.
 
-Create a new file named `multiple-check-constraints.sql` and add the following code to it:
+新建一个名为`multiple-check-constraints.sql`的文件并添加下面代码：
 
 ```sql
   CREATE TABLE "public"."secondtolastproduct" (
@@ -177,7 +177,7 @@ ALTER TABLE "public"."secondtolastproduct"
   ADD PRIMARY KEY ("productid");
 ```
 
-Now run the SQL statement against your database to create a new table called `secondtolastproduct`:
+在数据库中运行 SQL 文件，创建一个名为 `secondtolastproduct` 的新表：
 
 Unix (bash):
 
@@ -191,16 +191,16 @@ Windows (command line):
 \i 'c:/checkdemo/multiple-check-constraints.sql'
 ```
 
-Congratulations, you just created a table called `lastproduct` in the database. The table has three columns named `reducedprice`, `price` and `tags`, and the following check constraints:
+恭喜你成功在数据库中创建了`secondtolastproduct`表，该表有三列`reducedprice`,`price`和`tags`，具有一下 check 约束：
 
-- The `tags` column (which is an array) must contain a tag named `product`
-- The value of `reducedprice` must be less than the value of `price`
+- `tags`必须有名为`product`的 tag
+- `reducedprice`的值必须小于`price`的值
 
-## 5. Adding a check constraint to an existing table
+## 5. 在现有的表中添加一个 check 约束：
 
-In this section, you'll **add a check constraint to a table that already exists in your database**. To do so, you first need to create a new table and then alter the table to add the constraint.
+本节中，将**向数据库中已经存在的表添加一个 check 约束**。首先创建一个新表，然后通过改变表以添加约束。
 
-Create a new file named `add-single-check-constraint-later.sql` and add the following code:
+新建一个名为`add-single-check-constraint-later.sql`的文件并添加下面代码：
 
 ```sql
 CREATE TABLE "public"."lastproduct" (
@@ -211,12 +211,12 @@ ALTER TABLE "public"."lastproduct"
   ADD CONSTRAINT "category_not_clothing" CHECK (category <> 'clothing');
 ```
 
-This code contains two SQL statements:
+这段代码包含两条 SQL 语句:
 
-1. Create a new table called `lastproduct`
-2. Alter the table to add a check constraint named `price_not_zero_constraint`
+1. 新建一个名为`lastproduct`的新表
+2. 添加名为`category_not_clothing`的 check 约束
 
-Now run the SQL statements against your database to create a new table called `lastproduct`:
+在数据库中运行 SQL 文件，创建一个名为 `lastproduct` 的新表：
 
 Unix (bash):
 
@@ -230,31 +230,31 @@ Windows (command line):
 \i 'c:/checkdemo/add-single-check-constraint-later.sql'
 ```
 
-Congratulations, you just created a table called `lastproduct` in the database with a single column called `price`. You added constraint named `price_not_zero_constraint` to with a second SQL command, which ensures that the price of a product is never less than 0.01.
+恭喜你成功在数据库中创建了`lastproduct`表，该表有一名为`price`的列，第二条 SQL 语句添加了约束，确保了产品种类不是`clothing`：
 
-## 6. Introspect your database with Prisma
+## 6. Prisma 的数据库自省(Introspect)
 
-In the previous sections, you created four tables with different check constraints:
+在前面的章节中，你创建了四张具有不同 check 约束的表：
 
-- The `product` table has a check constraint that ensures that the value of `price` is never less than `0.01` and enver exactly `1240.00`.
-- The `anotherproduct` table has a check constraint that ensures that the value of `reducedprice` is never greater than the value of `price`.
-- The `secondtolastproduct` table has two check constraints - one that ensures that the value of `reducedprice` is never greater than the value of `price`, and one that ensures that the `tags` array always contains the value `product`.
-- The `lastproduct` table has a check constraint that ensures that the value of `category` is never `clothing`.
+- `price`不小于`0.01`且永不等于`1240.00`的`product`表
+- `reducedprice`永不大于`price`的`anotherproduct`表
+- `reducedprice`永不大于`price`，`tags`必须有名为`product`的 tag，带有这两个约束的`secondtolastproduct`表
+- `category`永远不是`clothing`的`lastproduct`表
 
-In this section you'll introspect your database to generate the Prisma models for these tables.
+本节中，通过数据库自省（Introspect）来生成 Prisma 模型。
 
-> **Note**: Check constraints are currently not included in the generated Prisma schema - however, the underlying database still enforces the constraints.
+> **注意**: 当前生成的 Prisma schema 中不会包括 check 约束 - 但是，底层的数据库逻辑是包括约束的
 
-To start, set up a new Node.js project and add the `prisma` CLI as a development dependency:
+首先，初始化一个 Node.js 项目，安装`prisma`为开发依赖：
 
 ```
 npm init -y
 npm install prisma --save-dev
 ```
 
-In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema.
+为了进行数据库自省（Introspect）,可以通过在 Prisma schema 中配置一个`datasource`，来告知 Prisma 数据源。
 
-Create a new file named `schema.prisma` and add the following code to it:
+创建一个名为`schema.prisma`的新文件，并在其中添加以下代码：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -263,27 +263,27 @@ datasource db {
 }
 ```
 
-The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://github.com/motdotla/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
+数据库连接的 URL 是通过环境变量设置的。Prisma CLI 支持[`dotenv`](https://github.com/motdotla/dotenv)格式所以能够自动识别定义在 `.env`文件中的环境变量。
 
-Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+创建一个新的`.env`文件 ，设置`DATABASE_URL`环境变量为:
 
 ```
 DATABASE_URL=postgresql://__USER__:__PASSWORD__@__HOST__:__PORT__/CheckDemo
 ```
 
-In the above code snippet, you need to replace the uppercase placeholders with your own connection details. For example, if your database is running locally it could look like this:
+按照具体情况替换大写的占位符。例如，如果数据库跑在本地：
 
 ```
 DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/CheckDemo
 ```
 
-With both the `schema.prisma` and `.env` files in place, you can run Prisma's introspection with the following command:
+有了`schema.prisma`和`.env`文件，运行以下命令 Prisma 的自省（introspection）：
 
 ```
 npx prisma db pull
 ```
 
-This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+这个命令让数据库进行自省（introspect），并为每个表添加一个 Prisma model 到 Prisma schema。
 
 ```prisma file=schema.prisma
 generator client {
@@ -319,11 +319,11 @@ model secondtolastproduct {
 }
 ```
 
-## 7. Generate Prisma Client
+## 7. 生成 Prisma 客户端
 
-To validate whether the check constraints work, you'll now generate Prisma Client and send a few sample queries to the database.
+为了验证外键约束是否有效，现在要生成 Prisma 客户端，并向数据库发送一些查询来测试。
 
-First, add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+首先， 在 Prisma schema 中添加如下代码(在 `datasource` 下面):
 
 ```prisma file=schema.prisma
 generator client {
@@ -331,17 +331,17 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行以下命令，在你的项目中安装和生成 Prisma 客户端:
 
 ```
 npx prisma generate
 ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在你可以使用 Prisma 客户端在 Node.js 中发送数据库查询。
 
-## 8. Validate the check constraints in a Node.js script
+## 8. 用 Node.js 脚本验证 check 约束
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为`index.js`的新文件，并在其中添加以下代码：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -361,22 +361,22 @@ async function main() {
 main()
 ```
 
-In this code, you're creating a product with a price of `0.00`, which does not meet the check constraint configured for the `price` column.
+上面的代码中，新建的一个价格为`0.00`的商品，不满足`price`列的 check 约束。
 
-Run the code with this command:
+运行下面的命令：
 
 ```
 node index.js
 ```
 
-The script throws an error indicating that the `price_check_value` check constraint was not met:
+抛出错误表明`price_check_value`约束不被满足：
 
 ```
 Error occurred during query execution:
 ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Error { kind: Db, cause: Some(DbError { severity: "ERROR", parsed_severity: Some(Error), code: SqlState("23514"), message: "new row for relation \"product\" violates check constraint \"price_value_check\"", detail: Some("Failing row contains (0, 11)."), hint: None, position: None, where_: None, schema: Some("public"), table: Some("product"), column: None, datatype: None, constraint: Some("price_value_check"), file: Some("d:\\pginstaller_12.auto\\postgres.windows-x64\\src\\backend\\executor\\execmain.c"), line: Some(2023), routine: Some("ExecConstraints") }) }) })
 ```
 
-To validate the multi-column check constraint, replace the code in `index.js` with the following:
+为了验证多列 check 约束，替换`index.js`里面的代码如下：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -397,14 +397,15 @@ async function main() {
 main()
 ```
 
-In this code, you're creating a product where the reduced price is higher than the actual price.
+上面代码中，创建的商品的打折价格高于原来的价格。
 
-Run the script again with this command:
+运行下面的命令：
 
 ```
 node index.js
 ```
 
+这回你将看到类似的信息表明，`reduce_price_check`check 约束未被满足：
 This time, you'll see a similar error message indicating the `reduce_price_check` check constraint was not met:
 
 ```
@@ -412,7 +413,7 @@ ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Error 
     at PrismaClientFetcher.request (C:\Work\Personal\prisma-check-constraint\node_modules\@prisma\client\index.js:89:17)
 ```
 
-Finally, modify the script to include multiple check constraint violations:
+最后， 换作如下代码来检测多个 check 约束的违规：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -436,18 +437,18 @@ async function main() {
 main()
 ```
 
-In this code, you're creating a product where the reduced price is higher than the actual price, and omitting the required `product` tag.
+上面的代码中，创建的商品的打折价格高于原价，且忽略了必填的`product`tag
 
-Run the script again with this command:
+运行下面的命令：
 
 ```
 node index.js
 ```
 
-Notice that the error message only mentions the `reduced_price_check` constraint:
+注意到错误信息仅仅表明了`reduced_price_check`约束不满足：
 
 ```
 ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Error { kind: Db, cause: Some(DbError { severity: "ERROR", parsed_severity: Some(Error), code: SqlState("23514"), message: "new row for relation \"secondtolastproduct\" violates check constraint \"reduced_price_check\"", detail: Some("Failing row contains (100, 90, {wrongtag}, 7)."), hint: None, position: None, where_: None, schema: Some("public"), table: Some("secondtolastproduct"), column: None, datatype: None, constraint: Some("reduced_price_check"), file: Some("d:\\pginstaller_12.auto\\postgres.windows-x64\\src\\backend\\executor\\execmain.c"), line: Some(2023), routine: Some("ExecConstraints") }) }) })
 ```
 
-Check constraints are resolved in alphabetical order, and only the first constraint to fail appears in the error message.
+原因是多个 check 约束违规只会显示按字母顺序排列的第一个。

@@ -1,68 +1,68 @@
 ---
-title: 'Cascading deletes (SQLite)'
-metaTitle: 'Configure cascading deletes with Prisma and SQLite'
-metaDescription: 'Learn how to configure cascading deletes with Prisma and SQLite by following the step-by-step instructions in this practical guide.'
+title: '级联删除 (SQLite)'
+metaTitle: '使用Prisma 和 SQLite，配置级联删除'
+metaDescription: '通过遵循本实用指南中的逐步说明，了解如何使用Prisma和SQLite配置级联删除。'
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later it is possible to do cascading deletes using the **preview feature** [referential actions](../../../../concepts/components/prisma-schema/relations/referential-actions).
+[2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0)以后的版本， 可以配合**预览功能**的[参照动作 (referential actions)](../../../../concepts/components/prisma-schema/relations/referential-actions)使用进行级联删除。
 
 </Admonition>
 
-This page explains how to configure cascading deletes on [foreign key constraints](https://www.sqlite.org/foreignkeys.html#fk_actions) (relations) in your SQLite database.
+本页将解释如何在 SQLite 数据库中配置[外键约束关系](https://www.sqlite.org/foreignkeys.html#fk_actions) (relations)的级联删除。
 
-Cascading deletes allow you to configure deletion behavior on relations (e.g. specify a rule like "when a user is deleted, all their posts should be automatically deleted too"). The database will then enforce this behavior when records are deleted.
+级联删除可以按照关系来配置删除行为(规则如， 一个用户被删除，则该用户的所有帖子会一同被删除)。设置后，数据库会严格遵守此级联删除规则。
 
-There generally are five options for configuring deletion behavior in SQLite (paraphrasing from the [SQLite docs](https://www.sqlite.org/foreignkeys.html#fk_actions)):
+在 SQLite 中，通常有五个选项用于配置删除行为(引用自 [SQLite docs](https://www.sqlite.org/foreignkeys.html#fk_actions)):
 
-- `NO ACTION` (default): If any referencing rows still exist when the constraint is checked, an error is raised
-- `RESTRICT`: Prevents deletion of a referenced row. The difference between these two choices is that `NO ACTION` allows the check to be deferred until later in the transaction, whereas `RESTRICT` does not.
-- `SET NULL`: Causes the referencing columns to be set to `NULL` when the referenced row is deleted.
-- `SET DEFAULT`: Causes the referencing columns to be set to their default values when the referenced row is deleted. Note that these do not excuse you from observing any constraints. For example, if an action specifies `SET DEFAULT` but the default value would not satisfy the foreign key, the operation will fail.
-- `CASCADE`: When a referenced row is deleted, row(s) referencing it should be automatically deleted as well.
+- `NO ACTION` (默认值): 如果在检查约束时仍有任何引用的行存在，就会抛出一个错误
+- `RESTRICT`: 防止删除被引用的行。这两个选择的本质区别是：`NO ACTION`允许检查推迟到事务的后期，而`RESTRICT`则不允许
+- `SET NULL`: 当一个被引用的行被删除时，引用它的列被设置为`NULL
+- `SET DEFAULT`: 一个被引用的行被删除时，引用它的列被设置为它们的默认值。 请注意，这些并不意味着你可以不遵守任何约束。例如，如果一个操作指定为 `SET DEFAULT`，但是默认值不满足外键，那么这个操作将会失败。
+- `CASCADE`: 当一个被引用的行被删除时，引用它的行也应该被自动删除
 
-In this guide, you'll create two tables where one references the other via a foreign key and explore the different options for cascading deletes.
+本指南中，你将创建两张表，其中一张表通过外键引用另一张表，然后来学习级联删除的不同选项。
 
-At the end of the guide, you'll introspect your database to reflect the foreign key in the Prisma schema, then you'll generate Prisma Client and write a simple Node.js script to test the deletion behaviors.
+最后，利用数据库自省(introspect)以反映 Prisma schema 中的外键，然后将生成 Prisma 客户端，并编写一个简单的 Node.js 脚本来测试删除行为。
 
 </TopBlock>
 
-## Prerequisites
+## 前提
 
-In order to follow this guide, you need:
+学习本指南，你需要：
 
-- the [`sqlite3`](https://www.sqlite.org/cli.html) command line client for SQLite
-- the [Node.js](https://nodejs.org/) runtime for JavaScript installed on your machine
+- 一个运行的[`sqlite3`](https://www.sqlite.org/cli.html)数据库服务器
+- 安装[Node.js](https://nodejs.org/)，一个 JavaScript 运行时
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-Start by creating a project directory where you can put the files you'll create throughout this guide:
+首先创建一个目录用以存放本指南中的所有文件：
 
 ```
 mkdir cascading-deletes-demo
 cd cascading-deletes-demo
 ```
 
-Next, make sure that your SQLite database server is running. Then execute the following command in your terminal to create a new database called `CascadingDeletesDemo`:
+接下来，确保 SQLite 数据库服务器正在运行。然后在终端执行以下命令，创建一个名为 `CascadingDeletesDemo`的新数据库：
 
 ```
 sqlite3 CascadingDeletesDemo.db '.databases'
 ```
 
-You can validate that the database was created by running the `\dt` command which lists all tables (_relations_) in your database (right now there are none):
+可以通过运行命令来验证数据库是否被创建，该命令列出了数据库中的所有表(现在没有表)：
 
 ```
 sqlite3 CascadingDeletesDemo.db '.tables'
 ```
 
-## 2. Create two tables with a foreign key and `RESTRICT` deletion behavior
+## 2. 创建两张具有`RESTRICT`删除行为的有外键关联的表
 
-In this section, you'll **create two tables where one references the other via a foreign key with the `RESTRICT` action** in the `CascadingDeletesDemo` database.
+在本节中，你将**创建两张表，其中一张通过外键引用另一张，并在`CascadingDeletesDemo`数据库中配置为`RESTRICT`**。
 
-Create a new file named `cascading-deletes-restrict.sql` and add the following code to it:
+创建一个`cascading-deletes-restrict.sql`文件并添加下面代码：
 
 ```sql
 CREATE TABLE "User" (
@@ -78,27 +78,27 @@ CREATE TABLE "Post" (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+在数据库中运行 SQL 文件，创建出两张表：
 
 ```
 sqlite3 CascadingDeletesDemo.db < cascading-deletes-restrict.sql
 ```
 
-Congratulations, you just created two tables called `User` and `Post` in the database. The `Post` table references the `User` table via the foreign key defined on the `authorId` column.
+恭喜你成功在数据库中创建了两个表，叫做`User`和`Post`。`Post`表通过定义在`authorId`列上的外键引用了`User`表。
 
-The deletion behavior `RESTRICT` in this case means that it is not possible to delete a `User` record that is referenced `User` record. If you try doing that, the database will throw an error similar to this:
+在这种情况下，删除行为`RESTRICT`意味着不可能删除一个被引用的`User`记录。如果尝试这样做，数据库将抛出一个如下的错误:
 
 ```
 update or delete on table "User" violates foreign key constraint "Post_author_fkey" on table "Post"
 Detail: Key (id)=(1) is still referenced from table "Post".
 ```
 
-<details><summary>Alternative: Define the constraint as a <strong>column constraint</strong></summary>
+<details><summary>其他方案: 定义一个<strong>列约束</strong></summary>
 <br />
 
-In the code above, you created the unique constraint as a **table constraint**. Alternatively, you can define it as a **column constraint**. There's no practical difference between the two, the alternative is just added for completeness.
+在上面的代码中，把唯一约束作为一个**表约束**创建。或者，也可以把它定义为**列约束**。两者之间没有实际的区别，只是为了完整起见，增加了一个备选方案。
 
-To add the foreign key constraint as a column constraint, you need to adjust your SQL statement for creating the `Post` table to look as follows:
+为了将外键约束添加为列约束，需要调整创建`Post`表的 SQL 语句，如下所示：
 
 ```sql
 CREATE TABLE "Post" (
@@ -110,11 +110,11 @@ CREATE TABLE "Post" (
 
 </details>
 
-## 3. Create two tables with a foreign key and `CASCADE` deletion behavior
+## 3. 创建两张具有`CASCADE`删除行为的有外键关联的表
 
-In this section, you'll **create two tables where one references the other via a foreign key with the `CASCADE` action** in the `CascadingDeletesDemo` database.
+在本节中，你将**创建两张表，其中一张通过外键引用另一张，并在`CascadingDeletesDemo`数据库中配置为`CASCADE`**。
 
-Create a new file named `cascading-deletes-cascade.sql` and add the following code to it:
+创建一个`cascading-deletes-cascade.sql`文件并添加下面代码：
 
 ```sql
 CREATE TABLE "AnotherUser" (
@@ -130,21 +130,21 @@ CREATE TABLE "AnotherPost" (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+在数据库中运行 SQL 文件，创建出两张表：
 
 ```
 sqlite3 CascadingDeletesDemo.db < cascading-deletes-cascade.sql
 ```
 
-Congratulations, you just created two tables called `AnotherUser` and `AnotherPost` in the database. The `AnotherPost` table references the `AnotherUser` table via the foreign key defined on the `authorId` column.
+恭喜你成功在数据库中创建了两个表，叫做`AnotherUser`和`AnotherPost`。`AnotherPost`表通过定义在`authorId`列上的外键引用了`AnotherUser`表。
 
-The deletion behavior `CASCADE` in this case means that when you delete an `AnotherUser` record that's referenced by one or more `AnotherPost` records, these `AnotherPost` records will be deleted as well.
+在这种情况下，删除行为 "CASCADE "意味着当删除一个`AnotherUser`记录，关联着的一个或者多个`AnotherPost`记录也将被删除。
 
-## 4. Create two tables with a foreign key and `NO ACTION` deletion behavior
+## 4. 创建两张具有`NO ACTION`删除行为的有外键关联的表
 
-In this section, you'll **create two tables where one references the other via a foreign key with the `NO ACTION` action** in the `CascadingDeletesDemo` database.
+在本节中，你将**创建两张表，其中一张通过外键引用另一张，并在`CascadingDeletesDemo`数据库中配置为`NO ACTION`**。
 
-Create a new file named `cascading-deletes-no-action.sql` and add the following code to it:
+创建一个`cascading-deletes-no-action.sql`文件并添加下面代码：
 
 ```sql
 CREATE TABLE "OneMoreUser" (
@@ -160,7 +160,7 @@ CREATE TABLE "OneMorePost" (
 );
 ```
 
-Note that because `NO ACTION` is the default, you could also omit it:
+`NO ACTION` 是默认值，因此也可以省略不写：
 
 ```sql
 CREATE TABLE "OneMorePost" (
@@ -171,26 +171,26 @@ CREATE TABLE "OneMorePost" (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+在数据库中运行 SQL 文件，创建出两张表：
 
 ```
 sqlite3 CascadingDeletesDemo.db < cascading-deletes-no-action.sql
 ```
 
-Congratulations, you just created two tables called `OneMoreUser` and `OneMorePost` in the database. The `OneMorePost` table references the `OneMoreUser` table via the foreign key defined on the `authorId` column.
+恭喜你成功在数据库中创建了两个表，叫做`OneMoreUser`和`OneMorePost`。`OneMorePost`表通过定义在`authorId`列上的外键引用了`OneMoreUser`表。
 
-The deletion behavior `NO ACTION` in this case means that it is not possible to delete a `OneMoreUser` record that is referenced `OneMoreUser` record. If you try doing that, the database will throw an error similar to this:
+在这种情况下，删除行为`NO ACTION`意味着不可能删除一个被引用的`OneMoreUser`记录。如果尝试这样做，数据库将抛出一个如下的错误:
 
 ```
 update or delete on table "User" violates foreign key constraint "Post_author_fkey" on table "Post"
 Detail: Key (id)=(1) is still referenced from table "Post".
 ```
 
-## 5. Create two tables with a foreign key and `SET NULL` deletion behavior
+## 5. 创建两张具有`SET NULL`删除行为的有外键关联的表
 
-In this section, you'll **create two tables where one references the other via a foreign key with the `SET NULL` action** in the `CascadingDeletesDemo` database.
+在本节中，你将**创建两张表，其中一张通过外键引用另一张，并在`CascadingDeletesDemo`数据库中配置为`SET NULL`**。
 
-Create a new file named `cascading-deletes-set-null.sql` and add the following code to it:
+创建一个`cascading-deletes-set-null.sql`文件并添加下面代码：
 
 ```sql
 CREATE TABLE "AlmostTheLastUser" (
@@ -206,21 +206,21 @@ CREATE TABLE "AlmostTheLastPost" (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+在数据库中运行 SQL 文件，创建出两张表：
 
 ```
 sqlite3 CascadingDeletesDemo.db < cascading-deletes-set-null.sql
 ```
 
-Congratulations, you just created two tables called `AlmostTheLastUser` and `AlmostTheLastPost` in the database. The `AlmostTheLastPost` table references the `AlmostTheLastUser` table via the foreign key defined on the `authorId` column.
+恭喜你成功在数据库中创建了两个表，叫做`AlmostTheLastUser`和`AlmostTheLastPost`。`AlmostTheLastPost`表通过定义在`authorId`列上的外键引用了`AlmostTheLastUser`表。
 
-The deletion behavior `SET NULL` in this case means that when you delete a `AlmostTheLastUser` record that's referenced by one or more `AlmostTheLastPost` records, the `authorId` column on these `AlmostTheLastPost` records will be set to `NULL` (therefore maintaining the integrity of the data and ensuring that no `AlmostTheLastPost` records point to non-existing `AlmostTheLastUser` records).
+在这种情况下，删除行为`SET NULL`意味着当删除一个`AlmostTheLastUser`记录，关联着的一个或者多个`AlmostTheLastPost`记录也将被设置成`NULL`（为保持数据的完整性，确保没有`AlmostTheLastPost`记录指向不存在的`AlmostTheLastUser`记录）。
 
-## 6. Create two tables with a foreign key and `SET DEFAULT` deletion behavior
+## 6. 创建两张具有`SET DEFAULT`删除行为的有外键关联的表
 
-In this section, you'll **create two tables where one references the other via a foreign key with the `SET DEFAULT` action** in the `CascadingDeletesDemo` database.
+在本节中，你将**创建两张表，其中一张通过外键引用另一张，并在`CascadingDeletesDemo`数据库中配置为`SET DEFAULT`**。
 
-Create a new file named `cascading-deletes-set-default.sql` and add the following code to it:
+创建一个`cascading-deletes-set-default.sql`文件并添加下面代码：
 
 ```sql
 CREATE TABLE "TheLastUser" (
@@ -236,47 +236,47 @@ CREATE TABLE "TheLastPost" (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+在数据库中运行 SQL 文件，创建出两张表：
 
 ```
 sqlite3 CascadingDeletesDemo.db < cascading-deletes-set-default.sql
 ```
 
-Congratulations, you just created two tables called `TheLastUser` and `TheLastPost` in the database. The `TheLastPost` table references the `TheLastUser` table via the foreign key defined on the `authorId` column.
+恭喜你成功在数据库中创建了两个表，叫做`TheLastUser`和`TheLastPost`。`TheLastPost`表通过定义在`authorId`列上的外键引用了`TheLastUser`表。
 
-The deletion behavior `SET NULL` in this case means that when you delete a `TheLastUser` record that's referenced by one or more `TheLastPost` records, the `authorId` column on these `TheLastPost` records will be set to the _default_ value of the column.
+在这种情况下，删除行为`SET DEFAULT`意味着当删除一个被一个或者多个`TheLastPost`记录引用的`TheLastUser`记录时，`TheLastPost`记录中`authorId`列会被设置为该列的默认值。如果没有默认值，则为`NULL`(行为和`SET NULL`一样)。在上表中，默认值为`42`。如果没有`id`值为`42`的`TheLastUser·记录存在，操作就会失败并抛出以下信息：
 
-If no default exists, it will be set to `NULL` (in that case, the behavior would be identical to `SET NULL`). In the above table, a contrived example with a default value of `42` is used. If no `TheLastUser` record with an `id` value of `42` exists though, the operation will fail with a message similar to this:
+如果不存在默认值, 它将被设置成`NULL` (这种情况下,效果与`SET NULL`相同). 在上面的表中，默认值为`42`。如果没有`id'值为`42'的`TheLastUser'记录存在，操作就会失败，抛出信息：
 
 ```
 insert or update on table "TheLastPost" violates foreign key constraint "TheLastPost_author_fkey"
 Detail: Key (authorId)=(42) is not present in table "TheLastUser".
 ```
 
-Since `TheLastPost` records can only ever reference existing `TheLastUser` records, `SET NULL` also maintains the integrity of the data and ensures that no `TheLastPost` records can point to non-existing `TheLastUser` records.
+由于`TheLastPost`记录只能引用现有的`TheLastUser`记录，`SET NULL`也可以保持数据的完整性，确保没有`TheLastPost`记录可以指向不存在的`TheLastUser`记录。
 
-## 7. Introspect your database with Prisma
+## 7. Prisma 的数据库自省(Introspect)
 
-In the previous sections, you created five times two tables with foreign key constraints:
+在前面的章节中，你创建了 5 次具有外键约束的两张表:
 
-- The table `Post` uses `RESTRICT` action on the foreign key column `authorId` which points to the `User` table
-- The table `AnotherPost` uses `CASCADE` action on the foreign key column `authorId` which points to the `AnotherUser` table
-- The table `OneMorePost` uses `NO ACTION` action on the foreign key column `authorId` which points to the `OneMoreUser` table
-- The table `AlmostTheLastPost` uses `SET NULL` action on the foreign key column `authorId` which points to the `AlmostTheLastUser` table
-- The table `TheLastPost` uses `SET DEFAULT` action on the foreign key column `authorId` which points to the `TheLastUser` table
+- `Post`表在外键列`authorId`上使用`RESTRICT`行为，该列指向`User`表
+- `AnotherPost`表在外键列`authorId`上使用`CASCADE`行为，该列指向`AnotherUser`表
+- `OneMorePost`表在外键列`authorId`上使用`NO ACTION`行为，该列指向`OneMoreUser`表
+- `AlmostTheLastPost`表在外键列`authorId`上使用`SET NULL`行为，该列指向`AlmostTheLastUser`表
+- `TheLastPost`表在外键列`authorId`上使用`SET DEFAULT`行为，该列指向`TheLastUser`表
 
-In this section you'll introspect your database to generate the Prisma models for these tables.
+本节中，通过数据库自省（Introspect）来生成 Prisma 模型。
 
-To start, set up a new Node.js project and add the `prisma` CLI as a development dependency:
+首先，初始化一个 Node.js 项目，安装`prisma`为开发依赖：
 
 ```
 npm init -y
 npm install prisma --save-dev
 ```
 
-In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema.
+为了进行数据库自省（Introspect）,可以通过在 Prisma schema 中配置一个`datasource`，来告知 Prisma 数据源。
 
-Create a new file named `schema.prisma` and add the following code to it:
+创建一个名为`schema.prisma`的新文件，并在其中添加以下代码：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -285,21 +285,21 @@ datasource db {
 }
 ```
 
-The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://www.npmjs.com/package/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
+数据库连接的 URL 是通过环境变量设置的。Prisma CLI 支持[`dotenv`](https://github.com/motdotla/dotenv)格式所以能够自动识别定义在 `.env`文件中的环境变量。
 
-Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+创建一个新的`.env`文件 ，设置`DATABASE_URL`环境变量为:
 
 ```
 DATABASE_URL=file:CascadingDeletesDemo.db
 ```
 
-With both the `schema.prisma` and `.env` files in place, you can run Prisma's introspection with the following command:
+有了`schema.prisma`和`.env`文件，运行以下命令 Prisma 的自省（introspection）：
 
 ```
 npx prisma db pull
 ```
 
-This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+这个命令让数据库进行自省（introspect），并为每个表添加一个 Prisma model 到 Prisma schema。
 
 ```prisma file=schema.prisma
 generator client {
@@ -377,13 +377,13 @@ model TheLastPost {
 }
 ```
 
-> **Note**: Deletion behaviors for relations are not yet supported in the Prisma schema so you don't see them anywhere. The behavior will still be enforced by the database though since that's where you configured it.
+> **注意**: 在 Prisma schema 中还不支持关联的删除行为，所以没有出现在 schema 中。但该行为仍将由数据库执行，因为你在那里配置了它。
 
-## 8. Generate Prisma Client
+## 8. 生成 Prisma 客户端
 
-To validate whether the foreign key constraints work, you'll now generate Prisma Client and send a few sample queries to the database to test the relations.
+为了验证外键约束是否有效，现在要生成 Prisma 客户端，并向数据库发送一些查询来测试。
 
-First, add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+首先， 在 Prisma schema 中添加如下代码(在 `datasource` 下面):
 
 ```prisma file=schema.prisma
 generator client {
@@ -391,23 +391,23 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行以下命令，在你的项目中安装和生成 Prisma 客户端:
 
 ```
 npx prisma generate
 ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在你可以使用 Prisma 客户端在 Node.js 中发送数据库查询。
 
-## 9. Validate the deletion behavior in a Node.js script
+## 9. 用 Node.js 脚本验证删除行为
 
-### 9.1. Validating `RESTRICT`
+### 9.1. 验证 `RESTRICT`
 
-The `RESTRICT` keyword prevents deletion of a referenced row. So, when trying to delete a `User` record that is reference by a `Post` record, the query will fail.
+`RESTRICT`关键字防止删除被引用的记录。 因此，尝试删除一个被`Post`引用的`User`，查询将会失败。
 
-To test the `RESTRICT` behavior, you need to access the `User` and `Post` tables.
+为了测试该行为，需要访问`User`和`Post`两张表。
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为`index.js`的新文件，并在其中添加以下代码：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -436,13 +436,13 @@ async function main() {
 main()
 ```
 
-Run the code with this command:
+运行以下代码：
 
 ```
 node index.js
 ```
 
-The script will throw an exception when invoking `prisma.user.delete(...)`. The error will look similar to this:
+调用时`prisma.user.delete(...)`会抛出异常。错误如下:
 
 ```
 PrismaClientUnknownRequestError:
@@ -461,13 +461,13 @@ ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Sqlite
     at processTicksAndRejections (internal/process/task_queues.js:85:5)
 ```
 
-### 9.2. Validating `CASCADE`
+### 9.2. 验证 `CASCADE`
 
-The `CASCADE` keyword ensures that when a referenced row is deleted, all the rows that are referencing it get deleted as well. So, when trying to delete an `AnotherUser` record that is referenced by one or more `AnotherPost` records, these `AnotherPost` records will be deleted too.
+`CASCADE`关键字确保当一个被引用的记录被删除时，所有引用它的记录也会被删除。因此, 当尝试删除被一个或多个`AnotherPost`引用的 `AnotherUser`，`AnotherPost`也将被删除。
 
-To test the `CASCADE` behavior, you need to access the `AnotherUser` and `AnotherPost` tables.
+为了测试该行为，需要访问`AnotherUser`和`AnotherPost`两张表。
 
-Open the `index.js` file and replace its contents with the following code:
+替换`index.js`里面的代码如下：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -506,26 +506,26 @@ async function main() {
 main()
 ```
 
-Run the code with this command:
+运行以下代码：
 
 ```
 node index.js
 ```
 
-The console output will look similar to this:
+控制台将输出：
 
 ```
 Before deleting the `AnotherUser` record there are 1 users and 1 posts.
 After deleting the `AnotherUser` record there are 0 users and 0 posts.
 ```
 
-### 9.3. Validating `NO ACTION`
+### 9.3. 验证 `NO ACTION`
 
-The `NO ACTION` keyword prevents deletion of a referenced row. So, when trying to delete a `OneMoreUser` record that is reference by a `OneMorePost` record, the query will fail.
+`NO ACTION`关键字防止删除被引用的记录。因此, 当尝试删除被`OneMorePost`引用的 `OneMoreUser`，查询将会失败。
 
-To test the `NO ACTION` behavior, you need to access the `OneMoreUser` and `OneMorePost` tables.
+为了测试该行为，需要访问`OneMoreUser`和`OneMorePost`两张表。
 
-Open the `index.js` file and replace its contents with the following code:
+替换`index.js`里面的代码如下：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -560,7 +560,7 @@ Run the code with this command:
 node index.js
 ```
 
-The script will throw an exception when invoking `prisma.user.delete(...)`. The error will look similar to this:
+调用时`prisma.user.delete(...)`会抛出异常。错误如下:
 
 ```
 PrismaClientUnknownRequestError:
@@ -579,13 +579,13 @@ ConnectorError(ConnectorError { user_facing_error: None, kind: ForeignKeyConstra
     at process._tickCallback (internal/process/next_tick.js:68:7)
 ```
 
-### 9.4. Validating `SET NULL`
+### 9.4. 验证 `SET NULL`
 
-The `SET NULL` keyword ensures that when a referenced row is deleted, all the rows that are referencing it reset their foreign key to `NULL`. So, when deleting an `AlmostTheLastUser` record that is referenced by one or more `AlmostTheLastPost` records, these `AlmostTheLastPost` records will reset their `authorId` fields to `NULL`.
+`SET NULL`关键字确保当一个被引用的行被删除时，所有引用它的记录也会被设置为`NULL`。因此，当删除一个被一个或多个`AlmostTheLastPost`记录引用的`AlmostTheLastUser`记录时，这些`AlmostTheLastPost`记录将重置其`authorId`字段为`NULL`。
 
-To test the `SET NULL` behavior, you need to access the `AlmostTheLastUser` and `AlmostTheLastPost` tables.
+为了测试该行为，需要访问`AlmostTheLastUser`和`AlmostTheLastPost`两张表。
 
-Open the `index.js` file and replace its contents with the following code:
+替换`index.js`里面的代码如下：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -635,13 +635,13 @@ async function main() {
 main()
 ```
 
-Run the code with this command:
+运行以下代码：
 
 ```
 node index.js
 ```
 
-The console output will look similar to this:
+控制台将输出：
 
 ```
 $ node index.js
@@ -651,13 +651,13 @@ After deleting the `AlmostTheLastUser` record, the `AlmostTheLastPost` record lo
 {"authorId":null,"id":1,"title":"Hello World","AlmostTheLastUser":null}
 ```
 
-### 9.5. Validating `SET DEFAULT`
+### 9.5. 验证 `SET DEFAULT`
 
-The `SET DEFAULT` keyword ensures that when a referenced row is deleted, all the rows that are referencing it set their foreign key to their default value (if there's no default value defined, it resets the foreign key to `NULL`). So, when deleting an `TheLastUser` record that is referenced by one or more `TheLastPost` records, these `TheLastPost` records will reset their `authorId` fields to `NULL`.
+`SET DEFAULT`关键字确保当一个被引用的行被删除时，所有引用它的记录的外键也会被设置为默认值(没有默认值则设置为`NULL`)。因此，当删除一个被一个或多个`TheLastPost`记录引用的`TheLastUser`记录时，这些`TheLastPost`记录将重置其`authorId`字段为`NULL`。
 
-To test the `SET DEFAULT` behavior, you need to access the `TheLastUser` and `TheLastPost` tables.
+为了测试该行为，需要访问`TheLastUser`和`TheLastPost`两张表。
 
-Open the `index.js` file and replace its contents with the following code:
+替换`index.js`里面的代码如下：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -707,13 +707,13 @@ async function main() {
 main()
 ```
 
-Run the code with this command:
+运行以下代码：
 
 ```
 node index.js
 ```
 
-If you run this command and there's no `User` record in the database with an `id` of `42`, the script is going to fail with the following error:
+如果运行这个命令，而数据库中没有`id`为`42`的`User`记录，将失败并抛出以下错误：
 
 ```
 Before deleting the `TheLastUser` record, the `TheLastPost` record looks as follows:
@@ -736,7 +736,7 @@ ConnectorError(ConnectorError { user_facing_error: None, kind: ForeignKeyConstra
 (node:3074) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
 ```
 
-If there is a `User` record with an `id` of `42`, the output will look similar to this:
+如果数据库中有`id`为`42`的`User`记录，控制台会输出如下：
 
 ```
 $ node index.js

@@ -1,28 +1,28 @@
 ---
-title: Schema prototyping with db push
-metaDescription: How to use db push to prototype a new feature or an entirely new schema.
+title: Schema 设计原型 with db push
+metaDescription: 如何使用数据库推送来为新的功能或全新的schema建立原型。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-`db push` uses the Migration Engine and does not currently support the [MongoDB connector](../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-This guide demonstrates how to use [`db push`](../../../reference/api-reference/command-reference#db-push) to prototype a new schema or a new feature for an existing schema.
+本指南演示了如何使用[`db push`](../../../reference/api-reference/command-reference#db-push)为一个新的 schema 或现有 schema 的新功能建立原型。
 
-Although `db push` and Prisma Migrate both synchronize your Prisma schema and database schema, they play [different roles in the development workflow](../../../concepts/components/prisma-migrate/db-push#choosing-db-push-or-prisma-migrate) and should not be used interchangeably.
+尽管`db push`和 Prisma Migrate 都干了同一件事，同步 Prisma schema 和数据库 schema，但是它们在[开发工作流程中扮演着不同角色](../../../concepts/components/prisma-migrate/db-push#choosing-db-push-or-prisma-migrate)，所以不应该交替使用。
 
 </TopBlock>
 
-## Prototyping a new schema
+## 设计一个新的 schema 的原型
 
-The following scenario demonstrates how to use `db push` to synchronize a new schema with an empty database, and evolve that schema - including what happens when `db push` detects that a change will result in data loss.
+下面的场景演示了如何使用`db push`将一个新的 schema 与一个空的数据库同步 - 包括当`db push`检测到一个会导致数据丢失的变化时会发生什么。
 
-1.  Create a first draft of your schema:
+1.  创建一个 schema 草案:
 
     ```prisma
     generator client {
@@ -68,13 +68,13 @@ The following scenario demonstrates how to use `db push` to synchronize a new sc
     }
     ```
 
-2.  Use `db push` to push the initial schema to the database:
+2.  使用 `db push` 提交:
 
     ```terminal
     npx prisma db push
     ```
 
-3.  Create some example content:
+3.  创建一些数据:
 
     ```ts
     const add = await prisma.user.create({
@@ -91,11 +91,11 @@ The following scenario demonstrates how to use `db push` to synchronize a new sc
     })
     ```
 
-4.  Make an additive change - for example, create a new required field:
+4.  做补充性改变 - 例如，新增一个必填字段：
 
     ```prisma highlight=6;add
     // ... //
-
+    
     model Post {
       id          Int        @id @default(autoincrement())
       title       String
@@ -110,13 +110,13 @@ The following scenario demonstrates how to use `db push` to synchronize a new sc
     // ... //
     ```
 
-5.  Push the changes:
+5.  提交变更:
 
     ```terminal
     npx prisma db push
     ```
 
-    `db push` will prompt you to reset because you cannot add a required field to a table with existing content unless you provide a default value:
+    `db push`会提示你重新设置，因为除非提供一个默认值，否则不能在一个已有内容的表中添加一个必填字段：
 
     ```bash
     ⚠️ We found changes that cannot be executed:
@@ -128,11 +128,11 @@ The following scenario demonstrates how to use `db push` to synchronize a new sc
 
 <Tip>
 
-Use the `--accept-data-loss` flag to skip this warning, or `--force-reset` to ignore all warnings. Furthermore, if your schema changes mean that seed scripts will no longer work, you can use the `--skip-seed` flag to ignore seed scripts.
+使用`--accept-data-loss`标志来跳过这个警告，或者使用`--force-reset`来忽略掉所有警告。此外，如果 schema 变化了意味着 seed 脚本将不再有效，可以使用`--skip-seed`标志来跳过 seeding。
 
 </Tip>
 
-6.  Confirm data loss and apply changes to your database (or revisit your schema):
+6.  确认数据丢失并对数据库进行修改 (或重新审视 schema):
 
     ```bash
      There might be data loss when applying the changes:
@@ -142,27 +142,27 @@ Use the `--accept-data-loss` flag to skip this warning, or `--force-reset` to ig
      ? Do you want to ignore the warning(s)? Some data will be lost. » (y/N)
     ```
 
-    > **Note**: Unlike Prisma Migrate, `db push` does not generate migrations that you can modify to preserve data, and is therefore best suited for prototyping in a development environment.
+    > **注意**: 与 Prisma Migrate 不同, `db push`不会生成可以修改的迁移以保留数据，因此最适合在开发环境中进行原型设计。
 
-7.  Continue to evolve your schema until it reaches a relatively stable state.
+7.  继续迭代 schema，直到它达到一个相对稳定的状态。
 
-8.  Initialize a migration history:
+8.  初始化一个迁移历史:
 
     ```terminal
     npx prisma migrate dev --name initial-state
     ```
 
-    The steps taken to reach the initial prototype are not preserved - `db push` does not generate a history.
+    到达初始原型的步骤没有被保留 - `db push`没有生成历史记录。
 
-9.  Push your migration history and Prisma schema to source control.
+9.  提交迁移历史和 Prisma schema。
 
-At this point, the final draft of your prototyping is preserved in a migration and can be pushed to other environments (testing, production, or other members of your team).
+目前，你的原型最终草案保留在迁移中并可以推送到其他环境（测试、生产或你团队的其他成员）。
 
-## Prototyping with an existing migration history
+## 利用现有的迁移历史进行原型设计
 
-The following scenario demonstrates how to use `db push` to prototype a change to a Prisma schema where a migration history already exists.
+下面的场景演示了如何使用`db push`对已经存在迁移历史的 Prisma schema 进行修改。
 
-1. Check out the latest Prisma schema and migration history:
+1. 查看最新的 Prisma schema 和迁移历史：
 
    ```prisma
    generator client {
@@ -208,30 +208,30 @@ The following scenario demonstrates how to use `db push` to prototype a change t
    }
    ```
 
-2. Prototype your new feature, which can involve any number of steps. For example, you might:
+2. 有新的设计，你可以这么做：
 
-   - Create a `tags String[]` field, then run `db push`
-   - Change the field type to `tags Tag[]` and add a new model named `Tag`, then run `db push`
-   - Change your mind and restore the original `tags String[]` field, then call `db push`
-   - Make a manual change to the `tags` field in the database - for example, adding a constraint
+- 创建`tags String[]`字段, 运行`db push`
+- 创建字段类型`tags Tag[]` 然后添加新模型 `Tag`, 运行`db push`
+- 改变主意了，恢复 `tags String[]` 字段,运行`db push`
+- 手动改变了`tags`字段 - 例如增加了约束
 
-   After experimenting with several solutions, the final schema change looks like this:
+在试验了几种解决方案之后，最终的 schema 是这样的：
 
-   ```prisma
-   model Post {
-     id          Int        @id @default(autoincrement())
-     title       String
-     description String
-     published   Boolean    @default(true)
-     content     String     @db.VarChar(500)
-     authorId    Int
-     author      User       @relation(fields: [authorId], references: [id])
-     categories  Category[]
-     tags        String[]
-   }
-   ```
+```prisma
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  published   Boolean    @default(true)
+  content     String     @db.VarChar(500)
+  authorId    Int
+  author      User       @relation(fields: [authorId], references: [id])
+  categories  Category[]
+  tags        String[]
+}
+```
 
-3. To create a migration that adds the new `tags` field, run the `migrate dev` command:
+3. 要创建一个添加新的 `tags` 字段的迁移，请运行 `migrate dev`命令:
 
    ```terminal
    npx prisma migrate dev --name added-tags
@@ -246,6 +246,6 @@ The following scenario demonstrates how to use `db push` to prototype a change t
    Do you want to continue? All data will be lost. ... yes
    ```
 
-4. Prisma Migrate replays the existing migration history, generates a new migration based on your schema changes, and applies those changes to the database.
+4. Prisma Migrate 会复制现有的迁移历史，根据 schema 变化生成一个新的迁移，并将这些变化应用到数据库。
 
-At this point, the final result of your prototyping is preserved in a migration, and can be pushed to other environments (testing, production, or other members of your team).
+现在，原型设计的最终结果被保存在迁移中，并可以推送到其他环境（测试、生产或你的团队的其他成员）

@@ -1,22 +1,22 @@
 ---
-title: 'SQL views'
+title: 'SQL视图'
 # metaTitle: 'Create SQL views with Prisma and PostgreSQL'
 # metaDescription: 'Learn how to create SQL views with Prisma and your database by following the step-by-step instructions in this practical guide.'
 dbSwitcher: ['postgres', 'mysql']
 techMetaTitles:
   [
-    { name: 'mysql', value: 'Create SQL views with Prisma and MySQL' },
-    { name: 'postgres', value: 'Create SQL views with Prisma and PostgreSQL)' },
+    { name: 'mysql', value: '使用Prisma和MySQL创建SQL视图' },
+    { name: 'postgres', value: '使用Prisma和PostgreSQL创建SQL视图)' },
   ]
 techMetaDescriptions:
   [
     {
       name: 'mysql',
-      value: 'Learn how to set up MySQL views with Prisma and your database by following the step-by-step instructions in this practical guide.',
+      value: '通过遵循本实用指南中的逐步说明，了解如何用Prisma和你的数据库设置MySQL视图。',
     },
     {
       name: 'postgres',
-      value: 'Find out how to configure PostgreSQL views with Prisma and your database by following the step-by-step instructions in this practical guide.',
+      value: '通过遵循本实用指南中的逐步说明，了解如何用Prisma和你的数据库设置PostgreSQL视图。',
     },
   ]
 ---
@@ -25,79 +25,79 @@ techMetaDescriptions:
 
 <SwitchTech technologies={['*', 'postgres']}>
 
-This page explains how to create a [view](https://www.postgresql.org/docs/9.2/sql-createview.html) in your PostgreSQL database.
+本页说明了如何在 PostgreSQL 数据库中创建[视图](https://www.postgresql.org/docs/9.2/sql-createview.html)。
 
 </SwitchTech>
 
 <SwitchTech technologies={['*', 'mysql']}>
 
-This page explains how to create a [view](https://dev.mysql.com/doc/refman/8.0/en/views.html) in your MySQL database.
+本页说明了如何在 MySQL 数据库中创建[view](https://dev.mysql.com/doc/refman/8.0/en/views.html)。
 
 </SwitchTech>
 
-In this guide, you will:
+在本指南中, 你将会:
 
-- Create two tables where one references the other via a foreign key.
-- Create a view named `Draft`.
-- Introspect your database to reflect the foreign key relation between the two tables in the Prisma schema.
-- Manually update the Prisma schema to include the view as a model.
-- Generate Prisma Client and write a simple Node.js script to read data from the view.
+- 创建两张表，其中一个通过外键引用另一个
+- 创建一个名为`Draft`的视图
+- 数据库自省（Introspect）后在 Prisma schema 中反映出两张表之间的外键关系
+- 手动更新 Prisma schema，将视图作为一个 model
+- 生成 Prisma 客户端， 写一段 Node.js 脚本来从视图中读取数据。
 
 <Tip>
 
-The workaround described in this guide is by no means a best practice, it instead fills in some gaps for missing functionality in Prisma. **It will not work with Prisma Migrate or introspection**.
+本指南中的解决办法谈不上是最佳实践，但它填补了目前 Prisma 所缺失的一些功能。**在 Prisma Migrate 和自省(introspection)中不适用**
 
-There is an [issue](https://github.com/prisma/prisma/issues/678) currently open which aims to add support for database views in Prisma.
+在 Prisma 中添加对数据库视图的支持，相关[issue](https://github.com/prisma/prisma/issues/678)。
 
-Subscribe to the issue for updates on progress and timelines.
+订阅这个 issue，以了解最新的进展和时间表。
 
 </Tip>
 
 </TopBlock>
 
-## Prerequisites
+## 前提
 
-In order to follow this guide, you need:
+学习本指南，你需要：
 
 <SwitchTech technologies={['*', 'postgres']}>
 
-- a [PostgreSQL](https://www.postgresql.org/) database server running
-- the [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html) command line utility
-- the [`psql`](https://www.postgresql.org/docs/10/app-psql.html) command line client for PostgreSQL
-- the [Node.js](https://nodejs.org/) runtime for JavaScript installed on your machine
+- 一个运行的[PostgreSQL](https://www.postgresql.org/)数据库服务器
+- [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html)命令行工具
+- [`psql`](https://www.postgresql.org/docs/10/app-psql.html)命令行客户端
+- 安装[Node.js](https://nodejs.org/)，一个 JavaScript 运行时
 
 </SwitchTech>
 
 <SwitchTech technologies={['*', 'mysql']}>
 
-- a [MySQL](https://www.mysql.com/) database server running
-- the [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html) command line client for MySQL
-- [Node.js](https://nodejs.org/) installed on your machine
+- 一个运行的[MySQL](https://dev.mysql.com/doc/refman/5.7/en/mysqld.html)数据库服务器
+- [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html)命令行客户端
+- 安装[Node.js](https://nodejs.org/)，一个 JavaScript 运行时
 
 </SwitchTech>
 
-## Limitations
+## 限制
 
-Be aware of the following limitations when using views with Prisma:
+配合 Prisma 使用视图，有以下限制请注意：
 
-- You must _manually_ add each view as a model to the Prisma schema right now. Introspection does not add views to the schema currently.
-- Views must include a unique column - such as an ID.
-- The generated Prisma Client will include queries such `create`, `delete`, and `update`, even though you cannot perform these queries on a view.
-- Models created for views will be **deleted** from your schema the next time you run an introspection. This is because they **do not** correspond to the tables in the database.
-- Prisma Migrate will treat these views as tables and try to create them. If you have view models, you **cannot** use Prisma Migrate with them.
+- 需要 _手动_ 添加视图作为模型, 自省(Introspection)目前不能自动添加视图到 schema。
+- 视图必须包括一个唯一的列 - 例如 ID
+- 生成的 Prisma 客户端将包括`create`, `delete` 和 `update`，尽管你不能在视图上执行这些查询
+- 视图创建的模型将在下次运行自省(introspection)时从 schema 中**被删除**， 因为它们**不对应**数据库中的表
+- Prisma Migrate 会将这些视图看做表，并尝试创建。如果有视图模型（view models）时**不能**使用 Prisma Migrate
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-To create a new database:
+创建一个新数据库：
 
-1. Create a project directory where you can put the files you'll create throughout this guide:
+1. 创建一个目录用以存放本指南中的所有文件:
 
    ```terminal
    mkdir sql-views-demo
    cd sql-views-demo
    ```
 
-2. Next, make sure that your database server is running. Then execute the following command in your terminal to create a new database called `SqlViews`:
+2. 接下来，确保数据库服务器正在运行。然后在终端执行以下命令，创建一个名为`SqlViews`的数据库:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -115,7 +115,7 @@ To create a new database:
 
    </SwitchTech>
 
-3. Validate that the database was created by running the following command which lists all tables (_relations_) in your database (right now there are none):
+3. 可以通过运行以下命令来验证数据库是否被创建，该命令列出了数据库中的所有表(现在还没有表)：
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -133,11 +133,11 @@ To create a new database:
 
    </SwitchTech>
 
-## 2. Create two tables with a foreign key
+## 2. 创建两张有一个外键关联着的表
 
-In this section, you'll **create two tables where one references the other via a foreign key** in the `SqlViews` database.
+在本节中，你将在`SqlViews`数据库中**创建两张表，其中一张通过外键引用另一张**。
 
-1. Create a new file named `sql-views-tables.sql` and add the following code to it:
+1. 创建一个`sql-views-tables.sql`文件并添加下面代码
 
    <SwitchTech technologies={['*', 'mysql']}>
 
@@ -181,7 +181,7 @@ In this section, you'll **create two tables where one references the other via a
 
    </SwitchTech>
 
-2. Run the SQL statement against your database to create the two tables:
+2. 在数据库中运行 SQL 文件，创建出两张表：
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -199,7 +199,7 @@ In this section, you'll **create two tables where one references the other via a
 
    </SwitchTech>
 
-3. Run the following command to validate that the tables were created:
+3. 运行以下命令，确认数据表已被创建:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -217,13 +217,13 @@ In this section, you'll **create two tables where one references the other via a
 
    </SwitchTech>
 
-You just created two tables named `User` and `Post` in the database. The `Post` table references the `User` table via the foreign key defined on the `authorId` column.
+已经成功在数据库中创建了两个表，叫做`User`和`Post`。`Post`表通过定义在`authorId`列上的外键引用了`User`表。
 
-## 3. Create a view named `Draft`
+## 3. 创建一个名为`Draft`的视图
 
 In this section you will create a view named `Draft`. The `Draft` view represents a query that returns the post title and author email of all posts that have not been published. To create a view:
 
-1. Create a new file named `sql-views-draft.sql` and add the following code to it:
+1. 创建一个名为`sql-views-draft.sql`的文件并添加下面代码：
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -247,7 +247,7 @@ In this section you will create a view named `Draft`. The `Draft` view represent
 
    </SwitchTech>
 
-2. Run the SQL statement against your database to create the view:
+2. 运行 SQL 语句，创建视图:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -265,7 +265,7 @@ In this section you will create a view named `Draft`. The `Draft` view represent
 
    </SwitchTech>
 
-3. Run the following command to validate that the view was created:
+3. 运行下面命令，确保视图被创建:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -283,45 +283,46 @@ In this section you will create a view named `Draft`. The `Draft` view represent
 
    </SwitchTech>
 
-   You should see the following list of views:
+你将看到下面的列表：
 
    <SwitchTech technologies={['*', 'postgres']}>
 
-   ```
-          List of relations
-    Schema |  Name  | Type |  Owner
-    --------+--------+------+----------
-    public | Draft  | view | postgres
-   ```
+```
+       List of relations
+ Schema |  Name  | Type |  Owner
+ --------+--------+------+----------
+ public | Draft  | view | postgres
+```
 
    </SwitchTech>
 
    <SwitchTech technologies={['*', 'mysql']}>
 
-   ```
-    +----------------+------------+
-    | Tables_in_mydb | Table_type |
-    +----------------+------------+
-    | Drafts         | VIEW       |
-    +----------------+------------+
-   ```
+```
+ +----------------+------------+
+ | Tables_in_mydb | Table_type |
+ +----------------+------------+
+ | Drafts         | VIEW       |
+ +----------------+------------+
+```
 
    </SwitchTech>
 
-## 4. Introspect your database with Prisma
+## 4. Prisma 的数据库自省(Introspect)
 
+本节中，通过数据库自省（Introspect），为创建的表生成 Prisma model。
 In this section you'll introspect your database to generate the Prisma models for the tables that you created.
 
-> **Note**: You will manually add the `Draft` view to the Prisma schema in a later step.
+> **注意**: 后面需要手动添加`Draft`视图到 Prisma schema。
 
-1. Set up a new Node.js project and add the `prisma` CLI as a development dependency:
+1. 初始化一个 Node.js 项目，安装`prisma`为开发依赖：
 
    ```terminal
    npm init -y
    npm install prisma --save-dev
    ```
 
-2. Create a new file named `schema.prisma` and add the following code to it:
+2. 创建一个名为`schema.prisma`的新文件，并在其中添加以下代码:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -345,7 +346,7 @@ In this section you'll introspect your database to generate the Prisma models fo
 
    </SwitchTech>
 
-3. In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema. Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+3. 为了进行数据库自省（Introspect）,可以通过在 Prisma schema 中配置一个`datasource`，来告知 Prisma 数据源。创建一个新的`.env`文件 ，设置`DATABASE_URL`环境变量为
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -363,33 +364,33 @@ In this section you'll introspect your database to generate the Prisma models fo
 
    </SwitchTech>
 
-   In the above code snippet, you need to replace the uppercase placeholders with your own connection details. For example, if your database is running locally it could look like this:
+按照具体情况替换大写的占位符。例如，如果数据库跑在本地：
 
    <SwitchTech technologies={['*', 'postgres']}>
 
-   ```copy
-   DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/SqlViews
-   ```
+```copy
+DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/SqlViews
+```
 
    </SwitchTech>
 
    <SwitchTech technologies={['*', 'mysql']}>
 
-   ```copy
-   DATABASE_URL=mysql://janedoe:mypassword@localhost:3306/mydb
-   ```
+```copy
+DATABASE_URL=mysql://janedoe:mypassword@localhost:3306/mydb
+```
 
    </SwitchTech>
 
-   The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://github.com/motdotla/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
+数据库连接的 URL 是通过环境变量设置的。Prisma CLI 支持[`dotenv`](https://github.com/motdotla/dotenv)格式所以能够自动识别定义在 `.env`文件中的环境变量。
 
-4. With both the `schema.prisma` and `.env` files in place, run Prisma's introspection with the following command:
+4. 有了`schema.prisma`和`.env`文件，运行以下命令 Prisma 的自省（introspection:
 
    ```terminal
    npx prisma db pull
    ```
 
-   This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+   这个命令让数据库进行自省（introspect），并为每个表添加一个 Prisma model 到 Prisma schema:
 
    <SwitchTech technologies={['*', 'postgres']}>
 
@@ -445,13 +446,13 @@ In this section you'll introspect your database to generate the Prisma models fo
 
     </SwitchTech>
 
-## 5. Manually add the `Draft` view to the Prisma schema
+## 5. 在 Prisma schema 中，手动添加`Draft`视图
 
-You must manually add views to the Prisma schema.
+必须手动添加视图到 Prisma schema 中
 
-1. Add a `Draft` model to the schema as shown:
+1. 添加 `Draft` model 到 schema:
 
-   > **Note**: The name of your view is case sensitive - if you created a view named `draft` in the database, you must create a model named `draft` in the Prisma schema.
+   > **注意**: 视图名字是大小写敏感的 - 如果数据库中视图名字为 `draft`, Prisma schema 中也应该为 `draft`。
 
    <SwitchTech technologies={['*', 'mysql']}>
 
@@ -521,11 +522,11 @@ You must manually add views to the Prisma schema.
 
     </SwitchTech>
 
-## 6. Generate Prisma Client
+## 6. 生成 Prisma 客户端
 
-In this section, you will generate Prisma Client.
+本节中, 将生成 Prisma 客户端。
 
-1. Add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+1. 在 Prisma schema 中添加如下代码(在 `datasource` 下面):
 
    ```prisma file=schema.prisma
    generator client {
@@ -533,19 +534,19 @@ In this section, you will generate Prisma Client.
    }
    ```
 
-2. Run the following command to install and generate Prisma Client in your project:
+2. 运行以下命令，在你的项目中安装和生成 Prisma 客户端:
 
    ```terminal
    npx prisma generate
    ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在你可以使用 Prisma 客户端在 Node.js 中发送数据库查询。
 
-## 9. Validate the `Draft` view in a Node.js script
+## 9. 用 Node.js 脚本验证`Draft`视图的创建
 
-In the following section, you will use the `drafts` model property to return `Post` records that have not yet been published. To use the `drafts` model property:
+在下面的章节中，你将使用`drafts`模型属性来返回尚未发布的`Post`记录。要使用`drafts`模型属性：
 
-1. Create a new file named `index.js` and add the following code to it:
+1. 新建`index.js`并添加以下代码:
 
    ```ts
    const { PrismaClient } = require('@prisma/client')
@@ -603,19 +604,19 @@ In the following section, you will use the `drafts` model property to return `Po
      })
    ```
 
-   This example:
+   上面的例子:
 
-   - Creates two `User` records with three `Post` records each
-   - Returns all `Draft` records from the view
-   - Returns all `Draft` records from the view where the author's email is `emily@prisma.io`
+   - 创建了两个`User`,分别带有三个`Post`
+   - 从视图中返回所有`Draft`
+   - 从视图中返回 author email 是 `emily@prisma.io`的`Draft `
 
-2. Run the code with the following command:
+2. 运行下面的命令:
 
    ```terminal -symbol
    node index.js
    ```
 
-   The following output indicates that the view works as expected - the first query returns all drafts (`Post` records where `published` is `false`), and the second query returns drafts by `emily@prisma.io` only):
+   下面的输出表明，该视图按预期工作
 
    ```js
    /* ALL DRAFTS */

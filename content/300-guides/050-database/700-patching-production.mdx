@@ -1,34 +1,34 @@
 ---
-title: Patching / hotfixing a database in production
-navTitle: Patching / hotfixing
-metaDescription: How to reconcile the migration history after applying a hotfix or patch to a production environment.
+title: 生产环境中的数据库打补丁 / 热修复
+navTitle: 补丁 / 热修复
+metaDescription: 生产环节中应用热修复和补丁后，如何调和迁移历史
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-Patching or hotfixing a database involves making an often time critical change directly in production. For example, you might add an index directly to a production database to resolve an issue with a slow-running query.
+打补丁或热修复数据库涉及到在生产环境中直接做一个涉及时间的关键修改。例如，你可能直接在生产数据库中添加一个索引，以解决一个运行缓慢的查询问题。
 
-Patching the production database directly results in **schema drift**: your database schema has 'drifted away' from the source of truth, and is out of sync with your migration history. You can use the `prisma migrate resolve` command to reconcile your migration history _without_ having to remove and re-apply the hotfix with `prisma migrate deploy`.
+直接给生产数据库打补丁会导致**schema 偏移**：你的数据库 schema 已经 "偏离"了真实源，并且与迁移历史不同步。可以使用`prisma migrate resolve`命令来协调你的迁移历史，而不需要通过 `prisma migrate deploy`来删除和重新应用热修复。
 
 </TopBlock>
 
-## Reconciling your migration history with a patch or hotfix
+## 应用热修复和补丁后，调和迁移历史
 
-The following scenario assumes that you made a manual change in production and want to propagate that change to your migration history and other databases.
+下面的场景假设你在生产中做了一个手动的改变，并且想把这个改变传播到迁移历史和其他数据库。
 
-To reconcile your migration history and database schema in production:
+为了调和生产环境中的迁移历史和数据库 schema：
 
 <!-- prettier-ignore-start -->
 
-1. Replicate the change you made in production in the schema - for example, add an `@@index` to a particular model.
-1. Generate a new migration and take note of the full migration name, including a timestamp, which is written to the CLI:(`20210316150542_retroactively_add_index`):
+1. 在schema中复现在生产中所做的改变 - 例如，为某个特定模型添加一个`@@index`。
+1. 生成一个新的迁移，并注意完整的迁移名称，包括时间戳(`20210316150542_retroactively_add_index`)，在命令行输入:
 
    <CodeWithResult expanded={true}>
    <cmd>
@@ -53,18 +53,18 @@ To reconcile your migration history and database schema in production:
    </cmdResult>
    </CodeWithResult>
 
-1. Push the migration to production **without running `migrate deploy`**. Instead, mark the migration created in the previous step as 'already applied' so that Prisma Migrate does not attempt to apply your hotfix a second time:
+1. 在不运行`migrate deploy`的情况下，将迁移推送到生产中。相反，将上一步创建的迁移标记为`已应用`，这样Prisma Migrate就不会试图第二次应用热修复。
 
    ```terminal
    prisma migrate resolve --applied "20201127134938-retroactively-add-index"
    ```
 
-   This command adds the migration to the migration history table without running the actual SQL.
+   这条命令将迁移内容添加到迁移历史表中，而不需要运行实际的SQL语句。
 
-1. Repeat the previous step for other databases that were patched - for example, if you applied the patch to a staging database.
+1. 对其他被打过补丁的数据库重复上一步 - 例如，如果把补丁应用到一个暂存数据库。
 
-1. Propagate the migration to other databases that were not patched - for example, by committing the migration to source control and allowing your CI/CD pipeline to apply it to all databases.
+1. 将迁移传播到其他没有打补丁的数据库 - 例如，提交代码到仓库并使用CI/CD
 
 <!-- prettier-ignore-end -->
 
-> **Note**: The migration will not be applied to databases where it has been marked as already applied by the `prisma migrate resolve` command.
+> **注意**: 迁移将不会应用于那些已经被`prisma migrate resolve`命令标记为已经应用的数据库。

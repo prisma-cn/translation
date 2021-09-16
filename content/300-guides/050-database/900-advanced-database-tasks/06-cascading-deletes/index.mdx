@@ -1,18 +1,18 @@
 ---
-title: 'Cascading deletes'
-metaTitle: 'Cascading deletes (Guide)'
-metaDescription: 'How to implement cascading deletes at database level.'
+title: '级联删除'
+metaTitle: '级联删除 (指南)'
+metaDescription: '在数据库层面如何进行级联删除。'
 ---
 
 <TopBlock>
 
-Cascading deletes allow you to define how foreign key relationships should be handled when you delete a record. For example, when you delete a user, you might use a cascading delete to remove that user's extended profile from a related table. By contrast, you might _not_ want to delete that user's blog posts.
+级联删除允许你定义删除一条记录时应该如何处理外键关系。例如，当删除一个用户时，可以使用级联删除来从相关表中删除该用户的扩展资料。相反，你可能不希望删除该用户的博客文章。
 
-The guides in this section describe how to implement cascading deletes manually in the database and verify the results in Prisma Client.
+本节中的指南描述了如何在数据库中手动实现级联删除并在 Prisma 客户端中验证结果。
 
 <Admonition type="warning">
 
-In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later it is possible to do cascading deletes using the **preview feature** [referential actions](../../../../concepts/components/prisma-schema/relations/referential-actions).
+[2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0)以后的版本， 可以配合**预览功能**的[参照动作 (referential actions)](../../../../concepts/components/prisma-schema/relations/referential-actions)使用进行级联删除。
 
 </Admonition>
 

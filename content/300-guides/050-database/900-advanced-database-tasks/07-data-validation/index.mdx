@@ -1,15 +1,15 @@
 ---
-title: 'Advanced data validation'
-metaTitle: 'Advanced data validation (Guides)'
-metaDescription: "Learn how to use the database's mechanism for validating input using CHECK constraints in this practical guide."
+title: '高级数据验证'
+metaTitle: '高级数据验证 (指南)'
+metaDescription: '在这个实用指南中，学习如何使用数据库的机制，用CHECK约束来验证输入。'
 toc: false
 ---
 
 <TopBlock>
 
-All databases include a mechanism for validating input. In a SQL context, `CHECK` constraints allow you to specify a set of conditions a value must satisfy - for example, Column X should not be larger than Column Y. This section describes how to configure custom `CHECK` constraints.
+所有的数据库都包括一个验证输入的机制。在 SQL 环境中，`CHECK`约束允许指定一组必须满足的条件 - 例如，列 X 不应该大于列 Y。本节描述了如何配置自定义`CHECK`约束。
 
-You can already define the following constraints in the Prisma schema:
+已经可以在 Prisma schema 中定义以下约束：
 
 - [Field must be unique](../../../../concepts/components/prisma-schema/data-model#defining-a-unique-field) <span class="concept"></span> (`UNIQUE` constraint)
 - [Field is mandatory](../../../../concepts/components/prisma-schema/data-model#optional-and-mandatory-fields) <span class="concept"></span> (`NOT NULL` constraint)

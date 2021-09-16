@@ -246,7 +246,7 @@ psql CascadingDeletesDemo < cascading-deletes-set-default.sql
 
 恭喜你成功在数据库中创建了两个表，叫做`TheLastUser`和`TheLastPost`。`TheLastPost`表通过定义在`authorId`列上的外键引用了`TheLastUser`表。
 
-在这种情况下，删除行为`SET DEFAULT`意味着当删除一个被一个或者多个`TheLastPost`记录引用的`TheLastUser`记录时，`TheLastPost`记录中`authorId`列会被设置为该列的默认值。如果没有默认值，则为`NULL`(行为和`SET NULL`一样)。在上表中，默认值为`42`。如果没有`id`值为`42`的`TheLastUser'记录存在，操作就会失败并抛出以下信息：
+在这种情况下，删除行为`SET DEFAULT`意味着当删除一个被一个或者多个`TheLastPost`记录引用的`TheLastUser`记录时，`TheLastPost`记录中`authorId`列会被设置为该列的默认值。如果没有默认值，则为`NULL`(行为和`SET NULL`一样)。在上表中，默认值为`42`。如果没有`id`值为`42`的`TheLastUser`记录存在，操作就会失败并抛出以下信息：
 
 ```
 insert or update on table "TheLastPost" violates foreign key constraint "TheLastPost_author_fkey"
