@@ -1,23 +1,23 @@
 ---
-title: 'Querying the database'
-metaTitle: 'Querying the database'
-metaDescription: 'Write data to and query the database'
+title: '查询数据库'
+metaTitle: '查询数据库'
+metaDescription: '向数据库写入数据并查询数据库'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['postgres', 'mysql']
 toc: false
 ---
 
-## Write your first query with Prisma Client
+## 使用Prisma客户端编写第一个查询
 
-Now that you have generated the Prisma Client, you can start writing queries to read and write data in your database.
+现在已经生成了Prisma Client，可以开始编写查询来读取和写入数据库中的数据。
 
-If you're building a REST API, you can use Prisma Client in your route handlers to read and write data in the database based on incoming HTTP requests. If you're building a GraphQL API, you can use Prisma Client in your resolvers to read and write data in the database based on incoming queries and mutations.
+如果正在构建REST API，可以在路由处理程序中使用Prisma Client，根据传入的HTTP请求读写数据库中的数据。如果正在构建GraphQL API，可以在解析器中使用Prisma Client，根据传入的查询和变化读写数据库中的数据。
 
-For the purpose of this guide however, you'll just create a plain Node.js script to learn how to send queries to your database using Prisma Client. Once you have an understanding of how the API works, you can start integrating it into your actual application code (e.g. REST route handlers or GraphQL resolvers).
+然而，为了达到本指南的目的，你只需要创建一个简单的Node.js脚本来学习如何使用Prisma Client将查询发送到数据库。一旦了解了API的工作原理，就可以开始将其集成到实际的应用程序代码中(例如REST路由处理程序或GraphQL解析器)。
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Create a new file named `index.ts` and add the following code to it:
+创建一个名为的新文件`index.ts`并向其添加以下代码：
 
 ```ts file=index.ts
 import { PrismaClient } from '@prisma/client'
@@ -41,7 +41,7 @@ main()
 
 <SwitchTech technologies={['node', '*']}>
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为`index.js`的新文件，并向其中添加以下代码：
 
 ```js file=index.js
 const { PrismaClient } = require('@prisma/client')
@@ -49,7 +49,7 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
-  // ... you will write your Prisma Client queries here
+  // ... 将在此处编写Prisma客户端查询
 }
 
 main()
@@ -63,19 +63,19 @@ main()
 
 </SwitchTech>
 
-Here's a quick overview of the different parts of the code snippet:
+以下是代码片段不同部分的快速概览：
 
-1. Import the `PrismaClient` constructor from the `@prisma/client` node module
-1. Instantiate `PrismaClient`
-1. Define an `async` function named `main` to send queries to the database
-1. Call the `main` function
-1. Close the database connections when the script terminates
+1. `PrismaClient`从`@prisma/client`节点模块导入构造函数
+2. 实例化`PrismaClient`
+3. 定义一个`async`名为`main`向数据库发送查询的函数
+4. 调用`main`函数
+5. 脚本终止时关闭数据库连接
 
-Depending on what your models look like, the Prisma Client API will look different as well. For example, if you have a `User` model, your `PrismaClient` instance exposes a property called `user` on which you can call [CRUD](../../../../concepts/components/prisma-client/crud) methods like `findMany`, `create` or `update`. The property is named after the model, but the first letter is lowercased (so for the `Post` model it's called `post`, for `Profile` it's called `profile`).
+根据您的模型的外观，Prisma 客户端 API 的外观也会有所不同。例如，如果您有一个`User`模型，您的`PrismaClient`实例会公开一个被调用的属性user，您可以在该属性上调用CRUD方法一样`findMany`，`create`或`update`。该属性以模型命名，但第一个字母是小写的（因此对于`Post`模型，它被称为`post`，因为`Profile`它被称为`profile`）。
 
-The following examples are all based on the models in the Prisma schema.
+以下示例均基于 Prisma 模式中的模型。
 
-Inside the `main` function, add the following query to read all `User` records from the database and print the result:
+在`main`函数内部，添加以下查询以`User`从数据库中读取所有记录并打印结果：
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -101,7 +101,7 @@ async function main() {
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Now run the code with your current TypeScript setup. If you're using `ts-node`, you can run it like this:
+现在使用您当前的 TypeScript 设置运行代码。如果您正在使用`ts-node`，您可以像这样运行它：
 
 ```terminal copy
 npx ts-node index.ts
@@ -111,7 +111,7 @@ npx ts-node index.ts
 
 <SwitchTech technologies={['node', '*']}>
 
-Now run the code with this command:
+现在用下面的命令运行代码:
 
 ```terminal copy
 node index.js
@@ -119,13 +119,13 @@ node index.js
 
 </SwitchTech>
 
-This will print an array of `User` records as plain old JavaScript objects.
+这会将`User`记录数组打印为普通的旧 JavaScript 对象。
 
-## Write data into the database
+## 将数据写入数据库
 
-The `findMany` query you used in the previous section only _reads_ data from the database. In this section, you'll learn how to write a query to _write_ new records into the `Post` and `User` tables.
+`findMany`您在上一节中使用的查询仅从数据库中读取数据。在本节中，您将学习如何编写查询以将新记录写入`Post`和`User`表。
 
-Adjust the `main` function to send a `create` query to the database:
+调整`main`函数向`create`数据库发送查询：
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -185,13 +185,13 @@ async function main() {
 
 </SwitchTech>
 
-This code creates a new `User` record together with new `Post` and `Profile` records using a [nested write](../../../../concepts/components/prisma-client/relation-queries#nested-writes) query. The `User` record is connected to the two other ones via the `Post.author` ↔ `User.posts` and `Profile.user` ↔ `User.profile` [relation fields](../../../../concepts/components/prisma-schema/relations#relation-fields) respectively.
+此代码使用嵌套写入查询User与 newPost和Profile记录一起创建新记录。该记录分别通过`Profile.user`↔`User.posts`和`Profile.user` ↔ `User.profile`[关联字段](../../../../concepts/components/prisma-schema/relations#relation-fields)连接到另外两个记录。
 
-Notice that you're passing the [`include`](../../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields) option to `findMany` which tells Prisma Client to include the `posts` and `profile` relations on the returned `User` objects.
+注意，您传递的[include](../../../../concepts/components/prisma-client/select-fields#include-relations-and-select-relation-fields)选项`findMany`告诉 Prisma Client在返回的对象上包含`posts`和`profile`关系`User`。
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Run the code with your current TypeScript setup. If you're using `ts-node`, you can run it like this:
+使用当前的 TypeScript 设置运行代码。如果您正在使用`ts-node`，您可以像这样运行它：
 
 ```terminal copy
 npx ts-node index.ts
@@ -201,7 +201,7 @@ npx ts-node index.ts
 
 <SwitchTech technologies={['node', '*']}>
 
-Run the code with this command:
+现在用下面的命令运行代码:
 
 ```terminal copy
 node index.js
@@ -209,7 +209,7 @@ node index.js
 
 </SwitchTech>
 
-Before moving on to the next section, you'll "publish" the `Post` record you just created using an `update` query. Adjust the `main` function as follows:
+在继续下一部分之前，您将`Post`使用`update`查询“发布”刚刚创建的记录。调整`main`功能如下：
 
 <SwitchTech technologies={['typescript', '*']}>
 
@@ -241,7 +241,7 @@ async function main() {
 
 <SwitchTech technologies={['typescript', '*']}>
 
-Run the code with your current TypeScript setup. If you're using `ts-node`, you can run it like this:
+使用当前的 TypeScript 设置运行代码。如果您正在使用`ts-node`，您可以像这样运行它：
 
 ```terminal copy
 npx ts-node index.ts
@@ -251,7 +251,7 @@ npx ts-node index.ts
 
 <SwitchTech technologies={['node', '*']}>
 
-Now run the code using the same command as before:
+现在使用与前面相同的命令运行代码：
 
 ```terminal copy
 node index.js
@@ -269,11 +269,11 @@ node index.js
   href="./install-prisma-client-node-postgres"
   arrowLeft
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 <ButtonLink color="dark" type="primary" href="./next-steps-node-postgres" arrow>
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -290,11 +290,11 @@ node index.js
   href="./install-prisma-client-node-mysql"
   arrowLeft
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 <ButtonLink color="dark" type="primary" href="./next-steps-node-mysql" arrow>
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -311,7 +311,7 @@ node index.js
   href="./install-prisma-client-typescript-postgres"
   arrowLeft
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 <ButtonLink
@@ -320,7 +320,7 @@ node index.js
   href="./next-steps-typescript-postgres"
   arrow
 >
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -337,7 +337,7 @@ node index.js
   href="./install-prisma-client-typescript-mysql"
   arrowLeft
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 <ButtonLink
@@ -346,7 +346,7 @@ node index.js
   href="./next-steps-typescript-mysql"
   arrow
 >
-  Next Steps
+  下一步
 </ButtonLink>
 
 </NavigationLinksContainer>

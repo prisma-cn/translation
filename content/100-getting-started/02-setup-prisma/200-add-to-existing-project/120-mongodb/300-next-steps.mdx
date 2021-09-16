@@ -1,31 +1,31 @@
 ---
-title: 'Next steps'
-metaTitle: 'Next steps'
+title: '下一步'
+metaTitle: '下一步'
 metaDescription: 'Next steps to take now that you have successfully added Prisma to your project'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['mongodb']
 toc: false
 ---
 
-## Next steps
+## 下一步
 
-This section lists a number of potential next steps you can now take from here. Feel free to explore these or read the [Introduction](../../../../concepts/overview/what-is-prisma) page to get a high-level overview of Prisma.
+本节列出了您现在可以从这里采取的一些潜在的后续步骤。随意探索这些内容或阅读简介页面以获取对 Prisma 的高级[概述](../../../../concepts/overview/what-is-prisma)。
 
-### Continue exploring the Prisma Client API
+### 继续探索 Prisma 客户端 API
 
-You can send a variety of queries with the Prisma Client API. Check out the [API reference](../../../../concepts/components/prisma-client) and use your existing database setup from this guide to try them out.
+您可以使用 Prisma Client API 发送各种查询。查看[API 参考](../../../../concepts/components/prisma-client)并使用本指南中现有的数据库设置来试用它们。
 
 <Tip>
 
-You can use your editor's auto-completion feature to learn about the different API calls and the arguments it takes. Auto-completion is commonly invoked by hitting <kbd>CTRL</kbd>+<kbd>SPACE</kbd> on your keyboard.
+您可以使用编辑器的自动完成功能来了解不同的 API 调用及其需要的参数。自动完成通常是通过在键盘上点击<kbd>CTRL</kbd>+<kbd>SPACE</kbd>来调用。
 
 </Tip>
 
-<details><summary>Expand for more Prisma Client API examples</summary>
+<details><summary>展开以获取更多 Prisma 客户端 API 示例</summary>
 
-Here are a few suggestions for a number of more queries you can send with Prisma Client:
+对于您可以使用 Prisma Client 发送的更多查询，以下是一些建议：
 
-**Filter all `Post` records that contain `"hello"`**
+**过滤所有`Post`包含的记录`"hello"`**
 
 ```js
 const filteredPosts = await prisma.post.findMany({
@@ -35,7 +35,7 @@ const filteredPosts = await prisma.post.findMany({
 })
 ```
 
-**Create a new `Post` record and connect it to an existing `User` record**
+**创建新`Post`记录并将其连接到现有`User`记录**
 
 ```js
 const post = await prisma.post.create({
@@ -50,7 +50,7 @@ const post = await prisma.post.create({
 })
 ```
 
-**Use the fluent relations API to retrieve the `Post` records of a `User` by traversing the relations**
+**使用fluent relations API通过遍历关系来检索`Post`的`User`记录**
 
 ```js
 const user = await prisma.comment
@@ -61,7 +61,7 @@ const user = await prisma.comment
   .user()
 ```
 
-**Delete a `User` record**
+**删除一条`User`记录**
 
 ```js
 const deletedUser = await prisma.user.delete({
@@ -71,17 +71,16 @@ const deletedUser = await prisma.user.delete({
 
 </details>
 
-### Explore the data in Prisma Studio
+### 在 Prisma Studio 中探索数据
 
-Prisma Studio is a visual editor for the data in your database.
-You can run it with two ways:
+Prisma Studio 是数据库中数据的可视化编辑器。您可以通过两种方式运行它：
 
-1. Run `$ npx prisma studio` in your terminal.
-2. Install [the desktop app](https://github.com/prisma/studio/releases) from the installers. Windows, macOS and Linux are supported.
+1. 在您的终端中运行`$ npx prisma studio`。
+2. 从安装程序安装桌面[应用程序](https://github.com/prisma/studio/releases)。支持 Windows、macOS 和 Linux。
 
-### Try a Prisma example
+### 尝试 Prisma 示例
 
-The [`prisma-examples`](https://github.com/prisma/prisma-examples/) repository contains a number of ready-to-run examples:
+该[`prisma-examples`](https://github.com/prisma/prisma-examples/)存储库包含许多可立即运行的示例：
 
 <TabbedContent tabs={[<FileWithIcon text="TypeScript" icon="code"/>, <FileWithIcon text="JavaScript (Node.js)" icon="code"/>]}>
 

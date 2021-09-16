@@ -1,8 +1,8 @@
 ---
 title: 'MongoDB'
-metaTitle: 'Add Prisma to an existing MongoDB project (15 min)'
-metaDescription: 'Learn how to add Prisma to an existing Node.js or TypeScript project by connecting it to your MongoDB database and generating a Prisma Client for database access.'
-duration: '15 min'
+metaTitle: '将Prisma添加到现有MongoDB项目（15分钟）'
+metaDescription: '了解如何通过将现有Node.js或TypeScript项目连接到MongoDB数据库并生成用于数据库访问的Prisma客户端，将Prisma添加到该项目中。'
+duration: '15分钟'
 toc: false
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['mongodb']
@@ -10,51 +10,52 @@ dbSwitcher: ['mongodb']
 
 <TopBlock>
 
-Learn how to add Prisma to an existing Node.js or TypeScript project by connecting it to your database and generating a Prisma Client for database access. The following tutorial introduces you to the [Prisma CLI](../../../../concepts/components/prisma-cli), [Prisma Client](../../../../concepts/components/prisma-client), and [Prisma Introspection](../../../../concepts/components/introspection).
+了解如何通过将 Prisma 连接到数据库并生成用于数据库访问的 Prisma 客户端，将 Prisma 添加到现有 Node.js 或 TypeScript 项目。以下教程向您介绍了[Prisma Client](../../../../concepts/components/prisma-client)、[Prisma Client](../../../../concepts/components/prisma-client)和[Prisma Introspection](../../../../concepts/components/introspection)。
 
 </TopBlock>
 
-## Prerequisites
+## 先决条件
 
-In order to successfully complete this guide, you need:
+为了成功完成本指南，您需要：
 
-- [Node.js](https://nodejs.org/en/) installed on your machine
-- Access to a MongoDB 4.2+ server with a replica set deployment. We recommend using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+- 安装[Node.js](https://nodejs.org/en/)在你的机器上
+- 使用副本集部署访问 MongoDB 4.2+ 服务器。我们推荐使用[MongoDB Atlas](https://www.mongodb.com/cloud/atlas)。
 
   <Admonition type="warning">
 
-  The MongoDB database connector uses transactions to support nested writes. Transactions **requires** a [replica set](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://docs.atlas.mongodb.com/getting-started/). It's free to get started.
+  MongoDB数据库连接器使用事务来支持嵌套写。事务**需要**一个[副本集](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)部署。部署副本集的最简单方法是使用[Atlas](https://docs.atlas.mongodb.com/getting-started/)。这是免费的开始。
+  
 
   </Admonition>
 
-Make sure you have your database [connection URL](../../../../reference/database-reference/connection-urls) (that includes your authentication credentials) at hand! If you don't have a database server running and just want to explore Prisma, check out the [Quickstart](../../../quickstart).
+确保您手头有您的数据库[连接 URL](../../../../reference/database-reference/connection-urls)（包括您的身份验证凭据）！如果您没有运行数据库服务器而只想探索 Prisma，请查看[快速入门](../../../quickstart)。
 
-> See [System requirements](../../../../reference/system-requirements) for exact version requirements.
+> 有关确切的[版本要求](../../../../reference/system-requirements)，请参阅系统要求。
 
-## Set up Prisma
+## 设置Prisma
 
-As a first step, navigate into it your project directory that contains the `package.json` file.
+第一步，导航到包含该`package.json`文件的项目目录。
 
-Next, add the Prisma CLI as a development dependency to your project:
+接下来，将 Prisma CLI 作为开发依赖项添加到您的项目中：
 
 ```terminal copy
 npm install prisma --save-dev
 ```
 
-You can now invoke the Prisma CLI by prefixing it with `npx`:
+您现在可以通过添加前缀来调用 Prisma CLI `npx`：
 
 ```terminal
 npx prisma
 ```
 
 Next, set up your Prisma project by creating your [Prisma schema](../../../../concepts/components/prisma-schema) file template with the following command:
+接下来，通过使用以下命令创建[Prisma schema](../../../../concepts/components/prisma-schema)文件模板来设置您的 Prisma 项目：
 
 ```terminal copy
 npx prisma init
 ```
 
-This command created a new directory called `prisma` which contains a file named `schema.prisma` and a `.env` file in the root of the project. `schema.prisma` contains the Prisma schema with your database connection and the Prisma Client generator.
-`.env` is a [dotenv](https://github.com/motdotla/dotenv) file for defining environment variables (used for your database connection).
+此命令创建了一个名为的新目录`prisma`，其中包含一个名为`schema.prisma`的`.env`文件和项目根目录中的一个文件。schema.prisma包含带有数据库连接和 Prisma 客户端生成器的 Prisma 模型。 `.env`是一个[dotenv](https://github.com/motdotla/dotenv)文件，用于定义环境变量（用于数据库连接）。
 
 <SwitchTech technologies={['node', 'mongodb']}>
 
@@ -66,7 +67,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./mongodb/connect-your-database-node-mongodb"
   arrow
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -83,7 +84,7 @@ This command created a new directory called `prisma` which contains a file named
   href="./mongodb/connect-your-database-typescript-mongodb"
   arrow
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 </NavigationLinksContainer>

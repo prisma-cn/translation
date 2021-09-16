@@ -1,15 +1,15 @@
 ---
-title: 'Connect your database'
-metaTitle: 'Connect your database'
-metaDescription: 'Connect your database to your project'
+title: '连接你的数据库'
+metaTitle: '连接你的数据库'
+metaDescription: '将数据库连接到项目'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['mongodb']
 toc: false
 ---
 
-## Connecting your database
+## 连接你的数据库
 
-To connect your database, you need to set the `url` field of the `datasource` block in your Prisma schema to your database [connection URL](../../../../../reference/database-reference/connection-urls):
+要连接您的数据库，您需要将Prisma 架构`url`中的`datasource`块字段设置为您的数据库[连接 URL](../../../../../reference/database-reference/connection-urls)：
 
 ```prisma file=prisma/schema.prisma
 datasource db {
@@ -18,13 +18,13 @@ datasource db {
 }
 ```
 
-In this case, the `url` is [set via an environment variable](../../../../guides/development-environment/environment-variables) which is defined in `.env`:
+在这种情况下，`url`是通过在`.env`以下定义的[环境变量设置](../../../../guides/development-environment/environment-variables)：
 
 ```bash file=.env
 DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase"
 ```
 
-Because MongoDB is currently a preview feature, you need to explicitly define that in the [`generator`]() block.
+因为 MongoDB 目前是一个预览功能，您需要在[`generator`](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/mongodb/)块中明确定义它。
 
 ```prisma file=prisma/schema.prisma
 generator client {
@@ -33,23 +33,23 @@ generator client {
 }
 ```
 
-You now need to adjust the connection URL to point to your own database.
+您现在需要调整连接 URL 以指向您自己的数据库。
 
-The format of the connection URL for your database depends on the database you use. For MongoDB, it looks as follows (the parts spelled all-uppercased are _placeholders_ for your specific connection details):
+数据库连接 URL 的格式取决于您使用的数据库。对于 MongoDB，它看起来如下（拼写为全部大写的部分是您的特定连接详细信息的 _占位符_）：
 
 ```no-lines
 mongodb://USERNAME:PASSWORD@HOST:PORT/DATABASE
 ```
 
-Here's a short explanation of each component:
+以下是每个组件的简短说明：
 
-- `USERNAME`: The name of your database user
-- `PASSWORD`: The password for your database user
-- `HOST`: The host where a [`mongod`](https://docs.mongodb.com/manual/reference/program/mongod/#mongodb-binary-bin.mongod) (or [`mongos`](https://docs.mongodb.com/manual/reference/program/mongos/#mongodb-binary-bin.mongos)) instance is running
-- `PORT`: The port where your database server is running (typically `27017` for MongoDB)
-- `DATABASE`: The name of the database
+- `USERNAME`: 你的数据库用户名
+- `PASSWORD`: 数据库用户的密码
+- `HOST`: 运行[`mongod`](https://docs.mongodb.com/manual/reference/program/mongod/#mongodb-binary-bin.mongod) (或 [`mongos`](https://docs.mongodb.com/manual/reference/program/mongos/#mongodb-binary-bin.mongos))实例的主机 
+- `PORT`: 您的数据库服务器运行的端口（通常`27017`用于 MongoDB）
+- `DATABASE`: 数据库名称
 
-As an example, for a MongoDB database hosted on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas), the [connection URL](../../../../reference/database-reference/connection-urls) might look similar to this:
+例如，对于托管在[MongoDB Atlas](https://www.mongodb.com/cloud/atlas)上的 MongoDB 数据库，[连接 URL](../../../../reference/database-reference/connection-urls)可能类似于：
 
 ```bash file=.env
 DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase"
@@ -65,7 +65,7 @@ DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase
   href="/getting-started/setup-prisma/add-to-existing-project/mongodb-node-mongodb"
   arrowLeft
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink
@@ -74,7 +74,7 @@ DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase
   href="./creating-the-prisma-schema-node-mongodb"
   arrow
 >
-  Creating the Prisma schema
+  创建Prisma schema
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -91,7 +91,7 @@ DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase
   href="/getting-started/setup-prisma/add-to-existing-project/mongodb-typescript-mongodb"
   arrowLeft
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink
@@ -100,7 +100,7 @@ DATABASE_URL="mongodb+srv://test:test@cluster0.ns1yp.mongodb.net/myFirstDatabase
   href="./creating-the-prisma-schema-typescript-mongodb"
   arrow
 >
-  Creating the Prisma schema
+  创建Prisma schema
 </ButtonLink>
 
 </NavigationLinksContainer>
