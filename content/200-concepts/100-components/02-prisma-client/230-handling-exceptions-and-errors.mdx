@@ -1,21 +1,20 @@
 ---
-title: 'Handling exceptions and errors'
-metaTitle: 'Handling exceptions and errors (Reference)'
-metaDescription: 'This page covers how to handle exceptions and errors'
+title: '处理异常和错误'
+metaTitle: '处理异常和错误 (参考)'
+metaDescription: '此页面介绍如何处理异常和错误'
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**Error handling incomplete in MongoDB** <br />
-Error handling for the [MongoDB connector](../../database-connectors/mongodb) is incomplete.
+**MongoDB 中的错误处理不完整** <br />
+[MongoDB 连接器](../../database-connectors/mongodb) 的错误处理不完整。
 
 </Admonition>
 
-In order to handle different types of errors you can use `instanceof` to check what the error is and handle it accordingly.
-
-The following example tries to create a user with an already existing email record. This will throw an error because the `email` field has the `@unique` attribute applied to it.
+为了处理不同类型的错误，你可以使用 `instanceof` 检查错误是什么，并相应地进行处理。
+下面的示例尝试创建一个已存在电子邮件记录的用户。这将引发错误，因为 `email` 字段应用了 `@unique` 属性。
 
 ```prisma file=schema.prisma
 model User {
@@ -25,7 +24,7 @@ model User {
 }
 ```
 
-Use the `Prisma` namespace to access the error type. The [error code](../../../reference/api-reference/error-reference#error-codes) can then be checked and a message can be printed.
+使用 `Prisma` 命名空间访问错误类型。然后可以检查 [错误代码](../../../reference/api-reference/error-reference#error-codes) 并打印消息。
 
 ```ts
 import { PrismaClient, Prisma } from '@prisma/client'
@@ -36,7 +35,7 @@ try {
   await client.user.create({ data: { email: 'alreadyexisting@mail.com' } })
 } catch (e) {
   if (e instanceof Prisma.PrismaClientKnownRequestError) {
-    // The .code property can be accessed in a type-safe manner
+    // .code 属性可以以类型安全的方式访问
     if (e.code === 'P2002') {
       console.log(
         'There is a unique constraint violation, a new user cannot be created with this email'
@@ -47,6 +46,6 @@ try {
 }
 ```
 
-See [Errors reference](../../../reference/api-reference/error-reference) for a detailed breakdown of the different error types and their codes.
+请参阅 [Errors reference](../../../reference/api-reference/error-reference) 以了解不同错误类型及其代码的详细分类。
 
 </TopBlock>

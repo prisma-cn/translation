@@ -4,7 +4,6 @@ metaTitle: '针对模型类型的部分结构进行操作'
 metaDescription: '此页面记录使用 Prisma 命名空间生成的类型的各种场景'
 ---
 
-
 <TopBlock>
 
 使用 Prisma Client 时，[Prisma schema](../../prisma-schema) 中的每个模型都会转换为专用的 TypeScript 类型。例如，假设你有以下 `User` 和 `Post` 模型：
@@ -26,7 +25,7 @@ model Post {
 }
 ```
 
-从此 schema 生成的 Prisma Client 代码包含以下 `User` 类型的表示：
+此 schema 生成的 Prisma Client 代码包含以下 `User` 类型的表示：
 
 ```ts
 export declare type User = {
@@ -38,18 +37,17 @@ export declare type User = {
 
 </TopBlock>
 
-## 问题: 使用生成的模型类型的变量 
+## 问题: 使用生成的模型类型的变体
 
 ### 描述
 
-在某些情况下，你可能需要生成的 `User` 类型的 _变量_。例如，当你有一个函数需要一个带有 `posts` 关系的 `User` 模型实例时。或者，当你需要一个类型在应用程序代码中只传递 `User` 模型的 `email` 和 `name` 字段时。
-
+在某些情况下，你可能需要生成的 `User` 类型的 _变体_。例如，当你有一个函数需要一个带有 `posts` 关系的 `User` 模型实例时。或者，当你需要一个类型在应用程序代码中只传递 `User` 模型的 `email` 和 `name` 字段时。
 
 ### 解决方案
 
 作为解决方案，你可以使用 Prisma Client 的帮助器类型自定义生成的模型类型。
 
- `User` 类型仅包含模型的 [scalar](../../prisma-schema/data-model#scalar-fields) 字段，但不考虑任何关系。这是因为在 Prisma Client 查询中 [默认情况下不包括关系](../select-fields#return-the-default-selection-set) 返回默认选择集）。
+`User` 类型仅包含模型的 [scalar](../../prisma-schema/data-model#scalar-fields) 字段，但不考虑任何关系。这是因为在 Prisma Client 查询中 [默认情况下不包括关系](../select-fields#return-the-default-selection-set) 返回默认选择集）。
 
 但是，有时使用 **包含关系** 的可用类型（即，从使用[`include`](../select-fields#include-relations-and-select-relation-fields) 的 API 调用中获得的类型）很有用。类似地，另一个有用的场景可能是提供一个 **仅包含模型 scalar 字段** 子集的类型（即，从使用 [`select`](../select-fields#select-specific-fields) 的 API 调用中获得的类型）。
 
@@ -92,24 +90,13 @@ const userPersonalData = Prisma.validator<Prisma.UserArgs>()({
 type UserWithPosts = Prisma.UserGetPayload<typeof userWithPosts>
 ```
 
-The main benefits of the latter approach are:
-
-- Cleaner approach as it leverages Prisma Client's generated types
-- Reduced maintenance burden and improved type safety when the schema changes
-
-## Problem: Getting access to the return type of a function
-
-### Description
-
-When doing [`select`](../../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> or [`include`](../../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> operations on your models and returning these variants from a function, it can be difficult to gain access to the return type, e.g:
-
 后一种方法的主要好处是：
 
 - 更干净的方法，因为它利用了 Prisma Client 生成的类型
 
 - 减少了维护负担，提高了模式更改时的类型安全性
 
-## 问题：获取对函数返回类型的访问
+## 问题：获取方法返回值的类型
 
 ### 描述
 

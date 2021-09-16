@@ -1,23 +1,23 @@
 ---
-title: Prisma Migrate limitations and known issues
-metaDescriptions: Limitations that apply to Prisma Migrate.
+title: Prisma迁移限制和已知问题
+metaDescriptions: 适用于Prisma Migrate的限制。
 ---
 
 <TopBlock>
 
-The following limitations apply to Prisma Migrate.
+以下限制适用于 Prisma Migrate。
 
 </TopBlock>
 
-## MongoDB connector not supported
+## 不支持 MongoDB 连接器
 
-Prisma Migrate does not currently support the MongoDB connector.
+Prisma Migrate 目前不支持 MongoDB 连接器。
 
-## You cannot automatically switch database providers
+## 无法自动切换数据库提供程序
 
-Prisma Migrate generates SQL files that are specific to your provider. This means that you cannot use the same migration files for PostgreSQL in production and SQLite in development, because the syntax in the migrations will be incompatible.
+Prisma Migrate 生成特定于您的提供程序的 SQL 文件。这意味着您不能在生产环境中对 PostgreSQL 和开发环境中对 SQLite 使用相同的迁移文件，因为迁移中的语法是不兼容的。
 
-In [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) and later, Prisma Migrate detects when the migrations do not match the configured provider and prints a helpful error message. For example, if your migrations are for a PostgreSQL database but you are using a `provider` is set to `mysql`:
+在[2.15.0](https://github.com/prisma/prisma/releases/2.15.0)和更高版本中，当迁移与配置的提供程序不匹配时，Prisma Migrate 会检测到，并打印一条有用的错误消息。例如，如果您的迁移对象是 PostgreSQL 数据库，但您使用的是`provider`，则会将`provider`设置为`mysql`:
 
 ```
 Error: P3014
@@ -25,42 +25,42 @@ Error: P3014
 The datasource provider `postgresql` specified in your schema does not match the one specified in the migration_lock.toml, mysql. Please remove your current migration directory and start a new migration history with prisma migrate dev.
 ```
 
-In order to manually switch the database provider, you must:
+要手动切换数据库提供程序，必须:
 
-- Change the `provider` and `url` parameters in the `datasource` block in your schema
-- Archive or remove your existing migration history - there must not be a `./prisma/migrations` folder
-- Run `prisma migrate dev` to start a new migration history
+- 更改架构中的 `datource` 块里的 `provider` 和 `url` 参数。
+- 备份或删除现有迁移历史记录 - 不能有 `./prisma/Migrations` 文件夹。
+- 运行`prisma migrate dev`启动新的迁移历史记录。
 
-The last step creates a new initial migration that goes from an empty database to your current `schema.prisma`. Be aware that:
+最后一步是创建一个新的迁移，从一个空数据库迁移到您当前的`schema.prisma`，但请注意:
 
-- This migration will _only_ contain what is reflected in your `schema.prisma`. If you manually edited your previous migration files to add custom SQL you will need to again add this yourself.
-- The newly created database using the new provider will not contain any data.
+- 这个迁移将 _只包含_ 在您的 `schema.prisma` 中反映的内容。如果您手动编辑了以前的迁移文件来添加自定义 SQL，则需要自己再次添加。
+- 使用新的提供程序创建的新数据库将不包含任何数据。
 
-## Lack of rollbacks / down migrations
+## 缺少回滚 / 向下迁移
 
-Prisma Migrate does not currently roll back a migration without [resetting the database](#data-loss-when-resetting-database).
-For a simple and integrated way to re-create data in your development database when the database is reset, check out our [seeding guide](../../../guides/database/seed-database).
+Prisma Migrate 当前不会在没有[重置数据库](#data-loss-when-resetting-database)的情况下回滚迁移。
+当你的开发数据库被重置时，一个简单而集成的方法来重新创建数据，请查看我们的[播种指南](../../../guides/database/seed-database)。
 
-## Data loss when resetting database
+## 重置数据库时数据丢失
 
-In a development environment, Prisma Migrate sometimes prompts you to reset the database. Resetting drops and recreates the database, which results in data loss. The database is reset when:
+在开发环境中，Prisma 迁移有时会提示您重置数据库。重置会删除并重新创建数据库，从而导致数据丢失。数据库在以下情况下会重置:
 
-- You call `prisma migrate reset` explicitly
-- You call `prisma migrate dev` and Prisma Migrate detects drift in the database or a migration history conflict
+- 你显式地调用了 `prisma migrate reset`
+- 调用 `prisma migrate dev` 时，prisma migrate 检测到数据库中的漂移或迁移历史冲突。
 
-The `prisma migrate dev` and `prisma migrate reset` commands are designed to be used **in development only**, and should not affect production data.
+`prisma migrate dev` 和 `prisma migrate reset` 命令被设计为**只在开发中使用**，不会影响生产数据。
 
-When the database is reset, if Prisma Migrate detects a seed script, it will trigger seeding.
+当数据库被重置时，如果 Prisma Migrate 检测到一个种子脚本，它将触发种子。
 
-> **Note**: For a simple and integrated way to re-create data when the database is reset, check out our [seeding guide](../../../guides/database/seed-database).
+> **请注意**: 当数据库被重置时，会有简单集成的重新创建数据方法，具体请查看[播种指南](../../../guides/database/seed-database).
 
-## Prisma Migrate and PgBouncer
+## Prisma Migrate 和 PgBouncer
 
-You might see the following error if you attempt to run Prisma Migrate commands in an environment that uses PgBouncer for connection pooling:
+如果你试图在使用 PgBouncer 作为连接池的环境中运行 Prisma Migrate 命令，你可能会看到以下错误:
 
 ```bash
 Error: undefined: Database error
 Error querying the database: db error: ERROR: prepared statement "s0" already exists
 ```
 
-See [Prisma Migrate and PgBouncer workaround](../../../guides/performance-and-optimization/connection-management/configure-pg-bouncer) for further information and a workaround. Follow [GitHub issue #6485](https://github.com/prisma/prisma/issues/6485) for updates.
+有关更多信息和解决方法，请参见[Prisma Migrate 和 PgBouncer 解决方法](../../../guides/performance-and-optimization/connection-management/configure-pg-bouncer)。 关注[GitHub issue #6485](https://github.com/prisma/prisma/issues/6485)以获取更新。

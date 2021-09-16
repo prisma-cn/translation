@@ -1,18 +1,18 @@
 ---
-title: 'Module bundlers'
-metaTitle: 'Module bundlers (Reference)'
-metaDescription: 'This page gives an overview of the most important things to be aware of when using a module bundler to bundle an application that uses Prisma Client.'
+title: '模块绑定器'
+metaTitle: '模块绑定器 (参考)'
+metaDescription: '本页概述了使用模块绑定器绑定使用 Prisma Client 的应用程序时需要注意的最重要事项。'
 ---
 
-## Overview
+## 概述
 
-_Module bundlers_ bundle JavaScript modules into a single JavaScript file. Most bundlers work by copying over the JavaScript code from a variety of source files into the target file.
+_模块绑定器_ 将 JavaScript 模块捆绑到单个 JavaScript 文件中。大多数绑定器通过将 JavaScript 代码从各种源文件复制到目标文件中来工作。
 
-Since Prisma Client is not only based on JavaScript code, but also relies on the [**query engine binary file**](../prisma-engines/query-engine#the-query-engine-binary-file) to be available, you need to make sure that your bundled code has access to the binary file.
+由于 Prisma Client 不仅基于 JavaScript 代码，而且还依赖于 [**查询引擎二进制文件**](../prisma-engines/query-engine#the-query-engine-binary-file) 可用，因此你需要确保捆绑代码可以访问二进制文件。
 
-To do so, you can use plugins that let you copy over static assets:
+为此，你可以使用允许你复制静态资源的插件：
 
-| Bundler | Plugin                                                                                                  |
+| 绑定器 | 插件                                                                                                  |
 | :------ | :------------------------------------------------------------------------------------------------------ |
 | Webpack | [`copy-webpack-plugin`](https://github.com/webpack-contrib/copy-webpack-plugin#copy-webpack-plugin)     |
 | Parcel  | [`parcel-plugin-static-files-copy`](https://github.com/elwin013/parcel-plugin-static-files-copy#readme) |

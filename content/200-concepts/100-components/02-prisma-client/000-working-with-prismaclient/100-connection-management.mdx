@@ -81,7 +81,7 @@ main()
 
 如果上述脚本在持续运行的应用程序的上下文中多次执行而 _没有_ 调用 `$disconnect()`，那么每个新的 `PrismaClient` 实例会创建一个新的连接池。
 
-## 退出 hooks
+## 退出 hooks {#exit-hooks}
 
 `beforeExit` hook 会在 Prisma 接收到外部触发（例如，通过 `SIGINT` 信号）关闭时运行，并允许你在 Client 断开连接 _之前_ 运行代码 - 例如，执行一条查询语句作为服务优雅停机的一部分：
 

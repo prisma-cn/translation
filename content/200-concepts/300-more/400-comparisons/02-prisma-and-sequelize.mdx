@@ -1,28 +1,31 @@
 ---
 title: 'Sequelize'
-metaTitle: 'Prisma vs Sequelize'
-metaDescription: 'Learn how Prisma compares to Sequelize.'
+metaTitle: 'Prisma 对比 Sequelize'
+metaDescription: '了解 Prisma 和 Sequelize 的对比情况。'
 ---
 
 <TopBlock>
 
 This page compares the Prisma and [Sequelize](https://sequelize.org/master/) APIs.
 
+本文比较了 Prisma 和 [Sequelize](https://sequelize.org/master/) 的 API。
+
 </TopBlock>
 
-## Sequelize vs Prisma
+## Sequelize 对比 Prisma
 
-While Prisma and Sequelize solve similar problems, they work in very different ways.
+虽然 Prisma 和 Sequelize 解决了类似的问题，但它们的工作方式并不相同。
 
-**Sequelize** is a traditional ORM which maps _tables_ to _model classes_. Instances of the model classes then provide an interface for CRUD queries to an application at runtime.
+**Sequelize** 是一个传统的 ORM，它将 _数据表_ 映射到 _模型类_。模型类的实例在运行时会提供一个接口供应用程序进行 CRUD 查询。
 
-**Prisma** is a new kind of ORM that mitigates many problems of traditional ORMs, such as bloated model instances, mixing business with storage logic, lack of type-safety or unpredictable queries caused e.g. by lazy loading.
+**Prisma** 是一种新的 ORM，它解决了传统 ORM 的许多问题，如臃肿的模型实例、业务与存储逻辑的混合、缺乏类型安全或由懒加载引起的不可预测的查询等。
 
-It uses the [Prisma schema](../../components/prisma-schema) to define application models in a declarative way. Prisma Migrate then allows to generate SQL migrations from the Prisma schema and executes them against the database. CRUD queries are provided by Prisma Client, a lightweight and entirely type-safe database client for Node.js and TypeScript.
+它使用 [Prisma schema](../../components/prisma-schema) 以声明式的方式来定义应用模型。然后 Prisma Migrate 允许从 Prisma schema 中生成 SQL 迁移（migration），并针对数据库执行这些迁移（migration）。CRUD 查询由 Prisma Client 提供，这是一个轻量级的、完全类型安全的 Node.js 和 TypeScript 数据库客户端。
 
-## API comparison
 
-### Fetching single objects
+## API 设计 & 抽象程度
+
+### 获取单个对象
 
 **Prisma**
 
@@ -40,7 +43,7 @@ const user = await prisma.user.findUnique({
 const user = await User.findByPk(id)
 ```
 
-### Fetching selected scalars of single objects
+### 获取单个对象的选定字段
 
 **Prisma**
 
@@ -63,11 +66,11 @@ const user = await User.findByPk(1, { attributes: ['name'], raw: true })
 
 <Tip>
 
-Use the `raw: true` query option to return plain JavaScript objects.
+使用 `raw:true` 查询选项来返回普通 JavaScript 对象。
 
 </Tip>
 
-### Fetching relations
+### 获取关联关系
 
 **Prisma**
 
@@ -96,7 +99,7 @@ const posts = await prisma.user
 
 </CodeBlock>
 
-> **Note**: `select` returns a `user` object that includes a `post` array, whereas the fluent API only returns a `post` array.
+> **注意**：`select` 返回一个包含 `post` 数组的 `user` 对象，而 fluent API 只返回一个 `post` 数组。
 
 **Sequelize**
 
@@ -112,11 +115,11 @@ const user = await User.findByPk(id, {
 
 <Tip>
 
-Use `model: Post as "Post"` if you used an alias to define the relationship between `User` and `Post` - for example: `User.hasMany(Post, { as: "Post", foreignKey: "authorId" });`
+如果你使用别名来定义 `User` 和 `Post` 之间的关系，请使用 `model: Post as "POST"` - 例如：`User.hasMany(Post, { as: "Post", foreignKey: "authorId" });`
 
 </Tip>
 
-### Filtering for concrete values
+### 对具体值进行过滤
 
 **Prisma**
 
@@ -143,23 +146,23 @@ const post = await Post.findAll({
 })
 ```
 
-### Other filter criteria
+### 其他过滤场景
 
 **Prisma**
 
-Prisma generates many [additional filters](../../components/prisma-client/filtering-and-sorting) that are commonly used in modern application development.
+Prisma 生成了许多 [额外的过滤器](../../components/prisma-client/filtering-and-sorting)，这些过滤器在现代应用开发中经常用到。
 
 **Sequelize**
 
-Sequelize has an [extensive set of operators](https://sequelize.org/master/manual/querying.html#operators).
+Sequelize 有一个 [广泛的操作符集合](https://sequelize.org/master/manual/querying.html#operators)。
 
-### Relation filters
+### 过滤关联关系
 
 **Prisma**
 
-Prisma lets you filter a list based on a criteria that applies not only to the models of the list being retrieved, but to a _relation_ of that model.
+Prisma 让你根据一个标准来过滤一个列表，这个标准不仅适用于被检索的列表的模型，而且适用于该模型的 _关联对象_。
 
-For example, the following query returns users with one or more posts with "Hello" in the title:
+例如，下面的查询返回一个或多个标题为 `"Hello" 的帖子的用户。
 
 ```ts
 const posts = await prisma.user.findMany({
@@ -177,13 +180,13 @@ const posts = await prisma.user.findMany({
 
 **Sequelize**
 
-Sequelize [doesn't offer a dedicated API for relation filters](https://github.com/sequelize/sequelize/issues/10943). You can get similar functionality by sending a raw SQL query to the database.
+Sequelize [并没有为关系过滤器提供专门的 API](https://github.com/sequelize/sequelize/issues/10943) 。你可以通过 `QueryBuilder` 或手工编写查询来获得类似的功能。
 
-### Pagination
+### 分页（Pagination）
 
 **Prisma**
 
-Cursor-style pagination:
+基于游标的分页：
 
 ```ts
 const page = prisma.post.findMany({
@@ -194,7 +197,7 @@ const page = prisma.post.findMany({
 })
 ```
 
-Offset pagination:
+基于 limit-offset 的分页：
 
 ```ts
 const cc = prisma.post.findMany({
@@ -212,7 +215,7 @@ const posts = await Post.findAll({
 })
 ```
 
-### Creating objects
+### 新建
 
 **Prisma**
 
@@ -245,7 +248,7 @@ const user = await User.create({
 
 </CodeBlock>
 
-### Updating objects
+### 更新
 
 **Prisma**
 
@@ -279,7 +282,7 @@ await User.update({
 
 </CodeBlock>
 
-### Deleting objects
+### 删除
 
 **Prisma**
 
@@ -297,7 +300,7 @@ const user = prisma.user.delete({
 await user.destroy()
 ```
 
-### Batch updates
+### 批量更新
 
 **Prisma**
 
@@ -327,7 +330,7 @@ const updatedUsers = await User.update({
 })
 ```
 
-### Batch deletes
+### 批量删除
 
 **Prisma**
 
@@ -353,7 +356,7 @@ await User.destroy({
 })
 ```
 
-### Transactions
+### 事务（Transactions）
 
 **Prisma**
 

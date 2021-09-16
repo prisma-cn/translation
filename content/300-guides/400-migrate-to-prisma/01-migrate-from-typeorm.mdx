@@ -19,7 +19,7 @@ metaDescription: '了解如何从 TypeORM 迁移到 Prisma'
 注意，无论你构建何种类型的应用程序或 API 层，从 TypeORM 迁移到 Prisma 的步骤始终相同：
 
 1. 安装 Prisma CLI
-1. 自测自己的数据库
+1. 内省(Introspect)数据库
 1. 安装 Prisma Client
 1. 用 Prisma Client 逐步替换 TypeORM 查询
 
@@ -210,7 +210,7 @@ export class Init1605698662257 implements MigrationInterface {
 
 </details>
 
-如上所述，本指南是 TypeORM Express 示例的扩展变体，并使用相同的文件结构。 路由处理程序位于 `src/controller` 目录中。 它们被放入 `src/routes.ts` 核心文件中，该文件用于在 `src/index.ts` 中配置路由：
+如上所述，本指南是 TypeORM Express 示例的扩展变体，并使用相同的文件结构。 路由处理程序位于 `src/controller` 目录中。 它们被引入 `src/routes.ts` 核心文件中，该文件用于在 `src/index.ts` 中配置路由：
 
 ```
 └── blog-typeorm
@@ -245,11 +245,11 @@ export class Init1605698662257 implements MigrationInterface {
 npm install prisma --save-dev
 ```
 
-## 步骤2，自测自己的数据库
+## 步骤2，内省数据库
 
 ### 2.1. 配置 Prisma
 
-在您可以内省数据库之前，您需要配置 [Prisma schema](../../concepts/components/prisma-schema) 并将 Prisma 连接到您的数据库。 在终端中运行以下命令以创建基本的 Prisma 模式文件：
+在内省数据库之前，需要配置 [Prisma schema](../../concepts/components/prisma-schema) 并将 Prisma 连接到您的数据库。 在终端中运行以下命令以创建基本的 Prisma 模式文件：
 
 ```terminal copy
 npx prisma init
@@ -282,7 +282,7 @@ generator client {
 
 </Tip>
 
-### 2.2. 连接你的数据库
+### 2.2. 连接数据库
 
 如果您没有使用 PostgreSQL，则需要将 `datasource` 块上的 `provider` 字段调整为您当前使用的数据库：
 
@@ -365,7 +365,7 @@ DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-typeorm"
 DATABASE_URL="postgresql://alice:myPassword42@localhost:5432/blog-typeorm?schema=myschema"
 ```
 
-如果未提供，则使用名为“public”的默认架构。
+如果未提供，则使用名为 `public` 的默认架构。
 
 </tab>
 
@@ -506,16 +506,16 @@ model user {
 
 ### 2.4. 调整 Prisma schema（可选）
 
-通过内省生成的模型当前精确映射到您的数据库表。 在本节中，您将了解如何调整 Prisma 模型的命名并满足 [Prisma 的命名约定](../../reference/api-reference/prisma-schema-reference#naming-conventions)。
+通过内省生成的模型精确的映射到了数据库表。在本节中，您将了解如何调整 Prisma 模型的命名并满足 [Prisma 的命名约定](../../reference/api-reference/prisma-schema-reference#naming-conventions)。
 
-所有调整都是可选的，不想调整任何内容，可以跳到下一步。 以后的时间随时返回进行调整。
+所有调整都是可选的，不想调整任何内容，可以跳到下一步。 后续随时返回调整。
 
-与当前 Prisma 模型的 `snake_case` 符号相反，Prisma 的命名约定是：
+Prisma 的命名与当前 `snake_case` 的命名约定不同：
 
-- 模型命名遵守 `PascalCase`
-- 字段命名遵守 `camelCase`
+- 模型(Prisma model)命名遵守 `PascalCase`
+- 字段(field)命名遵守 `camelCase`
 
-可以使用 `@@map` 和 `@map` 通过 映射到 Prisma 模型和字段名称到基础数据库中的现有表和列名称来调整命名。
+可以使用 `@@map` 和 `@map` 映射的模型和字段名称到已有的数据表和列名来调整命名。
 
 另请注意，可以重命名 [关联字段](../../concepts/components/prisma-schema/relations#relation-fields) 以优化稍后将用于向数据库发送查询的 Prisma Client API。 例如，`user` 模型上的 `post` 字段是数组格式，因此这个字段的更好名称是 `posts` 以表明它是复数形式。
 
@@ -605,7 +605,7 @@ export const prisma = new PrismaClient()
 
 ### 4.1. 替换 `GET` 请求中的查询
 
-REST API 有三个接受 `GET` 请求的路由：
+REST API 有 3 个接受 `GET` 请求的路由：
 
 - `/feed`: 返回所有已发布的帖子
 - `/filterPosts?searchString=SEARCH_STRING`: 通过关键字 `SEARCH_STRING` 过滤返回帖子
@@ -633,7 +633,7 @@ export async function feedAction(req, res) {
 }
 ```
 
-注意，每个返回的 `Post` 对象都包含与其关联的 `author` 的关系。 使用 TypeORM，包括关系不是类型安全的。 例如，如果检索到的关系中存在拼写错误，您的数据库查询只会在运行阶段失败，TypeScript 编译器在此处不提供任何安全性。
+注意，每个返回的 `Post` 对象都包含与其关联的 `author` 的关系。 使用 TypeORM，，包含关系不是类型安全的。 例如，如果检索到的关系中存在拼写错误，您的数据库查询只会在运行阶段失败，TypeScript 编译器在此处不提供任何安全性。
 
 使用 Prisma Client 实现相同路由：
 
@@ -738,7 +738,7 @@ export async function getPostByIdAction(req, res) {
 
 ### 4.2. 替换 `POST` 请求中的查询
 
-REST API 有三个接受 `POST` 请求的路由：
+REST API 有 3 个接受 `POST` 请求的路由：
 
 - `/user`: 创建一个新的 `User` 记录
 - `/post`: 创建一个新的 `Post` 记录

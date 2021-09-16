@@ -1,77 +1,77 @@
 ---
-title: 'Deploying to Netlify'
-metaTitle: 'Deploying to Netlify'
-metaDescription: 'Learn how to deploy Node.js and TypeScript applications that are using Prisma Client to Netlify.'
+title: '部署到Netlify'
+metaTitle: '部署到Netlify'
+metaDescription: '了解如何将使用Prisma客户端的Node.js和TypeScript应用程序部署到Netlify'
 ---
 
 <TopBlock>
 
-> **Note: This deployment guide is outdated and will be updated soon.**
+> **注意: 这个部署指南已经过期，很快就会更新.**
 
-In this guide, you will set up and deploy a serverless Node.js application to [Netlify](https://www.netlify.com/). The application will expose a REST API and use Prisma Client to handle fetching, creating, and deleting records from a database.
+在本指南中，您将设置并部署一个无服务器的 Node.js 应用程序到[Netlify](https://www.netlify.com/)。该应用程序将暴露一个 REST API，并使用 Prisma 客户端来处理从数据库中获取、创建和删除记录。
 
-Netlify is a cloud platform for continuous deployment, static sites, and serverless functions. Netlify integrates seamlessly with GitHub for automatic deployments upon commits. In this guide, you will use this approach to create a CI/CD pipeline that deploys your application from a GitHub repository.
+Netlify 是一个用于持续部署、静态网站和无服务器功能的云平台。Netlify 与 GitHub 无缝集成，在提交后自动部署。在本指南中，你将使用这种方法来创建一个 CI/CD 管道，从 GitHub 仓库中部署你的应用程序。
 
-The application has the following components:
+该应用程序有以下组件:
 
-- **Backend**: Serverless Node.js REST API with resource endpoints that use Prisma Client to handle database operations against a PostgreSQL database (e.g. hosted on Heroku).
-- **Frontend**: Static HTML page to interact with the API.
+- **后端**: 无服务器的 Node.js REST API，带有资源端点，使用 Prisma Client 处理针对 PostgreSQL 数据库的数据库操作（例如，托管在 Heroku 上）。
+- **前端**: 静态 HTML 页面与 API 进行交互。
 
 ![architecture diagram](https://res.cloudinary.com/prismaio/image/upload/v1628765080/docs/ybRH5wH_bpimat.png)
 
-The focus of this guide is showing how Prisma integrates with Netlify. The starting point will the [Prisma Netlify example](https://github.com/prisma/deployment-example-netlify) which has a couple of REST endpoints preconfigured as serverless functions and a static HTML page.
+本指南的重点是展示 Prisma 如何与 Netlify 整合。出发点是[Prisma Netlify 例子](https://github.com/prisma/deployment-example-netlify)，它有几个预设为无服务器功能的 REST 端点和一个静态 HTML 页面。
 
-With Netlify, the fundamental building block is a [**Site**](https://docs.netlify.com/configure-builds/get-started/). Sites are typically connected to a Git repository and have a publicly accessible URL that looks like `https://site-name.netlify.com`. In this guide, you will connect a GitHub repository to a Netlify site.
+在 Netlify 中，基本的构建模块是一个[**网站**](https://docs.netlify.com/configure-builds/get-started/)。网站通常连接到 Git 仓库，有一个可公开访问的 URL，看起来像`https://site-name.netlify.com`。在本指南中，你将把一个 GitHub 仓库连接到 Netlify 网站。
 
-> Throughout the guide you'll find various **checkpoints** that enable you to validate whether you performed the steps correctly.
+> 在整个指南中，你会发现各种 **检查点** ，使你能够验证你是否正确执行了这些步骤。
 
 </TopBlock>
 
-## Prerequisites
+## 前提条件
 
-- GitHub account
-- Hosted PostgreSQL database and a URL from which it can be accessed, e.g. `postgresql://username:password@your_postgres_db.cloud.com/db_identifier` (you can use Heroku, which offers a [free plan](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)).
-- [Netlify](https://app.netlify.com/signup) account connected to your GitHub account (Netlify will need access to the repository you will create as part of this guide).
-- [Netlify CLI](https://docs.netlify.com/cli/get-started/) installed.
-- Node.js installed.
-- PostgreSQL CLI `psql` installed.
+- GitHub 账户
+- 托管的 PostgreSQL 数据库和一个可以访问的 URL，例如`postgresql://username:password@your_postgres_db.cloud.com/db_identifier`（你可以使用 Heroku，它提供一个[免费计划](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)）
+- [Netlify](https://app.netlify.com/signup)账户连接到你的 GitHub 账户（Netlify 将需要访问你将在本指南中创建的仓库）
+- 安装[Netlify CLI](https://docs.netlify.com/cli/get-started/)
+- 安装了 Node.js
+- 安装了 PostgreSQL CLI `psql`
 
-## Prisma workflow
+## Prisma 工作流程
 
-Prisma supports different workflows depending on whether you integrate with an existing database or create a new one from scratch. Regardless of the workflow, Prisma relies on the Prisma schema, i.e. `schema.prisma` file.
+Prisma 支持不同的工作流程，这取决于你是与现有数据库集成还是从头开始创建一个新的数据库。无论哪种工作流程，Prisma 都依赖于 Prisma 模式，即`schema.prisma`文件。
 
-This guide starts with an empty database created with plain SQL and looks as follows:
+T 本指南从一个用普通 SQL 创建的空数据库开始，如下:
 
-1. Define the database schema using SQL.
-1. Run `prisma db pull` locally which will introspect and populate the `schema.prisma` with models based on the database schema.
-1. Run `prisma generate` which will generate Prisma Client based on the Prisma schema.
+1. 使用 SQL 定义数据库模式。
+1. 在本地运行`prisma db pull`，它将根据数据库模式反省并填充`schema.prisma`中的模型。
+1. 运行`prisma generate`，它将基于 Prisma 模式生成 Prisma 客户端。
 
-## 1. Fork the `deployment-example-netlify` repository
+## 1. Fork`deployment-example-netlify`仓库
 
-Go to [`deployment-example-netlify`](https://github.com/prisma/deployment-example-netlify) and **Fork** the repository by clicking on the fork button on the top right corner:
+进入[`deployment-example-netlify`](https://github.com/prisma/deployment-example-netlify)， 点击右上角的**Fork**按钮:
 
 ![fork button](https://res.cloudinary.com/prismaio/image/upload/v1628765101/docs/nyap5pW_g0tbuw.png)
 
-By forking, you create a copy of the repository to which you will be able to commit your changes. Later in the guide, you will connect the forked repository to Netlify so that changes are automatically built and deployed.
+通过 fork，你创建了一个版本库的副本，你将可以提交你的修改。在本指南的后面，你将把 Fork 的版本库连接到 Netlify，这样就可以自动构建和部署变化。
 
-**Checkpoint:** After cloning you should see the forked repository in your account, i.e. `https://github.com/YOUR_GITHUB_USERNAME/deployment-example-netlify`
+**检查点:** 克隆后你应该在你的账户中看到 fork 的版本库，即 `https://github.com/YOUR_GITHUB_USERNAME/deployment-example-netlify`
 
-## 2. Clone the fork and install dependencies
+## 2. 克隆 fork 的仓库并安装依赖
 
-Open your terminal, navigate to a location of your choice and clone your fork of the `deployment-example-netlify`:
+打开你的终端，导航到你选择的位置，克隆`deployment-example-netlify`:
 
 ```terminal
 git clone git@github.com:YOUR_GITHUB_USERNAME/deployment-example-netlify.git
 ```
 
-After cloning the repository, install the dependencies:
+克隆后，安装依赖:
 
 ```terminal
 cd deployment-example-netlify
 npm install
 ```
 
-**Checkpoint:** `ls -1` should show:
+**检查点:** `ls -1` 应显示如下信息:
 
 ```terminal
 ls -1
@@ -85,31 +85,31 @@ public
 schema.sql
 ```
 
-## 3. Set the DATABASE_URL environment variable locally
+## 3. 在本地设置 DATABASE_URL 环境变量
 
-Set the `DATABASE_URL` environment variable locally so you can create the database schema and Prisma can access the database to introspect:
+在本地设置`DATABASE_URL`环境变量，这样你就可以创建数据库 schema，Prisma 就可以访问数据库进行初始化：
 
 ```terminal
 export DATABASE_URL="postgresql://__USER__:__PASSWORD__@__HOST__/__DATABASE__"
 ```
 
-> **Note:** you will need the `DATABASE_URL` environment variable for the subsequent steps. Set it in all terminal sessions related to this project.
+> **注意：**你将需要`DATABASE_URL`环境变量来进行后续步骤。在所有与这个项目有关的终端会话中设置它
 
-You need to replace the uppercase placeholders with your database credentials, e.g.:
+你需要用你的数据库凭证替换大写的占位符，例如:
 
 ```terminal
 postgresql://janedoe:randompassword@yourpostgres.compute-1.amazonaws.com:5432/yourdbname
 ```
 
-## 4. Create the database schema
+## 4. 创建数据库 schema
 
-To create your database schema, run the `schema.sql` from the example code as follows:
+要创建你的数据库 schema，运行示例代码中的`schema.sql`，如下所示:
 
 ```terminal
 psql $DATABASE_URL -f schema.sql
 ```
 
-**Checkpoint:** `psql $DATABASE_URL -c "\dt"` should show the list of tables:
+**检查点:** `psql $DATABASE_URL -c "\dt"` 应展示如下表格列表:
 
 ```text
       List of relations
@@ -120,41 +120,41 @@ public | Profile | table | janedoe
 public | User    | table | janedoe
 ```
 
-Congratulations, you have successfully created the database schema.
+恭喜你，你已经成功创建了数据库 schema。
 
-## 5. Introspect the database
+## 5. 对数据库进行检查
 
-Introspect the database with the Prisma CLI:
+通过 Prisma CLI 对数据库进行检查:
 
 ```terminal
 npx prisma db pull
 ```
 
-Prisma will introspect the database defined in the `datasource` block of the Prisma schema and populate the Prisma schema with models corresponding to the database tables.
+Prisma 将对 Prisma schema 的`datasource`块中定义的数据库进行检查，并将与数据库表对应的模型填充到 Prisma schema 中。
 
-**Checkpoint:** Open `prisma/schema.prisma` and ensure there are three models: `Post`, `Profile`, and `User`.
+**检查点:** 打开 `prisma/schema.prisma` 并确保有如下三个模型: `Post`, `Profile`, and `User`.
 
-## 6. Commit the Prisma schema to the repository
+## 6. 提交 Prisma schema 到仓库
 
-The result of `prisma db pull` is the `schema.prisma` Prisma schema file.
+`prisma db pull`的结果是`schema.prisma`Prisma 文件。
 
-Since the Prisma schema is used to generate Prisma Client, commit it to your repository so that Prisma Client can be generated when Netlify builds the project:
+由于 Prisma schema 是用来生成 Prisma Client 的，请将其提交到你的仓库，以便在 Netlify 构建项目时生成 Prisma Client:
 
 ```terminal
 git commit prisma/schema.prisma -m 'Add Prisma schema'
 ```
 
-## 7. Netlify login
+## 7. 登录 Netlify
 
-Make sure you're logged in to Netlify with the CLI:
+确保你已经用 CLI 登录到 Netlify 了:
 
 ```terminal
 netlify login
 ```
 
-This will allow you to create a Netlify site and connect it to a repository from the terminal.
+这将允许你创建一个 Netlify 站点，并从终端将其连接到版本库中。
 
-**Checkpoint:** `netlify status` should show your username:
+**检查点:** `netlify status` 应该展示你的名字:
 
 ```terminal
 netlify status
@@ -167,21 +167,21 @@ Teams:
   ....
 ```
 
-## 8. Configure continuous deployment to Netlify
+## 8. 配置持续部署到 Netlify
 
-From the repository's folder, run `netlify init` to configure a new Netlify site:
+从资源库的文件夹中，运行 netlify init 来配置一个新的 Netlify 站点:
 
 ![Running netlify init to configure a new Netlify site](https://res.cloudinary.com/prismaio/image/upload/v1628765126/docs/Ctt56FN_oyu0dq.png)
 
-You will be prompted with configuration options:
+你会被提示有配置选项:
 
-1. Select `Create & configure a new site`
-2. If prompted to select your team, pick the one in which Netlify will create the site
-3. Give the site a unique name
-4. _Your build command_: `npm run build`
-5. _Directory to deploy_: `public`
+1. 选择`Create & configure a new site`
+2. 如果提示选择您的团队，请选择 Netlify 将创建网站的团队
+3. 给网站一个独特的名字
+4. _您的构建命令_: `npm run build`
+5. _部署的目录_: `public`
 
-**Checkpoint:** The Netlify CLI should output the following:
+**检查点:** Netlify CLI 应输出如下内容:
 
 ```text
 Site Created
@@ -190,70 +190,70 @@ Admin URL: https://app.netlify.com/sites/YOUR_SITE_NAME
 URL:       https://YOUR_SITE_NAME.netlify.com
 ```
 
-> **Note:** You can change the build configuration via the `netlify.toml` file and the site name from the Netlify admin UI.
+> **注意：**你可以通过`netlify.toml`文件和 Netlify 管理界面的站点名称来改变构建配置。
 
-## 9. Expose the DATABASE_URL environment variable to functions
+## 9. 将 DATABASE_URL 环境变量暴露给函数
 
-Since Prisma will connect to the database from your serverless functions, you need to expose the `DATABASE_URL` to the backend functions. This is typically done from the Netlify UI. To do, open the Netlify admin UI for the site. You can do so directly with the Netlify CLI as follows:
+由于 Prisma 将从你的无服务器函数连接到数据库，你需要将`DATABASE_URL`暴露给后端函数。这通常是在 Netlify 用户界面上完成的。要做到这一点，请打开网站的 Netlify 管理界面。你可以直接用 Netlify CLI 来做，如下所示：
 
 ```terminal
 netlify open --admin
 ```
 
-Once open, go to **Site settings**:
+打开后，进入**Site settings**:
 
 ![Netlify admin UI](https://res.cloudinary.com/prismaio/image/upload/v1628765152/docs/p472v73_amyavf.png)
 
-Navigate to **Build & deploy** in the sidebar on the left and then select **Environment**:
+左侧导航到 **Build & deploy**，选择**Environment**:
 
 ![Netlify environment variables](https://res.cloudinary.com/prismaio/image/upload/v1628765166/docs/UJc23f8_jfpxmf.png)
 
-Create a variable with the key `DATABASE_URL` and set the value with your PostgresSQL URL.
+用`DATABASE_URL`键创建一个变量，用你的 PostgresSQL URL 设置其值
 
-> **Note:** It's considered best practice to keep secrets out of your codebase. If you open up the `prisma/schema.prisma` file, you should see `env("DATABASE_URL")` in the _datasource_ block. By setting an environment variable you keep secrets out of the codebase.
+> **注意:** 在你的代码库中保留秘密被认为是最好的做法。如果你打开`prisma/schema.prisma`文件，你应该在*datasource*配置中看到 `env("DATABASE_URL")`。通过设置一个环境变量，你可以把秘密留在代码库之外。
 
-## 10. Deploy the app
+## 10. 部署应用程序
 
-Your project is now ready for deployment
+你的项目现在已经准备好部署了
 
-You can now use `git push` to push the commit with the Prisma schema. This will trigger a netlify build.
+你现在可以使用`git push`来推送带有 Prisma schema 的提交。这将触发 netlify 的构建。
 
-**Checkpoint:** Call the API status endpoint:
+**检查点:** 调用 API 状态:
 
 ```terminal
 curl https://YOUR_SITE_NAME.netlify.com/.netlify/functions/status
 ```
 
-The call should return: `{"up":true}`
+调用应该返回: `{"up":true}`
 
-## 11. Test your deployed application
+## 11. 测试部署的应用程序
 
-Open the site from the command line:
+命令行打开站点:
 
 ```terminal
 netlify open:site
 ```
 
-This will open the static frontend that you deployed.
-The URL should like this: `https://YOUR_SITE_NAME.netlify.com`.
+这将打开你部署的静态前台。
+url 应该类似这样: `https://YOUR_SITE_NAME.netlify.com`.
 
 ![deployed-screenshot](https://res.cloudinary.com/prismaio/image/upload/v1628765208/docs/RnaHMS3_urf3iu.png)
 
-The four buttons allow you to make requests to the REST API and view the response:
+这四个按钮允许你向 REST API 发出请求并查看响应:
 
-- **Check API status**: Will call the REST API status endpoint that returns `{"up":true}`. The implementation code is in `functions/index.js`
-- **Seed data**: Will delete all database records and load the database with test data `users`, `profiles`, and `posts`. Returns the created users. The implementation code is in `functions/seed.js`
-- **Load users with profiles**: Will load all `users` in the database with their related `profiles`. The implementation code is in `functions/getUsers.js`
-- **Load Posts**: Will load `posts` and their related `authors`. The implementation code is in `functions/getPosts.js`
+- **Check API status**: 将调用 REST API 状态端点，返回`{"up":true}`。实现代码在`functions/index.js`中
+- **Seed data**: 将删除所有的数据库记录，并用测试数据`users', `profiles`, 和`posts`加载数据库。返回创建的用户。实现代码在`functions/seed.js`中
+- **Load users with profiles**: 将加载数据库中所有的`users`和他们相关的`profiles`。实现代码在 `functions/getUsers.js`中
+- **Load Posts**: 将加载`posts`和他们相关的`authors`。实现代码在 `functions/getPosts.js`
 
-For example, calling seed data should show the following:
+例如，调用的初始化数据应该显示如下:
 
 ![deployed-screenshot](https://res.cloudinary.com/prismaio/image/upload/v1628765199/docs/dOJUBsv_e6fx9m.png)
 
-## Summary
+## 总结
 
-Congratulations! You have successfully deployed the application to Netlify.
+祝贺您！您已经成功地将应用程序部署到 Netlify。
 
-For more insight into Prisma Client's API, look at the function handlers in the `functions/` folder.
+为了更深入地了解 Prisma Client 的 API，请看`functions/`文件夹中的函数处理程序。
 
-Generally, when using a FaaS (function as a service) environment to interact with a database, it's beneficial to pool DB connections for performance reasons. This is because every function invocation may result in a new connection to the database (this is not a problem with a constantly running node.js server). For more information on some of the solutions, refer to the [connection management guide for serverless environments](../../performance-and-optimization/connection-management#serverless-environments-faas).
+一般来说，当使用 FaaS（功能即服务）环境与数据库进行交互时，出于性能的考虑，将数据库连接集中起来是很有好处的。这是因为每个函数的调用都可能导致一个新的数据库连接（这对于一个持续运行的 node.js 服务器来说不是问题）。关于一些解决方案的更多信息，请参考[无服务器环境的连接管理指南](../../performance-and-optimization/connection-management#serverless-environments-faas)。

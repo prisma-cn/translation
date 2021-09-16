@@ -1,24 +1,24 @@
 ---
-title: Supporting features without a PSL equivalent
-metaDescription: How to support database features that do not have an equivalent syntax in Prisma Schema Language.
+title: 无等效 PSL 的特性支持
+metaDescription: 如何支持没有等效的 Prisma Schema Language 语法的数据库特性
 ---
 
 <TopBlock>
 
-Not all database functions and features have a Prisma Schema Language equivalent. Refer to the [database features matrix](../../../reference/database-reference/database-features) for a complete list of supported features.
+并非所有数据库功能和特性都有等效的 Prisma Schema Language。参考 [数据库特性矩阵](../../../reference/database-reference/database-features) 以获得受支持特性的完整列表。
 
 <Admonition type="warning">
 
-**Not supported by the MongoDB connector**<br />
-The MongoDB connector does not support the `Unsupported` field type, and MongoDB does not have the concept of database-level functions. `dbgenerated()` is used exclusively to generate `ObjectId` values.
+**MongoDB 连接器不支持**<br />
+MongoDB 连接器不支持 `Unsupported` 字段类型，且 MongoDB 没有数据库层函数的概念。`dbgenerated()` 是生成 `ObjectId` 值的唯一方法。
 
 </Admonition>
 
 </TopBlock>
 
-## Native database functions
+## 原生数据函数
 
-Prisma Schema Language supports several [functions](../../../reference/api-reference/prisma-schema-reference#attribute-functions) that you can use to set the default value of a field. The following example uses the Prisma-level `uuid()` function to set the value of the `id` field:
+Prisma Schema Language 支持若干 [函数](../../../reference/api-reference/prisma-schema-reference#attribute-functions)，你可以使用它们来设置字段默认值。以下示例使用 Prisma 层的 `uuid()` 函数来设置 `id` 字段的值：
 
 ```prisma
 model Post {
@@ -26,7 +26,7 @@ model Post {
 }
 ```
 
-However, you can also use **native database functions** to define default values with [`dbgenerated()`](../../../reference/api-reference/prisma-schema-reference#dbgenerated) <span class="api"></span>. The following example uses the PostgreSQL `gen_random_uuid()` function to populate the `id` field:
+然而，你还可以通过 [`dbgenerated()`](../../../reference/api-reference/prisma-schema-reference#dbgenerated) <span class="api"></span> 使用 **原生数据库函数** 来定义默认值。以下示例使用 PostgreSQL `gen_random_uuid()` 函数来填充 `id` 字段：
 
 ```prisma
 model User {
@@ -34,14 +34,14 @@ model User {
 }
 ```
 
-### When to use a database-level function
+### 何时使用数据库层函数
 
-There are two reasons to use a database-level function:
+使用数据库层函数有两种原因：
 
-- There is no equivalent Prisma function (for example, `gen_random_bytes` in PostgreSQL).
-- You cannot or do not want to rely on functions such `uuid()` and `cuid()`, which are only implemented at Prisma level and do not manifest in the database.
+- 没有等效的 Prisma 函数 (例如，PostgreSQL 的 `gen_random_bytes`).
+- 你不能或不希望依赖 `uuid()` 和 `cuid()`，这些函数只在 Prisma 层实现且没有体现在数据库中。
 
-  Consider the following example, which sets the `id` field to a randomly generated `UUID`:
+  思考以下示例，其中 `id` 字段被设为随机生成的 `UUID`：
 
   ```prisma
   model Post {
@@ -49,28 +49,28 @@ There are two reasons to use a database-level function:
   }
   ```
 
-  The UUID is _only_ generated if you use Prisma Client to create the `Post`. If you create posts in any other way, such as a bulk import script written in plain SQL, you must generate the UUID yourself.
+  UUID _只有_ 当你使用 Prisma Client 创建 `Post` 时才会生成。如果你通过其他方式创建博文，比如一个用纯 SQL 编写的批量导入脚本，你必须自行生成 UUID。
 
-### Enable extensions for native database functions
+### 启用原生数据库函数扩展
 
-Some native database functions are part an extension. For example, `gen_random_uuid()` is part of the [`pgcrypto`](https://www.postgresql.org/docs/10/pgcrypto.html) module, and the `@db.Citext` native type attribute expects the `citext` extension. You must install the extension in order to use any functions or features:
+某些原生数据库函数是扩展的一部分。例如，`gen_random_uuid()` 是 [`pgcrypto`](https://www.postgresql.org/docs/10/pgcrypto.html) 模块的一部分，还有 `@db.Citext` 原生类型属性需要 `citext` 扩展。你必须安装此扩展以使用其中的函数或特性：
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 ```
 
-If your project uses [Prisma Migrate](../prisma-migrate), you must [install the extension as part of a migration](../../../guides/database/developing-with-prisma-migrate/enable-native-database-functions) <span class="guide"></span>. Do not install the extension manually, as it is also required by shadow database.
+如果你的项目使用 [Prisma Migrate](../prisma-migrate)，你必须 [将扩展作为迁移的一部分来安装](../../../guides/database/developing-with-prisma-migrate/enable-native-database-functions) <span class="guide"></span>。请不要手动安装扩展，因为影子数据库也需要它。
 
-Prisma Migrate returns the following error if the extension is not available:
+如果扩展不可用，Prisma Migrate 会返回如下错误：
 
 ```
 Migration `20210221102106_faild_migration` failed to apply cleanly to a temporary database.
 Database error: Error querying the database: db error: ERROR: type "pgcrypto" does not exist
 ```
 
-## Unsupported field types
+## 不支持的字段类型
 
-Some database types, such as `polygon` or `geometry`, do not have a Prisma Schema Language equivalent. Use the [`Unsupported`](../../../reference/api-reference/prisma-schema-reference#unsupported) <span class="api"></span> field type to represent the field in your Prisma schema:
+某些数据库类型，例如 `polygon` 或 `geometry`，没有等效的 Prisma Schema Language。在 Prisma schema 中使用 [`Unsupported`](../../../reference/api-reference/prisma-schema-reference#unsupported) <span class="api"></span> 字段类型构建字段：
 
 ```prisma highlight=3;normal
 model Star {
@@ -79,8 +79,8 @@ model Star {
 }
 ```
 
-The `prisma migrate dev` and `prisma db push` command will both create a `position` field of type `circle` in the database. However, the field will not be available in the generated Prisma Client.
+`prisma migrate dev` 和 `prisma db push` 命令都会在数据库中创建一个 `circle` 类型的 `position` 字段。然而，该字段在生成的 Prisma Client 中不可用。
 
-## Unsupported database features
+## 不支持的数据库特性
 
-Some features, like SQL views or partial indexes, cannot be represented in the Prisma schema. If your project uses [Prisma Migrate](../prisma-migrate), you must [include unsupported features as part of a migration](../../../guides/database/developing-with-prisma-migrate/include-unsupported-database-features) <span class="guide"></span>.
+某些特性，例如 SQL 视图或局部索引，无法在 Prisma schema 构建。如果你的项目使用 [Prisma Migrate](../prisma-migrate)，你必须 [将不支持的特性作为迁移的一部分引入](../../../guides/database/developing-with-prisma-migrate/include-unsupported-database-features) <span class="guide"></span>。

@@ -1,65 +1,65 @@
 ---
-title: 'Caveats when deploying to AWS platforms'
-metaTitle: 'Caveats when deploying to AWS platforms'
-metaDescription: 'Known caveats when deploying to an AWS platform'
+title: '部署到AWS平台时的注意事项'
+metaTitle: '部署到AWS平台时的注意事项'
+metaDescription: '署到AWS平台时已知的注意事项'
 ---
 
 <TopBlock>
 
-The following describes some caveats you might face when deploying to different AWS platforms.
+下面描述了在部署到不同的 AWS 平台时可能面临的一些注意事项。
 
 </TopBlock>
 
 ## AWS RDS Proxy
 
-Prisma is compatible with AWS RDS Proxy. However, there is no benefit in using it for connection pooling with Prisma due to the way RDS Proxy pins connections:
+Prisma 与 AWS RDS Proxy 兼容。但是，由于 RDS Proxy 钉住连接的方式，使用它与 Prisma 进行连接池没有好处:
 
-> "Your connections to the proxy can enter a state known as pinning. When a connection is pinned, each later transaction uses the same underlying database connection until the session ends. Other client connections also can't reuse that database connection until the session ends. The session ends when the client connection is dropped." - <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html">AWS RDS Proxy Docs</a>
+> 你与代理的连接可以进入一个被称为钉子的状态。当一个连接被钉住时，每个后来的事务都使用相同的基础数据库连接，直到会话结束。其他客户端连接也不能重复使用该数据库连接，直到会话结束。当客户端连接被放弃时，会话就会结束。" - <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html">AWS RDS Proxy Docs</a>
 
-Prepared statements (of any size) or query statements greater than 16 KB cause RDS Proxy to pin the session. Because Prisma uses prepared statements for all queries, you won't see any benefit when using RDS Proxy with Prisma.
+准备好的语句（任何大小）或大于 16KB 的查询语句会导致 RDS Proxy 锁定会话。因为 Prisma 对所有的查询都使用准备好的语句，所以在使用 RDS Proxy 与 Prisma 时，你不会看到任何好处。
 
 ## AWS Elastic Beanstalk
 
-AWS Elastic Beanstalk is a PaaS-like deployment service that abstracts away infrastructure and allows you to deploy applications to AWS quickly.
+AWS Elastic Beanstalk 是一种类似于 PaaS 的部署服务，它抽象了基础设施，允许你快速将应用程序部署到 AWS。
 
-When deploying an app using Prisma Client to AWS Elastic Beanstalk, Prisma generates the Prisma Client code into `node_modules`. This is typically done in the `postinstall` hook.
+当使用 Prisma 客户端将应用程序部署到 AWS Elastic Beanstalk 时，Prisma 将 Prisma 客户端代码生成为`node_modules`。这通常是在`postinstall`钩中完成的。
 
-Because Beanstalk limits the ability to write to the filesystem in the `postinstall` hook, you need to create an [`.npmrc`](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc) file in the root of your project and add the following configuration:
+由于 Beanstalk 限制了在`postinstall`钩子中写入文件系统的能力，你需要在项目的根部创建一个[`.npmrc`](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc)文件，并添加以下配置:
 
 ```config file=.npmrc
 unsafe-perm=true
 ```
 
-Enabling `unsafe-perm` forces _npm_ to run as _root_, avoiding the filesystem access problem, thereby allowing the `prisma generate` command in the `postinstall` hook to generate code into `node_modules`.
+启用 "unsafe-perm "迫使*npm*以*root*身份运行，避免了文件系统访问问题，从而允许 "postinstall "钩子中的 "prisma generate "命令生成代码到 "node_modules"。
 
 ### Error: @prisma/client did not initialize yet
 
-This error happens because AWS Elastic Beanstalk doesn't install `devDependencies`, which means that it doesn't pick up the Prisma CLI. To remedy this you can either:
+这个错误的发生是因为 AWS Elastic Beanstalk 没有安装`devDependencies`，这意味着它没有接收到 Prisma CLI。为了补救这个问题，你可以:
 
-1. Add the `prisma` CLI package to your `dependencies` instead of the `devDependencies`. (Making sure to run `npm install` afterward to update the `package-lock.json`).
-2. Or install your `devDependencies` on AWS Elastic Beanstalk instances. To do this you must set the AWS Elastic Beanstalk `NPM_USE_PRODUCTION` environment property to false.
+1. 将`prisma`CLI 包添加到你的`dependencies`中，而不是`devDependencies`。(确保之后运行`npm install`来更新`package-lock.json`）。
+2. 或者在 AWS Elastic Beanstalk 实例上安装你的`devDependencies`。要做到这一点，你必须将 AWS Elastic Beanstalk 的`NPM_USE_PRODUCTION`环境属性设置为 false。
 
 ## AWS Lambda upload limit
 
-AWS Lambda defines an **deployment package upload limit**, which includes:
+WS Lambda 定义了一个 **deployment package upload limit**, 其中包括:
 
-- All application code
-- Binaries like the [Prisma query engine](../../../concepts/components/prisma-engines/query-engine)
+- 所有应用程序的代码
+- 像[Prisma 查询引擎]的二进制文件(../../../concepts/components/prisma-engines/query-engine)
 
-The [deployment package (.zip) size limit for lambdas is 50MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html). When you prepare a deployment package, remove any files that the function does not require in production to keep the final .zip as small as possible. This includes some [Prisma engine binaries](#deleting-prisma-engine-binaries-that-are-not-required).
+[部署包（.zip）大小限制是 50MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)。当你准备一个部署包时，删除任何功能在生产中不需要的文件，以保持最终的.zip 尽可能的小。这包括一些[Prisma 引擎二进制文件](#deleting-prisma-engine-binaries-that-are-not-required)。
 
-### Deleting Prisma engine binaries that are not required
+### 删除不需要的 Prisma 引擎二进制文件
 
-Prisma downloads additional engine binaries that are **not required** in production. You can delete the following files and folders:
+Prisma 下载额外的引擎二进制文件，在生产中是 **不需要**的。你可以删除以下文件和文件夹:
 
-1. The entire `node_modules/@prisma/engines` folder (refer to the [sample bash script](https://github.com/prisma/e2e-tests/blob/dev/platforms-serverless/lambda/zip.sh) used by the Prisma end-to-end tests)
-1. The **native engine binary** from the `node_modules/.prisma/client`. For example, your schema might define the following `binaryTargets` if you develop on Debian (`native`) but deploy to AWS Lambda (`rhel-openssl-1.0.x`):
+1. 整个`node_modules/@prisma/engines`文件夹（参考 Prisma 端到端测试使用的[样本 bash 脚本](https://github.com/prisma/e2e-tests/blob/dev/platforms-serverless/lambda/zip.sh)
+1. 来自`node_modules/.prisma/client`的\*\*原生引擎二进制。例如，如果你在 Debian（`native`）上开发，但部署到 AWS Lambda（`rhel-openssl-1.0.x`），你的模式可能定义以下`binaryTargets`:
 
    ```prisma
    binaryTargets = ["native", "rhel-openssl-1.0.x"]
    ```
 
-   In this scenario:
+   在这种情况下:
 
-   - Keep `node_modules/.prisma/client/query-engine-rhel-openssl-1.0.x`, which is the binary used by AWS Lambda
-   - Delete `node_modules/.prisma/client/query-engine-debian-openssl-1.1.x`, which is only required locally
+   - 保留`node_modules/.prisma/client/query-engine-rhel-openssl-1.0.x`，这是 AWS Lambda 使用的二进制文件。
+   - 删除`node_modules/.prisma/client/query-engine-debian-openssl-1.1.x`，这只是本地需要的。

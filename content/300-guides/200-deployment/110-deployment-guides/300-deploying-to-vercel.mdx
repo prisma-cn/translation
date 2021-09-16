@@ -1,147 +1,147 @@
 ---
-title: 'Deploying to Vercel'
-metaTitle: 'How to deploy a Prisma app to Vercel'
-metaDescription: 'Learn how to deploy a Next.js app with a serverless REST API using Prisma Client to Vercel.'
+title: '部署到Vercel'
+metaTitle: '如何将Prisma应用程序部署到Vercel上'
+metaDescription: '了解如何使用Prisma客户端向Vercel部署带有serverless REST API的Next.js应用。'
 ---
 
 <TopBlock>
 
-In this guide, you will set up and deploy a Next.js app to [Vercel](https://vercel.com/home). The Next.js app will expose a REST API and use Prisma Client to handle fetching, creating, and deleting records from a database.
+在本指南中，你将设置并部署一个 Next.js 应用程序到[Vercel](https://vercel.com/home)。Next.js 应用程序将暴露一个 REST API，并使用 Prisma 客户端来处理从数据库中获取、创建和删除记录。
 
-Vercel is a cloud platform for static sites and serverless functions. Vercel integrates with a GitHub repository for automatic deployments upon commits. [Next.js](https://nextjs.org/) is a full-stack React serverless framework that integrates seamlessly with Vercel.
+Vercel 是一个用于静态网站和无服务器功能的云平台。Vercel 与 GitHub 仓库集成，以便在提交后自动部署。[Next.js](https://nextjs.org/)是一个全栈式 React 无服务器框架，与 Vercel 无缝集成。
 
-The Next.js app has the following components:
+Next.js 应用程序有以下组件:
 
-- **Backend**: Next.js API routes that serve a REST API and use Prisma Client to handle database operations against a PostgreSQL database (e.g., hosted on Heroku).
-- **Frontend**: Next.js page to interact with the API.
+- **后端**: Next.js 的 API 路由为 REST API 提供服务，并使用 Prisma Client 来处理针对 PostgreSQL 数据库的数据库操作（例如，托管在 Heroku 上）。
+- **前端**: Next.js 页面，与 API 进行交互。
 
 ![architecture diagram](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/GOhQXGZ.png)
 
-The focus of this guide is showing how Prisma can be used with Next.js and Vercel. The starting point will be the [Prisma Vercel example](https://github.com/prisma/deployment-example-vercel), which has a couple of serverless REST endpoints preconfigured as [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction) and a Next.js page.
+本指南的重点是展示 Prisma 如何与 Next.js 和 Vercel 一起使用。出发点是[Prisma Vercel 示例](https://github.com/prisma/deployment-example-vercel)，它有几个预设为[Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)的无服务器 REST 端点和一个 Next.js 页面。
 
-> Throughout the guide, you'll find various **checkpoints** that enable you to validate whether you performed the steps correctly.
+> 在整个指南中，你会发现各种**检查点**，使你能够验证你是否正确执行了这些步骤。
 
 </TopBlock>
 
-## Prerequisites
+## 前提准备
 
-- Hosted PostgreSQL database and a URL from which it can be accessed, e.g. `postgresql://username:password@your_postgres_db.cloud.com/db_identifier` (you can use Heroku, which offers a [free plan](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)).
-- [GitHub](https://github.com) account
-- [Vercel](https://vercel.com) account.
-- Node.js installed.
+- 托管的 PostgreSQL 数据库和一个可以访问它的 URL，例如`postgresql://username:password@your_postgres_db.cloud.com/db_identifier`（你可以使用 Heroku，它提供一个[免费计划](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)）。
+- [GitHub](https://github.com)账户
+- [Vercel](https://vercel.com)账户
+- 安装了 Node.js
 
-## Prisma workflow
+## Prisma 工作流程
 
-At the core of Prisma is the [Prisma schema](/concepts/components/prisma-schema) – a declarative configuration where you define your data model and other Prisma-related configuration. The Prisma schema is also a single source of truth for both Prisma Client and Prisma Migrate.
+Prisma 的核心是[Prisma schema](/concepts/components/prisma-schema) -- 一个声明式的配置，你在这里定义你的数据模型和其他与 Prisma 相关的配置。Prisma 模式也是 Prisma 客户端和 Prisma 迁移的单一真理来源。
 
-In this guide, you will create the database schema with [Prisma Migrate](/concepts/components/prisma-migrate). Prisma Migrate is based on the Prisma schema and works by generating `.sql` migration files that are executed against the database.
+在本指南中，你将用[Prisma Migrate](/concepts/components/prisma-migrate)创建数据库模式。Prisma Migrate 基于 Prisma 模式，通过生成针对数据库执行的`.sql`迁移文件而工作。
 
-Migrate comes with two primary workflows:
+Migrate 有两个主要工作流程：
 
-- Creating migrations and applying during local development with `prisma migrate dev`
-- Applying generated migration to production with `prisma migrate deploy`
+- 在本地开发过程中使用`prisma migrate dev`创建迁移文件并应用。
+- 使用`prisma migrate deploy`将生成的迁移应用到生产中。
 
-For brevity, the guide does not cover how migrations are created with `prisma migrate dev`. Rather, it focuses on the production workflow and uses the Prisma schema and SQL migration that are included in the example code.
+为了简洁起见，本指南不涉及如何使用`prisma migrate dev`创建迁移。相反，它侧重于生产工作流程，并使用示例代码中包含的 Prisma 模式和 SQL 迁移。
 
-You will use Vercel's [build step](https://vercel.com/docs/build-step) to run the `prisma migrate deploy` command so that the migrations are applied before the functions are deployed.
+你将使用 Vercel 的[构建步骤](https://vercel.com/docs/build-step)来运行`prisma migrate deploy`命令，这样就可以在功能部署前应用迁移。
 
-To learn more about how migrations are created with Prisma Migrate, check out the [start from scratch guide](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
+要了解更多关于如何用 Prisma Migrate 创建迁移的信息，请查看[小白指南](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
 
-## 1. Create and deploy the project using the Vercel deploy button
+## 1. 使用 Vercel 部署按钮创建并部署该项目
 
-Open https://github.com/prisma/deployment-example-vercel in your browser.
+在你的浏览器中打开https://github.com/prisma/deployment-example-vercel。
 
-Click on the Deploy button:
+单击 "部署 "按钮:
 
 ![Vercel deploy button](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/qqTHfji.png)
 
-This will lead you to Vercel, prompting you to clone the repository:
+这将引导你到 Vercel，提示你克隆存储库:
 
 ![Vercel Clone repository](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/9iYnP6B.png)
 
-Pick a repository name to replace `prisma-vercel-deployment-example` that is prefilled. This will be the name of the cloned repository in your GitHub account.
+挑选一个仓库名称来替换预填充的`prisma-vercel-deployment-example'。这将是你 GitHub 账户中克隆的仓库的名称。
 
-> **Note:** If this is your first time using Vercel, you will be promted to install the Vercel app in your GitHub account.
+> **注意：**如果这是你第一次使用 Vercel，你将被提示在你的 GitHub 账户中安装 Vercel 应用程序。
 
-Click **Create**, which will lead you to the following:
+点击**创建**，这将引导你到下面:
 
 ![Vercel configure project](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/FFZVPMm.png)
 
-Set the `DATABASE_URL` environment variable with the connection URL for your PostgreSQL database, which should look as follows: `postgresql://__USER__:__PASSWORD__@__HOST__/__DATABASE__`
+用 PostgreSQL 数据库的连接 URL 设置`DATABASE_URL`环境变量，它应该如下所示。`postgresql://__USER__:__PASSWORD__@__HOST__/__DATABASE__`。
 
-Finally, click **Deploy** which will start the build:
+最后，点击**部署**，将开始构建:
 
 ![Vercel Build](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/zn7xFj9.png)
 
-> **Note:** The build step defined in package.json as the `vercel-build` script, will run `prisma generate && prisma migrate deploy && next build` to generate Prisma Client, apply migrations, and build the Next.js project.
+> **注意：** package.json 中定义的构建步骤为`vercel-build`脚本，将运行`prisma generate && prisma migrate deploy && next build`来生成 Prisma 客户端，应用迁移，并构建 Next.js 项目。
 
-Once the build completes, you should see the following:
+一旦构建完成，你应该看到以下内容:
 
 ![Vercel Completed Build](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/KqVesdT.png)
 
-Congratulations! You have successfully deployed the app to Vercel. Note that Vercel will build and deploy further commits to your GitHub repository.
+恭喜你！你已经成功地将应用程序部署到 Vercel。你已经成功地将应用程序部署到 Vercel。注意，Vercel 将构建和部署进一步的提交到你的 GitHub 仓库。
 
-**Checkpoint:** Open the deployed app by clicking on the screenshot of the deployed app. Once the page loads, click on the **Check API status** button, which should return: `{"up":true}`
+**检查点：**通过点击已部署的应用程序的屏幕截图，打开已部署的应用程序。一旦页面加载，点击**检查 API 状态**按钮，应该会返回。`{"up":true}`。
 
-## 2. Test your deployed application
+## 2. 测试你部署的应用程序
 
-You can use the static frontend to interact with the API you deployed.
+你可以使用静态前端与你部署的 API 进行交互。
 
-Using the deployed app URL from the previous step (`https://PROJECT_NAME.VERCEL_USERNAME.vercel.app`), you should see the following:
+使用上一步（`https://PROJECT_NAME.VERCEL_USERNAME.vercel.app`）中部署的应用程序 URL，你应该看到以下内容:
 
 ![deployed-screenshot](https://res.cloudinary.com/prismaio/image/upload/v1628761153/docs/TfgJERN.png)
 
-The four buttons allow you to make requests to the REST API and view the response:
+这四个按钮允许你向 REST API 发出请求并查看响应。
 
-- **Check API status**: Will call the REST API status endpoint that returns `{"up":true}`. The implementation code is in `api/index.js`
-- **Seed data**: Will delete all database records and load the database with test data `users`, `profiles`, and `posts`; returns the created users. The implementation code is in `api/seed.js`
-- **Load users with profiles**: Will load all `users` in the database with their related `profiles`. The implementation code is in `api/users.js`
-- **Load Posts**: Will load `posts` and their related `authors`. The implementation code is in `api/posts.js`
+- **检查 API 状态**: 将调用 REST API 状态端点，返回`{"up":true}`。实现代码在`api/index.js`中。
+- **种子数据**: 将删除所有的数据库记录，并用测试数据`users`, `profiles`, 和 `posts` 加载数据库；返回创建的用户。实现代码在 `api/seed.js`中。
+- **加载有配置文件的用户**: 将加载数据库中所有的 `users` 和他们相关的 `profiles`。实现代码在 `api/users.js`中。
+- **加载帖子**: 将加载 `posts` 和他们相关的 `authors`。实现代码在 `api/posts.js`中。
 
-## Vercel specific notes
+## Vercel 具体说明
 
-### vercel-build hook
+### Vercel-build 钩子
 
-The `package.json` in the example uses the `vercel-build` hook script to run `prisma generate && prisma migrate deploy && next build`.
+示例中的`package.json`使用`vercel-build`钩子脚本来运行`prisma generate && prisma migrate deploy && next build`。
 
-<!-- Typically this would go in the `build` step. Because Vercel caches `node_modules` after the dependencies are installed, the functions won't have access to the generated Prisma Client. -->
+<!-- 通常这将在`build`步骤中进行。因为Vercel在安装了依赖关系后缓存了`node_modules`，这些函数将无法访问生成的Prisma客户端。-->
 
-Generating the Prisma Client in `vercel-build` ensures that the generated Prisma Client in `node_modules/@prisma/client` is available to the functions.
+在`vercel-build`中生成 Prisma 客户端，可以确保`node_modules/@prisma/client`中生成的 Prisma 客户端对函数可用。
 
-### Database migrations and deployments
+### 数据库迁移和部署
 
-In the example you deployed, migrations are applied using the `prisma migrate deploy` command during the Vercel build (as defined in the `build-vercel` script in `package.json`).
+在你部署的例子中，迁移是在 Vercel 构建过程中使用`prisma migrate deploy`命令应用的（如`package.json`中的`build-vercel`脚本所定义）。
 
-Vercel has two environments: _preview_ and _production_, where preview deployments are for pull requests and production is for the `main` branch. It's important to keep this distinction in mind in relation to the database.
+Vercel 有两个环境。预览*和生产*，其中预览部署是针对拉动请求，生产是针对`主`分支。在数据库方面，记住这个区别是很重要的。
 
-The `DATABASE_URL` environment variable, which you defined when you imported the project, will be available to both the preview and production environments. This can be a problem if you create a pull request containing a migration because a pull request will cause the production database schema to inadvertently change.
+你在导入项目时定义的 "DATABASE_URL "环境变量将对预览和生产环境都有效。如果你创建了一个包含迁移的拉动请求，这可能是一个问题，因为拉动请求会导致生产数据库模式在无意中发生变化。
 
-**Therefore, we recommend having separate databases for preview and production deployments** so that pull requests containing migrations don't meddle with the production database.
+**因此，我们建议为预览版和生产版的部署建立单独的数据库，**这样，包含迁移的拉动请求就不会干扰生产版数据库。
 
-To ensure that the `DATABASE_URL` you defined is only available for production deployments, open your project settings on Vercel, and navigate to the **Environment Variables** tab:
+为了确保你定义的 `DATABASE_URL` 只适用于生产部署，在 Vercel 上打开你的项目设置，并导航到**环境变量**标签:
 
 ![Vercel environment variables](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/jIQPVvt.png)
 
-Click on the three vertical dots on the right of the `DATABASE_URL`, and select **edit**:
+点击`DATABASE_URL`右边的三个垂直点，并选择**编辑**:
 
 ![Vercel env var options](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/XwJUdWK.png)
 
-Uncheck the **Preview** checkbox:
+取消勾选**预览**复选框:
 
 ![Vercel env var options](https://res.cloudinary.com/prismaio/image/upload/v1628761152/docs/jqcX0tV.png)
 
-Finally, click **Save**.
+最后，点击**保存**。
 
-Note that this prevents Preview deployments from working, as they have no access to the database.
+注意，这将阻止预览部署的工作，因为它们不能访问数据库。
 
-In order to enable Preview deployment for pull requests, create a separate database for preview deployments, set the `DATABASE_URL` env var , and expose it **only** to Preview deployments.
+为了使拉动请求的预览部署生效，为预览部署创建一个单独的数据库，设置`DATABASE_URL`环境变量，并将其**只**暴露给预览部署。
 
-> **Note**: because each pull request shares the same preview database, if you have multiple pull requests with diverging schema migrations, you will encounter problems applying them.
+> **注意**：由于每个拉动请求都共享同一个预览数据库，如果你有多个拉动请求的模式迁移不一致，你会遇到应用问题。
 
-## Summary
+## 总结
 
-Congratulations! You have successfully deployed the application to Vercel.
+恭喜你! 你已经成功地将应用程序部署到了 Vercel。
 
-For more insight into Prisma Client's API, look at the function handlers in the `api/` folder.
+为了更深入地了解 Prisma Client 的 API，请查看`api/`文件夹中的函数处理程序。
 
-When accessing a database from serverless functions, we recommended using a connection pooler like PgBouncer for scalability because every function invocation may result in a new connection to the database. For more information, check out our [serverless connection management guide](../../performance-and-optimization/connection-management#serverless-environments-faas).
+当从无服务器函数访问数据库时，我们建议使用像 PgBouncer 这样的连接池以获得可扩展性，因为每个函数的调用都可能导致与数据库的新连接。更多信息，请查看我们的[无服务器连接管理指南](../../performance-and-optimization/connection-management#serverless-environments-faas).

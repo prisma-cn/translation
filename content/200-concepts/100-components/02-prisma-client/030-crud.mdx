@@ -1,28 +1,28 @@
 ---
-title: 'CRUD'
-metaTitle: 'CRUD (Reference)'
-metaDescription: 'How to perform CRUD with Prisma Client.'
+title: 'CRUD 增删改查'
+metaTitle: 'CRUD 增删改查(参考)'
+metaDescription: '如何使用 Prisma Client 执行 CRUD 增删改查。'
 tocDepth: 5
 ---
 
 <TopBlock>
 
-This page describes how to perform CRUD operations with your generated Prisma Client API. CRUD is an acronym that stands for:
+本页介绍如何使用生成的 Prisma Client API 执行 CRUD 操作。CRUD 是一个缩写词，代表：
 
-- [Create](#create)
-- [Read](#read)
-- [Update](#update)
-- [Delete](#delete)
+- [Create 增](#create)
+- [Read 查](#read)
+- [Update 改](#update)
+- [Delete 删](#delete)
 
-Refer to the [Prisma Client API reference documentation](../../../../reference/api-reference/prisma-client-reference#on) <span class="api"></span> for detailed explanations of each method.
+有关每种方法的详细说明，请参阅 [Prisma Client API 参考文档](../../../../reference/api-reference/prisma-client-reference#on) <span class="api"></span>。
 
 </TopBlock>
 
-## Example schema
+## schema 示例
 
-All examples are based on the following schema:
+所有示例均基于以下 schema：
 
-<details><summary>Expand for sample schema</summary>
+<details><summary>展开示例 schema</summary>
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
@@ -139,19 +139,19 @@ enum Role {
 
 </details>
 
-For **relational databases**, use `db push` command to push the example schema to your own database
+对于 **关系型数据库**，使用 `db push` 命令将示例 schema 添加到你自己的数据库中
 
 ```terminal
 npx prisma db push
 ```
 
-For **MongoDB**, ensure your data is in a uniform shape and matches the model defined in the Prisma schema.
+对于 **MongoDB**，请确保数据的形状统一，并且与 Prisma schema 中定义的模型匹配。
 
-## Create
+## 创建 {#create}
 
-### Create a single record
+### 创建单个记录
 
-The following query creates ([`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span>) a single user with two fields:
+以下查询创建（[`create`](../../../reference/api-reference/prisma-client-reference#create) <span class="api"></span>）具有两个字段的单个用户：
 
 <CodeWithResult>
 <cmd>
@@ -182,11 +182,11 @@ const user = await prisma.user.create({
 </cmdResult>
 </CodeWithResult>
 
-The user's `id` is auto-generated, and your schema determines [which fields are mandatory](../prisma-schema/data-model#optional-and-mandatory-fields).
+用户的 `id` 是自动生成的，你的 schema 确定 [哪些字段是必填字段](../prisma-schema/data-model#optional-and-mandatory-fields).。
 
-#### Create a single record using generated types
+#### 使用生成的类型创建单个记录
 
-The following example produces an identical result, but creates a `UserCreateInput` variable named `user` _outside_ the context of the `create` query. After completing a simple check (should posts be included in this `create` query?), the `user` variable is passed into the query:
+下面的示例生成相同的结果，但在 `create` 查询的上下文 _之外_ 创建了一个名为 `user` 的 `UserCreateInput` 变量。在完成一个简单的检查后（是否应该将帖子包括在此 `create` 查询中？），将 `user` 变量传递到查询中：
 
 ```ts
 import { PrismaClient, Prisma } from '@prisma/client'
@@ -197,7 +197,7 @@ async function main() {
   let includePosts: boolean = false
   let user: Prisma.UserCreateInput
 
-  // Check if posts should be included in the query
+  // 检查是否应在查询中包括帖子
   if (includePosts) {
     user = {
       email: 'elsa@prisma.io',
@@ -215,7 +215,7 @@ async function main() {
     }
   }
 
-  // Pass 'user' object into query
+  // 将 'user' 对象传递到查询中
   const createUser = await prisma.user.create({ data: user })
 }
 
@@ -228,13 +228,13 @@ main()
   })
 ```
 
-For more information about working with generated types, see: [Generated types](advanced-type-safety).
+有关使用生成的类型的详细信息，请参阅：[生成的类型](advanced-type-safety)。
 
-### Create multiple records
+### 创建多个记录
 
-Prisma Client supports bulk inserts as a GA feature in [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later.
+Prisma Client 在 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中支持将大量插入作为 基础可用 功能。
 
-The following [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany) <span class="api"></span> query creates multiple users and skips any duplicates (`email` must be unique):
+以下 [`createMany`](../../../reference/api-reference/prisma-client-reference#createmany) <span class="api"></span> 查询创建多个用户并跳过任何重复项 (`email` 必须是唯一的)：
 
 <CodeWithResult expanded="{true}">
 <cmd>
@@ -243,11 +243,11 @@ The following [`createMany`](../../../reference/api-reference/prisma-client-refe
 const createMany = await prisma.user.createMany({
   data: [
     { name: 'Bob', email: 'bob@prisma.io' },
-    { name: 'Bobo', email: 'bob@prisma.io' }, // Duplicate unique key!
+    { name: 'Bobo', email: 'bob@prisma.io' }, // 唯一键重复!
     { name: 'Yewande', email: 'yewande@prisma.io' },
     { name: 'Angelique', email: 'angelique@prisma.io' },
   ],
-  skipDuplicates: true, // Skip 'Bobo'
+  skipDuplicates: true, // 跳过 'Bobo'
 })
 ```
 
@@ -264,7 +264,7 @@ const createMany = await prisma.user.createMany({
 
 </CodeWithResult>
 
-`createMany` uses a single `INSERT INTO` statement with multiple values, which is generally more efficient than a separate `INSERT` per row:
+`createMany` 使用具有多个值的单个 `INSERT INTO` 语句，这通常比每行单独的 `INSERT` 更有效：
 
 ```sql
 BEGIN
@@ -273,40 +273,43 @@ COMMIT
 SELECT "public"."User"."country", "public"."User"."city", "public"."User"."email", SUM("public"."User"."profileViews"), COUNT(*) FROM "public"."User" WHERE 1=1 GROUP BY "public"."User"."country", "public"."User"."city", "public"."User"."email" HAVING AVG("public"."User"."profileViews") >= $1 ORDER BY "public"."User"."country" ASC OFFSET $2
 ```
 
-> **Note**: Multiple `create` statements inside a `$transaction` results in multiple `INSERT` statements.
+> **注意**：`$transaction` 中的多个 `create` 语句会生成多个 `INSERT` 语句。
 
-The following video demonstrates how to use `createMany` and [faker.js](https://github.com/marak/Faker.js/) to seed a database with sample data:
+下面的视频演示了如何使用 `createMany` 和 [faker.js](https://github.com/marak/Faker.js/) 要使用示例数据为数据库种子，请执行以下操作：
 
 <div class="videoWrapper">
   <iframe
     width="560"
     height="315"
-    src="https://www.youtube.com/embed/QxyqR4yh1GI"
+    scrolling="no"
+    border="0"
+    framespacing="0"
+    src="//player.bilibili.com/player.html?aid=931453747&bvid=BV1UM4y1T7QF&cid=403685728&page=4"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen
   ></iframe>
 </div>
 
-### Create records and connect or create related records
+### 创建记录并连接或创建相关记录
 
-See [Working with relations > Nested writes](relation-queries#nested-writes) for information about creating a record and one or more related records at the same time.
+有关同时创建记录和一个或多个相关记录的信息，请参见[使用关系>嵌套写入](relation-queries#nested-writes)。
 
-## Read
+## 读取 {#read}
 
-### Get record by ID or unique identifier
+### 按 ID 或唯一标识符获取记录
 
-The following queries return a single record ([`findUnique`](../../../reference/api-reference/prisma-client-reference#findunique) <span class="api"></span>) by unique identifier or ID:
+以下查询按唯一标识符或 ID 返回单个记录 ([`findUnique`](../../../reference/api-reference/prisma-client-reference#findunique) <span class="api"></span>)
 
 ```ts
-// By unique identifier
+// 按唯一标识符
 const user = await prisma.user.findUnique({
   where: {
     email: 'elsa@prisma.io',
   },
 })
 
-// By ID
+// 按 ID
 const user = await prisma.user.findUnique({
   where: {
     id: 99,
@@ -314,10 +317,10 @@ const user = await prisma.user.findUnique({
 })
 ```
 
-If you are using the MongoDB connector and your underlying ID type is `ObjectId`, you can use the string representation of that `ObjectId`:
+如果你使用的是 MongoDB 连接器，并且你的基础 ID 类型为 `ObjectId`，则可以使用该 `ObjectId` 的字符串表示形式：
 
 ```ts
-// By ID
+// 按 ID
 const user = await prisma.user.findUnique({
   where: {
     id: '60d5922d00581b8f0062e3a8',
@@ -325,18 +328,19 @@ const user = await prisma.user.findUnique({
 })
 ```
 
-### Get record by compound ID or compound unique identifier
+### 按复合 ID 或复合唯一标识符获取记录
 
 <Admonition type="warning">
 
-**MongoDB does not support `@@id`**<br />
-MongoDB does not support composite IDs, which means you cannot identify a model with a `@@id` block. Furthermore, you cannot use a `@@unique` block as an ID.
+** MongoDB 不支持 `@@id`**<br />
+
+MongoDB 不支持复合 ID，这意味着你无法识别具有 `@@id` 块的模型。此外，不能将 `@@unique` 块用作 ID。
 
 </Admonition>
 
-The following examples demonstrate how to retrieve records by a compound ID or unique identifier, defined by [`@@id`](../../../reference/api-reference/prisma-schema-reference#id-2) <span class="api"></span> or [`@@unique`](../../../reference/api-reference/prisma-schema-reference#unique-1) <span class="api"></span>.
+以下示例演示如何通过 [`@@ID`](../../../reference/api-reference/prisma-schema-reference#id-2) <span class="api"></span> 或 [`@@unique`](../../../reference/api-reference/prisma-schema-reference#unique-1) <span class="api"></span> 定义的复合 ID 或唯一标识符检索记录。
 
-The following Prisma model defines a compound ID:
+以下 Prisma 模型定义了复合 ID：
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
 <tab>
@@ -356,7 +360,7 @@ model TimePeriod {
 </tab>
 </TabbedContent>
 
-To retrieve a time period by this compound ID, use the generated `year_quarter` field, which follows the `fieldName1_fieldName2` pattern:
+要通过此复合 ID 检索时间段，请使用生成的 `year_quarter` 字段，该字段遵循 `fieldName1_fieldName2` 模式：
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
 <tab>
@@ -377,7 +381,7 @@ const timePeriod = await prisma.timePeriod.findUnique({
 </tab>
 </TabbedContent>
 
-The following Prisma model defines a compound unique identifier with a custom name (`timePeriodId`)
+以下 Prisma 模型使用自定义名称（`timePeriodId`）定义了一个复合唯一标识符
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
 <tab>
@@ -397,7 +401,7 @@ model TimePeriod {
 </tab>
 </TabbedContent>
 
-To retrieve a time period by this unique identifier, use the custom `timePeriodId` field:
+要通过此唯一标识符检索时间段，请使用自定义 `timePeriodId` 字段：
 
 <TabbedContent tabs={[<FileWithIcon text="Relational databases only" icon="database"/>]}>
 <tab>
@@ -418,22 +422,22 @@ const timePeriod = await prisma.timePeriod.findUnique({
 </tab>
 </TabbedContent>
 
-### Get all records
+### 获取所有记录
 
-The following [`findMany`](../../../reference/api-reference/prisma-client-reference#findmany) <span class="api"></span> query returns _all_ `User` records:
+以下 [`findMany`](../../../reference/api-reference/prisma-client-reference#findmany) <span class="api"></span> 查询返回 _所有_ `User` 记录：
 
 ```ts
 const users = await prisma.user.findMany()
 ```
 
-You can also [paginate your results](pagination).
+你也可以 [对你的结果进行分页](pagination)。
 
-### Get the first record that matches a specific criteria
+### 获取与特定条件匹配的第一条记录
 
-The following [`findFirst`](../../../reference/api-reference/prisma-client-reference#findfirst) <span class="api"></span> query returns the _most recently created user_ with at least one post that has more than 100 likes:
+以下 [`findFirst`](../../../reference/api-reference/prisma-client-reference#findfirst) <span class="api"></span> 查询返回 至少有一个帖子有超过 100 个赞的 _最新创建的用户_：
 
-1. Order users by ascending ID (largest first) - the largest ID is the most recent
-2. Return the first user in ascending order with at least one post that has more than 100 likes
+1. 按升序 ID 排序用户（最大的优先）- 最大的 ID 是最近的 ID
+2. 以升序返回第一个用户，其中至少有一个帖子有 100 个以上的赞
 
 ```ts
   const findUser = await prisma.user.findFirst({
@@ -453,13 +457,13 @@ The following [`findFirst`](../../../reference/api-reference/prisma-client-refer
 }
 ```
 
-### Get a filtered list of records
+### 获取经过过滤的记录列表
 
-Prisma Client supports [filtering](filtering-and-sorting) on record fields and related record fields.
+Prisma Client 支持记录字段和相关记录字段的 [过滤](filtering-and-sorting)。
 
-#### Filter by a single field value
+#### 按单个字段值过滤
 
-The following query returns all `User` records with an email that ends in `"prisma.io"`:
+下面的查询返回所有 `User` 记录，其中包含以 `"prisma.io"` 结尾的电子邮件：
 
 ```ts
   const users = await prisma.user.findMany({
@@ -471,9 +475,9 @@ The following query returns all `User` records with an email that ends in `"pris
   }
 ```
 
-#### Filter by multiple field values
+#### 按多个字段值过滤
 
-The following query uses a combination of [operators](../../../reference/api-reference/prisma-client-reference#filter-conditions-and-operators) <span class="api"></span> to return users whose name start with `E` _or_ administrators with at least 1 profile view:
+以下查询使用 [operators](../../../reference/api-reference/prisma-client-reference#filter-conditions-and-operators) <span class="api"></span> 组合返回名称以 `E` 开头的用户 _或_ 至少具有 1 个 profile 的管理员：
 
 ```ts
 const users = await prisma.user.findMany({
@@ -499,9 +503,9 @@ const users = await prisma.user.findMany({
 })
 ```
 
-#### Filter by related record field values
+#### 按相关记录字段值过滤
 
-The following query returns users with an email that ends with `prisma.io` _and_ have at least _one_ post (`some`) that is not published:
+以下查询返回的用户电子邮件以 `prisma.io` 结尾，_并且_ 至少有 _一_ 篇（`some`）为未发布的帖子：
 
 ```ts
   const users = await prisma.user.findMany({
@@ -518,11 +522,11 @@ The following query returns users with an email that ends with `prisma.io` _and_
   }
 ```
 
-See [Working with relations](relation-queries) for more examples of filtering on related field values.
+有关过滤相关字段值的更多示例，请参见 [使用关系](relation-queries)。
 
-### Select a subset of fields
+### 选择字段的子集
 
-The following `findUnique` query uses `select` to return the `email` and `name` fields of a specific `User` record:
+以下 `findUnique` 查询使用 `select` 返回 `email` 和 `name` 字段是一个特别的 `User` 记录：
 
 <CodeWithResult>
 <cmd>
@@ -549,17 +553,17 @@ const user = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-For more information about including relations, refer to:
+有关包含关系的更多信息，请参阅：
 
-- [Select fields](select-fields)
-- [Relation queries](relation-queries)
+- [选择字段](select-fields)
+- [关系查询](relation-queries)
 
-#### Select a subset of related record fields
+#### 选择相关记录字段的子集
 
-The following query uses a nested `select` to return:
+以下查询使用嵌套的 `select` 返回：
 
-- The user's `email`
-- The `likes` field of each post
+- 用户的 `email`
+- 每个帖子的 `likes` 字段
 
 <CodeWithResult>
 <cmd>
@@ -590,15 +594,15 @@ const user = await prisma.user.findUnique({
 </cmdResult>
 </CodeWithResult>
 
-For more information about including relations, see [Select fields and include relations](select-fields).
+有关包含关系的详细信息，请参见 [选择字段并包含关系](select-fields) 。
 
-### Select distinct field values
+### 选择不同的字段值
 
-See [Select `distinct`](aggregation-grouping-summarizing#select-distinct) for information about selecting distinct field values.
+有关选择不同字段值的信息，请参见 [选择 `distinct`](aggregation-grouping-summarizing#select-distinct)。
 
-### Include related records
+### 包括相关记录
 
-The following query returns all `ADMIN` users and includes each user's posts in the result:
+以下查询返回所有 `ADMIN` 用户，并在结果中包含每个用户的帖子：
 
 <CodeWithResult>
 <cmd>
@@ -659,17 +663,17 @@ const users = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-For more information about including relations, see [Select fields and include relations](select-fields).
+有关包含关系的详细信息，请参见 [选择字段并包含关系](select-fields)。
 
-#### Include a filtered list of relations
+#### 包括关系的过滤列表
 
-See [Working with relations](relation-queries#filter-a-list-of-relations) to find out how to combine [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> and `where` for a filtered list of relations - for example, only include a user's published posts.
+请参阅 [使用关系](relation-queries#filter-a-list-of-relations) 以了解如何将 [`include`](../../../reference/api-reference/prisma-client-reference#include) <span class="api"></span> 和 `where` 组合在一起，以获得过滤后的关系列表 - 例如，仅包括用户发布的帖子。
 
-## Update
+## 更新 {#update}
 
-### Update a single record
+### 更新单个记录
 
-The following query uses [`update`](../../../reference/api-reference/prisma-client-reference#update) <span class="api"></span> to find and update a single `User` record by `email`:
+以下查询使用 [`update`](../../../reference/api-reference/prisma-client-reference#update) <span class="api"></span> 通过 `email` 查找和更新单个 `User` 记录：
 
 <CodeWithResult>
 <cmd>
@@ -702,9 +706,9 @@ const updateUser = await prisma.user.update({
 </cmdResult>
 </CodeWithResult>
 
-### Update multiple records
+### 更新多个记录
 
-The following query uses [`updateMany`](../../../reference/api-reference/prisma-client-reference#updateMany) <span class="api"></span> to update all `User` records that contain `prisma.io`:
+以下查询使用 [`updateMany`](../../../reference/api-reference/prisma-client-reference#updateMany) <span class="api"></span> 来更新包含 `prisma.io` 的所有 `User` 记录：
 
 <CodeWithResult>
 <cmd>
@@ -734,9 +738,9 @@ const updateUsers = await prisma.user.updateMany({
 </cmdResult>
 </CodeWithResult>
 
-### Update _or_ create records
+### 更新 _或_ 创建记录
 
-The following query uses [`upsert`](../../../reference/api-reference/prisma-client-reference#upsert) <span class="api"></span> to update a `User` record with a specific email address, or create that `User` record if it does not exist:
+以下查询使用 [`upsert`](../../../reference/api-reference/prisma-client-reference#upsert) <span class="api"></span> 使用特定的电子邮件地址更新 `User` 记录，或者如果该 `User` 记录不存在，则创建该记录：
 
 <CodeWithResult>
 <cmd>
@@ -773,9 +777,9 @@ const upsertUser = await prisma.user.upsert({
 </cmdResult>
 </CodeWithResult>
 
-### Update a number field
+### 更新数字字段
 
-Use [atomic number operations](../../../reference/api-reference/prisma-client-reference#atomic-number-operations) <span class="api"></span> to update a number field **based on its current value** - for example, increment or multiply. The following query increments the `views` and `likes` fields by `1`:
+使用 [原子数字操作](../../../reference/api-reference/prisma-client-reference#atomic-number-operations) <span class="api"></span> 根据当前值 **更新数字字段** - 例如，递增或乘法。以下查询将 `views` 和 `likes` 字段递增 `1`：
 
 ```ts
 const updatePosts = await prisma.post.updateMany({
@@ -790,15 +794,15 @@ const updatePosts = await prisma.post.updateMany({
 })
 ```
 
-### Connect and disconnect related records
+### 创建和断开相关记录的关系
 
-Refer to [Working with relations](relation-queries) for information about disconnecting ([`disconnect`](../../../reference/api-reference/prisma-client-reference#disconnect) <span class="api"></span>) and connecting ([`connect`](../../../reference/api-reference/prisma-client-reference#connect) <span class="api"></span>) related records.
+有关断开（[`disconnect`](../../../reference/api-reference/prisma-client-reference#disconnect) <span class="api"></span>) 和连接（[`connect`[`connect`](../../../reference/api-reference/prisma-client-reference#connect) <span class="api"></span>）相关记录的信息，请参阅 [使用关系](relation-queries)。
 
-## Delete
+## 删除 {#delete}
 
-### Delete a single record
+### 删除单个记录
 
-The following query uses [`delete`](../../../reference/api-reference/prisma-client-reference#delete) <span class="api"></span> to delete a single `User` record:
+以下查询使用 [`delete`](../../../reference/api-reference/prisma-client-reference#delete) <span class="api"></span> 来删除单个 `User` 记录:
 
 ```ts
 const deleteUser = await prisma.user.delete({
@@ -808,11 +812,11 @@ const deleteUser = await prisma.user.delete({
 })
 ```
 
-Attempting to delete a user with one or more posts result in an error, as every `Post` requires an author - see [cascading deletes](#cascading-deletes-deleting-related-records).
+试图删除具有一个或多个帖子的用户会导致错误，因为每个 `Post` 都需要作者 - 请参阅[级联删除](#cascading-deletes-deleting-related-records)。
 
-### Delete multiple records
+### 删除多个记录
 
-The following query uses `deleteMany` to delete all `User` records where `email` contains `prisma.io`:
+以下查询使用 `deleteMany` 来删除所有条件为 `email` 包含 `prisma.io` 的 `User` 记录 :
 
 ```ts
 const deleteUsers = await prisma.user.deleteMany({
@@ -824,27 +828,27 @@ const deleteUsers = await prisma.user.deleteMany({
 })
 ```
 
-Attempting to delete a user with one or more posts result in an error, as every `Post` requires an author - see [cascading deletes](#cascading-deletes-deleting-related-records).
+试图删除具有一个或多个帖子的用户会导致错误，因为每个 `Post` 都需要作者 - 请参阅[级联删除](#cascading-deletes-deleting-related-records)。
 
-### Delete all records
+### 删除所有记录
 
-The following query uses `deleteMany` to delete all `User` records:
+以下查询使用 `deleteMany` 来删除所有 `User` 记录:
 
 ```ts
 const deleteUsers = await prisma.user.deleteMany({})
 ```
 
-Be aware that this query will fail if the user has any related records (such as posts). In this case, you need to [delete the related records first](#cascading-deletes-deleting-related-records).
+请注意，如果用户有任何相关记录（如帖子），此查询将失败。在这种情况下，你需要 [首先删除相关记录](#cascading-deletes-deleting-related-records)。
 
-### Cascading deletes (deleting related records)
+### 级联删除（删除相关记录） {#cascading-deletes-deleting-related-records}
 
 <Admonition type="warning">
 
-In [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) and later it is possible to do cascading deletes using the **preview feature** [referential actions](../prisma-schema/relations/referential-actions).
+在 [2.26.0](https://github.com/prisma/prisma/releases/tag/2.26.0) 和更高版本中可以使用 **预览功能** 进行级联删除 [参考行动](../prisma-schema/relations/referential-actions)。
 
 </Admonition>
 
-The following query uses [`delete`](../../../reference/api-reference/prisma-client-reference#delete) <span class="api"></span> to delete a single `User` record:
+以下查询使用 [`delete`](../../../reference/api-reference/prisma-client-reference#delete) <span class="api"></span> 来删除单个 `User` 记录:
 
 ```ts
 const deleteUser = await prisma.user.delete({
@@ -854,15 +858,15 @@ const deleteUser = await prisma.user.delete({
 })
 ```
 
-However, the example schema includes a **required relation** between `Post` and `User`, which means that you cannot delete a user with posts:
+但是，示例 schema 在 `Post` 和 `User` 之间包含 **必需关系**，这意味着你无法删除具有帖子的用户：
 
 ```
-The change you are trying to make would violate the required relation 'PostToUser' between the `Post` and `User` models.
+你试图进行的更改将违反 `Post` 和 `User` 模型之间所需的关系 'PostToUser' 。
 ```
 
-To resolve this error, you can:
+要解决这个错误, 你可以:
 
-- Make the relation optional:
+- 使关系成为可选的:
 
   ```prisma highlight=3,4;add|5,6;delete
   model Post {
@@ -874,9 +878,9 @@ To resolve this error, you can:
   }
   ```
 
-- Change the author of the posts to another user before deleting the user.
+- 删除用户之前，请将帖子作者更改为其他用户。
 
-- Delete a user and all their posts with two separate queries in a transaction (all queries must succeed):
+- 通过事务中的两个单独查询删除用户及其所有帖子（所有查询必须成功）：
 
   ```ts
   const deletePosts = prisma.post.deleteMany({
@@ -894,43 +898,43 @@ To resolve this error, you can:
   const transaction = await prisma.$transaction([deletePosts, deleteUser])
   ```
 
-### Delete all records from all tables
+### 从所有表中删除所有记录
 
-Sometimes you want to remove all data from all tables but keep the actual tables. This can be particularly useful in a development environment and whilst testing.
+有时，你希望删除所有表中的所有数据，但保留实际的表。这在开发环境和测试中特别有用。
 
-The following shows how to delete all records from all tables with Prisma Client and with Prisma Migrate.
+下面显示了如何使用 Prisma Client 和 Prisma Migrate 从所有表中删除所有记录。
 
-#### Deleting all data with `deleteMany`
+#### 正在删除带有 `deleteMany` 的所有数据`
 
-When you know the order in which your tables should be deleted, you can use the [`deleteMany`](../../../reference/api-reference/prisma-client-reference#deletemany) function. This is executed synchronously in a [`$transaction`](../../../guides/performance-and-optimization/prisma-client-transactions-guide/) and can be used with all types of databases.
+知道表的删除顺序后，可以使用 [`deleteMany`](../../../reference/api-reference/prisma-client-reference#deletemany) 函数。这在 [`$transaction`](../../../guides/performance-and-optimization/prisma-client-transactions-guide/) 中同步执行，可用于所有类型的数据库。
 
 ```ts
 const deletePosts = prisma.post.deleteMany()
 const deleteProfile = prisma.profile.deleteMany()
 const deleteUsers = prisma.user.deleteMany()
 
-// The transaction runs synchronously so deleteUsers must run last.
+// 事务同步运行，因此 deleteUsers 必须最后运行。
 await prisma.$transaction([deleteProfile, deletePosts, deleteUsers])
 ```
 
-✅ **Pros**:
+✅ **利**:
 
-- Works well when you know the structure of your schema ahead of time
-- Synchronously deletes each tables data
+- 当你提前了解 schema 的结构时，效果会很好
+- 同步删除每个表的数据
 
-❌ **Cons**:
+❌ **弊**:
 
-- Doesn't scale as well as having a more generic solution which looks up and `TRUNCATES` your tables regardless of their relational constraints.
+- 没有一个更通用的解决方案来查找和 `TRUNCATES` 表，而不管它们的关系约束如何，这样的解决方案也不能很好地扩展。
 
-> **Note**: The `$transaction` performs a cascading delete on each models table so they have to be called in order.
+> **注意**：`$transaction` 对每个模型表执行级联删除，因此必须按顺序调用它们。
 
-#### Deleting all data with raw SQL / `TRUNCATE`
+#### 使用原始 SQL / `TRUNCATE` 删除所有数据
 
-If you are comfortable working with raw SQL you can perform a `TRUNCATE` on a table by utilizing [`$queryRaw`](../prisma-client/raw-database-access#queryraw).
+如果你对使用原始 SQL 感到满意，那么可以使用 [`$queryRaw`](../prisma-client/raw-database-access#queryraw) 对表执行 `TRUNCATE`。
 
-In the following examples, the first tab shows how to perform a `TRUNCATE` on a Postgres database by using a `$queryRaw` look up that maps over the table and `TRUNCATES` each table.
+在以下示例中，第一个选项卡显示了通过 `$queryRaw` 在表上查出 maps 并且 `TRUNCATE` 每个表来达到在 Postgres 数据库使用 `TRUNCATE` 的目的。
 
-The second tab shows performing the same function but with a MySQL database. In this instance the constraints must be removed before the `TRUNCATE` can be executed, before being reinstated once finished. The whole process is run as a `$transaction`
+第二个选项卡显示使用 MySQL 数据库执行相同的功能。在这种情况下，必须先删除约束，然后才能执行 `TRUNCATE`，完成后再恢复。整个流程作为 `$transaction` 运行
 
 <TabbedContent tabs={[<FileWithIcon text="PostgreSQL" icon="database"/>, <FileWithIcon text="MySQL" icon="database"/>]}>
 
@@ -983,32 +987,32 @@ try {
 
 </TabbedContent>
 
-✅ **Pros**:
+✅ **利**:
 
-- Scalable
-- Very fast
+- 可伸缩
+- 快速
 
-❌ **Cons**:
+❌ **弊**:
 
-- Can't undo the operation
-- Using reserved SQL key words as tables names can cause issues when trying to run a raw query
+- 无法撤消该操作
+- 在尝试运行原始查询时，使用保留 SQL 关键字作为表名可能会导致问题
 
-#### Deleting all records with Prisma Migrate
+#### 使用 Prisma Migrate 删除所有数据
 
-If you use Prisma Migrate, you can use `migrate reset`, this will:
+如果你使用 Prisma Migrate, 你可以使用 `migrate reset`, 它将:
 
-1. Drop the database
-2. Create a new database
-3. Apply migrations
-4. Seed the database with data
+1. 删除数据库
+2. 创建一个新的数据库
+3. 应用 migrations
+4. 为数据库添加数据种子
 
-## Advanced query examples
+## 高级查询示例
 
-### Create a deeply nested tree of records
+### 创建深度嵌套的记录树
 
-- A single `User`
-- Two new, related `Post` records
-- Connect or create `Category` per post
+- 一个单个 `User`
+- 两条新的、相关的 `Post` 记录
+- 连接或创建每个帖子的 `Category`
 
 ```ts
 const u = await prisma.user.create({

@@ -1,30 +1,30 @@
 ---
-title: Customizing migrations
-metaDescription: How to edit a migration file before applying it to avoid data loss in production.
+title: 定制迁移流程
+metaDescription: 为了避免生产环境中的数据丢失在应用迁移文件之前需要修改迁移文件。
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持 [MongoDB connector](../../../concepts/database-connectors/mongodb)。
 
 </Admonition>
 
-In some scenarios, you need to edit a migration before applying it. For example, to [change the direction of a 1-1 relation](#changing-the-direction-of-a-1-1-relation) (moving the foreign key from one side to another) without data loss, you need to move data as part of the migration - this SQL is not part of the default migration, and must be written by hand.
+在某些情况下，您需要在应用迁移之前对其进行编辑。例如，[修改 1 对 1 关系的指向](#changing-the-direction-of-a-1-1-relation)(将外键从一边移到另一边)，为了避免数据丢失，需要将迁移数据作为迁移的一部分 -  此 SQL 不是默认迁移的一部分，并且必须手写。
 
-To edit a migration file before applying it:
+要在应用迁移之前编辑该文件:
 
-1. Make a schema change that requires custom SQL (for example, to preserve existing data)
-1. Create a draft migration using:
+1. 做一个需要自定义 SQL 的 schema 改变（例如，保留现有数据）。
+1. 创建一个预迁移：
 
    ```terminal
    npx prisma migrate dev --create-only
    ```
 
-1. Modify the generated SQL file.
-1. Apply the modified SQL by running:
+1. 修改生成的 SQL 文件。
+1. 执行修改后的 SQL：
 
    ```terminal
    npx prisma migrate dev
@@ -32,14 +32,14 @@ To edit a migration file before applying it:
 
 </TopBlock>
 
-## Renaming a field
+## 重命名字段
 
-By default, renaming a field in the schema results in a migration that will:
+默认情况下，schema 重命名schema中的一个字段会导致:
 
-- `CREATE` a new column (for example, `fullname`)
-- `DROP` the existing column (for example, `name`) and the data in that column
+- `CREATE` 一新的列 (例如, `fullname`)
+- `DROP` 现有列 (for example, `name`) 和该列中的数据
 
-To actually **rename** a field and avoid data loss when you run the migration in production, you need to modify the generated migration SQL before applying it to the database. Consider the following schema fragment - the `biograpy` field is spelled wrong.
+要真正**重命名**一个字段，且在生产中运行迁移时避免数据丢失，需要在将迁移 SQL 应用到数据库之前修改生成的迁移 SQL 语句。考虑下面的 schema 片段 - `biograpy`字段是拼写错误的。
 
 ```prisma highlight=3;normal;
 model Profile {
@@ -50,9 +50,9 @@ model Profile {
 }
 ```
 
-To rename the `biograpy` field to `biography`:
+重命名 `biograpy` 字段为 `biography`:
 
-1. Rename the field in the schema:
+1. 重命名 schema 中的字段:
 
    ```prisma highlight=3;delete|4;add;
    model Profile {
@@ -64,13 +64,13 @@ To rename the `biograpy` field to `biography`:
    }
    ```
 
-1. Run the following command to create a **draft migration** that you can edit before applying to the database:
+2. 运行以下命令以创建可以在应用到数据库之前编辑的：**草稿迁移**:
 
    ```terminal
    npx prisma migrate dev --name rename-migration --create-only
    ```
 
-1. Edit the draft migration as shown, changing `DROP` / `DELETE` to a single `RENAME COLUMN`:
+3. 如图所示编辑迁移草案, 将`DROP` / `DELETE` 改为 `RENAME COLUMN`:
 
    <TabbedContent tabs={[<FileWithIcon text="Before" icon="code"/>, <FileWithIcon text="After" icon="code" />]}>
 
@@ -94,25 +94,25 @@ To rename the `biograpy` field to `biography`:
 
    </TabbedContent>
 
-1. Save and apply the migration:
+4. 保存和应用该迁移：
 
    ```terminal
    npx prisma migrate dev
    ```
 
-You can use the same technique to rename a `model` - edit the generated SQL to _rename_ the table rather than drop and re-create it.
+可以使用同样的技术来重命名一个 `model` - 编辑生成的SQL用于重命名表，而不是删除再重新创建。
 
-## Using the expand and contract pattern to evolve the schema without downtime
+## 应用 expand 和 contract 模式，在不停机的情况下改进 schema
 
-Making schema changes to existing fields, e.g., renaming a field can lead to downtime. It happens in the time frame between applying a migration that modifies an existing field, and deploying a new version of the application code which uses the modified field.
+对现有字段进行架构更改（例如，重命名字段）可能会导致停机。它发生在应用修改现有字段的迁移和部署使用修改后的字段的应用程序代码的新版本之间的时间范围内。
 
-You can prevent downtime by breaking down the steps required to alter a field into a series of discrete steps designed to introduce the change gradually. This pattern is known as the _expand and contract pattern_.
+可以将修改字段分解为一系列不连续的步骤，从而避免停机。 这种模式叫作 _expand 和 contract 模式_。
 
-The pattern involves two components: your application code accessing the database and the database schema you intend to alter.
+该模式涉及两个部分：访问数据库的应用程序代码和计划修改的数据库 schema。
 
-With the _expand and contract_ pattern, renaming the field `bio` to `biography` would look as follows with Prisma:
+通过 expand 和 contract 模式 , 重命名字段 `bio` 为 `biography` :
 
-1. Add the new `biography` field to your Prisma schema and create a migration
+1. 在 Prisma schema 增加`biography`字段并创建迁移
 
    ```prisma highlight=4;add;
    model Profile {
@@ -124,8 +124,8 @@ With the _expand and contract_ pattern, renaming the field `bio` to `biography` 
    }
    ```
 
-2. _Expand_: update the application code and write to both the `bio` and `biography` fields, but continue reading from the `bio` field, and deploy the code
-3. Create an empty migration and copy existing data from the `bio` to the `biography` field
+2. _Expand_: 更新代码并同时写入`bio` 和 `biography`字段, 但保持读取`bio`字段, 然后部署代码
+3. 创建一个空的迁移，将`bio`字段中的现有数据拷贝到`biography`字段
 
    ```terminal
    npx prisma migrate dev --name copy_biography --create-only
@@ -135,10 +135,10 @@ With the _expand and contract_ pattern, renaming the field `bio` to `biography` 
    UPDATE table SET biography = bio;
    ```
 
-4. Verify the integrity of the `biography` field in the database
-5. Update application code to **read** from the new `biography` field
-6. Update application code to **stop writing** to the `bio` field
-7. _Contract_: remove the `bio` from the Prisma schema, and create a migration to remove the `bio` field
+4. 验证数据库中`biography`字段的完整性
+5. 更新代码，**读**`biography`字段
+6. 更新代码，**停止写入**`bio`字段
+7. _Contract_: 在 Prisma schema 中删除`bio`字段, 然后创建一个迁移来移除`bio`字段
 
    ```prisma highlight=3;delete;
    model Profile {
@@ -154,17 +154,17 @@ With the _expand and contract_ pattern, renaming the field `bio` to `biography` 
    npx prisma migrate dev --name remove_bio
    ```
 
-By using this approach, you avoid potential downtime that altering existing fields that are used in the application code are prone to, and reduce the amount of coordination required between applying the migration and deploying the updated application code.
+通过使用这种方法, 降低了改变应用代码中现有字段造成的停机的几率，并减少了应用迁移和部署更新的应用代码之间所需的协作工作量。
 
-Note that this pattern is applicable in any situation involving a change to a column that has data and is in use by the application code. Examples include combining two fields into one, or transforming a `1:n` relation to a `m:n` relation.
+请注意，这种模式适用于任何涉及有某列数据改变且代码中使用到的情况。例如，将两个字段合并为一个字段，或者将 `1:n` 关系转换为 `m:n` "`关系。
 
-To learn more, check out the Data Guide article on [the expand and contact pattern](https://www.prisma.io/dataguide/types/relational/expand-and-contract-pattern)
+如需了解更多，可以查看数据指南方面的文章[expand 和 contact 模式](https://www.prisma.io/dataguide/types/relational/expand-and-contract-pattern)
 
-## Changing the direction of a 1-1 relation
+## 改变 1-1 关系的方向
 
-To change the direction of a 1-1 relation:
+改变 1-1 关系的方向:
 
-1. Make the change in the schema:
+1. 改变 schema:
 
    ```prisma
    model User {
@@ -182,7 +182,7 @@ To change the direction of a 1-1 relation:
    }
    ```
 
-1. Run the following command to create a **draft migration** that you can edit before applying to the database:
+2. 运行下面的指令，创建可以在应用到数据库前先编辑的**预迁移**:
 
    <CodeWithResult expanded={true}>
 
@@ -197,16 +197,16 @@ To change the direction of a 1-1 relation:
    <cmdResult>
 
    ```
-   ⚠️  There will be data loss when applying the migration:
+   ⚠️  应用迁移时可能会有数据损失:
 
-   • The migration will add a unique constraint covering the columns `[profileId]` on the table `User`. If there are existing duplicate values, the migration will fail.
+   • 本迁移将在 "User"表上的`[profileId]`列上添加一个唯一的约束条件。如果存在重复的值，迁移将失败。
    ```
 
    </cmdResult>
 
    </CodeWithResult>
 
-1. Edit the draft migration as shown:
+3. 如下所示，编辑预迁移:
 
   <TabbedContent tabs={[<FileWithIcon text="Before" icon="code"/>, <FileWithIcon text="After" icon="code"/>]}>
 
@@ -267,7 +267,7 @@ To change the direction of a 1-1 relation:
 
   </TabbedContent>
 
-1. Save and apply the migration:
+4. 保存并应用迁移:
 
    ```terminal
    npx prisma migrate dev

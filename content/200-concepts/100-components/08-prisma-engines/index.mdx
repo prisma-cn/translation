@@ -1,50 +1,50 @@
 ---
 title: 'Prisma engines'
 metaTitle: 'Prisma engines'
-metaDescription: 'Learn about Prisma internals and how it works "under the hood". Prisma tools are based on an engine-layer which manages the communication with the database.'
+metaDescription: '了解Prisma的内部结构以及它是如何"在引擎盖下"工作的。Prisma工具是基于引擎层来管理与数据库的通信。'
 ---
 
 <TopBlock>
 
-This page gives an overview of the Prisma internals and how it works "under the hood".
+这个页面给出了 Prisma 内部结构的概述，以及它如何“在引擎盖下”工作。
 
-Note that **this page does not contain any practical information that is relevant for _using_ Prisma**. It rather aims at providing a _mental model_ for what the Prisma toolkit _actually_ is and how the different tools that are available to developers are structured.
+相反，它旨在为 Prisma 工具包的 _实际_ 内容以及开发人员可以使用的不同工具的结构提供一个 _心智模型_。
 
-If you're new to Prisma, be sure to check out the [Quickstart](../../../../getting-started/quickstart) and [Introduction](../../overview/what-is-prisma) pages first.
+如果您是 Prisma 新手，请务必先查看[快速入门](../../../../getting-started/quickstart)和[简介页面](../../overview/what-is-prisma)。
 
 </TopBlock>
 
 ## Prisma engines
 
-At the core of each module, there typically is a [Prisma engine](https://github.com/prisma/prisma-engines) that implements the core set of functionality. Engines are implemented in [Rust](https://www.rust-lang.org/) and expose a low-level API that is used by the higher-level interfaces.
+在每个模块的核心，通常都有一个实现核心功能集的[Prisma 引擎](https://github.com/prisma/prisma-engines)，引擎是在[Rust](https://www.rust-lang.org/)中实现，并公开了一个由高级接口使用的低级 API。
 
-A Prisma engine is the **direct interface to the database**, any higher-level interfaces always communicate with the database _through_ the engine-layer.
+Prisma 引擎是 **到数据库的直接接口**，任何更高级别的接口总是 _通过_ 引擎层与数据库通信。
 
-As an example, Prisma Client connects to the [query engine](../../components/prisma-engines/query-engine) in order to read and write data in a database:
+例如，Prisma Client 连接到[查询引擎](../../components/prisma-engines/query-engine)，以便在数据库中读写数据:
 
 ![Prisma engine](https://res.cloudinary.com/prismaio/image/upload/v1628764928/docs/I8do25A_ynswyd.png)
 
-### Using custom engine binaries
+### 使用自定义引擎二进制文件
 
-By default, all binaries are automatically downloaded into the `node_modules/@prisma/engines` folder when you install or update `prisma`, the Prisma CLI package. (The [query engine](../../components/prisma-engines/query-engine) is also copied to the generated Prisma Client when you generate.) You might want to use a [custom binary](https://github.com/prisma/prisma-engines) file if:
+默认情况下，安装或更新 `prisma` 时，所有二进制文件都会自动下载到`node_module/@prisma/engines`文件夹中。Prisma CLI 包，(生成时，[query engine](../../components/prisma-engines/query-engine)也会复制到生成的 Prisma Client)。在以下情况下，您可能希望使用[自定义二进制](https://github.com/prisma/prisma-engines)文件：
 
-- Automated download of binaries is not possible.
-- You have created your own engine binary (for testing, or for an OS that is not officially supported).
+- 无法自动下载二进制文件
+- 您已经创建了自己的引擎二进制文件 (用于测试，或者用于官方不支持的操作系统)
 
-Use the following environment variables to specify custom locations for your binaries:
+使用以下环境变量为二进制文件指定自定义位置:
 
 - [`PRISMA_QUERY_ENGINE_BINARY`](../../../../reference/api-reference/environment-variables-reference/#prisma_query_engine_binary) <span class="api"></span> (Query engine)
 - [`PRISMA_MIGRATION_ENGINE_BINARY`](../../../../reference/api-reference/environment-variables-reference/#prisma_migration_engine_binary) <span class="api"></span> (Migration engine)
 - [`PRISMA_INTROSPECTION_ENGINE_BINARY`](../../../../reference/api-reference/environment-variables-reference/#prisma_introspection_engine_binary) <span class="api"></span> (Introspection engine)
 - [`PRISMA_FMT_BINARY`](../../../../reference/api-reference/environment-variables-reference/#prisma_fmt_binary) <span class="api"></span> (for `npx prisma format`)
 
-#### Setting the environment variable
+#### 设置环境变量
 
-You can define environment variables globally on your machine or in the `.env` file.
+您可以在您的计算机定义上全局环境变量，也可以在 `.env` 文件中定义环境变量。
 
-##### a) The `.env` file
+##### a) `.env` 文件
 
-Add the environment variable to the [`.env` file](../../../../guides/development-environment/environment-variables#using-env-files).
+将环境变量添加到[`.env`文件](../../../../guides/development-environment/environment-variables#using-env-files)。
 
 <TabbedContent
   tabs={[<FileWithIcon defaultKey="unix" text="Unix, macOS" icon="code"/>, <FileWithIcon defaultKey="windows" text="Windows" icon="display"/>]}
@@ -67,11 +67,11 @@ PRISMA_QUERY_ENGINE_BINARY=c:\custom\path\my-query-engine-binary.exe
 </tab>
 </TabbedContent>
 
-> **Note**: It is possible to [use an `.env` file in a location outside the `prisma` folder](../../../../guides/development-environment/environment-variables/managing-env-files-and-setting-variables).
+> **请注意**: 可以[在 `prisma` 文件夹之外的位置使用 `.env` 文件](../../../../guides/development-environment/environment-variables/managing-env-files-and-setting-variables)。
 
-##### b) Global environment variable
+##### b) 全局环境变量
 
-Run the following command to set the environment variable globally (in this example, `PRISMA_QUERY_ENGINE_BINARY`):
+运行以下命令在全局中设置环境变量 (在本例中为`PRISMA_QUERY_ENGINE_BINARY`)：
 
 <TabbedContent
   tabs={[<FileWithIcon defaultKey="unix" text="Unix, macOS" icon="code"/>, <FileWithIcon defaultKey="windows" text="Windows" icon="display"/>]}
@@ -96,15 +96,15 @@ set PRISMA_QUERY_ENGINE_BINARY=c:\custom\my-query-engine-windows.exe
 
 </TabbedContent>
 
-#### Test your environment variable
+#### 测试环境变量
 
-Run the following command to output the paths to all binaries:
+执行如下命令，输出所有二进制文件的路径:
 
 ```terminal
 npx prisma -v
 ```
 
-The output shows that the query engine path comes from the `PRISMA_QUERY_ENGINE_BINARY` environment variable:
+会输出显示查询引擎的路径，它来自 `PRISMA_QUERY_ENGINE_BINARY` 环境变量:
 
 <TabbedContent
   tabs={[<FileWithIcon defaultKey="unix" text="Unix, macOS" icon="code"/>, <FileWithIcon defaultKey="windows" text="Windows" icon="display"/>]}
@@ -136,10 +136,10 @@ Format Binary        : prisma-fmt d6ff7119649922b84e413b3b69660e2f49e2ddf3 (at c
 
 </TabbedContent>
 
-### Hosting binaries
+### 托管二进制文件
 
-The [`PRISMA_BINARIES_MIRROR`](../../../reference/api-reference/environment-variables-reference#prisma_binaries_mirror) <span class="api"></span> environment variable allows you to host a binary via a private server, AWS bucket or other cloud storage.
-This can be useful if you have a custom OS which requires you to use your own custom built binaries.
+[`PRISMA_BINARIES_MIRROR`](../../../reference/api-reference/environment-variables-reference#prisma_binaries_mirror) <span class="api"></span> 环境变量允许您通过专有服务器、AWS 存储桶或其他云存储来托管二进制文件。
+如果您的自定义操作系统要求您使用自己自定义构建的二进制文件，这将非常有用。
 
 ```terminal
 PRISMA_BINARIES_MIRROR=https://my-aws-bucket

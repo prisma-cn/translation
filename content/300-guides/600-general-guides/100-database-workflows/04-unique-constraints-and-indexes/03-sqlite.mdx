@@ -1,54 +1,55 @@
 ---
-title: 'Unique constraints and indexes (SQLite)'
-metaTitle: 'Unique constraints and indexes with Prisma and SQLite'
-metaDescription: 'Learn how to configure unique constraints and indexes with Prisma and SQLite by following the step-by-step instructions in this practical guide.'
+title: '唯一约束和索引 (SQLite)'
+metaTitle: 'Prisma 和 SQLite 的唯一约束和索引'
+metaDescription: '按照本指南，一步一步学习如何使用 Prisma 和 SQLite 配置唯一约束和索引。'
 ---
 
 <TopBlock>
 
-This page explains how to configure a unique [constraint](https://www.sqlite.org/lang_createtable.html#uniqueconst) / [index](https://www.sqlite.org/lang_createindex.html#uniqueidx) in your SQLite database. Constraints and indexes are very similar in SQLite: When adding a unique constraint to one or more columns, SQLite will always create a corresponding unique index.
+本文解释如何在 SQLite 数据库中配置唯一[约束](https://www.sqlite.org/lang_createtable.html#uniqueconst) / [index](https://www.sqlite.org/lang_createindex.html#uniqueidx)。SQLite 中的约束和索引非常相似: 当向一个或更多列添加唯一约束时，SQLite 始终创建相应的唯一索引
 
-In this guide, you'll always configure unique constraints (which will automatically configure unique indexes as well).
 
-Since [SQLite does not support `ALTER TABLE` statements with the `ADD CONSTRAINT` operation](https://www.sqlite.org/omitted.html), constraints can only be added when you create the table initially (using `CREATE TABLE`). You can configure unique constraints either on a **single column** or on **multiple columns**. This guide covers both of the supported combinations.
+本指南将配置唯一约束（也会自动配置唯一索引）。
 
-At the end of the guide, you'll introspect your database to reflect the unique constraint in the Prisma schema, then you'll generate Prisma Client and write a simple Node.js script to validate the constraints.
+[SQLite 不支持带有 `ADD CONSTRAINT` 操作的 `ALTER TABLE` 语句](https://www.sqlite.org/omitted.html)，因此只能在最初创建表时添加约束（使用 `CREATE TABLE`）。 可以在 **单列** 或 **多列** 上配置唯一约束。 本指南涵盖了两种受支持的组合。
+
+在本指南最后，将检查数据库以反映 Prisma 模式中的唯一约束，然后您将生成 Prisma 客户端并编写一个简单的 Node.js 脚本来验证约束。
 
 </TopBlock>
 
-## Prerequisites
+## 先决条件
 
-In order to follow this guide, you need:
+需要准备:
 
-- the [`sqlite3`](https://www.sqlite.org/cli.html) command line client for SQLite
-- [Node.js](https://nodejs.org/) installed on your machine
+- SQLite [`sqlite3`](https://www.sqlite.org/cli.html) 命令行客户端
+- 安装 [Node.js](https://nodejs.org/)
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-Start by creating a project directory where you can put the files you'll create throughout this guide:
+先创建一个项目目录，在其中放置创建的文件：
 
 ```
 mkdir unique-demo
 cd unique-demo
 ```
 
-Afterwards, execute the following command in your terminal to create a new database called `UniqueDemo`:
+在终端中执行以下命令创建名为 `UniqueDemo` 的新数据库：
 
 ```
 sqlite3 UniqueDemo.db
 ```
 
-You can validate that the database was created by running the `.tables` command which lists all tables (_relations_) in your database (right now there are none):
+运行 `.tables` 命令验证数据库是否已创建，该命令列出了数据库中的所有表（_关系_）（目前没有）：
 
 ```
 sqlite3 UniqueDemo.db '.tables'
 ```
 
-## 2. Create a table with a single-column unique constraint and index
+## 2. 创建具有单列唯一约束和索引的表
 
-In this section, you'll **create a new table with a single-column unique constraint** in the `UniqueDemo` database. As mentioned above, this means that SQLite automatically adds a unique index to the same column.
+在 `UniqueDemo` 数据库中**创建一个具有单列唯一约束的新表**。 SQLite 会自动为同一列添加唯一索引。
 
-Create a new file named `single-column-unique.sql` and add the following code to it:
+创建一个名为 `single-column-unique.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE "User" (
@@ -57,24 +58,24 @@ CREATE TABLE "User" (
 );
 ```
 
-Now run the SQL statement against your database to create a new table called `User`:
+运行 SQL 语句创建一个名为 `User` 的新表：
 
 ```
 sqlite3 UniqueDemo.db < single-column-unique.sql
 ```
 
-Congratulations, you just created a table called `User` in the database. The table has an `id` column and a column called `email` on which you defined a unique index. SQLite also automatically added a corresponding unique index (do **not** run this code):
+在数据库中创建了一个名为 `User` 的表。 该表有一个 `id` 和一个名为 `email` 的列，并定义了一个唯一索引。 SQLite 还自动添加了相应的唯一索引（**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX "sqlite_autoindex_User_1" ON "User"("email");
 ```
 
-<details><summary>Alternative: Define the constraint as a <strong>table constraint</strong></summary>
+<details><summary>替代方案：将约束定义为 <strong>表约束</strong></summary>
 <br />
 
-In the code above, you created the unique constraint as a **column constraint**. Alternatively, you can define it as a **table constraint**. There's no practical difference between the two, the alternative is just added for completeness.
+将唯一约束创建为**列约束**。 或者，可以将其定义为**表约束**。 两者之间没有实际区别，只是为了完整性而添加了替代方案。
 
-To add the unique constraint as a table constraint, you need to adjust your SQL statement to look as follows:
+要将唯一约束添加为表约束，您需要调整 SQL 语句如下：
 
 ```sql
 CREATE TABLE "User" (
@@ -86,11 +87,11 @@ CREATE TABLE "User" (
 
 </details>
 
-## 3. Create a table with a multi-column unique constraint and index
+## 3. 创建具有多列唯一约束和索引的表
 
-Next, you'll **create a table with a multi-column unique constraint**. This also adds a unique index to the columns with the constraint.
+**创建一个具有多列唯一约束的表**。 会向具有约束的列添加唯一索引。
 
-Create a new file named `multi-column-unique.sql` and add the following code to it:
+创建名为 `multi-column-unique.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE "AnotherUser" (
@@ -101,37 +102,38 @@ CREATE TABLE "AnotherUser" (
 );
 ```
 
-Now run the SQL statement against your database to create a new table called `AnotherUser`:
+对数据库运行 SQL 语句以创建名为 `AnotherUser` 的新表：
 
 ```
 sqlite3 UniqueDemo.db < multi-column-unique.sql
 ```
 
-Congratulations, you just created a table called `AnotherUser` in the database. The table has an `id` column and two column called `firstName` and `lastName` on which you defined a unique index. SQLite also automatically added a corresponding unique index (do **not** run this code):
+该表有列 `id`、`firstName` 和 `lastName`，其中定义了唯一索引。 SQLite 还自动添加了相应的唯一索引（请**不要**运行此代码）：
+
 
 ```sql
 CREATE UNIQUE INDEX "sqlite_autoindex_AnotherUser_1" ON "AnotherUser"("firstName", "lastName");
 ```
 
-## 4. Introspect your database with Prisma
+## 4. 使用 Prisma 内省数据库
 
-In the previous sections, you created two tables with unique constraints:
+在前面部分，创建了 2 个具有唯一约束的表：
 
-- The table `User` has a singe-column unique constraint and index on the `email` column
-- The table `AnotherUser` has a multi-column unique constraint and index on the `firstName` and `lastName` columns
+- 表 `User` 在 `email` 列上有一个单列唯一约束和索引
+- 表 `AnotherUser` 在 `firstName` 和 `lastName` 列上有一个多列唯一约束和索引
 
-In this section you'll introspect your database to generate the Prisma models for these tables.
+在本节中，将检查数据库以生成这些表的 Prisma 模型。
 
-To start, set up a new Node.js project and add the `prisma` CLI as a development dependency:
+首先，添加一个新的 Node.js 项目并添加 Prisma CLI 作为开发依赖项：
 
 ```
 npm init -y
 npm install prisma --save-dev
 ```
 
-In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema.
+为了内省数据库，要告诉 Prisma 如何连接到它。 可以通过在 Prisma schema 中配置 `datasource` 来实现。
 
-Create a new file named `schema.prisma` and add the following code to it:
+创建新文件 `schema.prisma`， 添加代码：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -140,21 +142,21 @@ datasource db {
 }
 ```
 
-The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://github.com/motdotla/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
+数据库连接 URL 是通过环境变量设置的。 Prisma CLI 自动支持 [`dotenv`](https://github.com/motdotla/dotenv) 格式，该格式会自动选取 `.env` 文件中定义的环境变量。
 
-Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+创建新文件 `.env` 并将数据库连接 URL 设置为 `DATABASE_URL` 环境变量：
 
 ```
 DATABASE_URL=file:UniqueDemo.db
 ```
 
-With both the `schema.prisma` and `.env` files in place, you can run Prisma's introspection with the following command:
+有了 `schema.prisma` 和 `.env` 文件，可以使用以下命令运行 Prisma 的自省：
 
 ```
 npx prisma db pull
 ```
 
-This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+此命令会检查数据库，并为每个表基于 Prisma schema 添加一个 Prisma 模型：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -176,11 +178,11 @@ model AnotherUser {
 }
 ```
 
-## 5. Generate Prisma Client
+## 5. 生成 Prisma Client
 
-To validate whether the unique constraints work, you'll now generate Prisma Client and send a few sample queries to the database.
+为了验证唯一约束是否有效，生成 Prisma Client 并向数据库发送一些示例查询。
 
-First, add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+首先，在 Prisma schema 中添加一个 `generator` 块（通常添加在 `datasource` 块的下面）：
 
 ```prisma file=schema.prisma
 generator client {
@@ -188,17 +190,17 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行命令安装和生成 Prisma Client：
 
 ```
 npx prisma generate
 ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在可以使用 Prisma Client 在 Node.js 中发送数据库查询。
 
-## 6. Validate the unique constraints in a Node.js script
+## 6. 验证 Node.js 脚本中的唯一约束
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为 `index.js` 的新文件，并添加代码：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -223,15 +225,15 @@ async function main() {
 main()
 ```
 
-In this code, you're creating two users with the same `email`, so you're violating the unique constraint that's configured on the `User` table.
+使用相同的 `email` 创建了两个用户，因此违反了在 `User` 表上配置的唯一约束。
 
-Run the code with this command:
+执行以下代码：
 
 ```
 node index.js
 ```
 
-After `newUser1` gets printed to the console successfully, the script throws an error indicating that the unique constraint on `email` is violated:
+`newUser1` 成功打印到控制台后，脚本会抛出一个错误，表明违反了 `email` 的唯一约束：
 
 ```
 { email: 'alice@prisma.io', id: 1 }
@@ -246,7 +248,7 @@ Invalid `newUser2 = await prisma.user.create()` invocation in
 → 12 const newUser2 = await prisma.user.create(Unique constraint failed on the fields: (`email`)
 ```
 
-To validate the multi-column unique constraint, replace the code in `index.js` with the following:
+要验证多列唯一约束，将 `index.js` 中的代码替换为以下内容：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -273,13 +275,13 @@ async function main() {
 main()
 ```
 
-Run the script again with this command:
+执行以下代码：
 
 ```
 node index.js
 ```
 
-This time, you'll see a similar error message indicating the unique constraint on `firstName` and `lastName` was violated:
+这一次，将看到类似的错误消息，表明违反了对 `firstName` 和 `lastName` 的唯一约束：
 
 ```
 { firstName: 'Alice', id: 1, lastName: 'Smith' }
@@ -294,7 +296,7 @@ Invalid `newUser2 = await prisma.anotherUser.create()` invocation in
 → 13 const newUser2 = await prisma.anotherUser.create(Unique constraint failed on the fields: (`firstName`,`lastName`)
 ```
 
-Note that you can add `NULL` values for these columns without violating the constraints. For example, the following code snippet will **not** fail:
+注意，可以在不违反约束的情况下为这些列添加 `NULL` 值。 例如，以下代码片段将**不会**失败：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -311,4 +313,4 @@ async function main() {
 main()
 ```
 
-It will create two new records where the `email` is set to `NULL` in the database.
+在数据库中创建了两个新记录，其中 `email` 设置为 `NULL`。

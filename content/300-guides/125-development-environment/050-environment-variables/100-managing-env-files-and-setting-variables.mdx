@@ -1,39 +1,39 @@
 ---
-title: 'Managing .env files and setting variables'
-metaTitle: 'Managing .env files and setting variables'
-metaDescription: 'Learn how to manage .env files and set environment variables'
+title: '管理.env文件和设置变量'
+metaTitle: '管理.env文件和设置变量'
+metaDescription: '了解如何管理.env文件和设置变量'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-[Prisma creates an `.env` file for you upon installation](./#how-does-prisma-use-environment-variables). You are not limited to using that file, some other options include:
+[Prisma 在安装时为你创建一个`.env`文件](./#how-does-prisma-use-environment-variables). 你并不限于使用该文件，其他一些选择包括:
 
-- Do not use `.env` files and let Prisma use the system environment variables directly
-- Use `.env` files from a location that the Prisma CLI does not check [by default](./#using-env-files)
-- [Use multiple `.env` file](./using-multiple-env-files)
+- 不使用.env 文件，让 Prisma 直接使用系统环境变量
+- 使用 Prisma CLI[默认](./#using-env-files)不检查的某个位置的`.env`文件
+- [使用多个`.env`文件](./using-multiple-env-files)
 
 </TopBlock>
 
-## Using the system environment directly
+## 直接使用系统环境
 
-Because Prisma reads from the system's environment when looking for environment variables, it's possible to skip using `.env` completely and create them manually on your local system.
+因为 Prisma 在寻找环境变量时从系统的环境中读取，所以可以完全跳过使用`.env`，在你的本地系统上手动创建它们。
 
 <Admonition type="info">
 
-The following examples will use setting the `DATABASE_URL` environment variable which is often used for the database connection URL.
+下面的例子将使用设置`DATABASE_URL`环境变量，它通常用于数据库连接 URL。
 
 </Admonition>
 
-### Manually set an environment variable on a Mac/Linux system
+### 在 Mac/Linux 系统上手动设置一个环境变量
 
-From a terminal on a Unix machine (Mac/Linux), you export the variable as a key value pair.
+在 Unix 机器（Mac/Linux）上的终端，你将变量导出为一个键值对。
 
 ```terminal
 export DATABASE_URL=postgresql://test:test@localhost:5432/test?schema=public
 ```
 
-Then check that it has been successfully set using `printenv`:
+然后用`printenv`检查它是否已经成功设置。
 
 <CodeWithResult expanded={true}>
 
@@ -55,9 +55,9 @@ postgresql://test:test@localhost:5432/test?schema=public
 
 </CodeWithResult>
 
-### Manually set an environment variable on a Windows system
+### 在 Windows 系统上手动设置一个环境变量
 
-The following examples illustrate how to set the environment variable (for the current user) using both Command Prompt (`cmd.exe`) and PowerShell, depending on your preference.
+下面的例子说明了如何使用命令提示符（`cmd.exe`）和`PowerShell`来设置环境变量（针对当前用户），这取决于你的偏好。
 
 <TabbedContent tabs={[<FileWithIcon text="Command Prompt" icon="display"/>, <FileWithIcon text="Powershell" icon="display"/>]}>
 
@@ -79,7 +79,7 @@ set DATABASE_URL="postgresql://test:test@localhost:5432/test?schema=public"
 
 </TabbedContent>
 
-Then check that it has been successfully set:
+然后检查它是否已经成功设置:
 
 <TabbedContent tabs={[<FileWithIcon text="Command Prompt" icon="display"/>, <FileWithIcon text="Powershell" icon="display"/>]}>
 
@@ -101,48 +101,48 @@ Get-ChildItem Env:DATABASE_URL
 
 </TabbedContent>
 
-## Manage <inlinecode>.env</inlinecode> files manually
+## 手动管理 <inlinecode>.env</inlinecode> 文件
 
-The [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli) and [`dotenv`](https://www.npmjs.com/package/dotenv) packages can be used if you want to manage your `.env`files manually.
+如果你想手动管理你的`.env`文件，可以使用[`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli)和[`dotenv`](https://www.npmjs.com/package/dotenv)包。
 
-They allow you to:
+它们允许你:
 
-- [Use multiple `.env` files](./using-multiple-env-files)
-- Use `.env` files from a location that the Prisma CLI does not check [by default](./#using-env-files)
+- [使用多个`.env`文件](./using-multiple-env-files)
+- 使用 Prisma CLI[默认](./#using-env-files)不检查的位置的.env 文件
 
-### Using <inlinecode>dotenv-cli</inlinecode> via command line
+### 通过命令行使用 <inlinecode>dotenv-cli</inlinecode>
 
-The following steps show how to use the `dotenv-cli` package to use an alternative file to contain environment variables than the [default](./#using-env-files) created by Prisma, which is then used to run Introspection.
+下面的步骤显示了如何使用`dotenv-cli`包来使用一个替代文件来包含环境变量，而不是由 Prisma 创建的[默认文件](./#using-env-files)
 
-1.  Install [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli):
+1.  安装 [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli):
 
     ```
     npm install -g dotenv-cli
     ```
 
-2.  Create a file - for example, `.env3` - in your project's root folder.
+2.  在你项目的根目录下创建一个文件, 例如`.env3`
 
-3.  To use the `.env3` file, you can use `dotenv` when you run any Prisma command and specify which `.env` file to use. The following example uses a file named `.env3`:
+3.  为了使用`.env3`文件，你可以在运行任何 Prisma 命令时使用`dotenv`，并指定要使用哪个`.env`文件。下面的例子使用一个名为`.env3`的文件:
 
     ```
     dotenv -e .env3 -- npx prisma db pull
     ```
 
-> **Note:** dotenv doesn't pass the flags to the Prisma command by default, this is why the command includes two dashes `--` before `prisma`, making it possible to use flags like `--force`, `--schema` or `--preview-feature`.
+> **Note:** `dotenv` 默认情况下不会将标记传递给 Prisma 命令，这就是为什么该命令包含两个破折号 -- 在 `Prisma` 之前，从而可以使用 `` --force`、 ``--schema` 或 ``--preview-feature` 等标志
 
-### Using <inlinecode>dotenv</inlinecode> via application code
+### 通过应用程序代码使用 <inlinecode>dotenv</inlinecode>
 
-The following steps show how to use the `dotenv` package to reference an alternative environment file in your project's code.
+下面的步骤展示了如何使用`dotenv`包在你项目的代码中引用一个替代的环境文件：
 
-1.  Add [`dotenv`](https://www.npmjs.com/package/dotenv) to your project:
+1.  将 [`dotenv`](https://www.npmjs.com/package/dotenv)添加到您的项目中:
 
     ```
     npm install dotenv
     ```
 
-2.  Create a file - for example, `.env3` - in your project's root folder.
+2.  在你项目的根目录下创建一个文件, 例如，`.env3`
 
-3.  To use the `.env3` file, include a reference to `dotenv` at the top of your project's entry file.
+3.  要使用`.env3`文件，在你项目的入口文件的顶部导入 dotenv 的引用
 
     ```ts
     import { config } from 'dotenv'

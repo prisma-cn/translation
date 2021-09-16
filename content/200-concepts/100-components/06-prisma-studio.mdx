@@ -1,32 +1,32 @@
 ---
 title: 'Prisma Studio'
-metaTitle: 'Prisma Studio (Reference)'
-metaDescription: 'Prisma Studio is a visual database editor.'
+metaTitle: 'Prisma Studio (参考)'
+metaDescription: 'Prisma Studio是一个可视化的数据库编辑器。'
 experimental: false
 ---
 
 <TopBlock>
 
-Prisma Studio is a visual editor for the data in your database. Note that Prisma Studio is not open source but you can still create issues in the [`prisma/studio`](https://github.com/prisma/studio) repo.
+Prisma Studio 是数据库中数据的可视化编辑器。请注意，Prisma Studio 不是开源的，但是您仍可以在[`prisma/studio`](https://github.com/prisma/studio) 仓库中创建问题。
 
-You can run it with two ways:
+您可以通过两种方式运行它:
 
-1. Run `$ npx prisma studio` in your terminal.
-2. Install [the desktop app](https://github.com/prisma/studio/releases) from the installers. Windows, macOS and Linux are supported.
+1. 在终端中运行 `$npx Prisma studio`。
+2. 从安装程序中安装[桌面应用程序](https://github.com/prisma/studio/releases)。支持 Windows、MacOS 和 Linux。
 
 </TopBlock>
 
-## Troubleshooting
+## 故障排除
 
-### Terminal: Failed to run script / Error in Prisma Client request
+### 终端: 无法运行脚本 / Prisma Client 请求中出现错误
 
-Caching issues may cause Prisma Studio to use an older version of the query engine. You may see the following error:
+缓存问题可能会导致 Prisma Studio 使用较旧版本的查询引擎。您可能会看到以下错误:
 
 ```
 Error in request:  PrismaClientKnownRequestError: Failed to validate the query Error occurred during query validation & transformation
 ```
 
-To resolve, delete the following folders:
+要解决此问题，请删除以下文件夹:
 
-- `~/.cache/prisma` on macOS and Linux
-- `%AppData%/Prisma/Studio` on Windows
+- MacOS 和 Linux 上的 `~/.cache/prisma`
+- Windows 上的 `%AppData%/Prisma/Studio`

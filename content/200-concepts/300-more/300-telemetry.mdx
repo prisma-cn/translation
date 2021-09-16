@@ -1,74 +1,74 @@
 ---
 title: 'Telemetry'
 metaTitle: 'Telemetry (Reference)'
-metaDescription: 'This page explains how Prisma uses telemetry features to improve the Prisma developer experience.'
+metaDescription: '本文解释了 Prisma 如何通过数据收集来改善 Prisma 的开发体验'
 ---
 
 ## Overview
 
-The term **telemetry** refers to the collection of certain usage data to help _improve the quality of a piece of software_. Prisma 2 uses telemetry in two contexts:
+术语 **telemetry** 是指收集某些使用数据，以帮助 _提高软件的质量_。Prisma 2 在以下两种情况使用 telemetry。
 
-- collecting usage data
-- submitting error reports
+- 收集使用数据
+- 提交错误报告
 
-This page describes the overall telemetry approach for Prisma 2, what kind of data is collected and how to opt-out of data collection.
+本文描述了 Prisma 2 的整体 telemetry 方法，收集什么样的数据以及如何禁用数据收集。
 
-## Why does Prisma collect metrics?
+## 为什么 Prisma 要收集数据指标？
 
-Telemetry helps us better understand _how many users_ are using our products and _how often_ they are using our products. Unlike many telemetry services, our telemetry implementation is intentionally limited in scope and is actually useful for the developer:
+Telemetry 帮助我们更好的了解 _有多少用户_ 在使用我们的产品，以及他们使用我们产品的频率如何。与许多 telemetry 服务不同的是，我们的 telemetry 实现是有限制范围的，并且对开发者来说实际上是有用的。
 
-- **Limited in scope**: We use telemetry to answer one question: how many monthly active developers are using Prisma?
-- **Provides value**: Our telemetry service also checks for version updates and offers security notices.
+- **范围有限**：我们使用 telemetry 来回答一个问题：有多少月活开发者在使用 Prisma ？
+- **提供价值**：我们的 telemetry 服务还检查版本更新并提供安全通知。
 
-## When is data collected?
+## 何时收集数据？
 
-Data is collected in two scenarios that are described below.
+数据会在以下两种情况下进行收集。
 
-### Usage data
+### 使用数据
 
-Invocations of the `prisma` CLI and general usage of Studio results in data being sent to the telemetry server at https://checkpoint.prisma.io. Note that:
+调用 `prisma` CLI 和 使用 Studio 一般会导致数据被发送到 telemetry 服务器（https://checkpoint.prisma.io）。
 
-- Information is only sent every 12 hours (sending is paused for 12 hours after any invocation)
-- The data does **not** include your schema or the data in your database
+- 信息每 12 小时发送一次（在任何调用后，发送将暂停 12 小时）
+- 这些数据不包含你的 schema 或你数据库中的数据。
 
-Here is an overview of the data that's being submitted:
+下面是会被提交的数据的概述：
 
-|          Field | Attributes | Description                                                                            |
-| -------------: | :--------: | :------------------------------------------------------------------------------------- |
-|      `product` |  _string_  | Name of the product (e.g. `prisma`)                                                    |
-|      `version` |  _string_  | Currently installed version of the product (e.g. `1.0.0-rc0`)                          |
-|         `arch` |  _string_  | Client's operating system architecture (e.g. `amd64`).                                 |
-|           `os` |  _string_  | Client's operating system (e.g. `darwin`).                                             |
-| `node_version` |  _string_  | Client's node version (e.g. `v12.12.0`).                                               |
-|    `signature` |  _string_  | Random, non-identifiable signature UUID (e.g. `91b014df3-9dda-4a27-a8a7-15474fd899f8`) |
-|   `user_agent` |  _string_  | User agent of the checkpoint client (e.g. `prisma/js-checkpoint`)                      |
-|    `timestamp` |  _string_  | When the request was made in RFC3339 format (e.g. `2019-12-12T17:45:56Z`)              |
+|           字段 |   属性   | 描述                                                                  |
+| -------------: | :------: | :-------------------------------------------------------------------- |
+|      `product` | _string_ | 产品名称 (例如：`prisma`)                                             |
+|      `version` | _string_ | 产品当前的版本号 (例如： `1.0.0-rc0`)                                 |
+|         `arch` | _string_ | 客户的操作系统架构 (例如：`amd64`).                                   |
+|           `os` | _string_ | 客户的操作系统 (例如：`darwin`).                                      |
+| `node_version` | _string_ | 客户的 node 版本 (例如：`v12.12.0`).                                  |
+|    `signature` | _string_ | 随机、不可识别的 UUID (例如：`91b014df3-9dda-4a27-a8a7-15474fd899f8`) |
+|   `user_agent` | _string_ | User agent of the checkpoint client (e.g. `prisma/js-checkpoint`)     |
+|    `timestamp` | _string_ | 请求发送时间，使用 RFC3339 格式 (e.g. `2019-12-12T17:45:56Z`)         |
 
-You can opt-out of this behavior by setting the `CHECKPOINT_DISABLE` environment variable to `1`, e.g.:
-
-```terminal
-export CHECKPOINT_DISABLE=1
-```
-
-### Error reporting
-
-During the Preview period, data is potentially collected upon:
-
-- a crash in the CLI
-- a crash or an unexpected error in Prisma Studio
-
-Before an error report is submitted, there will _always_ be a prompt asking you to confirm or deny the submission of the error report! Error reports are never submitted without your explicit consent!
-
-## How to opt-out of data collection?
-
-### Usage data
-
-You can opt-out of usage data collection by setting the `CHECKPOINT_DISABLE` environment variable to `1`, e.g.:
+你可以通过设置 `CHECKPOINT_DISABLE` 环境变量值为 `1` 来禁用此行为，例如：
 
 ```terminal
 export CHECKPOINT_DISABLE=1
 ```
 
-### Error reporting
+### 错误报告
 
-You can opt-out of data collection by responding to the interactive prompt with _no_.
+在预览期间，可能会收集以下数据：
+
+- CLI 崩溃
+- Prisma Studio 崩溃或出现意外错误
+
+在提交错误报告之前，总会有一个提示，要求您确认或拒绝提交！如果没有您的明确同意，错误报告永远不会被提交。
+
+## 如何禁用数据收集？
+
+### 使用数据
+
+你可以通过设置 `CHECKPOINT_DISABLE` 环境变量值为 `1` 来禁用使用数据收集，例如：
+
+```terminal
+export CHECKPOINT_DISABLE=1
+```
+
+### 错误报告
+
+你可以通过在互通提示中回答 _no_ 来选择不接受数据收集。

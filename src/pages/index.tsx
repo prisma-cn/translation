@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Layout from '../components/layout'
 import styled from 'styled-components'
-import background from 'images/home-bg.svg'
 import listDot from 'images/list-dot.png'
 import { BookOpen, Package, Database, Menu, ArrowRight, ChevronsRight } from 'react-feather'
 import { graphql, useStaticQuery } from 'gatsby'
@@ -29,7 +28,7 @@ const Summary = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: url(${background}) center -150px no-repeat;
+  background: url("/home-bg.svg") center -150px no-repeat;
   h1 {
     font-weight: bold;
     font-family: ${(p) => p.theme.fonts.display};
@@ -308,14 +307,16 @@ const Homepage = () => {
     <Layout homePage={true}>
       <SEO title={title} description={description} homepage />
       <Summary>
-        <h1>Prisma Documentation</h1>
+        <h1>Prisma 中文文档</h1>
+        <NormalPara>下一代 Node.js、TypeScript、Go 的数据库 ORM</NormalPara>
+        <NormalPara>Prisma是一个开源的数据库工具链项目，帮助开发人员更快地构建应用程序并减少错误，支持PostgreSQL、MySQL、MongoDB、SQL Server和SQLite。</NormalPara>
         <NormalPara>
-          Choose one of our{' '}
-          <Link to={SummaryLinkData.gettingStarted}>getting started tutorials</Link> or explore the{' '}
-          <Link to={SummaryLinkData.readyToRun}>ready-to-run examples on GitHub</Link>. Join our
-          thriving community on <Link to={SummaryLinkData.slack}>Slack</Link> and{' '}
-          <Link to={SummaryLinkData.git}>GitHub</Link> for help and ideas.
+          选择一个{' '}
+          <Link to={SummaryLinkData.gettingStarted}>快速开始教程</Link> 或查看{' '}
+          <a target="_blank" href={SummaryLinkData.readyToRun}>GitHub上已经准备好的示例项目</a>。 加入我们的社区 <Link to={'community'}>微信群</Link> 和{' '}
+          <a target="_blank" href={SummaryLinkData.git}>GitHub</a> 寻求帮助和建议。
         </NormalPara>
+        <NormalPara><a target="_blank" href={'https://prisma.io'}>查看英文官网</a> | <a target="_blank" href={'https://cloud.prisma.io'}>使用Prisma云</a></NormalPara>
         <SummaryLinks>
           {SummaryLinkData.buttons.map((slink: any, index: number) =>
             slink.special ? (
@@ -338,13 +339,13 @@ const Homepage = () => {
       <QuickLinks>
         <GenaralLinks>
           {GeneralLinkData.map((generalLink: any, index: number) => (
-            <GeneralLink>
+            <GeneralLink key={index}>
               <IconHolder>{icons[generalLink.icon]}</IconHolder>
               <div>
                 <CapTitle>{generalLink.categoryName}</CapTitle>
                 <List>
-                  {generalLink.links.map((link: any) => (
-                    <li key={index}>
+                  {generalLink.links.map((link: any,lkey:any) => (
+                    <li key={lkey}>
                       <Link to={link.url}>
                         <span className={`${link.codeBlock ? 'inline-code' : ''}`}>
                           {link.text}
@@ -358,7 +359,7 @@ const Homepage = () => {
           ))}
         </GenaralLinks>
         <Space height={80} />
-        <SubHeading>Guides</SubHeading>
+        <SubHeading>指南</SubHeading>
         <NormalPara>{GuideText}</NormalPara>
         <Row>
           {GuideLinkData.map((gLinkData: any, index: number) => (
@@ -379,7 +380,7 @@ const Homepage = () => {
           ))}
         </Row>
         <Space height={80} />
-        <SubHeading>Reference</SubHeading>
+        <SubHeading>参考文档</SubHeading>
         <NormalPara>{ReferenceText}</NormalPara>
         <Row>
           {ReferenceLinkData.map((rLinkData: any, index: number) => (
@@ -387,7 +388,7 @@ const Homepage = () => {
               <span className="icon">{icons[rLinkData.icon]}</span>
               <Space height={16} />
               <ListTitle>
-                <Link href={rLinkData.mainUrl}>
+                <Link to={rLinkData.mainUrl}>
                   {rLinkData.categoryName} &nbsp;
                   <ArrowRight color="#A0AEC0" />{' '}
                 </Link>
@@ -405,7 +406,7 @@ const Homepage = () => {
           ))}
         </Row>
         <Space height={80} />
-        <CapTitle withBorder={true}>More useful resources</CapTitle>
+        <CapTitle withBorder={true}>更多资源</CapTitle>
         <Row style={{ marginTop: '0' }}>
           <List split={true}>
             {MoreUsefulLinks.map((uLink: any, index: number) => (

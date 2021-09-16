@@ -1,7 +1,7 @@
 ---
 title: '使用字段'
 metaTitle: '使用字段 (概念)'
-metaDescription: '如何按复杂字段读取、写入和筛选。'
+metaDescription: '如何按复杂字段读取、写入和过滤。'
 tocDepth: 2
 ---
 
@@ -41,7 +41,7 @@ const newTypes = await prisma.sample.create({
 
 ### 序列化 BigInt
 
-Prisma 将记录作为纯 JavaScript 对象返回。如果你尝试把 `JSON.stringify` 在包含 `BigInt` 字段的对象上使用，你将看到以下错误：
+Prisma 将记录作为纯 JavaScript 对象返回。如果你尝试在包含 `BigInt` 字段的对象上使用 `JSON.stringify` ，你将看到以下错误：
 
 ```
 Do not know how to serialize a BigInt // 不知道如何将 BigInt 序列化
@@ -52,7 +52,7 @@ Do not know how to serialize a BigInt // 不知道如何将 BigInt 序列化
 ```js
 JSON.stringify(
   this,
-  (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+  (key, value) => (typeof value === 'bigint' ? value.toString() : value) // 返回所有未经修改的值
 )
 ```
 

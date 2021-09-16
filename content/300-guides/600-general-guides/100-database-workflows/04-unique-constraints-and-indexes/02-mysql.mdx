@@ -1,66 +1,66 @@
 ---
-title: 'Unique constraints and indexes (MySQL)'
-metaTitle: 'Unique constraints and indexes with Prisma and MySQL'
-metaDescription: 'Learn how to configure unique constraints and indexes with Prisma and MySQL by following the step-by-step instructions in this practical guide.'
+title: '唯一约束和索引 (MySQL)'
+metaTitle: 'Prisma 和 MySQL 的唯一约束和索引'
+metaDescription: '按照本指南，一步一步学习如何使用 Prisma 和 MySQL 配置唯一约束和索引。'
 ---
 
-## Overview
+## 概览
 
-This page explains how to configure a unique [constraint](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_unique_constraint) / [index](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_unique_index) in your MySQL database. Constraints and indexes are very similar in MySQL (learn more [here](https://dba.stackexchange.com/a/147)): When adding a unique constraint to one or more columns, MySQL will always create a corresponding unique index.
+本文解释如何在 MySQL 数据库中配置唯一[约束](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_unique_constraint)/[index](https://dev.mysql.com /doc/refman/5.7/en/glossary.html#glos_unique_index) 。 MySQL 中的约束和索引非常相似（了解更多 [此处](https://dba.stackexchange.com/a/147)）：当向一列或多列添加唯一约束时，MySQL 将始终创建相应的唯一索引。
 
-In this guide, you'll always configure unique constraints (which will automatically configure unique indexes as well).
+本指南将配置唯一约束（也会自动配置唯一索引）。
 
-You can configure unique constraints either on a **single column** or on **multiple columns**. These can be added when you create the table initially (using `CREATE TABLE`) or to an already existing table (using `ALTER TABLE`). This guide covers all four combinations.
+您可以在 **单列** 或 **多列** 上配置唯一约束。 可以在您最初创建表时添加（使用 `CREATE TABLE`）或添加到已经存在的表中（使用 `ALTER TABLE`）。 本指南涵盖所有四种组合。
 
-At the end of the guide, you'll introspect your database to reflect the unique constraint in the Prisma schema, then you'll generate Prisma Client and write a simple Node.js script to validate the constraints.
+在本指南最后，将检查数据库以反映 Prisma 模式中的唯一约束，然后您将生成 Prisma 客户端并编写一个简单的 Node.js 脚本来验证约束。
 
-## Prerequisites
+## 先决条件
 
-In order to follow this guide, you need:
+需要准备:
 
-- a [MySQL](https://www.mysql.com/) database server running
-- the [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html) command line client for MySQL
-- [Node.js](https://nodejs.org/) installed on your machine
+- 运行的 [MySQL](https://www.mysql.com/) 数据库服务器
+- [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html) 命令行客户端
+- 安装 [Node.js](https://nodejs.org/)
 
-> **Note**: If you are using a version of MySQL where MyISAM is the default engine, you must specify `ENGINE = InnoDB;` when you create a table.
+> **注意**: 如果使用的是 MyISAM 默认引擎的 MySQL 版本，则在创建表时必须指定 `ENGINE = InnoDB;`。
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-Start by creating a project directory where you can put the files you'll create throughout this guide:
+先创建一个项目目录，在其中放置创建的文件：
 
 ```
 mkdir unique-demo
 cd unique-demo
 ```
 
-Next, make sure that your MySQL database server is running. Then execute the following command in your terminal to create a new database called `UniqueDemo`:
+接下来，确认 MySQL 数据库服务器正在运行。 在终端中执行以下命令以创建一个名为 `UniqueDemo` 的新数据库：
 
 ```
 mysql -e 'CREATE DATABASE UniqueDemo;'
 ```
 
-> **Note:** When invoking the `mysql` CLI, you might need to authenticate against your MySQL server. To do so, you need to pass two options to the command:
+> **注意：** 在调用 `mysql` CLI 时，可能需要对您的 MySQL 服务器进行身份验证。 此时需要向命令传递两个选项：
 >
-> - `-u __USERNAME__`: The database user
-> - `-p`: Enable a password prompt for authentication
+> - `-u __USERNAME__`: 数据库用户名
+> - `-p`: 启用密码提示进行身份验证
 >
-> Here's a sample invocation for a user called `root` using the above command:
+> 对 `root` 用户进行的示例调用：
 >
 > ```
 > mysql -u root -p -e 'CREATE DATABASE UniqueDemo;'
 > ```
 
-You can validate that the database was created by running the `SHOW TABLES` command which lists all tables (_relations_) in your database (right now there are none):
+运行 `SHOW TABLES` 命令验证数据库是否已创建，该命令列出了数据库中的所有表（_关系_）（目前没有）：
 
 ```
 mysql -e 'SHOW TABLES in UniqueDemo;'
 ```
 
-## 2. Create a table with a single-column unique constraint and index
+## 2. 创建具有单列唯一约束和索引的表
 
-In this section, you'll **create a new table with a single-column unique constraint** in the `UniqueDemo` database. As mentioned above, this means that MySQL automatically adds a unique index to the same column.
+在 `UniqueDemo` 数据库中**创建一个具有单列唯一约束的新表**。 PostgreSQL 会自动为同一列添加唯一索引。
 
-Create a new file named `single-column-unique.sql` and add the following code to it:
+创建一个名为 `single-column-unique.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE `UniqueDemo`.`User` (
@@ -69,24 +69,24 @@ CREATE TABLE `UniqueDemo`.`User` (
 );
 ```
 
-Now run the SQL statement against your database to create a new table called `User`:
+运行 SQL 语句创建一个名为 `User` 的新表：
 
 ```
 mysql < single-column-unique.sql
 ```
 
-Congratulations, you just created a table called `User` in the database. The table has an `id` column and a column called `email` on which you defined a unique constraint. MySQL also automatically added a corresponding unique index (do **not** run this code):
+在数据库中创建了一个名为 `User` 的表。 该表有一个名为 `email` 的列，并在该列上定义了一个唯一索引。 MySQL 还自动添加了相应的唯一索引（**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX `email` ON `UniqueDemo`.`User`(`email`);
 ```
 
-<details><summary>Alternative: Define the constraint as a <strong>table constraint</strong></summary>
+<details><summary>替代方案：将约束定义为 <strong>表约束</strong></summary>
 <br />
 
-In the code above, you created the unique constraint as a **column constraint**. Alternatively, you can define it as a **table constraint**. There's no practical difference between the two, the alternative is just added for completeness.
+将唯一约束创建为**列约束**。 或者，可以将其定义为**表约束**。 两者之间没有实际区别，只是为了完整性而添加了替代方案。
 
-To add the unique constraint as a table constraint, you need to adjust your SQL statement to look as follows:
+要将唯一约束添加为表约束，您需要调整 SQL 语句如下：
 
 ```sql
 CREATE TABLE `UniqueDemo`.`User` (
@@ -98,11 +98,11 @@ CREATE TABLE `UniqueDemo`.`User` (
 
 </details>
 
-## 3. Create a table with a multi-column unique constraint and index
+## 3. 创建具有多列唯一约束和索引的表
 
-Next, you'll **create a table with a multi-column unique constraint**. This also adds a unique index to the columns with the constraint.
+**创建一个具有多列唯一约束的表**。 会向具有约束的列添加唯一索引。
 
-Create a new file named `multi-column-unique.sql` and add the following code to it:
+创建名为 `multi-column-unique.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE `UniqueDemo`.`AnotherUser` (
@@ -113,23 +113,23 @@ CREATE TABLE `UniqueDemo`.`AnotherUser` (
 );
 ```
 
-Now run the SQL statement against your database to create a new table called `AnotherUser`:
+对数据库运行 SQL 语句以创建名为 `AnotherUser` 的新表：
 
 ```
 mysql < multi-column-unique.sql
 ```
 
-Congratulations, you just created a table called `AnotherUser` in the database. The table has an `id` column and two column called `firstName` and `lastName` on which you defined a unique index. MySQL also automatically added a corresponding unique index (do **not** run this code):
+该表有两列名为 `firstName` 和 `lastName`，其中定义了唯一索引。 MySQL 还自动添加了相应的唯一索引（请**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX `firstName` ON `UniqueDemo`.`AnotherUser`(`firstName`, `lastName`);
 ```
 
-## 4. Adding a single-column unique constraint to an existing table
+## 4. 向现有表添加单列唯一约束
 
-In this section, you'll **add a single-column unique constraint to a table that already exists in your database**. To do so, you first need to create a new table and then alter the table to add the constraint.
+首先创建一个新表，然后更改该表以添加约束。
 
-Create a new file named `add-single-unique-constraint-later.sql` and add the following code:
+创建名为 `add-single-unique-constraint-later.sql` 的新文件并添加代码：
 
 ```sql
 CREATE TABLE `UniqueDemo`.`OneMoreUser` (
@@ -140,28 +140,28 @@ CREATE TABLE `UniqueDemo`.`OneMoreUser` (
 ALTER TABLE `UniqueDemo`.`OneMoreUser` ADD CONSTRAINT `OneMoreUser_email_unique_constraint` UNIQUE (`email`);
 ```
 
-This code contains two SQL statements:
+代码包含两条 SQL 语句：
 
-1. Create a new table called `OneMoreUser`
-1. Alter the table to add an unique constraint
+1. 创建一个名为 `OneMoreUser` 的新表
+1. 修改表添加唯一约束
 
-Now run the SQL statements against your database to create a new table called `OneMoreUser`:
+对数据库运行 SQL 语句以创建一个名为 `OneMoreUser` 的新表：
 
 ```
 mysql < add-single-unique-constraint-later.sql
 ```
 
-Congratulations, you just created a table called `OneMoreUser` in the database. The table has an `id` column and a column called `email` on which you later added a unique constraint in the second SQL statement. MySQL also automatically added a corresponding unique index (do **not** run this code):
+在数据库中创建了名为 `OneMoreUser` 的表。 该表有一个 `id` 列和一个名为 `email` 的列，在第二个 SQL 语句中添加了一个唯一约束。 MySQL 还自动添加了相应的唯一索引（请**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX `OneMoreUser_email_unique_constraint` ON `UniqueDemo`.`OneMoreUser`(`email`);
 ```
 
-## 5. Adding a multi-column unique constraint to an existing table
+## 5. 向现有表添加多列唯一约束
 
-In this section, you'll **add a multi-column unique constraint to a table that already exists in your database**. To do so, you first need to create a new table and then alter the table to add the constraint.
+首先需要创建一个新表，然后更改该表以添加约束。
 
-Create a new file named `add-multi-unique-constraint-later.sql` and add the following code:
+创建名为 `add-multi-unique-constraint-later.sql` 的新文件并添加代码：
 
 ```sql
 CREATE TABLE `UniqueDemo`.`TheLastUser` (
@@ -173,44 +173,44 @@ CREATE TABLE `UniqueDemo`.`TheLastUser` (
 ALTER TABLE `UniqueDemo`.`TheLastUser` ADD CONSTRAINT `TheLastUser_firstName_lastName_unique_constraint` UNIQUE (`firstName`, `lastName`);
 ```
 
-This code contains two SQL statements:
+此代码包含两条 SQL 语句：
 
-1. Create a new table called `TheLastUser`
-1. Alter the table to add an unique constraint
+1. 创建一个名为 `TheLastUser` 的新表
+1. 修改表添加唯一约束
 
-Now run the SQL statements against your database to create a new table called `OneMoreUser`:
+对数据库运行 SQL 语句以创建一个名为 `OneMoreUser` 的新表：
 
 ```
 mysql < add-multi-unique-constraint-later.sql
 ```
 
-Congratulations, you just created a table called `OneMoreUser` in the database. The table has an `id` column and two columns called `firstName` and `lastName` on which you later added a unique constraint in the second SQL statement. MySQL also automatically added a corresponding unique index (do **not** run this code):
+该表有两列名为 `firstName` 和 `lastName`，在第二个 SQL 语句中添加了唯一约束。 MySQL 还自动添加了相应的唯一索引（请**不要**运行此代码）：
 
 ```sql
 CREATE UNIQUE INDEX `TheLastUser_firstName_lastName_unique_constraint` ON `UniqueDemo`.`TheLastUser`(`firstname`, `lastname`);
 ```
 
-## 6. Introspect your database with Prisma
+## 6. 使用 Prisma 内省数据库
 
-In the previous sections, you created four tables with unique constraints:
+在前面部分，创建了四个具有唯一约束的表：
 
-- The table `User` has a singe-column unique constraint and index on the `email` column
-- The table `AnotherUser` has a multi-column unique constraint and index on the `firstName` and `lastName` columns
-- The table `OneMoreUser` has a singe-column unique constraint and index on the `email` column
-- The table `TheLastUser` has a multi-column unique constraint and index on the `firstName` and `lastName` columns
+- 表 `User` 在 `email` 列上有一个单列唯一约束和索引
+- 表 `AnotherUser` 在 `firstName` 和 `lastName` 列上有一个多列唯一约束和索引
+- 表`OneMoreUser` 在`email` 列上有一个单列唯一约束和索引
+- 表 `TheLastUser` 在 `firstName` 和 `lastName `列上有一个多列唯一约束和索引
 
-In this section you'll introspect your database to generate the Prisma models for these tables.
+在本节中，将检查数据库以生成这些表的 Prisma 模型。
 
-To start, set up a new Node.js project and add the `prisma` CLI as a development dependency:
+首先，添加一个新的 Node.js 项目并添加 Prisma CLI 作为开发依赖项：
 
 ```
 npm init -y
 npm install prisma --save-dev
 ```
 
-In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema.
+为了内省数据库，要告诉 Prisma 如何连接到它。 可以通过在 Prisma schema 中配置 `datasource` 来实现。
 
-Create a new file named `schema.prisma` and add the following code to it:
+创建新文件 `schema.prisma`， 添加代码：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -219,27 +219,27 @@ datasource db {
 }
 ```
 
-The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://github.com/motdotla/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
+数据库连接 URL 是通过环境变量设置的。 Prisma CLI 自动支持 [`dotenv`](https://github.com/motdotla/dotenv) 格式，该格式会自动选取 `.env` 文件中定义的环境变量。
 
-Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+创建新文件 `.env` 并将数据库连接 URL 设置为 `DATABASE_URL` 环境变量：
 
 ```
 DATABASE_URL=mysql://__USER__:__PASSWORD__@__HOST__:__PORT__/UniqueDemo
 ```
 
-In the above code snippet, you need to replace the uppercase placeholders with your own connection details. For example, if your database is running locally it could look like this:
+在上面的代码片段中，需要用连接信息替换大写占位符。 例如，如果您的数据库在本地运行，它可能如下所示：
 
 ```
 DATABASE_URL=mysql://janedoe:mypassword@localhost:3306/UniqueDemo
 ```
 
-With both the `schema.prisma` and `.env` files in place, you can run Prisma's introspection with the following command:
+有了 `schema.prisma` 和 `.env` 文件，可以使用以下命令运行 Prisma 的自省：
 
 ```
 npx prisma db pull
 ```
 
-This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+此命令会检查数据库，并为每个表基于 Prisma schema 添加一个 Prisma 模型：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -274,11 +274,11 @@ model User {
 }
 ```
 
-## 7. Generate Prisma Client
+## 7. 生成 Prisma Client
 
-To validate whether the unique constraints work, you'll now generate Prisma Client and send a few sample queries to the database.
+为了验证唯一约束是否有效，生成 Prisma Client 并向数据库发送一些示例查询。
 
-First, add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+首先，在 Prisma schema 中添加一个 `generator` 块（通常添加在 `datasource` 块的下面）：
 
 ```prisma file=schema.prisma
 generator client {
@@ -286,17 +286,17 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行命令安装和生成 Prisma Client：
 
 ```
 npx prisma generate
 ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在可以使用 Prisma Client 在 Node.js 中发送数据库查询。
 
-## 8. Validate the unique constraints in a Node.js script
+## 8. 验证 Node.js 脚本中的唯一约束
 
-Create a new file named `index.js` and add the following code to it:
+创建一个名为 `index.js` 的新文件，并添加代码：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -321,15 +321,15 @@ async function main() {
 main()
 ```
 
-In this code, you're creating two users with the same `email`, so you're violating the unique constraint that's configured on the `User` table.
+使用相同的 `email` 创建了两个用户，因此违反了在 `User` 表上配置的唯一约束。
 
-Run the code with this command:
+执行以下代码：
 
 ```
 node index.js
 ```
 
-After `newUser1` gets printed to the console successfully, the script throws an error indicating that the unique constraint on `email` is violated:
+`newUser1` 成功打印到控制台后，脚本会抛出一个错误，表明违反了 `email` 的唯一约束：
 
 ```
 { email: 'alice@prisma.io', id: 1 }
@@ -344,7 +344,7 @@ Invalid `newUser2 = await prisma.user.create()` invocation in
 → 12 const newUser2 = await prisma.user.create(Unique constraint failed on the constraint: `email`
 ```
 
-To validate the multi-column unique constraint, replace the code in `index.js` with the following:
+要验证多列唯一约束，将 `index.js` 中的代码替换为以下内容：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -371,13 +371,13 @@ async function main() {
 main()
 ```
 
-Run the script again with this command:
+执行以下代码：
 
 ```
 node index.js
 ```
 
-This time, you'll see a similar error message indicating the unique constraint on `firstName` and `lastName` was violated:
+这一次，将看到类似的错误消息，表明违反了对 `firstName` 和 `lastName` 的唯一约束：
 
 ```
 { firstName: 'Alice', id: 1, lastName: 'Smith' }
@@ -392,7 +392,7 @@ Invalid `newUser2 = await prisma.anotherUser.create()` invocation in
 → 13 const newUser2 = await prisma.anotherUser.create(Unique constraint failed on the constraint: `firstName`
 ```
 
-Note that you can add `NULL` values for these columns without violating the constraints. For example, the following code snippet will **not** fail:
+注意，可以在不违反约束的情况下为这些列添加 `NULL` 值。 例如，以下代码片段将**不会**失败：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -409,4 +409,4 @@ async function main() {
 main()
 ```
 
-It will create two new records where the `email` is set to `NULL` in the database.
+在数据库中创建了两个新记录，其中 `email` 设置为 `NULL`。

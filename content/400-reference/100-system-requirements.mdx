@@ -1,37 +1,37 @@
 ---
-title: System requirements
-description: System requirements for running Prisma.
+title: 系统配置
+description: 运行 Prisma 的系统配置要求。
 ---
 
 <TopBlock>
 
-The [latest version of Prisma](https://www.npmjs.com/package/@prisma/client) requires the following:
+最新版本 [Prisma](https://www.npmjs.com/package/@prisma/client) 环境要求：
 
-|                       | Minimum required version |
-| :-------------------- | :----------------------- |
-| Node.js               | 12.2.X / 14.X            |
-| TypeScript (optional) | 4.1.X                    |
-| Yarn (optional)       | 1.19.2                   |
+|                       | 最低版本      |
+| :-------------------- | :------------ |
+| Node.js               | 12.2.X / 14.X |
+| TypeScript (optional) | 4.1.X         |
+| Yarn (optional)       | 1.19.2        |
 
-Notes:
+提示:
 
-- Prisma supports and tests all _Active LTS_ and _Maintenance LTS_ **Node.js** releases. [Releases that are not in these states like _Current_, and also odd-numbered versions](https://nodejs.org/en/about/releases/) probably also work, but are not recommended for production use.
-- **TypeScript** is only required for TypeScript users.
-- When using **Yarn 1**, `1.19.2` is the minimum version compatible with Prisma Client.
+- Prisma 支持并测试通过了所有*Active LTS*和*Maintenance LTS* **Node.js** 版本。不在这些状态下的版本（如当前版本和奇数版本）可能也可以工作，但不建议在生产中使用。
+- 使用 **TypeScript** 的用户请自行安装。
+- 如使用 **Yarn 1**， `1.19.2`是与 Prisma Client 兼容的最低版本。
 
-See also: [Supported database versions](database-reference/supported-databases)
+另请参见：[支持的数据库版本](database-reference/supported-databases)
 
 </TopBlock>
 
-## Troubleshooting
+## 故障排除
 
-There are some common problems caused by using outdated versions of the system requirements:
+使用过时版本的系统配置会导致一些常见问题：
 
-### Unable to build a TypeScript project with `@prisma/client`
+### 无法使用`@prisma/client`生成 TypeScript 项目
 
-#### Problem
+#### 问题表现
 
-You see the following error when you try type-checking a project after you run `prisma generate`.
+在您运行 `prisma generate` 后对项目进行类型检查时，控制台报以下错误：
 
 ```terminal
 ./node_modules/.prisma/client/index.d.ts:10:33
@@ -45,15 +45,15 @@ Type error: Type expected.
   13 |
 ```
 
-#### Solution
+#### 解决方案
 
-Upgrade your project to TypeScript 4.1.X or later. `npm install -D typescript`.
+将项目升级到 TypeScript 4.1.X 或更高版本，`npm install -D typescript`。
 
-### Unable to use `groupBy` preview feature
+### 无法使用 `groupBy` 预览特性
 
-#### Problem
+#### 问题表现
 
-You see the following console error when you attempt to run an app that uses the `groupBy` feature:
+当您尝试运行使用 `groupBy` 特性的应用程序时，控制台报以下错误：
 
 ```terminal
 server.ts:6:25 - error TS2615: Type of property 'OR' circularly references itself in mapped type '{ [K in keyof { AND?: Enumerable<ProductScalarWhereWithAggregatesInput>; OR?: Enumerable<ProductScalarWhereWithAggregatesInput>; ... 4 more ...; category?: string | StringWithAggregatesFilter; }]: Or<...> extends 1 ? { ...; }[K] extends infer TK ? GetHavingFields<...> : never : {} extends FieldPaths<...> ? never : K...'.
@@ -72,6 +72,6 @@ server.ts:6:48 - error TS2554: Expected 0 arguments, but got 1.
   ~~~
 ```
 
-#### Solution
+#### 解决方案
 
-Upgrade your project to TypeScript 4.1.X or later. `npm install -D typescript`.
+将项目升级到 TypeScript 4.1.X 或更高版本，`npm install -D typescript`。

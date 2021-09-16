@@ -1,21 +1,21 @@
 ---
-title: 'Deploying to a different OS'
-metaTitle: 'Deploying to a different OS'
-metaDescription: 'Learn how to deploy Node.js and TypeScript applications that are using Prisma Client to a different operating system.'
+title: '部署到一个不同的操作系统'
+metaTitle: '部署到一个不同的操作系统'
+metaDescription: '了解如何将使用Prisma Client的Node.js和TypeScript应用程序部署到不同的操作系统。'
 ---
 
 <!-- This page needs to be refactored into a guide -->
 
 <TopBlock>
 
-Prisma Client depends on the [query engine](../../../concepts/components/prisma-engines/query-engine) that is running as a binary on the same host as your application.
+Prisma Client 依赖于[查询引擎](./././concepts/components/prisma-engines/query-engine)。该引擎作为二进制文件与你的应用程序在同一主机上运行。
 
-The query engine is implemented in Rust and is used by Prisma in the form of executable binary files. The binary is downloaded when `prisma generate` is called.
+该查询引擎是用 Rust 实现的，并以可执行二进制文件的形式被 Prisma 使用。二进制文件在调用`prisma generate`时被下载。
 
-If you have developed your application on a Windows machine for example, and wish to upload to AWS Lambda, which is a Linux environment, you may encounter issues and be presented with some warnings in your terminal.
+例如，如果你在 Windows 机器上开发了你的应用程序，并希望上传到 AWS Lambda（这是一个 Linux 环境），你可能会遇到问题，并在终端出现一些警告。
 
-To solve this, if you know ahead of time that you will be deploying to a different environment, you can use the [binary targets](/concepts/components/prisma-schema/generators#the-native-binary-target) and specify which of the [supported operating systems](/reference/api-reference/prisma-schema-reference#binarytargets-options) binaries should be included.
+为了解决这个问题，如果你提前知道你将部署到不同的环境，你可以使用[二进制目标](/concepts/components/prisma-schema/generators#the-native-binary-target)并指定哪些[支持的操作系统](/reference/api-reference/prisma-schema-reference#binarytargets-options)二进制文件应该被包含。
 
-> **Note**: If your OS isn't supported you can include a [custom binary](../../../concepts/components/prisma-engines#using-custom-engine-binaries).
+> **注意**: 如果你的操作系统不被支持，你可以包括一个[自定义二进制](.../.../concepts/components/prisma-engines#using-custom-engine-binaries)。
 
 </TopBlock>

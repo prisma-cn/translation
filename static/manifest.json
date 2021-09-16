@@ -1,0 +1,21 @@
+{
+  "name": "Prisma文档",
+  "short_name": "Prisma文档",
+  "description": "Prisma 是新一代的数据库工具集，ORM框架，能够管理复杂的数据库构建和读写，拥有优异的开发体验，快速开发GraphQL、REST、gRRC等服务。适用于任意语言和数据库。",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

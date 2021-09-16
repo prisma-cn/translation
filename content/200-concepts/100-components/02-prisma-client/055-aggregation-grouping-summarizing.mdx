@@ -1,19 +1,19 @@
 ---
-title: 'Aggregation, grouping, and summarizing'
-metaTitle: 'Aggregation, grouping, and summarizing (Concepts)'
-metaDescription: 'Use Prisma Client to aggregate, group by, count, and select distinct.'
+title: '聚合、分组和汇总'
+metaTitle: '聚合、分组和汇总 (概念)'
+metaDescription: '使用 Prisma Client 要进行聚合，请按分组、计数并选择去重。'
 tocDepth: 3
 ---
 
 <TopBlock>
 
-Prisma Client allows you to count records, aggregate number fields, and select distinct field values.
+Prisma Client 允许你计算记录数、聚合字段数并选择去重字段值。
 
 </TopBlock>
 
-## Aggregate
+## 聚合
 
-Prisma Client allows you to [`aggregate`](../../../reference/api-reference/prisma-client-reference#aggregate) <span class="api"></span> on the **number** fields (such as `Int` and `Float`) of a model. The following query returns the average age of all users:
+Prisma Client 允许你在模型中的 **数字** 字段 (就像 `Int` 和 `Float`) 上使用 [`聚合`](../../../reference/api-reference/prisma-client-reference#aggregate) <span class="api"></span> 。以下查询返回所有用户的平均年龄：
 
 ```ts
 const aggregations = await prisma.user.aggregate({
@@ -25,11 +25,11 @@ const aggregations = await prisma.user.aggregate({
 console.log('Average age:' + aggregations._avg.age)
 ```
 
-You can combine aggregation with filtering and ordering. For example, the following query returns the average age of users:
+你可以将聚合与过滤和排序结合起来。例如，以下查询返回用户的平均年龄：
 
-- Ordered by `age` ascending
-- Where `email` contains `prisma.io`
-- Limited to the 10 users
+- 按 `age` 升序排列
+- 其中 `email` 包含 `prisma.io`
+- 仅限于 10 个用户
 
 ```ts
 const aggregations = await prisma.user.aggregate({
@@ -50,11 +50,11 @@ const aggregations = await prisma.user.aggregate({
 console.log('Average age:' + aggregations.avg.age)
 ```
 
-### Aggregate values are nullable
+### 聚合值可以为空
 
-In [2.21.0](https://github.com/prisma/prisma/releases/tag/2.21.0) and later, aggregations on **nullable fields** can return a `number` or `null`. This excludes `count`, which always returns 0 if no records are found.
+在 [2.21.0](https://github.com/prisma/prisma/releases/tag/2.21.0) 和更高版本中，在 **可空字段** 上的聚合可以返回 `number` 或 `null`。这不包括 `count`，如果找不到任何记录，它将始终返回 0。
 
-Consider the following query, where `age` is nullable in the schema:
+考虑下面的查询，其中 schema 中的 `age` 是空的：
 
 <CodeWithResult expanded={true}>
 <cmd>
@@ -87,25 +87,28 @@ const aggregations = await prisma.user.aggregate({
 </cmdResult>
 </CodeWithResult>
 
-The query returns `{ _avg: { age: null } }` in either of the following scenarios:
+在以下任一情况下，查询返回 `{ _avg: { age: null } }` ：
 
-- There are no users
-- The value of every user's `age` field is `null`
+- 没有用户
+- 每个用户的 `age` 字段的值为 `null`
 
-This allows you to differentiate between the true aggregate value (which could be zero) and no data.
+这允许你区分真实聚合值（可能为零）和无数据。
 
-## Group by
+## 分组
 
-Prisma Client's [`groupBy`](../../../reference/api-reference/prisma-client-reference#groupby) <span class="api"></span> allows you to **group records** by one or more field values - such as `country`, or `country` and `city` and **perform aggregations** on each group, such as finding the average age of people living in a particular city. `groupBy` is a GA in [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later.
+Prisma Client 的 [`groupBy`](../../../reference/api-reference/prisma-client-reference#groupby) <span class="api"></span> 允许你通过一个或多个字段值对 **记录进行分组**，例如 `country` 或 `country` 和 `city`，并对每个组 **执行聚合**，例如查找居住在特定城市的人的平均年龄。 `groupBy` 是 [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中的 GA。
 
-The following video uses `groupBy` to summarize total COVID-19 cases by continent:
+下面的视频使用 `groupBy` 来分组欧洲大陆所有 2019 冠状病毒疾病案例
 
 <div class="videoWrapper">
 
 <iframe
   width="560"
   height="315"
-  src="https://www.youtube.com/embed/BdlCPdPaorY"
+  scrolling="no"
+  border="0"
+  framespacing="0"
+  src="//player.bilibili.com/player.html?aid=931453747&bvid=BV1UM4y1T7QF&cid=403685728&page=6"
   frameborder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowfullscreen
@@ -113,7 +116,7 @@ The following video uses `groupBy` to summarize total COVID-19 cases by continen
 
 </div>
 
-The following example groups all users by the `country` field and returns the total number of profile views for each country:
+以下示例按 `country` 字段对所有用户进行分组，并返回每个国家的个人资料浏览总数：
 
 <CodeWithResult>
 <cmd>
@@ -140,13 +143,13 @@ const groupUsers = await prisma.user.groupBy({
 </cmdResult>
 </CodeWithResult>
 
-### <inlinecode>groupBy</inlinecode> and filtering
+### <inlinecode>分组</inlinecode> 和过滤
 
-`groupBy` supports two levels of filtering: `where` and `having`.
+`groupBy` 支持两种级别的过滤： `where` 和 `having`。
 
-#### Filter records with `where`
+#### 使用 `where` 过滤记录
 
-Use `where` to filter all records **before grouping**. The following example groups users by country and sums profile views, but only includes users where the email address contains `prisma.io`:
+在**分组之前**，使用 `where` 过滤所有记录。以下示例按国家对用户进行分组，并对个人资料浏览数进行汇总，但仅包括电子邮件地址包含 `prisma.io` 的用户：
 
 ```ts highlight=3-7;normal
 const groupUsers = await prisma.user.groupBy({
@@ -162,9 +165,9 @@ const groupUsers = await prisma.user.groupBy({
 })
 ```
 
-#### Filter groups with <inlinecode>having</inlinecode>
+#### 使用 <inlinecode>having</inlinecode> 过滤分组
 
-Use `having` to filter **entire groups** by an aggregate value such as the sum or average of a field, not individual records - for example, only return groups where the _average_ `profileViews` is greater than 100:
+使用 `having` 按聚合值（如字段的总和或平均值）而不是单个记录过滤 **整个组**，例如，仅返回 _平均_ `人资料浏览数` 大于 100 的组：
 
 ```ts highlight=11-17;normal
 const groupUsers = await prisma.user.groupBy({
@@ -187,11 +190,11 @@ const groupUsers = await prisma.user.groupBy({
 })
 ```
 
-##### Use case for <inlinecode>having</inlinecode>
+##### <inlinecode>having</inlinecode> 用例
 
-The primary use case for `having` is to filter on aggregations. We recommend that you use `where` to reduce the size of your data set as far as possible _before_ grouping, because doing so ✔ reduces the number of records the database has to return and ✔ makes use of indices.
+`having` 的主要用例是对聚合进行过滤。我们建议你在分组 _之前_ 使用 `where` 尽可能减小数据集的大小，因为这样做 ✔ 减少数据库必须返回的记录数，并能 ✔ 利用索引。
 
-For example, the following query groups all users that are _not_ from Sweden or Ghana:
+例如，以下查询将所有非瑞典或加纳用户分组：
 
 ```ts highlight=4-6;normal
 const fd = await prisma.user.groupBy({
@@ -214,7 +217,7 @@ const fd = await prisma.user.groupBy({
 })
 ```
 
-The following query technically achieves the same result, but excludes users from Ghana _after_ grouping. This does not confer any benefit and is not recommended practice.
+以下查询在技术上实现了相同的结果，但分组后排除了来自加纳的用户。这不会带来任何好处，也不是推荐的做法。
 
 ```ts highlight=4-6,12-14;normal
 const groupUsers = await prisma.user.groupBy({
@@ -240,21 +243,21 @@ const groupUsers = await prisma.user.groupBy({
 })
 ```
 
-> **Note**: Within `having`, you can only filter on aggregate values _or_ fields available in `by`.
+> **注意**：在 `having` 中，你只能过滤 `by` 中可用的聚合值 _或_ 字段。
 
-### <inlinecode>groupBy</inlinecode> and ordering
+### <inlinecode>分组</inlinecode>和排序
 
-The following constraints apply when you combine `groupBy` and `orderBy`:
+组合使用 `groupBy` 和 `orderBy` 时，以下约束适用：
 
-- You can `orderBy` fields that are present in `by`
-- You can `orderBy` aggregate (Preview in 2.21.0 and later)
-- If you use `skip` and/or `take` with `groupBy`, you must also include `orderBy` in the query
+- 你可以在 `by` 中显示 `orderBy` 字段
+- 你可以使用 `orderBy` 聚合（在 2.21.0 及更高版本中预览）
+- 如果将 `skip` 和/或 `take` 与 `groupBy` 一起使用，则还必须在查询中包含 `orderBy`
 
-#### Order by aggregate group (Preview)
+#### 按聚合组排序（预览）
 
-In [2.21.0](https://github.com/prisma/prisma/releases/2.21.0) and later, you can **order by aggregate group**.
+在 [2.21.0](https://github.com/prisma/prisma/releases/2.21.0) 和更高版本中，你可以 **按聚合组** 排序。
 
-To enable this feature, add `orderByAggregateGroup` to `previewFeatures` in your schema:
+要启用此功能，请将 `orderByAggregateGroup` 添加到 schema 中的 `previewFeatures` 里：
 
 ```prisma highlight=3;normal
 generator client {
@@ -265,12 +268,12 @@ generator client {
 
 <Admonition type="warning">
 
-**MongoDB not supported**<br />
-You cannot currently use `orderByAggregateGroup` with the MongoDB connector.
+**不支持 MongoDB**<br />
+你当前无法将 `orderByAggregateGroup` 与 MongoDB 连接器一起使用。
 
 </Admonition>
 
-The following example sorts each `city` group by the number of users in that group (largest group first):
+下面的示例按照每个 `city` 组中的用户数对该组进行排序（首先是最大的组）：
 
 <CodeWithResult>
 <cmd>
@@ -303,9 +306,9 @@ const groupBy = await prisma.user.groupBy({
 </cmdResult>
 </CodeWithResult>
 
-#### Order by field
+#### 按字段排序
 
-The following query orders groups by country, skips the first two groups, and returns the 3rd and 4th group:
+以下查询按国家分组进行排序，跳过前两个组，并返回第三和第四个组：
 
 ```ts
 const groupBy = await prisma.user.groupBy({
@@ -321,31 +324,31 @@ const groupBy = await prisma.user.groupBy({
 })
 ```
 
-### <inlinecode>groupBy</inlinecode> FAQ
+### <inlinecode>分组</inlinecode> 常见问题
 
-#### Can I use `select` with `groupBy`?
+#### 我可以将 `select` 与 `groupBy` 一起使用吗？
 
-You cannot use `select` with `groupBy`. However, all fields included in `by` are automatically returned.
+不能将 `select` 与 `groupBy` 一起使用。但是，`by` 中包含的所有字段都会自动返回。
 
-#### What is the difference between using `where` and `having` with `groupBy`?
+#### 在 `groupBy` 中使用 `where` 和 `having` 有什么区别？
 
-`where` filters all records before grouping, and `having` filters entire groups and supports filtering on an aggregate field value, such as the average or sum of a particular field in that group.
+`where` 在分组之前过滤所有记录，`having` 过滤整个组，并支持对聚合字段值进行过滤，例如该组中特定字段的平均值或总和。
 
-#### What is the difference between `groupBy` and `distinct`?
+#### `groupBy` 和 `distinct` 有什么区别？
 
-Both `distinct` and `groupBy` group records by one or more unique field values. `groupBy` allows you to aggregate data within each group - for example, return the average number of views on posts from Denmark - whereas distinct does not.
+`distinct` 和 `groupBy` 均按一个或多个唯一字段值对记录进行分组 `groupBy` 允许你在每个组内聚合数据，例如，返回来自丹麦的帖子的平均浏览次数，而 `distinct` 则不允许。
 
-## Count
+## 计数
 
-Use [`count`](../../../reference/api-reference/prisma-client-reference#count) <span class="api"></span> to count the number of records or non-`null` field values. The following example query counts all users:
+使用 [`count`](../../../reference/api-reference/prisma-client-reference#count) <span class="api"></span> 计算记录数或非空字段值。以下示例查询统计所有用户：
 
 ```ts
 const userCount = await prisma.user.count()
 ```
 
-### Count relations
+### 计数关系
 
-The ability to count relations is available in version [2.20.0](https://github.com/prisma/prisma/releases/2.20.0) and later. To enable this feature, add `selectRelationCount` to `previewFeatures` in your schema:
+[2.20.0](https://github.com/prisma/prisma/releases/2.20.0) 和更高版本中提供了计算关系的功能。要启用此功能，请将 `selectRelationCount` 添加到 schema 中的 `previewFeatures` 里：
 
 ```prisma
 generator client {
@@ -356,12 +359,12 @@ generator client {
 
 <Admonition type="warning">
 
-**MongoDB not supported**<br />
-You cannot currently use `selectRelationCount` with the MongoDB connector.
+**不支持 MongoDB**<br />
+你当前无法将 `selectRelationCount` 与 MongoDB 连接器一起使用。
 
 </Admonition>
 
-To return a count of relations (for example, a user's post count), use the `_count` parameter with a nested `select` as shown:
+要返回关系计数（例如，用户的 post 计数），请使用带有嵌套 `select` 的 `_count` 参数，如下所示：
 
 <CodeWithResult>
 <cmd>
@@ -390,15 +393,15 @@ const usersWithCount = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-The `_count` parameter:
+`_count` 参数:
 
-- Can be used inside a top-level `include` _or_ `select`
-- Can be used with any query that returns records (including `delete`, `update`, and `findFirst`)
-- Can return [multiple relation counts](#return-multiple-relation-counts)
+- 可在顶级 `include` _或_ `select` 中使用
+- 可用于任何返回记录的查询（包括 `delete` 、 `update` 和 `findFirst`）
+- 可以返回 [多个关系计数](#return-multiple-relation-counts)
 
-#### Return a relations count with `include`
+#### 返回带有 `include` 的关系计数`
 
-The following query includes each user's post count in the results:
+以下查询在结果中包括每个用户的 post 计数：
 
 <CodeWithResult>
 <cmd>
@@ -427,9 +430,9 @@ const usersWithCount = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-#### Return a relations count with `select`
+#### 返回带有 `select` 的关系计数`
 
-The following query uses `select` to return each user's post count and no other fields:
+以下查询使用 `select` 返回每个用户的帖子数量，不返回其他字段：
 
 <CodeWithResult>
 <cmd>
@@ -458,9 +461,9 @@ const usersWithCount = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-#### Return multiple relation counts
+#### 返回多个关系计数 {#return-multiple-relation-counts}
 
-The following query returns a count of each user's `posts` and `recipes` and no other fields:
+以下查询返回每个用户的 `posts` 和 `recipes` 计数，不返回其他字段：
 
 <CodeWithResult>
 <cmd>
@@ -493,12 +496,12 @@ const usersWithCount = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### Count non-`null` field values
+### 计算非 `null` 字段值
 
-In [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) and later, you can count all records as well as all instances of non-`null` field values. The following query returns a count of:
+在 [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) 和更高版本中，你可以计算所有记录以及非 `null` 字段值的所有实例。以下查询返回的计数为：
 
-- All `User` records (`_all`)
-- All non-`null` `name` values (not distinct values, just values that are not `null`)
+- 所有 `User` 记录 (`_all`)
+- 所有 非 `null` `name` 值 (不是去重的值, 仅仅它们是非 `null` 的)
 
 <CodeWithResult>
 <cmd>
@@ -506,8 +509,8 @@ In [2.15.0](https://github.com/prisma/prisma/releases/2.15.0) and later, you can
 ```ts
 const userCount = await prisma.user.count({
   select: {
-    _all: true, // Count all records
-    name: true, // Count all non-null field values
+    _all: true, // 计数所有记录
+    name: true, // 计数所有 非 null 字段值
   },
 })
 ```
@@ -522,9 +525,9 @@ const userCount = await prisma.user.count({
 </cmdResult>
 </CodeWithResult>
 
-### Filtered count
+### 过滤计数
 
-`count` supports filtering. The following example query counts all users with more than 100 profile views:
+`count` 支持过滤。以下示例查询统计具有 100 个以上个人资料浏览数的所有用户：
 
 ```ts
 const userCount = await prisma.user.count({
@@ -536,7 +539,7 @@ const userCount = await prisma.user.count({
 })
 ```
 
-The following example query counts a particular user's posts:
+以下示例查询统计特定用户的帖子：
 
 ```ts
 const postCount = await prisma.post.count({
@@ -546,11 +549,11 @@ const postCount = await prisma.post.count({
 })
 ```
 
-## Select distinct
+## select distinct
 
-Prisma Client allows you to filter duplicate rows from a Prisma Query response to a [`findMany`](../../../reference/api-reference/prisma-client-reference#findMany) <span class="api"></span> query using [`distinct`](../../../reference/api-reference/prisma-client-reference#distinct) <span class="api"></span>. `distinct` is often used in combination with [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> to identify certain unique combinations of values in the rows of your table.
+Prisma Client 允许你使用 [`findMany`](../../../reference/api-reference/prisma-client-reference#findMany) <span class="api"></span> 查询过滤 Prisma 查询响应中的 [`distinct`](../../../reference/api-reference/prisma-client-reference#distinct) <span class="api"></span>。 `distinct` 通常与 [`select`](../../../reference/api-reference/prisma-client-reference#select) <span class="api"></span> 结合使用，以识别表行中某些独特的值组合。
 
-The following example returns all fields for all `User` records with distinct `name` field values:
+以下示例返回具有不同 `name` 字段值的所有 `User` 记录的所有字段：
 
 ```ts
 const result = await prisma.user.findMany({
@@ -559,7 +562,7 @@ const result = await prisma.user.findMany({
 })
 ```
 
-The following example returns distinct `role` field values (for example, `ADMIN` and `USER`):
+以下示例返回不同的 `role` 字段值（例如 `ADMIN` 和 `USER`）：
 
 <CodeWithResult>
 <cmd>
@@ -590,20 +593,20 @@ const distinctRoles = await prisma.user.findMany({
 </cmdResult>
 </CodeWithResult>
 
-### <inlinecode>distinct</inlinecode> under the hood
+### <inlinecode>distinct</inlinecode> 在后台
 
-Prisma's `distinct` option does not use SQL `SELECT DISTINCT`. Instead, `distinct` uses:
+Prisma 的 `distinct` 选项不使用 SQL `SELECT DISTINCT`。相反，`distinct` 使用：'
 
-- A `SELECT` query
-- In-memory post-processing to select distinct
+- `SELECT` 查询
+- 在内存中进行后处理以 select distinct
 
-It was designed in this way in order to **support `select` and `include`** as part of `distinct` queries.
+它的设计目的是 **支持 `select` 和 `include`** 作为 `distinct` 查询的一部分。
 
-The following example selects distinct on `gameId` and `playerId`, ordered by `score`, in order to return **each player's highest score per game**. The query uses `include` and `select` to include additional data:
+下面的示例 select `gameId` 和 `playerId`上的 distinct，按 `score` 排序，以返回 **每个玩家每场比赛的最高分数**。查询使用 `include` 和 `select` 包含其他数据：
 
-- Select `score` (field on `Play`)
-- Select related player name (relation between `Play` and `User`)
-- Select related game name (relation between `Play` and `Game`)
+- 选择 `score`（`Play` 字段）
+- 选择相关玩家名称（`Play` 和 `User` 之间的关系）
+- 选择相关的游戏名称（`Play` 和 `Game` 之间的关系）
 
 <details><summary>Expand for sample schema</summary>
 
@@ -678,7 +681,7 @@ const distinctScores = await prisma.play.findMany({
 </cmdResult>
 </CodeWithResult>
 
-Without `select` and `distinct`, the query would return:
+如果没有 `select` 和 `distinct`，查询将返回：
 
 ```
 [

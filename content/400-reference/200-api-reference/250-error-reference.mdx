@@ -1,185 +1,215 @@
 ---
-title: 'Errors reference'
-metaTitle: 'Prisma error reference (Reference)'
-metaDescription: 'Prisma Client, Migrate, Introspection error reference'
+title: '错误参考'
+metaTitle: 'Prisma 错误参考（参考）'
+metaDescription: 'Prisma Client, Migrate, Introspection 错误参考'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-This page describes Prisma exceptions and error codes. For more information about working with exceptions and error codes, see [Handling exceptions and errors](../../concepts/components/prisma-client/handling-exceptions-and-errors) <span class="concept"></span>.
+本页介绍了 Prisma 异常和错误代码。有关处理异常和错误代码的更多信息，请参阅 [异常和错误处理](../../concepts/components/prisma-client/handling-exceptions-and-errors) <span class="concept"></span>。
 
 </TopBlock>
 
-## Prisma Client error types
+## Prisma Client 错误类型
 
-Prisma Client throws different kinds of errors. The following lists the exception types, and their documented data fields:
+Prisma 客户端抛出不同类型的错误。以下列出了异常类型及其记录的数据字段：
 
 ### <inlinecode>PrismaClientKnownRequestError</inlinecode>
 
-Prisma Client throws a `PrismaClientKnownRequestError` exception if the query engine returns a known error related to the request - for example, a unique constraint violation.
+如果查询引擎返回与请求相关的已知错误（例如，唯一约束冲突），Prisma 客户端将抛出 `PrismaClientKnownRequestError` 异常。
 
-| **Property**    | **Description**                                                                                                  |
-| :-------------- | :--------------------------------------------------------------------------------------------------------------- |
-| `code`          | A Prisma-specific [error code](#error-codes).                                                                    |
-| `meta`          | Additional information about the error - for example, the field that caused the error: `{ target: [ 'email' ] }` |
-| `message`       | Error message associated with [error code](#error-codes).                                                        |
-| `clientVersion` | Version of Prisma Client (for example, `2.19.0`)                                                                 |
+| **Property**    | **Description**                                                                   |
+| :-------------- | :-------------------------------------------------------------------------------- |
+| `code`          | Prisma 预定义 [错误码](#error-codes).                                             |
+| `meta`          | 错误的附加信息 - 例如, the field that caused the error: `{ target: [ 'email' ] }` |
+| `message`       | [错误码](#error-codes)对应的文本描述                                              |
+| `clientVersion` | Prisma Client 的版本（例如：`2.19.0`）                                            |
 
 ### <inlinecode>PrismaClientUnknownRequestError</inlinecode>
 
-Prisma Client throws a `PrismaClientUnknownRequestError` exception if the query engine returns an error related to a request that does not have an error code.
+如果查询引擎返回没有错误代码的错误，Prisma 客户端将抛出 `PrismaClientUnknownRequestError` 异常。
 
-| **Property**    | **Description**                                           |
-| :-------------- | :-------------------------------------------------------- |
-| `message`       | Error message associated with [error code](#error-codes). |
-| `clientVersion` | Version of Prisma Client (for example, `2.19.0`)          |
+| **属性**        | **描述**                               |
+| :-------------- | :------------------------------------- |
+| `message`       | [错误码](#error-codes)对应的文本描述。 |
+| `clientVersion` | Prisma Client 的版本（例如：`2.19.0`） |
 
 ### <inlinecode>PrismaClientRustPanicError</inlinecode>
 
-Prisma Client throws a `PrismaClientRustPanicError` exception if the underlying engine crashes and exits with a non-zero exit code. In this case, the Prisma Client or the whole Node process must be restarted.
+如果底层引擎崩溃并以非零退出代码退出，Prisma 客户端将引发 `PrismaclientTrustPanicError` 异常。这种情况下必须重新启动 Prisma Client 或整个节点进程。
 
-| **Property**    | **Description**                                           |
-| :-------------- | :-------------------------------------------------------- |
-| `message`       | Error message associated with [error code](#error-codes). |
-| `clientVersion` | Version of Prisma Client (for example, `2.19.0`)          |
+| **属性**        | **描述**                               |
+| :-------------- | :------------------------------------- |
+| `message`       | [错误码](#error-codes)对应的文本描述。 |
+| `clientVersion` | Prisma Client 的版本（例如：`2.19.0`） |
 
 ### <inlinecode>PrismaClientInitializationError</inlinecode>
 
-Prisma Client throws a `PrismaClientInitializationError` exception if something goes wrong when the query engine is started and the connection to the database is created. This happens either:
+如果在启动查询引擎并创建与数据库的连接时出现问题，Prisma Client 将引发 `PrismaclientializationError` 异常。这种情况发生在：
 
-- When `prisma.$connect()` is called OR
-- When the first query is executed
+- 调用了 `prisma.$connect()` 或者
+- 第一次执行查询
 
-Errors that can occur include:
+可能的错误原因:
 
-- The provided credentials for the database are invalid
-- There is no database server running under the provided hostname and port
-- The port that the query engine HTTP server wants to bind to is already taken
-- A missing or inaccessible environment variable
-- The query engine binary for the current platform could not be found (`generator` block)
+- 数据库连接凭证错误。
+- 数据库服务器域名或端口错误。
+- 查询引擎的端口已经被占用。
+- 环境变量丢失或者配置错误。
+- 找不到用来启动查询引擎的二进制文件 (`generator` 配置项)
 
-| **Property**    | **Description**                                  |
-| :-------------- | :----------------------------------------------- |
-| `errorCode`     | A Prisma-specific error code.                    |
-| `message`       | Error message associated with error code.        |
-| `clientVersion` | Version of Prisma Client (for example, `2.19.0`) |
+| **属性**        | **描述**                               |
+| :-------------- | :------------------------------------- |
+| `errorCode`     | Prisma 预定义错误码                    |
+| `message`       | 错误码对应的文本描述                   |
+| `clientVersion` | Prisma Client 的版本（例如：`2.19.0`） |
 
 ### <inlinecode>PrismaClientValidationError</inlinecode>
 
-Prisma Client throws a `PrismaClientValidationError` exception if validation fails - for example:
+如果验证失败，Prisma 客户端将引发 `PrismaClientValidationError` 异常，例如：
 
-- Missing field - for example, an empty `data: {}` property when creating a new record
-- Incorrect field type provided (for example, setting a `Boolean` field to `"Hello, I like cheese and gold!"`)
+- 字段缺失 - 例如，创建记录的字段为空 `data: {}`
+- 字段类型不匹配 (例如，给 `Boolean` 字段赋值 `"Hello, I like cheese and gold!"`)
 
-| **Property** | **Description**                                           |
-| :----------- | :-------------------------------------------------------- |
-| `message`    | Error message associated with [error code](#error-codes). |
+| **属性**  | **描述**                               |
+| :-------- | :------------------------------------- |
+| `message` | [错误码](#error-codes)对应的文本描述。 |
 
-## Error codes
+## 错误码
 
-### Common
+### 常见错误
 
 #### <inlinecode>P1000</inlinecode>
 
 "Authentication failed against database server at `{database_host}`, the provided database credentials for `{database_user}` are not valid. Please make sure to provide valid database credentials for the database server at `{database_host}`."
 
+（"数据库 `{database_host}` 鉴权失败, 您提供的登录凭证 `{database_user}` 无效。 请为 `{database_host}` 提供有效的登录凭证."）
+
 #### <inlinecode>P1001</inlinecode>
 
 "Can't reach database server at `{database_host}`:`{database_port}` Please make sure your database server is running at `{database_host}`:`{database_port}`."
+
+（"无法连接到 `{database_host}`:`{database_port}` 请确保您的数据库运行在 `{database_host}`:`{database_port}`。"）
 
 #### <inlinecode>P1002</inlinecode>
 
 "The database server at `{database_host}`:`{database_port}` was reached but timed out. Please try again. Please make sure your database server is running at `{database_host}`:`{database_port}`. "
 
+（"数据库 `{database_host}`:`{database_port}` 连接超时，请重试。 请确保数据库运行在`{database_host}`:`{database_port}`。 "）
+
 #### <inlinecode>P1003</inlinecode>
 
 "Database {database_file_name} does not exist at {database_file_path}"
 
+（"{database_file_path} 路径下找不到数据库文件 {database_file_name}"）
+
 "Database `{database_name}.{database_schema_name}` does not exist on the database server at `{database_host}:{database_port}`."
 
+（"数据库服务器 `{database_host}:{database_port}` 找不到此数据库 `{database_name}.{database_schema_name}`"）
+
 "Database `{database_name}` does not exist on the database server at `{database_host}:{database_port}`."
+
+（"数据库服务器 `{database_host}:{database_port}` 找不到此数据库 `{database_name}`"）
 
 #### <inlinecode>P1008</inlinecode>
 
 "Operations timed out after `{time}`"
 
+（"操作超时 `{time}`"）
+
 #### <inlinecode>P1009</inlinecode>
 
 "Database `{database_name}` already exists on the database server at `{database_host}:{database_port}`"
+
+（"数据库服务器 `{database_host}:{database_port}` 已经存在此数据库 `{database_name}`"）
 
 #### <inlinecode>P1010</inlinecode>
 
 "User `{database_user}` was denied access on the database `{database_name}`"
 
+（"用户 `{database_user}` 拒绝连接 `{database_name}`"）
+
 #### <inlinecode>P1011</inlinecode>
 
 "Error opening a TLS connection: {message}"
+
+（"无法建立 TLS 连接: {message}"）
 
 #### <inlinecode>P1012</inlinecode>
 
 "{full_error}"
 
-Possible errors:
+可能的错误:
 
-- "Argument `{}` is missing."
-- "Function `{}` takes {} arguments, but received {}."
-- "Argument `{}` is missing in attribute `@{}`."
-- "Argument `{}` is missing in data source block `{}`."
-- "Argument `{}` is missing in generator block `{}`."
-- "Error parsing attribute `@{}`: {}"
-- "Attribute `@{}` is defined twice."
-- "The model with database name `{}` could not be defined because another model with this name exists: `{}`"
-- "`{}` is a reserved scalar type name and can not be used."
-- "The {} `{}` cannot be defined because a {} with that name already exists."
-- "Key `{}` is already defined in {}."
-- "Argument `{}` is already specified as unnamed argument."
-- "Argument `{}` is already specified."
-- "No such argument.""
-- "Field `{}` is already defined on model `{}`."
-- "Field `{}` in model `{}` can't be a list. The current connector does not support lists of primitive types."
-- "The index name `{}` is declared multiple times. With the current connector index names have to be globally unique."
-- "Value `{}` is already defined on enum `{}`."
-- "Attribute not known: `@{}`."
-- "Function not known: `{}`."
-- "Datasource provider not known: `{}`."
-- "shadowDatabaseUrl is the same as url for datasource `{}`. Please specify a different database as shadow database."
-- "The preview feature `{}` is not known. Expected one of: {}"
-- "`{}` is not a valid value for {}."
-- "Type `{}` is neither a built-in type, nor refers to another model, custom type, or enum."
-- "Type `{}` is not a built-in type."
-- "Unexpected token. Expected one of: {}"
+- "Argument `{}` is missing."（参数丢失）
+- "Function `{}` takes {} arguments, but received {}."（参数错误）
+- "Argument `{}` is missing in attribute `@{}`."（参数缺少属性）
+- "Argument `{}` is missing in data source block `{}`."（datasource 缺少参数）
+- "Argument `{}` is missing in generator block `{}`."（generator 缺少参数）
+- "Error parsing attribute `@{}`: {}"（属性解析出错）
+- "Attribute `@{}` is defined twice."（属性重复定义）
+- "The model with database name `{}` could not be defined because another model with this name exists: `{}`"（已存在同名 model）
+- "`{}` is a reserved scalar type name and can not be used."（使用了保留字）
+- "The {} `{}` cannot be defined because a {} with that name already exists."（名称被占用）
+- "Key `{}` is already defined in {}."（键已存在）
+- "Argument `{}` is already specified as unnamed argument."（已经被作为匿名参数使用）
+- "Argument `{}` is already specified."（参数已经定义）
+- "No such argument.""（无此参数）
+- "Field `{}` is already defined on model `{}`."（字段重复定义）
+- "Field `{}` in model `{}` can't be a list. The current connector does not support lists of primitive types."（使用了原生不支持的列表（数组）类型，）
+- "The index name `{}` is declared multiple times. With the current connector index names have to be globally unique."（索引名称重复）
+- "Value `{}` is already defined on enum `{}`."（枚举值已经定义）
+- "Attribute not known: `@{}`."（未知属性）
+- "Function not known: `{}`."（未知函数）
+- "Datasource provider not known: `{}`."（使用了不明 provider）
+- "shadowDatabaseUrl is the same as url for datasource `{}`. Please specify a different database as shadow database."（迁移数据库和目标数据库不能是同一个）
+- "The preview feature `{}` is not known. Expected one of: {}"（未知预览特性）
+- "`{}` is not a valid value for {}."（值不合法）
+- "Type `{}` is neither a built-in type, nor refers to another model, custom type, or enum."（出现了不明觉厉的类型）
+- "Type `{}` is not a built-in type."（类型不是内置类型）
+- "Unexpected token. Expected one of: {}"（错误标志）
 - "{}"
 - "{}"
 - "{}"
-- "Environment variable not found: {}."
-- "Expected a {} value, but received {} value `{}`."
-- "Expected a {} value, but failed while parsing `{}`: {}."
-- "Error validating model `{}`: {}"
-- "Error validating field `{}` in model `{}`: {}"
-- "Error validating datasource `{datasource}`: {message}""
-- "Error validating enum `{}`: {}"
-- "Error validating: {}"
+- "Environment variable not found: {}."（没找到环境变量）
+- "Expected a {} value, but received {} value `{}`."（不符合预期）
+- "Expected a {} value, but failed while parsing `{}`: {}."（解析页失败了）
+- "Error validating model `{}`: {}"（模型定义合法性校验不通过）
+- "Error validating field `{}` in model `{}`: {}"（模型字段校验失败）
+- "Error validating datasource `{datasource}`: {message}""（数据库检验失败）
+- "Error validating enum `{}`: {}"（枚举不合法）
+- "Error validating: {}"（校验错误）
 
 #### <inlinecode>P1013</inlinecode>
 
 "The provided database string is invalid. {details}"
 
+（"数据库连接串错误. {details}"）
+
 #### <inlinecode>P1014</inlinecode>
 
 "The underlying {kind} for model `{model}` does not exist."
+
+（"model `{model}` 不存在此 {kind}"）
 
 #### <inlinecode>P1015</inlinecode>
 
 "Your Prisma schema is using features that are not supported for the version of the database.<br />Database version: {database_version}<br />Errors:<br />{errors}"
 
+（"您使用了当前 Prisma schema 版本未支持的特性。<br />数据库版本: {database_version}<br />错误:<br />{errors}"）
+
 #### <inlinecode>P1016</inlinecode>
 
 "Your raw query had an incorrect number of parameters. Expected: `{expected}`, actual: `{actual}`."
 
+（"原始查询参数长度错误。 期望：`{expected}`, 实际: `{actual}`."）
+
 #### <inlinecode>P1017</inlinecode>
 
 "Server has closed the connection."
+
+（"服务器关闭了连接。"）
 
 ### Prisma Client (Query Engine)
 
@@ -187,195 +217,291 @@ Possible errors:
 
 "The provided value for the column is too long for the column's type. Column: {column_name}"
 
+（"列长度超出: {column_name}"）
+
 #### <inlinecode>P2001</inlinecode>
 
 "The record searched for in the where condition (`{model_name}.{argument_name} = {argument_value}`) does not exist"
+
+（"where 查询语句字段 (`{model_name}.{argument_name} = {argument_value}`) 不存在"）
 
 #### <inlinecode>P2002</inlinecode>
 
 "Unique constraint failed on the {constraint}"
 
+（"不满足唯一约束 {constraint}"）
+
 #### <inlinecode>P2003</inlinecode>
 
 "Foreign key constraint failed on the field: `{field_name}`"
+
+（"外键约束错误: `{field_name}`"）
 
 #### <inlinecode>P2004</inlinecode>
 
 "A constraint failed on the database: `{database_error}`"
 
+（"约束错误: `{database_error}`"）
+
 #### <inlinecode>P2005</inlinecode>
 
 "The value `{field_value}` stored in the database for the field `{field_name}` is invalid for the field's type"
+
+（"现有数据库字段 `{field_value}` 的值 `{field_name}` 和 schema 不匹配"）
 
 #### <inlinecode>P2006</inlinecode>
 
 "The provided value `{field_value}` for `{model_name}` field `{field_name}` is not valid"
 
+（"模型 `{model_name}` `{field_name}` 字段的值 `{field_value}` 不合法"）
+
 #### <inlinecode>P2007</inlinecode>
 
 "Data validation error `{database_error}`"
+
+（"数据校验失败 `{database_error}`"）
 
 #### <inlinecode>P2008</inlinecode>
 
 "Failed to parse the query `{query_parsing_error}` at `{query_position}`"
 
+（"解析查询失败 `{query_parsing_error}` 位置： `{query_position}`"）
+
 #### <inlinecode>P2009</inlinecode>
 
 "Failed to validate the query: `{query_validation_error}` at `{query_position}`"
+
+（"错误的查询: `{query_validation_error}` 位置： `{query_position}`"）
 
 #### <inlinecode>P2010</inlinecode>
 
 "Raw query failed. Code: `{code}`. Message: `{message}`"
 
+（"原语查询失败 代码: `{code}`。 消息： `{message}`"）
+
 #### <inlinecode>P2011</inlinecode>
 
 "Null constraint violation on the {constraint}"
+
+（"{constraint} 的 Null 约束冲突"）
 
 #### <inlinecode>P2012</inlinecode>
 
 "Missing a required value at `{path}`"
 
+（"缺少必需字段 `{path}`"）
+
 #### <inlinecode>P2013</inlinecode>
 
 "Missing the required argument `{argument_name}` for field `{field_name}` on `{object_name}`."
+
+（"`{field_name}` 下的 `{object_name}` 缺少必需参数 `{argument_name}`。"）
 
 #### <inlinecode>P2014</inlinecode>
 
 "The change you are trying to make would violate the required relation '{relation_name}' between the `{model_a_name}` and `{model_b_name}` models."
 
+（"您试图进行的更改将违反 `{model_a_name}` 和 `{model_b_name}` 模型之间所需的关系 '{relation_name}'。"）
+
 #### <inlinecode>P2015</inlinecode>
 
 "A related record could not be found. {details}"
+
+（"相关数据记录无法找到。 {details}"）
 
 #### <inlinecode>P2016</inlinecode>
 
 "Query interpretation error. {details}"
 
+（"查询语句解析错误。 {details}"）
+
 #### <inlinecode>P2017</inlinecode>
 
 "The records for relation `{relation_name}` between the `{parent_name}` and `{child_name}` models are not connected."
+
+（"`{parent_name}` 和 `{child_name}` 模型之间的关系 `{relation_name}` 记录未连接"）
 
 #### <inlinecode>P2018</inlinecode>
 
 "The required connected records were not found. {details}"
 
+（"未找到所需的关联记录。 {details}"）
+
 #### <inlinecode>P2019</inlinecode>
 
 "Input error. {details}"
+
+（"输入错误。 {details}"）
 
 #### <inlinecode>P2020</inlinecode>
 
 "Value out of range for the type. {details}"
 
+（"值范围超出。 {details}"）
+
 #### <inlinecode>P2021</inlinecode>
 
 "The table `{table}` does not exist in the current database."
+
+（"当前数据库不存在此表 `{table}`"）
 
 #### <inlinecode>P2022</inlinecode>
 
 "The column `{column}` does not exist in the current database."
 
+（"当前数据库不存在此列 `{column}`。"）
+
 #### <inlinecode>P2023</inlinecode>
 
 "Inconsistent column data: {message}"
+
+（"列数据不一致： {message}"）
 
 #### <inlinecode>P2024</inlinecode>
 
 "Timed out fetching a new connection from the connection pool. (More info: [http://pris.ly/d/connection-pool](http://pris.ly/d/connection-pool), Current connection limit: {connection_limit})"
 
+（"从连接池取连接超时 (更多信息: [http://pris.ly/d/connection-pool](http://pris.ly/d/connection-pool)，当前连接限制: {connection_limit})"）
+
 #### <inlinecode>P2025</inlinecode>
 
 "An operation failed because it depends on one or more records that were required but not found. {cause}"
+
+（"操作失败，一个或多个必需记录未找到的。 {cause}"）
 
 #### <inlinecode>P2026</inlinecode>
 
 "The current database provider doesn't support a feature that the query used: {feature}"
 
+（"当前数据库 provider 不支持查询所使用的功能： {feature}"）
+
 #### <inlinecode>P2027</inlinecode>
 
 "Multiple errors occurred on the database during query execution: {errors}"
 
-### Prisma Migrate (Migration Engine)
+（"在查询执行过程中，数据库出现多个错误：{errors}"）
+
+### Prisma Migrate (迁移引擎)
 
 #### <inlinecode>P3000</inlinecode>
 
 "Failed to create database: {database_error}"
 
+（"连接数据库错误: {database_error}"）
+
 #### <inlinecode>P3001</inlinecode>
 
 "Migration possible with destructive changes and possible data loss: {migration_engine_destructive_details}"
+
+（"迁移可能带来破坏性的更改以及数据丢失: {migration_engine_destructive_details}"）
 
 #### <inlinecode>P3002</inlinecode>
 
 "The attempted migration was rolled back: {database_error}"
 
+（"迁移已被回滚： {database_error}"）
+
 #### <inlinecode>P3003</inlinecode>
 
 "The format of migrations changed, the saved migrations are no longer valid. To solve this problem, please follow the steps at: [https://pris.ly/d/migrate](https://pris.ly/d/migrate)"
+
+（"迁移的格式已更改，保存的迁移不再有效。要解决此问题，请按照如下步骤操作: [https://pris.ly/d/migrate](https://pris.ly/d/migrate)"）
 
 #### <inlinecode>P3004</inlinecode>
 
 "The `{database_name}` database is a system database, it should not be altered with prisma migrate. Please connect to another database."
 
+（"`{database_name}`数据库是系统数据库，不应使用 Prisma migrate 对其进行更改。请连接到其他数据库。"）
+
 #### <inlinecode>P3005</inlinecode>
 
 "The database schema for `{database_name}` is not empty. Read more about how to baseline an existing production database: [https://pris.ly/d/migrate-baseline](https://pris.ly/d/migrate-baseline)"
+
+（"`{database_name}` 的数据库 schema 不为空。了解有关如何对现有生产数据库进行基准设置的更多信息： [https://pris.ly/d/migrate-baseline](https://pris.ly/d/migrate-baseline)"）
 
 #### <inlinecode>P3006</inlinecode>
 
 "Migration `{migration_name}` failed to apply cleanly to the shadow database. <br />{error_code}Error:<br />{inner_error}"
 
+（"迁移任务 `{migration_name}` 未能全部在影子数据库执行 <br />{error_code}错误:<br />{inner_error}"）
+
 #### <inlinecode>P3007</inlinecode>
 
 "Some of the requested preview features are not yet allowed in migration engine. Please remove them from your data model before using migrations. (blocked: {list_of_blocked_features})"
+
+（"迁移引擎中尚不允许某些请求的预览功能。在使用迁移之前，请将其从数据模型中删除。 (问题点: {list_of_blocked_features})"）
 
 #### <inlinecode>P3008</inlinecode>
 
 "The migration `{migration_name}` is already recorded as applied in the database."
 
+（"迁移任务 `{migration_name}` 已经被执行。"）
+
 #### <inlinecode>P3009</inlinecode>
 
 "migrate found failed migrations in the target database, new migrations will not be applied. Read more about how to resolve migration issues in a production database: [https://pris.ly/d/migrate-resolve](https://pris.ly/d/migrate-resolve)<br />{details}"
+
+（"在目标数据库中发现失败的迁移，将不应用新迁移。了解有关如何解决生产数据库中的迁移问题的更多信息：[https://pris.ly/d/migrate-resolve](https://pris.ly/d/migrate-resolve)<br />{details}"）
 
 #### <inlinecode>P3010</inlinecode>
 
 "The name of the migration is too long. It must not be longer than 200 characters (bytes)."
 
+（"迁移的名称太长，长度不得超过 200 个字符（字节）。"）
+
 #### <inlinecode>P3011</inlinecode>
 
 "Migration `{migration_name}` cannot be rolled back because it was never applied to the database. Hint: did you pass in the whole migration name? (example: \"20201207184859_initial_migration\")"
+
+（"无法回滚迁移 `{migration_name}`，因为数据库没有执行过此迁移。提示：你是否输入了完整的迁移名称？ (示例: \"20201207184859_initial_migration\")"）
 
 #### <inlinecode>P3012</inlinecode>
 
 "Migration `{migration_name}` cannot be rolled back because it is not in a failed state."
 
+（"无法回滚迁移 `{migration_name}`，因为它未处于失败状态。"）
+
 #### <inlinecode>P3013</inlinecode>
 
 "Datasource provider arrays are no longer supported in migrate. Please change your datasource to use a single provider. Read more at [https://pris.ly/multi-provider-deprecation](https://pris.ly/multi-provider-deprecation)"
+
+（"不再支持数据源 provider 数组。请将数据源更改为使用单个提供程序。阅读更多 [https://pris.ly/multi-provider-deprecation](https://pris.ly/multi-provider-deprecation)"）
 
 #### <inlinecode>P3014</inlinecode>
 
 "Prisma Migrate could not create the shadow database. Please make sure the database user has permission to create databases. More info: [https://pris.ly/d/migrate-shadow](https://pris.ly/d/migrate-shadow). Original error: {error_code}<br />{inner_error}"
 
+（"Prisma Migrate 无法创建影子数据库。请确保数据库用户有创建数据库的权限。更多信息: [https://pris.ly/d/migrate-shadow](https://pris.ly/d/migrate-shadow). 原始错误: {error_code}<br />{inner_error}"）
+
 #### <inlinecode>P3015</inlinecode>
 
 "Could not find the migration file at {migration_file_path}. Please delete the directory or restore the migration file."
+
+（"在 {migration_file_path} 处找不到迁移文件。请删除目录或还原迁移文件。"）
 
 #### <inlinecode>P3016</inlinecode>
 
 "The fallback method for database resets failed, meaning Migrate could not clean up the database entirely. Original error: {error_code}<br />{inner_error}"
 
+（"数据库重置回退失败，Migrate 无法完全清理数据库。原始错误： {error_code}<br />{inner_error}"）
+
 #### <inlinecode>P3017</inlinecode>
 
 "The migration {migration_name} could not be found. Please make sure that the migration exists, and that you included the whole name of the directory. (example: \"20201207184859_initial_migration\")"
+
+（"找不到迁移任务 {migration_name}。请确保迁移存在，并且包含目录的完整名称。 (例如: \"20201207184859_initial_migration\")"）
 
 #### <inlinecode>P3018</inlinecode>
 
 "A migration failed to apply. New migrations can not be applied before the error is recovered from. Read more about how to resolve migration issues in a production database: https://pris.ly/d/migrate-resolve<br /><br />Migration name: {migration_name}<br /><br />Database error code: {database_error_code}<br /><br />Database error:<br />{database_error} "
 
+（"无法应用迁移。在错误迁移恢复之前，无法应用新迁移。了解有关如何解决生产数据库中的迁移问题的更多信息： https://pris.ly/d/migrate-resolve<br /><br />Migration name: {migration_name}<br /><br />Database error code: {database_error_code}<br /><br />Database error:<br />{database_error} "）
+
 #### <inlinecode>P3019</inlinecode>
 
 "The datasource provider `{provider}` specified in your schema does not match the one specified in the migration_lock.toml, `{expected_provider}`. Please remove your current migration directory and start a new migration history with prisma migrate dev. Read more: [https://pris.ly/d/migrate-provider-switch](https://pris.ly/d/migrate-provider-switch)"
+
+（"Schema 中指定的数据源 provider `{provider}` 与 migration_lock.toml 中指定的 `{expected_provider}` 不匹配。请删除当前迁移目录，并使用 prisma migrate dev 启动新的迁移历史记录。阅读更多： [https://pris.ly/d/migrate-provider-switch](https://pris.ly/d/migrate-provider-switch)"）
 
 ### <inlinecode>prisma db pull</inlinecode> (Introspection Engine)
 
@@ -383,12 +509,18 @@ Possible errors:
 
 "Introspection operation failed to produce a schema file: {introspection_error}"
 
+（"内省操作无法生成 schema 文件： {introspection_error}"）
+
 #### <inlinecode>P4001</inlinecode>
 
 "The introspected database was empty: {connection_string}"
 
+（"内省数据库为空: {connection_string}"）
+
 #### <inlinecode>P4002</inlinecode>
 
 "The schema of the introspected database was inconsistent: {explanation}"
+
+（"内省数据库的 schema 不一致：{explanation}"）
 
 <!-- Error codes generated by https://github.com/mhwelander/doc-tools/blob/master/error_code_parser.py -->

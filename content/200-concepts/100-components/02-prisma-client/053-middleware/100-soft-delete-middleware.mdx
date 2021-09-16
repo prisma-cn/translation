@@ -1,18 +1,19 @@
 ---
-title: 'Soft delete middleware'
-metaTitle: 'Soft delete middleware (Reference)'
-metaDescription: 'How to use middleware to intercept deletes and set a field value instead of deleting the record.'
+title: '软删除中间件'
+metaTitle: '软删除中间件 (概念)'
+metaDescription: '如何使用中间件拦截删除并设置字段值，而不是删除记录。'
 tocDepth: 3
 ---
 
 <TopBlock>
 
-The following example uses middleware to perform a **soft delete**, which means that a record is **marked as deleted** by changing a field like `deleted` to `true` rather than actually being removed from the database. Reasons to use a soft delete include:
+下面的示例使用中间件执行 **软删除**，这意味着记录 **标记为已删除**，方法是将类似 `已删除` 的字段更改为 `真` ，而不是实际从数据库中删除。使用软删除的原因包括：
 
-- Regulatory requirements that mean you have to keep data for a certain amount of time
-- 'Trash' / 'bin' functionality that allows users to restore content that was deleted
+- 法规要求，这意味着你必须将数据保留一段时间
 
-This example uses the following schema - note the `deleted` field on the `Post` model:
+- '废弃' / '垃圾箱' 功能，允许用户还原已删除的内容
+
+本例使用以下 schema - 注意 `Post` 模型上的 `deleted` 字段：
 
 ```prisma highlight=28;normal
 datasource db {
@@ -60,11 +61,11 @@ model Tag {
 
 </TopBlock>
 
-## Step 1: Store status of record
+## 步骤 1 ： 记录的存储状态
 
-Add a field named `deleted` to the `Post` model. You can choose between two field types depending on your requirements:
+将名为 `deleted` 的字段添加到 `Post` 模型中。根据你的要求，你可以选择两种字段类型：
 
-- `Boolean` with a default value of `false`:
+- `Boolean` 默认值为 `false`:
 
   ```prisma highlight=4;normal
   model Post {
@@ -74,7 +75,7 @@ Add a field named `deleted` to the `Post` model. You can choose between two fiel
   }
   ```
 
-- Create a nullable `DateTime` field so that you know exactly _when_ a record was marked as deleted - `NULL` indicates that a record has not been deleted. In some cases, storing when a record was removed may be a regulatory requirement:
+- 创建一个可为空的 `DateTime` 字段，以便准确地知道记录 _何时_ 被标记为已删除 - `NULL` 表示记录尚未被删除。在某些情况下，删除记录时进行存储可能是一项法规要求：
 
   ```prisma highlight=4;normal
   model Post {
@@ -84,19 +85,21 @@ Add a field named `deleted` to the `Post` model. You can choose between two fiel
   }
   ```
 
-> **Note**: Using two separate fields (`isDeleted` and `deletedDate`) may result in these two fields becoming out of sync - for example, a record may be marked as deleted but have no associated date.)
+> **注**：使用两个单独的字段（`isDeleted` 和 `deletedDate`）可能会导致这两个字段不同步 - 例如，记录可能被标记为已删除，但没有关联的日期。）
 
-This example uses a `Boolean` field type for simplicity.
+为了简单起见，此示例使用 `Boolean` 字段类型。
 
-## Step 2: Soft delete middleware
+## 步骤 2：软删除中间件
 
-Add a middleware that performs the following tasks:
+添加执行以下任务的中间件：
 
-- Intercepts `delete` and `deleteMany` queries for the `Post` model
-- Changes the `params.action` to `update` and `updateMany` respectively
-- Introduces a `data` argument and sets `{ deleted: true }`, preserving other filter arguments if they exist
+- 截取 `Post` 模型的 `delete` 和 `deleteMany` 查询
 
-Run the following example to test the soft delete middleware:
+- 将 'params.action' 分别更改为 `update` 和 `updateMany`
+
+- 引入 `data` 参数并设置 `{deleted:true}`，保留其他过滤器参数（如果存在）
+
+运行以下示例测试软删除中间件：
 
 ```ts
 import { PrismaClient } from '@prisma/client'
@@ -105,20 +108,20 @@ const prisma = new PrismaClient({})
 
 async function main() {
   /***********************************/
-  /* SOFT DELETE MIDDLEWARE */
+  /* 软删除中间件 */
   /***********************************/
 
   prisma.$use(async (params, next) => {
-    // Check incoming query type
+    // 检查传入查询类型
     if (params.model == 'Post') {
       if (params.action == 'delete') {
-        // Delete queries
-        // Change action to an update
+        // 删除查询
+        // 将操作更改为更新
         params.action = 'update'
         params.args['data'] = { deleted: true }
       }
       if (params.action == 'deleteMany') {
-        // Delete many queries
+        // 删除许多查询
         params.action = 'updateMany'
         if (params.args.data != undefined) {
           params.args.data['deleted'] = true
@@ -131,22 +134,22 @@ async function main() {
   })
 
   /***********************************/
-  /* TEST */
+  /* 测试 */
   /***********************************/
 
   const titles = [
-    { title: 'How to create soft delete middleware' },
-    { title: 'How to install Prisma' },
-    { title: 'How to update a record' },
+    { title: 'How to create soft delete middleware' }, //如何创建软删除中间件
+    { title: 'How to install Prisma' }, //如何安装 Prisma
+    { title: 'How to update a record' }, //如何更新一条记录
   ]
 
-  console.log('\u001b[1;34mSTARTING SOFT DELETE TEST \u001b[0m')
+  console.log('\u001b[1;34mSTARTING SOFT DELETE TEST \u001b[0m') //开始软删除测试
   console.log('\u001b[1;34m#################################### \u001b[0m')
 
   let i = 0
   let posts = new Array()
 
-  // Create 3 new posts with a randomly assigned title each time
+  // 每次创建 3 篇带有随机分配标题的新帖子
   for (i == 0; i < 3; i++) {
     const createPostOperation = prisma.post.create({
       data: titles[Math.floor(Math.random() * titles.length)],
@@ -163,14 +166,14 @@ async function main() {
       '\u001b[0m'
   )
 
-  // Delete the first post from the array
+  // 从数组中删除第一篇帖子
   const deletePost = await prisma.post.delete({
     where: {
       id: postsCreated[0].id, // Random ID
     },
   })
 
-  // Delete the 2nd two posts
+  // 删除后两个帖子
   const deleteManyPosts = await prisma.post.deleteMany({
     where: {
       id: {
@@ -190,117 +193,124 @@ async function main() {
   console.log()
 
   console.log(
-    'Deleted post with ID: ' + '\u001b[1;32m' + deletePost.id + '\u001b[0m'
+    'Deleted post with ID: ' + '\u001b[1;32m' + deletePost.id + '\u001b[0m' //已删除 ID 为 {} 的帖子
   )
   console.log(
-    'Deleted posts with IDs: ' +
+    'Deleted posts with IDs: ' + //已删除 ID 为 {} 的帖子
       '\u001b[1;32m' +
       [postsCreated[1].id + ',' + postsCreated[2].id] +
       '\u001b[0m'
   )
   console.log()
   console.log(
-    'Are the posts still available?: ' +
+    'Are the posts still available?: ' + //这些帖子还有吗？
       (getPosts.length == 3
         ? '\u001b[1;32m' + 'Yes!' + '\u001b[0m'
         : '\u001b[1;31m' + 'No!' + '\u001b[0m')
   )
   console.log()
   console.log('\u001b[1;34m#################################### \u001b[0m')
-  // 4. Count ALL posts
+  // 4. 统计所有帖子
   const f = await prisma.post.findMany({})
-  console.log('Number of posts: ' + '\u001b[1;32m' + f.length + '\u001b[0m')
+  console.log('Number of posts: ' + '\u001b[1;32m' + f.length + '\u001b[0m') //帖子数
 
-  // 5. Count DELETED posts
+  // 5. 统计已删除的帖子
   const r = await prisma.post.findMany({
     where: {
       deleted: true,
     },
   })
   console.log(
-    'Number of SOFT deleted posts: ' + '\u001b[1;32m' + r.length + '\u001b[0m'
+    'Number of SOFT deleted posts: ' + '\u001b[1;32m' + r.length + '\u001b[0m' //已软删除贴子数
   )
 }
 
 main()
 ```
 
-The example outputs the following:
+该示例输出以下内容：
 
 ```no-lines
-STARTING SOFT DELETE TEST
+STARTING SOFT DELETE TEST //启动软删除测试
 ####################################
-Posts created with IDs: 587,588,589
+Posts created with IDs: 587,588,589 //使用ID创建的帖子: 587,588,589
 
-Deleted post with ID: 587
-Deleted posts with IDs: 588,589
+Deleted post with ID: 587 //已删除 ID 为 587 的帖子
+Deleted posts with IDs: 588,589 //已删除 ID 为 588589 的帖子
 
-Are the posts still available?: Yes!
+Are the posts still available?: Yes! //这些帖子还有吗？：是的！
 
 ####################################
 ```
 
 <Tip>
 
-Comment out the middleware to see the message change.
+标注出中间件以查看消息更改。
 
 </Tip>
 
-✔ Pros of this approach to soft delete include:
+✔ 这种软删除方法的优点包括：
 
-- Soft delete happens at data access level, which means that you cannot delete records unless you use raw SQL
+- 软删除发生在数据访问级别，这意味着除非使用原生 SQL，否则无法删除记录
 
-✘ Cons of this approach to soft delete include:
+✘ 这种软删除方法的缺点包括：
 
-- Content can still be read and updated unless you explicitly you filter by `where: { deleted: false }` - in a large project with a lot of queries, there is a risk that soft deleted content will still be displayed
-- You can still use raw SQL to delete records
+- 内容仍然可以读取和更新，除非你明确地按 `where: { deleted: false }` 进行过滤 - 在具有大量查询的大型项目中，仍有显示软删除内容的风险
+
+- 你仍然可以使用原始 SQL 删除记录
 
 <Tip>
 
-You can create rules or triggers ([MySQL](https://dev.mysql.com/doc/refman/8.0/en/trigger-syntax.html) and [PostgreSQL](https://www.postgresql.org/docs/8.1/rules-update.html)) at a database level to prevent records from being deleted.
+你可以创建规则或触发器 （[MySQL](https://dev.mysql.com/doc/refman/8.0/en/trigger-syntax.html) 和 [PostgreSQL](https://www.postgresql.org/docs/8.1/rules-update.html)） 在数据库级别防止删除记录。
 
 </Tip>
 
-## Step 3: Optionally prevent read/update of soft deleted records
+## 步骤 3：选择性地防止 读取/更新 软删除记录
 
-In step 2, we implemented middleware that prevents `Post` records from being deleted. However, you can still read and update deleted records. This step explores two ways to prevent the reading and updating of deleted records.
+在第 2 步中，我们实现了防止删除 `Post` 记录的中间件。但是，你仍然可以读取和更新已删除的记录。本步骤探讨两种防止读取和更新已删除记录的方法。
 
-> **Note**: These options are just ideas with pros and cons, you may choose to do something entirely different.
+> **注意**：这些选项只是互有利弊的想法，你可以选择做完全不同的事情。
 
-### Option 1: Implement filters in your own application code
+### 选项 1：在你自己的应用程序代码中实现过滤器
 
-In this option:
+在该选项中：
 
-- Prisma middleware is responsible for preventing records from being deleted
-- Your own application code (which could be a GraphQL API, a REST API, a module) is responsible for filtering out deleted posts where necessary (`{ where: { deleted: false } }`) when reading and updating data - for example, the `getPost` GraphQL resolver never returns a deleted post
+- Prisma 中间件负责防止记录被删除
 
-✔ Pros of this approach to soft delete include:
+- 在读取和更新数据时，你自己的应用程序代码（可能是 GraphQL API、REST API 或模块）负责在必要时（`{ where: { deleted: false } }`）过滤掉已删除的帖子，例如，`getPost` GraphQL 解析器从不返回已删除的帖子
 
-- No change to Prisma's create/update queries - you can easily request deleted records if you need them
-- Modifying queries in middleware can have some unintended consequences, such as changing query return types (see option 2)
+✔ 这种软删除方法的优点包括：
 
-✘ Cons of this approach to soft delete include:
+- 对 Prisma 的创建/更新查询没有任何更改 - 如果需要，你可以轻松请求删除的记录
 
-- Logic relating to soft delete maintained in two different places
-- If your API surface is very large and maintained by multiple contributors, it may be difficult to enforce certain business rules (for example, never allow deleted records to be updated)
+- 在中间件中修改查询可能会产生一些意外的后果，例如更改查询返回类型（请参见选项 2）
 
-### Option 2: Use middleware to determine the behavior of read/update queries for deleted records
+✘ 这种软删除方法的缺点包括：
 
-Option two uses Prisma middleware to prevent soft deleted records from being returned. The following table describes how the middleware affects each query:
+- 在两个不同的位置维护与软删除相关的逻辑
 
-| **Query**    | **Middleware logic**                                                                                                                                                                    | **Changes to return type**       |
-| :----------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
-| `findUnique` | 🔧 Change query to `findFirst` (because you cannot apply `deleted: false` filters to `findUnique`) <br /> 🔧 Add `where: { deleted: false }` filter to exclude soft deleted posts       | No change                        |
-| `findMany`   | 🔧 Add `where: { deleted: false }` filter to exclude soft deleted posts by default <br />🔧 Allow developers to **explicitly request** soft deleted posts by specifying `deleted: true` | No change                        |
-| `update`     | 🔧 Change query to `updateMany` (because you cannot apply `deleted: false` filters to `update`) <br /> 🔧 Add `where: { deleted: false }` filter to exclude soft deleted posts          | `{ count: n }` instead of `Post` |
-| `updateMany` | 🔧 Add `where: { deleted: false }` filter to exclude soft deleted posts                                                                                                                 | No change                        |
+- 如果你的 API 表面非常大，并且由多个参与者维护，则可能很难强制执行某些业务规则（例如，决不允许更新已删除的记录）
 
-- **Why are you making it possible to use `findMany` with a `{ where: { deleted: true } }` filter, but not `updateMany`?**<br />
-  This particular example was written to support the scenario where a user can _restore_ their deleted blog post (which requires a list of soft deleted posts) - but the user should not be able to edit a deleted post.
-- **Can I still `connect` or `connectOrCreate` a deleted post?**<br />
-  In this example - yes. The middleware does not prevent you from connecting an existing, soft deleted post to a user.
+### 选项 2：使用中间件确定已删除记录的读取/更新查询行为
 
-Run the following sample to see how middleware affects each query:
+选项二使用 Prisma 中间件防止返回软删除的记录。下表描述了中间件如何影响每个查询：
+
+| **查询**     | **中间件逻辑**                                                                                                                                              | **返回类型的更改**               |
+| :----------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
+| `findUnique` | 🔧 将查询更改为 `findFirst` （因为你不能将 `deleted: false` 过滤器应用于 `findUnique`） <br /> 🔧 添加 `where: { deleted: false }` 过滤器以排除软删除的帖子 | 没变                             |
+| `findMany`   | 🔧 添加 `where: { deleted: false }` 过滤器以默认排除软删除的帖子 <br />🔧 允许开发人员通过指定 **显式** 请求软删除帖子 `deleted: true`                      | 没变                             |
+| `update`     | 🔧 Change query to `updateMany` （因为你不能将 `deleted: false` 过滤器应用于 `update`） <br /> 🔧 添加 `where: { deleted: false }` 过滤器以排除软删除的帖子 | `{ count: n }` instead of `Post` |
+| `updateMany` | 🔧 添加 `where: { deleted: false }` 过滤器以排除软删除的帖子                                                                                                | 没变                             |
+
+- ** 为什么可以将 `findMany` 与 `{ where: { deleted: true } }` 过滤器一起使用，而不是 `updateMany` ？**<br/>
+
+这个特别的例子是为了支持这样一个场景：用户可以恢复他们删除的博客文章（需要一个软删除文章的列表），但是用户不能编辑删除的文章。
+
+- **我仍然可以 `连接` 或 `连接或创建` 已删除的帖子吗？**<br/>
+
+在这个例子中 - 是的。中间件不会阻止你将现有的软删除帖子连接到用户。
+
+运行以下示例以查看中间件如何影响每个查询：
 
 ```ts
 import { PrismaClient } from '@prisma/client'
@@ -309,24 +319,24 @@ const prisma = new PrismaClient({})
 
 async function main() {
   /***********************************/
-  /* SOFT DELETE MIDDLEWARE */
+  /* 软删除中间件 */
   /***********************************/
 
   prisma.$use(async (params, next) => {
     if (params.model == 'Post') {
       if (params.action == 'findUnique') {
-        // Change to findFirst - you cannot filter
-        // by anything except ID / unique with findUnique
+        // 更改为 findFirst - 无法过滤
+        // 除 ID / unique 和 findUnique 之外的任何内容
         params.action = 'findFirst'
-        // Add 'deleted' filter
-        // ID filter maintained
+        // 添加 'deleted' 过滤器
+        // 保持 ID 过滤器
         params.args.where['deleted'] = false
       }
       if (params.action == 'findMany') {
-        // Find many queries
+        // 查找许多查询
         if (params.args.where != undefined) {
           if (params.args.where.deleted == undefined) {
-            // Exclude deleted records if they have not been expicitly requested
+            // 如果未明确要求删除记录，则将其排除在外
             params.args.where['deleted'] = false
           }
         } else {
@@ -340,11 +350,11 @@ async function main() {
   prisma.$use(async (params, next) => {
     if (params.model == 'Post') {
       if (params.action == 'update') {
-        // Change to updateMany - you cannot filter
-        // by anything except ID / unique with findUnique
+        // 更改为 updateMany - 无法过滤
+        // 除 ID / unique 和 findUnique 之外的任何内容
         params.action = 'updateMany'
-        // Add 'deleted' filter
-        // ID filter maintained
+        // 添加 'deleted' 过滤器
+        // 保持 ID 过滤器
         params.args.where['deleted'] = false
       }
       if (params.action == 'updateMany') {
@@ -359,16 +369,16 @@ async function main() {
   })
 
   prisma.$use(async (params, next) => {
-    // Check incoming query type
+    // 检查传入查询类型
     if (params.model == 'Post') {
       if (params.action == 'delete') {
-        // Delete queries
-        // Change action to an update
+        // 删除查询
+        // 将操作更改为更新
         params.action = 'update'
         params.args['data'] = { deleted: true }
       }
       if (params.action == 'deleteMany') {
-        // Delete many queries
+        // 删除许多查询
         params.action = 'updateMany'
         if (params.args.data != undefined) {
           params.args.data['deleted'] = true
@@ -381,7 +391,7 @@ async function main() {
   })
 
   /***********************************/
-  /* TEST */
+  /* 测试 */
   /***********************************/
 
   const titles = [
@@ -396,7 +406,7 @@ async function main() {
   let i = 0
   let posts = new Array()
 
-  // Create 3 new posts with a randomly assigned title each time
+  // 每次创建 3 篇带有随机分配标题的新帖子
   for (i == 0; i < 3; i++) {
     const createPostOperation = prisma.post.create({
       data: titles[Math.floor(Math.random() * titles.length)],
@@ -413,14 +423,14 @@ async function main() {
       '\u001b[0m'
   )
 
-  // Delete the first post from the array
+  // 从数组中删除第一篇文章
   const deletePost = await prisma.post.delete({
     where: {
-      id: postsCreated[0].id, // Random ID
+      id: postsCreated[0].id, // 随机 ID
     },
   })
 
-  // Delete the 2nd two posts
+  // 删除后两个帖子
   const deleteManyPosts = await prisma.post.deleteMany({
     where: {
       id: {
@@ -531,13 +541,13 @@ async function main() {
   )
   console.log()
   console.log('\u001b[1;34m#################################### \u001b[0m')
-  // 4. Count ALL posts
+  // 4. 统计所有帖子
   const f = await prisma.post.findMany({})
   console.log(
     'Number of active posts: ' + '\u001b[1;32m' + f.length + '\u001b[0m'
   )
 
-  // 5. Count DELETED posts
+  // 5. 统计所有已删除的帖子
   const r = await prisma.post.findMany({
     where: {
       deleted: true,
@@ -551,7 +561,7 @@ async function main() {
 main()
 ```
 
-The example outputs the following:
+该示例输出以下内容：
 
 ```
 STARTING SOFT DELETE TEST
@@ -573,26 +583,30 @@ Number of active posts: 0
 Number of SOFT deleted posts: 95
 ```
 
-✔ Pros of this approach:
+✔ 这种方法的优点：
 
-- A developer can make a conscious choice to include deleted records in `findMany`
-- You cannot accidentally read or update a deleted record
+- 开发人员可以有意识地选择将已删除的记录包含在 `findMany` 中
 
-✖ Cons of this approach:
+- 不能意外读取或更新已删除的记录
 
-- Not obvious from API that you aren't getting all records and that `{ where: { deleted: false } }` is part of the default query
-- Return type `update` affected because middleware changes the query to `updateMany`
+✖ 这种方法的缺点：
 
-## FAQ
+-从 API 中不明显看出你没有获得所有记录，并且 `{ where: { deleted: false } }` 是默认查询的一部分
 
-### Can I add a global <inlinecode>includeDeleted</inlinecode> to the <inlinecode>Post</inlinecode> model?
+-返回类型 `update` 受影响，因为中间件将查询更改为 `updateMany`
 
-You may be tempted to 'hack' your API by adding a `includedDeleted` property to the `Post` model and make the following query possible:
+## 常见问题
+
+### 我是否可以将全局<inlinecode>includeDeleted</inlinecode>添加到<inlinecode>Post</inlinecode>模型？
+
+你可能会试图通过向 `Post` 模型添加 `includedDeleted` 属性来 '破解' API，并使以下查询成为可能：
 
 ```ts
-prisma.post.findMany({ where: { includeDeleted: true } })
+
+prisma.post.findMany（{where:{includeDeleted:true}}）
+
 ```
 
-> **Note**: You would still need to write middleware.
+> **注意**：你仍然需要编写中间件。
 
-We **✘ do not** recommend this approach as it pollutes the schema with fields that do not represent real data.
+我们 **✘ 不 ** 推荐这种方法，因为它会用不代表真实数据的字段污染 schema。

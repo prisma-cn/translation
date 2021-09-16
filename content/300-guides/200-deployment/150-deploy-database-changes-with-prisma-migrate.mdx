@@ -1,36 +1,36 @@
 ---
-title: 'Deploying database changes with Prisma Migrate'
-navTitle: 'Deploying database changes'
-metaDescription: 'Learn how to deploy database changes with Prisma Migrate.'
+title: '用Prisma Migrate部署数据库变更'
+navTitle: '部署数据库变更'
+metaDescription: '了解如何使用Prisma Migrate部署数据库变更。'
 ---
 
 <TopBlock>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Prisma Migrate 目前不支持[MongoDB 连接器](././concepts/data-connectors/mongodb).
 
 </Admonition>
 
-To apply pending migrations to development, staging, or testing environments, run the `migrate deploy` command as part of your CI/CD pipeline:
+要在开发、暂存或测试环境中应用未完成的迁移，请运行`migrate deploy`命令作为 CI/CD 管道的一部分:
 
 ```terminal
 npx prisma migrate deploy
 ```
 
-Exactly when to run `prisma migrate deploy` depends on your platform. For example, a simplified [Heroku](./deployment-guides/deploying-to-heroku) workflow includes:
+具体何时运行`prisma migrate deploy`取决于你的平台。例如，一个简化的[Heroku](./deployment-guides/deploying-toheroku)工作流程包括:
 
-1. Ensuring the `./prisma/migration` folder is in source control
-2. Running `prisma migrate deploy` during the [release phase](https://devcenter.heroku.com/articles/release-phase)
+1. 确保`./prisma/migration`文件夹在源代码控制中
+2. 在 [发布阶段](https://devcenter.heroku.com/articles/release-phase) 运行`prisma migrate deploy`
 
-Ideally, `migrate deploy` should be part of an automated CI/CD pipeline, and we do not generally recommend [running this command locally to deploy changes to a production database](./deployment-guides/deploying-migrations-from-a-local-environment) (for example, by temporarily changing the `DATABASE_URL` environment variable). It is not generally considered good practice to store the production database URL locally.
+理想情况下，`migrate deploy`应该是自动化 CI/CD 管道的一部分，我们一般不建议[在本地运行这个命令来部署对生产数据库的变更](./deployment-guides/deploying-migrations-from-a-local-environment)（例如，通过临时改变`DATABASE_URL`环境变量）。一般认为在本地存储生产数据库的 URL 不是好的做法。
 
-Beware that in order to run the `prisma migrate deploy` command, you need access to the `prisma` dependency that is typically added to the `devDependencies`. Some platforms like Vercel, prune development dependencies during the build, thereby preventing you from calling the command. This can be worked around by making the `prisma` a production dependency, by moving it to `dependencies` in your `package.json`.
-For more information about the `migrate deploy` command, see:
+注意，为了运行 `prisma migrate deploy` 命令，你需要访问 `prisma` 依赖，该依赖通常被添加到 `devDependencies`中。一些平台如 Vercel，在构建过程中会清理开发依赖关系，从而使你无法调用该命令。这可以通过将 `prisma`作为生产依赖来解决，把它移到`package.json`中的`dependencies`。
+关于`migrate deploy`命令的更多信息，请参见:
 
 - [`migrate deploy` reference](../../../reference/api-reference/command-reference#migrate-deploy) <span class="api"></span>
 - [How `migrate deploy` works](../../../concepts/components/prisma-migrate#production-and-testing-environments) <span class="concept"></span>
-- [Production troubleshooting](../database/production-troubleshooting)
+- [生产故障排除](../database/production-troubleshooting)
 
 </TopBlock>

@@ -1,23 +1,23 @@
 ---
-title: 'prisma-binding to SDL-first'
-metaTitle: 'Upgrading from Prisma 1 with prisma-binding to SDL-first'
-metaDescription: 'Learn how to upgrade existing Prisma 1 projects with prisma-binding to Prisma 2 (SDL-first).'
+title: 'prisma-binding升级SDL-first'
+metaTitle: '从使用prisma-binding的Prisma 1升级到SDL-first'
+metaDescription: '了解如何将现有使用prisma-binding的Prisma 1项目升级到Prisma 2（SDL-first）。'
 ---
 
-## Overview
+## 概述
 
-This upgrade guide describes how to migrate a Node.js project that's based on [Prisma 1](https://github.com/prisma/prisma1) and uses `prisma-binding` to implement a GraphQL server.
+本升级指南介绍了如何迁移基于[Prisma 1](https://github.com/prisma/prisma1)和使用`prisma-binding`来搭建GraphQL服务。
 
-The code will keep the [SDL-first approach](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3) for constructing the GraphQL schema. When migrating from `prisma-binding` to Prisma Client, the main difference is that the `info` object can't be used to resolve relations automatically any more, instead you'll need to implement your _type resolvers_ to ensure that relations get resolved properly.
+代码将保留[SDL-first approach](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3)用于构造GraphQL schema。当从`prisma-binding`迁移到Prisma Client，最主要的区别在于`info`对象无法再用于自动解析relations，取而代之的是你需要实现你的_type resolvers_来妥善处理relations.
 
-The guide assumes that you already went through the [guide for upgrading the Prisma layer](./upgrading-the-prisma-layer-postgres). This means you already:
+本指南假定你已阅读过[guide for upgrading the Prisma layer](./upgrading-the-prisma-layer-postgres)，这意味着你已经:
 
-- installed the Prisma 2 CLI
-- created your Prisma 2 schema
-- introspected your database and resolved potential schema incompatibilities
-- installed and generated Prisma Client
+- 已安装Prisma 2 CLI
+- 已创建Prisma 2 schema
+- 检查了数据库并解决了潜在的schema[不兼容问题](./schema-incompatibilities-postgres)
+- 已安装和生成的Prisma Client
 
-The guide further assumes that you have a file setup that looks similar to this:
+本指南进一步假设您的文件设置与此类似：
 
 ```
 .
@@ -35,34 +35,34 @@ The guide further assumes that you have a file setup that looks similar to this:
     └── schema.graphql
 ```
 
-The important parts are:
+以下部分请注意：
 
-- A folder called with `prisma` with your Prisma 2 schema
-- A folder called `src` with your application code and a schema called `schema.graphql`
+- 一个包含你的Prisma 2.0 schema的`prisma`文件夹 
+- 一个`src`文件夹，其中包含你的应用程序代码和名为`schema.graphql`的schema
 
-If this is not what your project structure looks like, you'll need to adjust the instructions in the guide to match your own setup.
+如果这与你的项目结构不同，你需要调整指南中的说明以匹配你自己的设置。
 
-## 1. Adjusting your GraphQL schema
+## 1. 调整你的GraphQL schema
 
-With `prisma-binding`, your approach for defining your GraphQL schema (sometimes called [application schema](https://v1.prisma.io/docs/1.20/data-model-and-migrations/data-model-knul/#a-note-on-the-application-schema)) is based on _importing_ GraphQL types from the generated `prisma.graphql` file (in Prisma 1, this is typically called [Prisma GraphQL schema](https://v1.prisma.io/docs/1.20/data-model-and-migrations/data-model-knul/#the-prisma-graphql-schema)). These types mirror the types from your Prisma 1 datamodel and serve as foundation for your GraphQL API.
+使用`prisma-binding`时，定义GraphQL schema（有时称为 [application schema](https://v1.prisma.io/docs/1.20/data-model-and-migrations/data-model-knul/#a-note-on-the-application-schema)）可以通过从生成的`prisma.graphql`文件中_导入_GraphQL types（在Prisma 1中，这是典型的[Prisma GraphQL schema](https://v1.prisma.io/docs/1.20/data-model-and-migrations/data-model-knul/#the-prisma-graphql-schema)）。这些types映射了Prisma 1的数据模型并作为GraphQL API的基础。
 
-With Prisma 2, there's no `prisma.graphql` file any more that you could import from. Therefore, you have to spell out all the types of your GraphQL schema directly inside your `schema.graphql` file.
+在Prisma 2中，不再存在`prisma.graphql`文件且无法从中导入，因此，取而代之的是你必须在GraphQL schema中直接拼写出全部的types。
 
-The easiest way to do so is by downloading the full GraphQL schema from the GraphQL Playground. To do so, open the **SCHEMA** tab and click the **DOWNLOAD** button in the top-right corner, then select **SDL**:
+要实现这一点，最简单的办法是从GraphQL Playground中下载完整的GraphQL schema，在右上角打开**SCHEMA**选项并点击**DOWNLOAD**按钮，然后选择**SDL**：
 
-![Downloading the GraphQL schema with GraphQL Playground](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/BbgLyp2.png)
+![使用GraphQL Playground下载GraphQL模式](https://res.cloudinary.com/prismaio/image/upload/v1628761154/docs/BbgLyp2.png)
 
-Alternatively, you can use the `get-schema` command of the [GraphQL CLI](https://github.com/Urigo/graphql-cli) to download your full schema:
+或者，你可以使用[GraphQL CLI](https://github.com/Urigo/graphql-cli)的`get-schema`命令来下载完整的schema：
 
 ```
 npx graphql get-schema --endpoint __GRAPHQL_YOGA_ENDPOINT__ --output schema.graphql --no-all
 ```
 
-> **Note**: With the above command, you need to replace the `__GRAPHQL_YOGA_ENDPOINT__` placeholder with the actual endpoint of your GraphQL Yoga server.
+> **备注**：使用上述命令时，你要用你实际的GraphQL Yoga服务地址来替换`__GRAPHQL_YOGA_ENDPOINT__`占位符。
 
-Once you obtained the `schema.graphql` file, replace your current version in `src/schema.graphql` with the new contents. Note that the two schemas are 100% equivalent, except that the new one doesn't use [`graphql-import`](https://github.com/ardatan/graphql-import) for importing types from a different file. Instead, it spells out all types in a single file.
+成功获得`schema.graphql`文件后，在`src/schema.graphql`中将你的当前版本替换为新的内容。 注意这两个schemas是100%等效的，只是这个新的不能使用[`graphql-import`](https://github.com/ardatan/graphql-import)从不同的文件中导入types，相反，它在一个文件中列出所有类型。
 
-Here's a comparison of these two versions of the sample GraphQL schema that we'll migrate in this guide (you can use the tabs to switch between the two versions):
+下面我们通过本指南中的迁移来对着两个版本的GraphQL schema示例进行比较（你可以使用选项卡在这两个版本之间切换）：
 
 <CodeBlock languages={["Before (with graphql-import)", "After (used with Prisma 2)"]}>
 
@@ -757,15 +757,15 @@ input UserWhereInput {
 
 </CodeBlock>
 
-You'll notice that the new version of your GraphQL schema not only defines the _models_ that were imported directly, but also additional types (e.g. `input` types) that were not present in the schema before.
+你会注意到，新版本的GraphQL schema不仅定义了直接导入的_models_，而且还定义了以前schema中不存在的其他types（例如`input`）。
 
-## 2. Set up your `PrismaClient` instance
+## 2. 设置你的 `PrismaClient` 实例
 
-`PrismaClient` is your new interface to the database in Prisma 2. It lets you invoke various methods which build SQL queries and send them to the database, returning the results as plain JavaScript objects.
+`PrismaClient`是 Prisma 2中数据库的新接口，它允许你调用各种方法来构建SQL查询并将它们发送到数据库，并将结果作为普通JavaScript对象返回。
 
-The `PrismaClient` query API is inspired by the initial `prisma-binding` API, so a lot of the queries you send with Prisma Client will feel familiar.
+`PrismaClient`查询API的灵感来源于最初的`prisma-binding` API，因此使用prisma客户端发送的许多查询都会让人感到熟悉。
 
-Similar to the `prisma-binding` instance from Prisma 1, you also want to attach your `PrismaClient` from Prisma 2 to GraphQL's `context` so that in can be accessed inside your resolvers:
+与prisma 1中的`prisma-binding`实例类似，你同样希望将prisma 2中的`PrismaClient`附加到GraphQL的`context`中，以便可以在解析程序中访问：
 
 ```js line-number highlight=10-13;delete|14;add
 const { PrismaClient } = require('@prisma/client')
@@ -786,19 +786,19 @@ const server = new GraphQLServer({
 })
 ```
 
-In the code block above, the _red_ lines are the lines to be removed from your current setup, the _green_ lines are the ones that you should add. Of course, it's possible that your previous setup differed from this one (e.g. it's unlikely that your Prisma `endpoint` was `http://localhost:4466` if you're running your API in production), this is just a sample to indicate what it _could_ look like.
+在上面的代码块中，_红色_线是要从当前设置中删除的线，_绿色_是你应该添加的线。当然，你以前的设置可能与此不同（例如，如果你是在生产环境中运行的API，那么Prisma的`endpoint`不太可能是`http://localhost:4466`），这只是一个示例来说明它_可能_是什么样。
 
-When you're now accessing `context.prisma` inside of a resolver, you now have access to the Prisma Client queries.
+当你现在在解析器中访问`context.prisma`时，你可以通过prisma客户端查询。
 
-## 2. Write your GraphQL type resolvers
+## 2. 编写GraphQL类型的解析器
 
-`prisma-binding` was able to _magically_ resolve relations in your GraphQL schema. When not using `prisma-binding` though, you need to explicitly resolve your relations using so-called _type resolvers_.
+`prisma-binding`能够_神奇地_解决GraphQL模式中的关系，但如果不使用`prisma-binding`，则需要使用_类型解析器_来确认解析relations。
 
-> **Note** You can learn more about the concept of type resolvers and why they're necessary in this article: [GraphQL Server Basics: GraphQL Schemas, TypeDefs & Resolvers Explained](https://www.prisma.io/blog/graphql-server-basics-the-schema-ac5e2950214e)
+> **注意**在本文中，你可以点击链接了解更多关于类型解析器的概念以及为什么需要它们：[GraphQL Server Basics: GraphQL Schemas, TypeDefs & Resolvers Explained](https://www.prisma.io/blog/graphql-server-basics-the-schema-ac5e2950214e)
 
-### 2.1. Implementing the type resolver for the `User` type
+### 2.1. 实现`User`类型的解析器
 
-The `User` type in our sample GraphQL schema is defined as follows:
+示例GraphQL模式中的`User`类型定义如下：
 
 ```graphql
 type User implements Node {
@@ -820,14 +820,14 @@ type User implements Node {
 }
 ```
 
-This type has two relations:
+这种类型有两种关系：
 
-- The `posts` field denotes a 1-n relation to `Post`
-- The `profile` field denotes a 1-1 relation to `Profile`
+- `posts`字段表示与`Post`的1-n关系
+- `profile`字段表示与`Profile`的1-1关系
 
-Since you're not using `prisma-binding` any more, you now need to resolve these relations "manually" in type resolvers.
+由于不再使用`prisma-binding`，现在需要在类型解析程序中"手动"解析这些关系。
 
-You can do so by adding a `User` field to your _resolver map_ and implement the resolvers for the `posts` and `profile` relations as follows:
+你可以通过在_解析器映射_中添加一个`User`字段来实现，并按如下方式实现`posts`和`profile`关系的解析器：
 
 ```js line-number highlight=8-23;add
 const resolvers = {
@@ -856,9 +856,9 @@ const resolvers = {
 }
 ```
 
-Inside of these resolvers, you're using your new `PrismaClient` to perform a query against the database. Inside the `posts` resolver, the database query loads all `Post` records from the specified `author` (whose `id` is carried in the `parent` object). Inside the `profile` resolver, the database query loads the `Profile` record from the specified `user` (whose `id` is carried in the `parent` object).
+在这些解析器中，你正在使用新的`PrismaClient`对数据库执行查询。在`posts`解析器中，数据库查询从指定的`author`（其`id`包含在`parent`对象中）加载所有`Post`记录，在`profile`解析器中，数据库查询从指定的`user`（其`id`在`parent`对象中携带）加载`profile`记录。
 
-Thanks to these extra resolvers, you'll now be able to nest relations in your GraphQL queries/mutations whenever you're requesting information about the `User` type in a query, e.g.:
+多亏了这些额外的解析器，你现在可以在查询中请求有关`User`类型的信息时，在GraphQL queries/mutations中嵌套关系，例如：
 
 ```graphql
 {
@@ -879,9 +879,9 @@ Thanks to these extra resolvers, you'll now be able to nest relations in your Gr
 }
 ```
 
-### 2.2. Implementing the type resolver for the `Post` type
+### 2.2. 为`Post`类型实现类型解析器
 
-The `Post` type in our sample GraphQL schema is defined as follows:
+示例GraphQL模式中的`Post`类型定义如下：
 
 ```graphql
 type Post implements Node {
@@ -904,14 +904,14 @@ type Post implements Node {
 }
 ```
 
-This type has two relations:
+这种类型有两种关系：
 
-- The `author` field denotes a 1-n relation to `User`
-- The `categories` field denotes a m-n relation to `Category`
+- `author`字段表示与`User`的1-n关系`
+- `categories`字段表示与`Category`的m-n关系`
 
-Since you're not using `prisma-binding` any more, you now need to resolve these relations "manually" in type resolvers.
+由于不再使用`prisma-binding`，现在需要在类型解析程序中"手动"解析这些关系。
 
-You can do so by adding a `Post` field to your _resolver map_ and implement the resolvers for the `author` and `categories` relations as follows:
+你可以通过将`Post`字段添加到你的_分解器映射_，并实现`author`和`categories`关系解析，如下所示：
 
 ```js line-number highlight=11-26;add
 const resolvers = {
@@ -943,9 +943,9 @@ const resolvers = {
 }
 ```
 
-Inside of these resolvers, you're using your new `PrismaClient` to perform a query against the database. Inside the `author` resolver, the database query loads the `User` record that represents the `author` of the `Post`. Inside the `categories` resolver, the database query loads all `Category` records from the specified `post` (whose `id` is carried in the `parent` object).
+在这些解析器中，你使用新的`PrismaClient`对数据库执行查询。在`author`解析器中，数据库查询加载表示`Post`的`author`的`User`记录。在`categories`解析器中，数据库查询从指定的`post`（其`id`包含在`parent`对象中）加载所有`categority`记录。
 
-Thanks to these extra resolvers, you'll now be able to nest relations in your GraphQL queries/mutations whenever you're requesting information about the `User` type in a query, e.g.:
+多亏了这些额外的解析器，你现在可以在查询中请求有关`User`类型的信息时，在GraphQL queries/mutations中嵌套关系，例如：
 
 ```graphql
 {
@@ -966,9 +966,9 @@ Thanks to these extra resolvers, you'll now be able to nest relations in your Gr
 }
 ```
 
-### 2.3. Implementing the type resolver for the `Profile` type
+### 2.3. 为`Profile`类型实现类型解析器
 
-The `Profile` type in our sample GraphQL schema is defined as follows:
+示例GraphQL模式中的`Profile`类型定义如下：
 
 ```graphql
 type Profile implements Node {
@@ -978,11 +978,11 @@ type Profile implements Node {
 }
 ```
 
-This type has one relation: The `user` field denotes a 1-n relation to `User`.
+此类型有一个关系：`user`字段表示与`User`的1-n关系。
 
-Since you're not using `prisma-binding` any more, you now need to resolve this relation "manually" in type resolvers.
+由于不再使用`prisma-binding`，现在需要在类型解析程序中"手动"解析此关系。
 
-You can do so by adding a `Profile` field to your _resolver map_ and implement the resolvers for the `owner` relation as follows:
+你可以通过将`Profile`字段添加到_分解器映射_中来完成此操作，并按如下方式实现`owner`关系的解析程序：
 
 ```js line-number highlight=14-22;add
 const resolvers = {
@@ -1010,13 +1010,13 @@ const resolvers = {
 }
 ```
 
-Inside of this resolver, you're using your new `PrismaClient` to perform a query against the database. Inside the `user` resolver, the database query loads the `User` records from the specified `profile` (whose `id` is carried in the `parent` object).
+在这个解析器中，你正在使用新的`PrismaClient`对数据库执行查询。在'user'解析器中，数据库查询从指定的`profile`（其`id`包含在`parent`对象中）加载`user`记录。
 
-Thanks to this extra resolver, you'll now be able to nest relations in your GraphQL queries/mutations whenever you're requesting information about the `Profile` type in a query.
+多亏了这个额外的解析器，你现在可以在查询中请求有关`Profile`类型的信息时，在GraphQL queries/mutations中嵌套关系.
 
-### 2.4. Implementing the type resolver for the `Category` type
+### 2.4. 为`Category`类型实现类型解析器
 
-The `Category` type in our sample GraphQL schema is defined as follows:
+示例GraphQL模式中的`Category`类型定义如下：
 
 ```graphql
 type Category implements Node {
@@ -1034,11 +1034,11 @@ type Category implements Node {
 }
 ```
 
-This type has one relation: The `posts` field denotes a m-n relation to `Post`.
+此类型有一个关系：`posts`字段表示与`Post`的m-n关系。
 
-Since you're not using `prisma-binding` any more, you now need to resolve this relation "manually" in type resolvers.
+由于不再使用`prisma-binding`，现在需要在类型解析程序中"手动"解析此关系。
 
-You can do so by adding a `Category` field to your _resolver map_ and implement the resolvers for the `posts` and `profile` relations as follows:
+你可以通过将`Category`字段添加到_分解器映射_中来实现，并按如下方式实现`posts`和`profile`关系的解析程序：
 
 ```js line-number highlight=17-25;add
 const resolvers = {
@@ -1069,23 +1069,23 @@ const resolvers = {
 }
 ```
 
-Inside of this resolver, you're using your new `PrismaClient` to perform a query against the database. Inside the `posts` resolver, the database query loads all `Post` records from the specified `categories` (whose `id` is carried in the `parent` object).
+在这个解析器中，你正在使用新的`PrismaClient`对数据库执行查询。在`posts`解析器中，数据库查询从指定的`Post`（其`id`包含在`parent`对象中）加载所有`Post`记录。
 
-Thanks to this extra resolver, you'll now be able to nest relations in your GraphQL queries/mutations whenever you're requesting information about a `Category` type in a query.
+多亏了这个额外的解析器，你现在可以在查询中请求有关`Category`类型的信息时，在GraphQL queries/mutations中嵌套关系。
 
-With all your type resolvers in place, you can start migrating the actual GraphQL API operations.
+所有类型解析程序就绪后，就可以开始迁移实际的GraphQLAPI操作了。
 
-## 3. Migrate GraphQL operations
+## 3. 迁移GraphQL操作
 
-### 3.1. Migrate GraphQL queries
+### 3.1. 迁移GraphQL查询
 
-In this section, you'll migrate all GraphQL _queries_ from `prisma-binding` to Prisma Client.
+在本节中，你将把所有GraphQL_查询_从`prisma-binding`迁移到Prisma Client。
 
-#### 3.1.1. Migrate the `users` query (which uses `forwardTo`)
+#### 3.1.1. 迁移`users`查询（使用`forwardTo`）
 
-In our sample API, the `users` query from the sample GraphQL schema is defined and implemented as follows.
+在我们的示例API中，来自示例GraphQL模式的`users`查询定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有`prisma-binding`的SDL模型定义
 
 ```graphql
 type Query {
@@ -1094,7 +1094,7 @@ type Query {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用`prisma-binding`的解析器实现
 
 ```js
 const resolvers = {
@@ -1105,9 +1105,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `users` resolver with Prisma Client
+##### 用Prisma Client实现“用户”解析器
 
-To re-implement queries that were previously using `forwardTo`, the idea is to pass the incoming filtering, ordering and pagination arguments to `PrismaClient`:
+要重新实现以前使用`forwardTo`的查询，可以将传入的筛选、排序和分页参数传递给`PrismaClient`：
 
 ```js
 const resolvers = {
@@ -1130,13 +1130,13 @@ const resolvers = {
 }
 ```
 
-Note that this approach does **not** work yet because the _structures_ of the incoming arguments is different from the ones expected by `PrismaClient`. To ensure the structures are compatible, you can use the `prisma-binding-argument-transform` npm package which ensures compatibility:
+注意，这种方法**还不能**生效，因为传入参数的_结构_与`PrismaClient`所需要的不同，为了确保结构的兼容性，可以使用`prisma-binding-argument-transform`的npm package以确保兼容性：
 
 ```copy
 npm install @prisma/binding-argument-transform
 ```
 
-You can now use this package as follows:
+你现在可以按如下方式使用此package：
 
 ```js
 const {
@@ -1166,13 +1166,13 @@ const resolvers = {
 }
 ```
 
-The last remaining issue with this are the pagination arguments. Prisma 2 introduces a [new pagination API](https://github.com/prisma/prisma/releases/tag/2.0.0-beta.7):
+最后剩下的问题是分页参数，Prisma 2介绍了一种[新的分页API](https://github.com/prisma/prisma/releases/tag/2.0.0-beta.7):
 
-- The `first`, `last`, `before` and `after` arguments are removed
-- The new `cursor` argument replaces `before` and `after`
-- The new `take` argument replaces `first` and `last`
+- 删除`first`、`last`、`before`和`after`参数
+- 新增`cursor`参数替换了`before`和`after`
+- 新增`take`参数替换了`first`和`last`
 
-Here is how you can adjust the call to make it compliant with the new Prisma Client pagination API:
+以下是如何调整调用以使其符合新的Prisma Client分页API：
 
 ```js
 const {
@@ -1210,13 +1210,13 @@ const resolvers = {
 }
 ```
 
-The calculations are needed to ensure the incoming pagination arguments map properly to the ones from the Prisma Client API.
+需要进行计算，以确保传入的分页参数正确映射到Prisma Client的API中的参数。
 
-#### 3.1.2. Migrate the `posts(searchString: String): [Post!]!` query
+#### 3.1.2. 迁移`posts(searchString: String): [Post!]!`查询
 
-The `posts` query is defined and implemented as follows.
+`posts`查询的定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有`prisma-binding`的SDL模型定义
 
 ```graphql
 type Query {
@@ -1225,7 +1225,7 @@ type Query {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用`prisma-binding`的解析器实现
 
 ```js
 const resolvers = {
@@ -1248,9 +1248,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `posts` resolver with Prisma Client
+##### 用Prisma Client实现`posts`解析器
 
-To get the same behavior with the new Prisma Client, you'll need to adjust your resolver implementation:
+要获得与新Prisma Client相同的能力，你需要调整解析器实现：
 
 ```js line-number highlight=3-11;normal
 const resolvers = {
@@ -1270,7 +1270,7 @@ const resolvers = {
 }
 ```
 
-You can now send the respective query in the GraphQL Playground:
+现在，你可以在GraphQL中发送相应的查询：
 
 ```graphql
 {
@@ -1285,11 +1285,11 @@ You can now send the respective query in the GraphQL Playground:
 }
 ```
 
-#### 3.1.3. Migrate the `user(uniqueInput: UserUniqueInput): User` query
+#### 3.1.3. 迁移`user(uniqueInput: UserUniqueInput): User`查询
 
-In our sample app, the `user` query is defined and implemented as follows.
+在我们的示例应用程序中，`user`查询的定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有`prisma-binding`的SDL模型定义
 
 ```graphql
 type Query {
@@ -1303,7 +1303,7 @@ input UserUniqueInput {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用`prisma-binding`的解析器实现
 
 ```js
 const resolvers = {
@@ -1321,9 +1321,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `user` resolver with Prisma Client
+##### 用Prisma Client实现`user`解析器
 
-To get the same behavior with the new Prisma Client, you'll need to adjust your resolver implementation:
+要获得与新Prisma Client相同的能力，你需要调整解析器实现：
 
 ```js line-number highlight=3-7;normal
 const resolvers = {
@@ -1338,7 +1338,7 @@ const resolvers = {
 }
 ```
 
-You can now send the respective query via the GraphQL Playground:
+现在，你可以通过GraphQL发送相应的查询：
 
 ```graphql
 {
@@ -1349,15 +1349,15 @@ You can now send the respective query via the GraphQL Playground:
 }
 ```
 
-### 3.1. Migrate GraphQL mutations
+### 3.1. 迁移GraphQL mutations
 
-In this section, you'll migrate the GraphQL mutations from the sample schema.
+在本节中，你将从示例模式迁移GraphQL mutations。
 
-#### 3.1.2. Migrate the `createUser` mutation (which uses `forwardTo`)
+#### 3.1.2. 迁移`createUser` mutation（使用`forwardTo`）
 
-In the sample app, the `createUser` mutation from the sample GraphQL schema is defined and implemented as follows.
+在示例应用程序中，示例GraphQL模式中的`createUser` mutation定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有prisma-binding的SDL模型定义
 
 ```graphql
 type Mutation {
@@ -1366,7 +1366,7 @@ type Mutation {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 具有`prisma-binding`的解析器实现
 
 ```js
 const resolvers = {
@@ -1377,9 +1377,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `createUser` resolver with Prisma Client
+##### 使用Prisma Client实现`createUser`解析器
 
-To get the same behavior with the new Prisma Client, you'll need to adjust your resolver implementation:
+要获得与新Prisma Client相同的行为，你需要调整解析器实现：
 
 ```js line-number highlight=3-7;normal
 const resolvers = {
@@ -1394,7 +1394,7 @@ const resolvers = {
 }
 ```
 
-You can now write your first mutation against the new API, e.g.:
+你现在可以针对新API编写第一个mutation，例如：
 
 ```graphql
 mutation {
@@ -1404,11 +1404,11 @@ mutation {
 }
 ```
 
-#### 3.1.3. Migrate the `createDraft(title: String!, content: String, authorId: String!): Post!` query
+#### 3.1.3. 迁移`createDraft(title: String!, content: String, authorId: String!): Post!`查询
 
-In the sample app, the `createDraft` mutation is defined and implemented as follows.
+在示例应用程序中，`createDraft` mutation的定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有prisma-binding的SDL模型定义
 
 ```graphql
 type Mutation {
@@ -1417,7 +1417,7 @@ type Mutation {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用prisma-binding的解析器实现
 
 ```js
 const resolvers = {
@@ -1443,9 +1443,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `createDraft` resolver with Prisma Client
+##### 使用Prisma Client实现`createDraft`解析器
 
-To get the same behavior with the new Prisma Client, you'll need to adjust your resolver implementation:
+要获得与新Prisma Client相同的行为，你需要调整解析器实现：
 
 ```js line-number highlight=3-15;normal
 const resolvers = {
@@ -1468,7 +1468,7 @@ const resolvers = {
 }
 ```
 
-You can now send the respective mutation via the GraphQL Playground:
+现在，你可以通过GraphQL发送相应的mutation：
 
 ```graphql
 mutation {
@@ -1483,11 +1483,11 @@ mutation {
 }
 ```
 
-#### 3.1.4. Migrate the `updateBio(bio: String, userUniqueInput: UserUniqueInput!): User` mutation
+#### 3.1.4. 迁移`updateBio(bio: String, userUniqueInput: UserUniqueInput!): User` mutation
 
-In the sample app, the `updateBio` mutation is defined and implemented as follows.
+在示例应用程序中，`updateBio` mutation的定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有prisma-binding的SDL模型定义
 
 ```graphql
 type Mutation {
@@ -1496,7 +1496,7 @@ type Mutation {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用prisma-binding的解析器实现
 
 ```js
 const resolvers = {
@@ -1519,9 +1519,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `updateBio` resolver with Prisma Client
+##### 使用Prisma Client实现'`updateBio`解析器
 
-To get the same behavior with Prisma Client, you'll need to adjust your resolver implementation:
+要获得与Prisma Client相同的行为，你需要调整解析器实现：
 
 ```js line-number highlight=3-12;normal
 const resolvers = {
@@ -1541,7 +1541,7 @@ const resolvers = {
 }
 ```
 
-You can now send the respective mutation via the GraphQL Playground :
+现在，你可以通过GraphQL发送相应的mutation：
 
 ```graphql
 mutation {
@@ -1559,11 +1559,11 @@ mutation {
 }
 ```
 
-#### 3.1.5. Migrate the `addPostToCategories(postId: String!, categoryIds: [String!]!): Post` mutation
+#### 3.1.5. 迁移`addPostToCategories(postId: String!, categoryIds: [String!]!): Post` mutation
 
-In our sample app, the `addPostToCategories` mutation is defined and implemented as follows.
+在我们的示例应用程序中，`addPostToCategories` mutation的定义和实现如下。
 
-##### SDL schema definition with `prisma-binding`
+##### 带有prisma-binding的SDL模型定义
 
 ```graphql
 type Mutation {
@@ -1572,7 +1572,7 @@ type Mutation {
 }
 ```
 
-##### Resolver implementation with `prisma-binding`
+##### 使用prisma-binding的解析器实现
 
 ```js
 const resolvers = {
@@ -1598,9 +1598,9 @@ const resolvers = {
 }
 ```
 
-##### Implementing the `addPostToCategories` resolver with Prisma Client
+##### 用Prisma Client实现`addPostToCategories`解析器
 
-To get the same behavior with Prisma Client, you'll need to adjust your resolver implementation:
+要获得与Prisma Client相同的行为，你需要调整解析器实现：
 
 ```js line-number highlight=3-13;normal
 const resolvers = {
@@ -1621,7 +1621,7 @@ const resolvers = {
 }
 ```
 
-You can now send the respective query via the GraphQL Playground:
+现在，你可以通过GraphQL发送相应的查询：
 
 ```graphql
 mutation {
@@ -1639,26 +1639,26 @@ mutation {
 }
 ```
 
-## 4. Cleaning up
+## 4. 清理
 
-Since the entire app has now been upgraded to Prisma 2, you can delete all unnecessary files and remove the no longer needed dependencies.
+由于整个应用程序现已升级到Prisma 2，因此你可以删除所有不必要的文件并删除不再需要的依赖项。
 
-### 4.1. Clean up npm dependencies
+### 4.1. 清理npm依赖项
 
-You can start by removing npm dependencies that were related to the Prisma 1 setup:
+你可以从删除与Prisma 1设置相关的npm依赖项开始：
 
 ```copy
 npm uninstall graphql-cli prisma-binding prisma1
 ```
 
-### 4.2. Delete unused files
+### 4.2. 删除未使用的文件
 
-Next, delete the files of your Prisma 1 setup:
+接下来，删除Prisma 1安装程序的文件：
 
 ```copy
 rm prisma1/datamodel.prisma prisma1/prisma.yml
 ```
 
-### 4.3. Stop the Prisma server
+### 4.3. 停止Prisma服务器
 
-Finally, you can stop running your Prisma server.
+最后，你可以停止运行Prisma服务器。

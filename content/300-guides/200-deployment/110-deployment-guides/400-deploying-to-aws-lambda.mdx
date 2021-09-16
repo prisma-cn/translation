@@ -1,30 +1,30 @@
 ---
-title: 'Deploying to AWS Lambda'
-metaTitle: 'Deploying to AWS Lambda'
-metaDescription: 'Learn how to deploy Node.js and TypeScript applications that are using Prisma Client to AWS Lambda.'
+title: '部署到AWS Lambda'
+metaTitle: '部署到AWS Lambda'
+metaDescription: '了解如何将使用Prisma客户端的Node.js和TypeScript应用程序部署到AWS Lambda。'
 ---
 
 <TopBlock>
 
-In this guide, you will set up and deploy a serverless Node.js REST API to [AWS Lambda](https://aws.amazon.com/lambda/) using the Serverless Framework.
+在本指南中，您将使用无服务器框架设置和部署一个无服务器 Node.js REST API 到[AWS Lambda](https://aws.amazon.com/lambda/)。
 
-AWS Lambda is part of the AWS cloud platform and allows you to use the serverless paradigm to run your code without managing servers. To deploy a REST API to AWS Lambda, you need to make use of several additional AWS services, namely [S3](https://aws.amazon.com/s3/) to host the files and [API Gateway](https://aws.amazon.com/api-gateway/) to expose the API over HTTP.
+AWS Lambda 是 AWS 云平台的一部分，允许你使用无服务器范式来运行你的代码，而无需管理服务器。要将 REST API 部署到 AWS Lambda，你需要利用几个额外的 AWS 服务，即[S3](https://aws.amazon.com/s3/)来托管文件和[API Gateway](https://aws.amazon.com/api-gateway/)来通过 HTTP 公开 API。
 
-The Serverless Framework simplifies the deployment to Lambda with a CLI that helps with workflow automation and AWS resource provisioning.
+无服务器框架通过 CLI 简化了对 Lambda 的部署，有助于工作流自动化和 AWS 资源配置。
 
-The REST API will use Prisma Client to handle fetching, creating, and deleting records from a database. Specifically, each function will represent a REST resource endpoint and use Prisma Client to handle database operations against a PostgreSQL database (e.g. hosted on Heroku).
+REST API 将使用 Prisma 客户端来处理从数据库中获取、创建和删除记录。具体来说，每个函数将代表一个 REST 资源端点，并使用 Prisma 客户端来处理针对 PostgreSQL 数据库（例如，托管在 Heroku 上）的数据库操作。
 
-The focus of this guide is showing how an API based on Prisma can be deployed to AWS Lambda. The starting point will be the [Prisma AWS example](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/aws-lambda) which has a couple of REST endpoints preconfigured as serverless functions.
+本指南的重点是展示如何将基于 Prisma 的 API 部署到 AWS Lambda。出发点将是[Prisma AWS 示例](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/aws-lambda)，其中有几个 REST 端点被预设为 serverless 函数。
 
-> Throughout the guide you'll find various **checkpoints** that enable you to validate whether you performed the steps correctly.
+> 在整个指南中，你会发现各种**检查点**，使你能够验证你是否正确执行了这些步骤。
 
 </TopBlock>
 
-## A note on deploying GraphQL servers to AWS Lambda
+## 关于将 GraphQL 服务器部署到 AWS Lambda 的说明
 
-While the example uses REST, the same principles apply to a GraphQL server, with the main difference being that you typically only need a single function to serve a GraphQL API.
+虽然这个例子使用的是 REST，但同样的原则也适用于 GraphQL 服务器，主要区别在于，你通常只需要一个函数来为 GraphQL API 提供服务。
 
-In that function, the `context.callbackWaitsForEmptyEventLoop` of the [AWS Lambda Context Object](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html) needs to be set to `false` as follows:
+在该函数中，[AWS Lambda Context Object](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html)的`context.callbackWaitsForEmptyEventLoop`需要被设置为`false`，如下所示。
 
 ```js
 exports.server = (event, context, cb) => {
@@ -35,27 +35,27 @@ exports.server = (event, context, cb) => {
 }
 ```
 
-## Prerequisites
+## 前提条件
 
-- Hosted PostgreSQL database and a URL from which it can be accessed, e.g. `postgresql://username:password@your_postgres_db.cloud.com/db_identifier` (you can use Heroku, which offers a [free plan](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)).
-- [AWS](https://aws.amazon.com/) account and a corresponding <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html">access key</a> for programmatic access.
-- [Serverless Framework CLI](https://www.serverless.com/framework/docs/getting-started/) installed.
-- Node.js installed.
-- PostgreSQL CLI `psql` installed.
+- 托管的 PostgreSQL 数据库和一个可以访问的 URL，例如`postgresql://username:password@your_postgres_db.cloud.com/db_identifier`（你可以使用 Heroku，它提供一个[免费计划](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1)）
+- [AWS](https://aws.amazon.com/)帐户和相应的<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html">访问密钥</a>，用于编程访问
+- 安装了[Serverless Framework CLI](https://www.serverless.com/framework/docs/getting-started/)
+- 安装了 Node.js
+- 安装了 PostgreSQL CLI `psql`
 
-## Prisma workflow
+## Prisma 工作流程
 
-Prisma supports different workflows depending on whether you integrate with an existing database or create a new one from scratch. Regardless of the workflow, Prisma relies on the Prisma schema, i.e. `schema.prisma` file.
+Prisma 支持不同的工作流程，这取决于你是与现有数据库集成还是从头开始创建一个新的数据库。无论哪种工作流程，Prisma 都依赖于 Prisma prisma，即`schema.prisma`文件。
 
-This guide starts with an empty database created with plain SQL and looks as follows:
+本指南从一个用普通 SQL 创建的空数据库开始，看起来如下。
 
-1. Define the database schema using SQL.
-1. Run `prisma db pull` locally which will introspect and populate the `schema.prisma` with models based on the database schema.
-1. Run `prisma generate` which will generate Prisma Client based on the Prisma schema.
+1. 使用 SQL 定义数据库模式。
+1. 在本地运行`prisma db pull`，它将根据数据库 schema 并填充`schema.prisma`中的模型。
+1. 运行`prisma generate`，它将基于 Prisma 模式生成 Prisma 客户端。
 
-## 1. Download the example
+## 1. 下载示例
 
-Open your terminal and navigate to a location of your choice. Create the directory that will hold the application code and download the example code:
+打开你的终端，导航到你选择的一个位置。创建将存放应用程序代码的目录，并下载示例代码:
 
 ```terminal
 mkdir prisma-aws-lambda
@@ -65,7 +65,7 @@ curl https://codeload.github.com/prisma/prisma-examples/tar.gz/latest | tar -xz 
 
 <!-- tar strip folder is a concatenation of the REPOSITORY-BRANCH/REF, e.g. prisma-examples-latest -->
 
-**Checkpoint:** `ls -1` should show:
+检查点：ls -1 应该显示:
 
 ```terminal
 ls -1
@@ -80,55 +80,55 @@ schema.sql
 serverless.yml
 ```
 
-After downloading the example code, install the dependencies:
+在下载了示例代码后，安装依赖项:
 
 ```
 npm install
 ```
 
-## 2. Set the DATABASE_URL environment variable locally
+## 2. 在本地设置 DATABASE_URL 环境变量
 
-Set the `DATABASE_URL` environment variable locally so you can create the database schema and Prisma can access the database to introspect:
+在本地设置 `DATABASE_URL` 环境变量，这样你就可以创建数据库 schema，Prisma 就可以访问数据库。
 
 ```terminal
 export DATABASE_URL="postgresql://__USER__:__PASSWORD__@__HOST__/__DATABASE__"
 ```
 
-> **Note:** you will need the `DATABASE_URL` environment variable for the subsequent steps. Set it in all terminal sessions related to this project.
+> **注意：**你将需要`DATABASE_URL`环境变量来进行后续步骤。在所有与这个项目有关的终端会话中设置它。
 
-You need to replace the uppercase placeholders with your database credentials, e.g.:
+你需要用你的数据库凭证替换大写的占位符，例如：:
 
 ```terminal
 postgresql://janedoe:randompassword@yourpostgres.compute-1.amazonaws.com:5432/yourdbname
 ```
 
-## 3. Set the DATABASE_URL in `.env`
+## 3. 在".env "中设置 DATABASE_URL
 
-For the Lambda functions to access the database, they need access to the `DATABASE_URL` environment variable.
+为了让 Lambda 函数能够访问数据库，它们需要访问`DATABASE_URL`环境变量。
 
-For this, you need to define a `.env` file which the preconfigured `serverless-dotenv-plugin` will use to inject into the function runtime.
+为此，你需要定义一个`.env`文件，预配置的`serverless-dotenv-plugin`将使用该文件注入函数运行时。
 
-The repository contains a `.env.example` example file to assist with this.
+资源库中包含一个`.env.example'的例子文件，以协助完成这项工作。
 
-Copy the file:
+复制该文件:
 
 ```
 cp .env.example .env
 ```
 
-Then open the .env file and set the `DATABASE_URL` with the same value as in step 2.
+然后打开.env 文件，将`DATABASE_URL`设置为与步骤 2 相同的值。
 
-> **Note:** When working with Git repositories, it's best practice to keep secrets, e.g. DATABASE_URL out of the repository. This is typically done by adding a line to `.gitignore` to ignore the `.env` file. This guide only copies the source without creating a repository, so this is not necessary unless you initialize a repository.
+> **注意：**在使用 Git 仓库时，最好的做法是保持秘密，例如 DATABASE_URL 不在仓库中。这通常是通过在`.gitignore`中添加一行来忽略`.env`文件来实现。本指南只复制源代码而不创建版本库，所以除非你初始化一个版本库，否则没有必要这样做。
 
-## 4. Create the database schema
+## 4. 创建数据库 schema
 
-To create your database schema, run the `schema.sql` from the example code as follows:
+为了创建你的数据库 schema，运行示例代码中的`schema.sql`，如下所示:
 
 ```terminal
 psql $DATABASE_URL -f schema.sql
 ```
 
-**Checkpoint:** `psql $DATABASE_URL -c "\dt"` should show the list of tables:
+**检查点：** `psql $DATABASE_URL -c "\dt"`应该显示表的列表:
 
 ```terminal
           List of relations
@@ -139,19 +139,19 @@ psql $DATABASE_URL -f schema.sql
  public | User    | table | janedoe
 ```
 
-Congratulations, you have successfully created the database schema.
+恭喜你，你已经成功创建了数据库 schema.
 
-## 5. Introspect the database
+## 5. 介绍数据库
 
-Introspect the database with the Prisma CLI:
+用 Prisma CLI 对数据库进行检查:
 
 ```terminal
 npx prisma db pull
 ```
 
-Prisma will introspect the database defined in the `datasource` block of the Prisma schema and populate the Prisma schema with models corresponding to the database tables.
+Prisma 将对 Prisma schema 的`datasource`块中定义的数据库进行初始化，并将对应于数据库表的模型填充到 Prisma schema 中。
 
-**Checkpoint:** `prisma/schema.prisma` should look as follows (note that the fields on the models have been reordered for better readability):
+**检查点：** `prisma/schema.prisma`应该如下所示（注意模型上的字段已经被重新排序，以提高可读性:
 
 ```prisma file=schema.prisma
 model Post {
@@ -180,18 +180,18 @@ model User {
 }
 ```
 
-You can now run `prisma generate` to generate the Prisma Client based on your new Prisma schema. Whenever you make changes to your Prisma schema in the future, you manually need to invoke `prisma generate` in order to accommodate the changes in your Prisma Client API.
+你现在可以运行`prisma generate`来生成基于你的新 Prisma schema 的 Prisma Client 。无论何时你对你的 Prisma schema 进行修改，你都需要手动调用`prisma generate`，以适应你的 Prisma Client API 的变化。
 
-### Rename the relation fields for easy access
+### 重命名关系字段以方便访问
 
-Because both the generated `Post` and `Profile` fields in the `User` model are _virtual_ (i.e. they're _not backed by a foreign key in the database_), you can manually rename them in your Prisma schema. This will only affect the generated client and is typically done so that they have a more meaningful name in the context of the relation.
+因为在 `User` 模型中生成的 `Post` 和 `Profile` 字段都是\_虚拟的（也就是说，它们不是由数据库中的外键支持的），你可以在你的 Prisma schema 中手动重命名它们。这只会影响生成的客户端，通常是为了让它们在关系的上下文中有一个更有意义的名字。
 
-In the resulting Prisma schema there are two types of relation fields:
+在生成的 Prisma schema 中，有两种类型的关系字段:
 
-- Relation fields: identified by having a Model name as the type, e.g. the `User` field in the `Post` model. Can be renamed to better fit its usage, e.g. `User` -> `author`.
-- [Relation scalar fields](../../../../../../concepts/components/prisma-schema/relations): these are used to store the foreign key, e.g. the `authorId` field in the `Post` model. Cannot be rename as it must match the field in the database.
+- 关系字段：通过将模型名称作为类型来识别，例如`Post`模型中的 `User`字段。可以重命名以更好地适应它的使用，例如：`User`->`author`。
+- [关系标量字段](.../.../.../.../concepts/components/prisma-schema/relations)：这些用于存储外键，例如`Post`模型中的`authorId`字段。不能重命名，因为它必须与数据库中的字段匹配。
 
-The names of the relation fields are used in the client to access those relations for example, fetching a specific `Post` and its associated `User` object would as follows with the Prisma schema above:
+关系字段的名称在客户端用于访问这些关系，例如，获取一个特定的 `Post` 及其相关的 `User`对象，在上面的 Prisma 模式下，如下所示:
 
 ```js
 const postAuthor = await prisma.post.findUnique({
@@ -200,7 +200,7 @@ const postAuthor = await prisma.post.findUnique({
 })
 ```
 
-If you rename the `User` field in the `Post` model to `author`, you'll be able to access it as follows:
+如果你把`Post`模型中的`User`字段重命名为`author`，你就可以按以下方式访问它:
 
 ```js
 const postAuthor = await prisma.post.findUnique({
@@ -209,7 +209,7 @@ const postAuthor = await prisma.post.findUnique({
 })
 ```
 
-Based on that logic, rename the relation fields to better adhere to the [naming conventions](../../../reference/api-reference/prisma-schema-reference#naming-conventions-1) <span class="api"></span>:
+基于这个逻辑，重命名关系字段以更好地遵守[命名惯例](.../.../reference/api-reference/prisma-schema-reference#naming-conventions-1) <span class="api"></span>:
 
 ```prisma file=schema.prisma
 model Post {
@@ -238,27 +238,27 @@ model User {
 }
 ```
 
-## 6. Set the AWS Access key as an environment variable
+## 6. 将 AWS 的访问密钥设置为环境变量
 
-In order for the Serverless Framework to provision the AWS resources and deploy your application, you need to configure the access key.
+为了让 Serverless Framework 配置 AWS 资源并部署你的应用程序，你需要配置访问密钥。
 
-There are different ways to get the access key, depending on whether you create you use your personal account or create a special IAM user for the Serverless Framework (this approach is recommended for security reasons as it allows to set granular permissions). To get an access key for your account, follow the <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey">AWS guide</a>
+有不同的方法来获取访问密钥，这取决于你是使用个人账户还是为无服务器框架创建一个特殊的 IAM 用户（出于安全考虑，推荐使用这种方法，因为它可以设置细粒度的权限）。要获得您账户的访问密钥，请遵循<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey">AWS 指南</a>。
 
-Once you have the _Access key ID_ and a _Secret access key_. Set them with the following command:
+一旦你有了*访问密钥 ID*和*秘密访问密钥*。用以下命令设置它们:
 
 ```
 serverless config credentials --provider aws --key AWS_ACCESS_KEY_ID  --secret AWS_SECRET_ACCESS_KEY
 ```
 
-## 7. Deploy the app
+## 7. 部署应用程序
 
-Your project is now ready for deployment:
+你的项目现在已经准备好部署了:
 
 ```
 serverless deploy
 ```
 
-Serverless will create the AWS resources and upload your code, and output the service information:
+Serverless 将创建 AWS 资源，上传你的代码，并输出服务信息:
 
 ```
 Service Information
@@ -285,17 +285,17 @@ layers:
   None
 ```
 
-**Checkpoint:** Call the status endpoint
+**检查点：**调用状态端点
 
 ```terminal
 curl https://UNIQUE_IDENTIFIER.execute-api.us-east-1.amazonaws.com/dev/
 ```
 
-The call should return: `{"up":true}`
+调用应该返回 `{"up":true}`
 
-## 8. Test your deployed REST API
+## 8. 测试你部署的 REST API
 
-With the API base URL: `https://UNIQUE_IDENTIFIER.execute-api.us-east-1.amazonaws.com/dev/`, you can test the API's endpoints:
+使用 API 的基本 URL。`https://UNIQUE_IDENTIFIER.execute-api.us-east-1.amazonaws.com/dev/`，你可以测试 API 的端点:
 
 | Endpoint      | Description                                                                                                              | Implementation            |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
@@ -305,31 +305,31 @@ With the API base URL: `https://UNIQUE_IDENTIFIER.execute-api.us-east-1.amazonaw
 | `POST /users` | Create a single `users` in the database                                                                                  | `handlers/create-user.js` |
 | `GET /posts`  | Fetch all `posts` and their related `authors`                                                                            | `handlers/posts.js`       |
 
-To call the API, you can use curl:
+要调用 API，你可以使用 curl:
 
 ```
 curl -v https://UNIQUE_IDENTIFIER.execute-api.us-east-1.amazonaws.com/dev/seed
 ```
 
-## Notes
+## 要点
 
 ### `serverless.yml`
 
-The `serverless.yml` configuration file is where the endpoint and function configuration lives. You can update this file to add or change endpoints. For more AWS specific configuration, check out the AWS provider configuration in the [Serverless Framework Docs](https://serverless.com/framework/docs/providers/aws/guide/functions/).
+`serverless.yml`配置文件是端点和功能配置的所在。你可以更新这个文件来添加或改变端点。关于更多 AWS 的具体配置，请查看[Serverless Framework Docs](https://serverless.com/framework/docs/providers/aws/guide/functions/)中的 AWS 提供者配置。
 
-### Binary targets in `schema.prisma`
+### `schema.prisma`中的二进制目标
 
-The Prisma schema contains the following in the generator block:
+Prisma 模式在生成器块中包含以下内容:
 
 ```
 binaryTargets = ["native", "rhel-openssl-1.0.x"]
 ```
 
-This is necessary as the local runtime is different to the Lambda runtime. Adding the `binaryTarget` will ensure that the compatible Prisma Engine binary is available.
+这是必要的，因为本地运行时间与 Lambda 运行时间不同。添加`binaryTarget`将确保兼容的 Prisma 引擎二进制文件是可用的。
 
-### Package Pattern in `serverless.yml`
+### serverless.yml`中的包模式
 
-The Serverless configuration file includes a package pattern that excludes all Prisma Engine binaries but the one relevant for the Lambda runtime, so only 1 binary will be included when Serverless packages your app for upload:
+Serverless 配置文件包括一个打包模式，该模式排除了所有 Prisma Engine 二进制文件，但与 Lambda 运行时相关的二进制文件除外，因此当 Serverless 打包上传你的应用时，只包括一个二进制文件:
 
 ```
 package:
@@ -340,10 +340,10 @@ package:
 
 This ensures the packaged archive is as small as possible.
 
-## Summary
+## 总结
 
-Congratulations! You have successfully deployed the API to AWS Lambda.
+恭喜你！你已经成功地将 API 部署到 AWS Lambda。你已经成功地将 API 部署到 AWS Lambda。
 
-For more insight into Prisma Client's API, look at the function handlers in the `handlers/` folder.
+要深入了解 Prisma Client 的 API，请看`handlers/`文件夹中的函数处理程序。
 
-Generally, when using a FaaS (function as a service) environment to interact with a database, it's beneficial to pool DB connections for performance reasons. This is because every function invocation may result in a new connection to the database (this is not a problem with a constantly running node.js server). For more information on some of the solutions, refer to the [connection management guide for serverless environments](../../performance-and-optimization/connection-management#serverless-environments-faas).
+一般来说，当使用 FaaS（函数即服务）环境与数据库进行交互时，出于性能的考虑，将 DB 连接池化是有益的。这是因为每个函数的调用都可能导致一个新的数据库连接（这对于一个持续运行的 node.js 服务器来说不是问题）。关于一些解决方案的更多信息，请参考[无服务器环境的连接管理指南]（.../.../performance-and-optimization/connection-management#serverless-environments-faas）。

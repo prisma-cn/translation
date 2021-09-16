@@ -18,7 +18,7 @@ Prisma 客户端的行为更像是一个*query builder*返回纯 JavaScript 对�
 
 ## 未来，Prisma 客户端是否会支持更多数据库(和其他数据源）?
 
-是的。 Prisma 客户端基于 Prisma 的[查询引擎](../concepts/components/prisma-engines/query-engine) ，可以提供*连接器实现*连接到任何数据源。将有内置连接器，如 [PostgreSQL](../concepts/database-connectors/postgresql), [MySQL](../concepts/database-connectors/mysql) 和 [SQLite](../concepts/database-connectors/sqlite)。
+是的。Prisma Client基于Prisma的[查询引擎](../concepts/components/prisma-engines/query-engine) ，它可以连接到任何提供正确 `_connector` 实现的数据源。将会有一些内置连接器，比如当前用于[PostgreSQL](../concepts/database-connectors/postgresql)、[MySQL](../concepts/database-connectors/mysql)和[ SQLite ](../concepts/database-connectors/sqlite).
 
 不经如此，也可以构建自己的连接器，有关该主题的更多文档将很快跟进。
 
@@ -36,7 +36,7 @@ const prisma = new PrismaClient({
 
 ## Prisma 客户端怎么实现架构数据库迁移？
 
-Prisma 客户端对如何准确的迁移数据库模式（例如，创建新表、更改列等）并不固执己见。你可以保留现有的系统迁移，并在每次模式迁移以后对数据库执行重复[自查](../concepts/components/introspection)。你还可以 Prisma Migrate 基于 Prisma 的声明性 [数据模型定义](../concepts/components/prisma-schema/data-model)。
+Prisma Client 对于如何迁移数据库模式并没有自己的看法(例如，创建新表、更改列、 ...)。您可以保留现有的迁移系统并重新进行[内省](。./concepts/components/反思)你的数据库模式在每个模式迁移之后。您还可以使用 Prisma Migrate 基于 Prisma 的声明[数据模型定义](。./concepts/components/prisma-schema/data-model).
 
 ## Prisma 客户端是否支持 GraphQL 架构委托和 GraphQL 绑定?
 

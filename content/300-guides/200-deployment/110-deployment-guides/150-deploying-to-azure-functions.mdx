@@ -1,50 +1,50 @@
 ---
-title: 'Deploying to Azure Functions'
-metaTitle: 'How to deploy a REST API to Azure Functions with Azure SQL'
-metaDescription: 'Learn how to deploy a Prisma based REST API to Azure Functions and connect to Azure SQL database'
+title: '部署到Azure Functions'
+metaTitle: '如何用Azure SQL将REST API部署到Azure Functions上'
+metaDescription: '了解如何将基于Prisma的REST API部署到Azure Functions并连接到Azure SQL数据库。'
 ---
 
 <TopBlock>
 
-In this guide, you will set up and deploy a Prisma based Node.js REST API to [Azure Functions](https://azure.microsoft.com/en-us/services/functions/) together with [Azure SQL](https://azure.microsoft.com/en-us/services/sql-database/) as the database. The application will expose a REST API and use Prisma Client to handle fetching, creating, and deleting records from a database.
+在本指南中，你将设置和部署一个基于 Prisma 的 Node.js REST API 到[Azure Functions](https://azure.microsoft.com/en-us/services/functions/)，并将[Azure SQL](https://azure.microsoft.com/en-us/services/sql-database/)作为数据库。该应用程序将暴露一个 REST API，并使用 Prisma 客户端来处理从数据库中获取、创建和删除记录。
 
-Azure Functions is a serverless deployment platform that allows you to deploy code without having to maintain infrastructure. Azure SQL Database is a relational database service built for the cloud with automatic scaling.
+Azure Functions 是一个 serverless 部署平台，允许你部署代码而无需维护基础设施。Azure SQL 数据库是一个为云计算建立的关系型数据库服务，具有自动扩展功能。
 
-In this guide, you will create the necessary resources in Azure, create the database schema using Prisma Migrate and deploy a Node.js REST API with resource endpoints that use Prisma Client to handle database operations against the Azure SQL database.
+在本指南中，你将在 Azure 中创建必要的资源，使用 Prisma Migrate 创建数据库模式，并部署一个带有资源端点的 Node.js REST API，使用 Prisma Client 来处理针对 Azure SQL 数据库的数据库操作。
 
-This guide's focus is showing how Prisma can be used in the Azure cloud focusing on Azure Functions and Azure SQL. The starting point is the [Prisma Azure Functions example](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/azure-functions) – a REST API for a simple blog with two models: `User` and `Post` (_1:n_). The example contains REST endpoints preconfigured as serverless functions.
+本指南的重点是展示如何在 Azure 云中使用 Prisma，重点是 Azure Functions 和 Azure SQL。出发点是[Prisma Azure Functions 范例](https://github.com/prisma/prisma-examples/tree/latest/deployment-platforms/azure-functions) - 一个简单博客的 REST API，有两个模型。`用户'和`帖子'（_1:n_）。这个例子包含预设为无服务器函数的 REST 端点。
 
-Note that Azure SQL support in Prisma is in [Preview](/about/releases#preview).
+请注意，Prisma 中的 Azure SQL 支持处于[预览阶段](/about/releases#preview)。
 
-With Azure Functions, the fundamental building block is a [**Function App**](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference#function-app). A function app provides an execution context in Azure in which your functions run. It is comprised of one or more individual functions that are managed, deployed, and scaled together. That way, you can organize and collectively manage multiple functions as a single logical unit.
+通过 Azure Functions，基本构建模块是[**功能应用**](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference#function-app)。一个函数应用在 Azure 中提供了一个执行环境，你的函数在其中运行。它是由一个或多个单独的函数组成的，这些函数被一起管理、部署和扩展。这样，你就可以把多个功能作为一个逻辑单元来组织和集体管理。
 
-> Throughout the guide, you'll find various **checkpoints** that enable you to validate whether you performed the steps correctly.
+> 在整个指南中，你会发现各种**检查点**，使你能够验证你是否正确执行了这些步骤。
 
 </TopBlock>
 
-## Prerequisites
+## 前提条件
 
-- Azure account.
-- Git installed
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed.
-- [Node.js](https://nodejs.org/) installed.
+- Azure 账号
+- Git 已安装
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) 已安装
+- [Node.js](https://nodejs.org/) 已安装
 
-## Prisma workflow
+## Prisma 工作流
 
-At the core of Prisma is the [Prisma schema](/concepts/components/prisma-schema) – a declarative configuration where you define your data model and other Prisma-related configuration. The Prisma schema is also a single source of truth for both Prisma Client and Prisma Migrate.
+Prisma 的核心是[Prisma schema](/concepts/components/prisma-schema) - 一个声明性的配置，你在这里定义你的数据模型和其他与 Prisma 有关的配置。Prisma 模式也是 Prisma 客户端和 Prisma 迁移的单一真理来源。
 
-In this guide, you will use [Prisma Migrate](/concepts/components/prisma-migrate) to create the database schema. Prisma Migrate is based on the Prisma schema and works by generating `.sql` migration files that are executed against the database.
+在本指南中，你将使用[Prisma Migrate]（/concepts/components/prisma-migrate）来创建数据库模式。Prisma Migrate 以 Prisma 模式为基础，通过生成`.sql`迁移文件来工作，并针对数据库执行。
 
-Migrate comes with two primary workflows:
+Migrate 有两个主要工作流程:
 
-- Creating migrations and applying during local development with `prisma migrate dev`
-- Applying generated migration to production with `prisma migrate deploy`
+- 在本地开发过程中使用`prisma migrate dev`创建迁移文件并应用。
+- 使用`prisma migrate deploy`将生成的迁移应用到生产中。
 
-For brevity, the guide does not cover how migrations are created with `prisma migrate dev`. Rather, it focuses on the production workflow with `prisma migrate deploy` and uses the Prisma schema and SQL migration that are included in the example code.
+为了简洁起见，本指南不涉及如何使用`prisma migrate dev`创建迁移。相反，它侧重于使用`prisma migrate deploy`的生产工作流程，并使用示例代码中的 Prisma 模式和 SQL 迁移。
 
-To learn more about how migrations are created with Prisma Migrate, check out the [start from scratch guide](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
+要了解更多关于如何使用 Prisma Migrate 创建迁移，请查看[从头开始指南](/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgres)
 
-## Required Azure resources
+## 需要的 Azure 资源
 
 - Resource group
 - Azure SQL Database server
@@ -53,11 +53,11 @@ To learn more about how migrations are created with Prisma Migrate, check out th
 - Storage account
 - Function App
 
-## 1. Download the example and install dependencies
+## 1. 下载案例代码并安装依赖
 
-Open your terminal and navigate to a location of your choice.
+打开你的终端，导航到你选择的位置。
 
-Create the directory for the application code and download the example code:
+创建应用程序代码的目录，并下载示例代码:
 
 ```terminal copy
 mkdir prisma-azure
@@ -67,13 +67,13 @@ curl https://codeload.github.com/prisma/prisma-examples/tar.gz/latest | tar -xz 
 
 <!-- tar strip folder is a concatenation of the {REPOSITORY}-{BRANCH}/REF, e.g. prisma-examples-latest -->
 
-**Checkpoint:** Run the following command to list the contents of the folder:
+**检查点:** 运行以下命令，列出文件夹的内容:
 
 ```terminal copy
 ls -1
 ```
 
-You should see the following files
+你将看到如下文件
 
 ```no-lines
 CreatePost/
@@ -91,33 +91,33 @@ prisma/
 proxies.json
 ```
 
-Install the dependencies:
+安装依赖:
 
 ```terminal copy
 npm install
 ```
 
-## 2. Sign in to Azure using the Azure CLI
+## 2. 使用 Azure CLI 登录到 Azure
 
-Begin by signing in using the following command in your terminal:
+首先在你的终端使用以下命令登录：
 
 ```terminal copy
 az login
 ```
 
-## 3. Create the Resource Group on Azure
+## 3. 在 Azure 创建 Resource Group
 
-In Azure, a resource group is a way to group together different cloud resources. Whenever you create a resource, e.g., an Azure Function, you need to assign it a resource group.
+在 Azure 中，resource group 是一种将不同的云资源组合在一起的方式。每当你创建一个资源，例如 Azure 函数，你需要给它分配一个 resource group。
 
-Since the REST API will use both Azure Functions and an Azure SQL database, you will first create the resource group with the following command:
+由于 REST API 将同时使用 Azure 函数和 Azure SQL 数据库，你将首先用以下命令创建 resource group:
 
 ```terminal copy
 az group create --location germanywestcentral --name prisma-azure-example
 ```
 
-> **Note:** The command above creates the resource group in the `germanywestcentral` region. You should create the resource group in the region closest to your users. For the full list of Azure regions, run the `az account list-locations` command.
+> **Note:** 上面的命令在`germanywestcentral`区域创建 resource group。你应该在离你的用户最近的地区创建 resource group。关于 Azure 地区的完整列表，请运行`az account list-locations`命令。
 
-> **Checkpoint:** The command should output information about the created resource group:
+> **检查点:** 该命令应输出所创建的 resource group 的信息:
 
 ```json
 {
@@ -133,66 +133,66 @@ az group create --location germanywestcentral --name prisma-azure-example
 }
 ```
 
-## 4. Create the Azure SQL database server
+## 4. 创建 Azure SQL 数据库服务
 
-To create the Azure SQL database server, copy the command below into your terminal:
+终端执行以下命令创建 Azure SQL 数据库服务:
 
 ```terminal copy
 az sql server create -l germanywestcentral -g prisma-azure-example --name UNIQUE_DB_SERVER_NAME --admin-user prisma --admin-password CHOOSE_A_PASSWORD --enable-public-network true
 ```
 
-Before running the command, replace a unique name for the database in place of `UNIQUE_DB_SERVER_NAME`, set a password in place of `CHOOSE_A_PASSWORD`, and note it down.
+在运行该命令之前，用`UNIQUE_DB_SERVER_NAME`代替数据库的唯一名称，`在CHOOSE_A_PASSWORD中设置一个密码`，并记下它:
 
-The command does the following:
+该命令做了以下工作:
 
-- Creates the database server in the `germanywestcentral` region.
-- Associates it with the `prisma-azure-example` resource group created in the previous step.
-- Sets a unique name for the Azure SQL server with `UNIQUE_DB_SERVER_NAME`.
-- Sets the admin user to `prisma`.
-- Sets the admin password.
-- Enables public network access so you can create the database schema from your machine.
+- 在`germanywestcentral`地区创建数据库服务器。
+- 将其与上一步创建的`prisma-azure-example` resource group 关联
+- 用`UNIQUE_DB_SERVER_NAME`为 Azure SQL 服务器设置一个唯一的名字
+- 将管理用户设置为 prisma
+- 设置管理员密码
+- 启用公共网络访问，这样你就可以从你的机器上创建数据库模式。
 
-In the next step, you will create the database that Prisma will use in the REST API.
+在下一步，你将创建 Prisma 将在 REST API 中使用的数据库。
 
-## 5. Create the database
+## 5. 创建数据库
 
-In this step, you will create a database in the server you created in the previous step.
+在这一步，你将在上一步创建的服务器中创建一个数据库。
 
-Run the following command in the terminal, replace `UNIQUE_DB_SERVER_NAME` with the database name you chose in the previous step:
+在终端运行以下命令，将`UNIQUE_DB_SERVER_NAME`替换为你在上一步选择的数据库名称:
 
 ```terminal copy
 az sql db create --resource-group prisma-azure-example --server UNIQUE_DB_SERVER_NAME --name prisma-azure-example --service-objective Basic
 ```
 
-Here's a breakdown of the command's parameters:
+下面是该命令的参数明细:
 
-- `--resource-group` adds the database to the resource group created in step 3
-- `--server` sets the Azure SQL database server to create it in
-- `--name` sets the name of the database
-- `--service-objective` sets the database's service tier that [determines the cost](https://azure.microsoft.com/en-us/pricing/details/sql-database/single/).
+- `--resource-group` 将数据库添加到步骤 3 中创建的资源组中
+- `--server` 设置 Azure SQL 数据库服务器来创建它
+- `--name` 设置数据库的名称
+- `--service-objective` 设置数据库的服务等级，[决定了成本](https://azure.microsoft.com/en-us/pricing/details/sql-database/single/).
 
-## 6. Create a firewall rule to allow local access to the database
+## 6. 创建一个防火墙规则，允许本地访问数据库
 
-In this step, you will add two firewall rules:
+在这一步，你将添加两个防火墙规则:
 
-- Allow remote access from your local computer's public IP to the Azure SQL database. This is necessary so you can create the database schema and use the database for testing locally.
-- Allow access to the Azure SQL database from Azure Functions
+- 允许从你本地计算机的公共 IP 远程访问 Azure SQL 数据库。这是必要的，这样你就可以在本地创建数据库模式并使用该数据库进行测试。
+- 允许从 Azure Functions 访问 Azure SQL 数据库
 
-### Allow access from your local computer
+### 允许从你的本地计算机访问
 
-Begin by determining your public IP with the following command:
+首先用以下命令确定你的公共 IP:
 
 ```terminal copy
 curl ifconfig.me
 ```
 
-Copy the IP from the output and run the following command, replacing `YOUR_PUBLIC_IP` with the IP address and `UNIQUE_DB_SERVER_NAME` with the name from step 4:
+从输出中复制 IP 并运行以下命令，用 IP 地址替换`YOUR_PUBLIC_IP`，用步骤 4 中的名称替换`UNIQUE_DB_SERVER_NAME`:
 
 ```terminal copy
 az sql server firewall-rule create --resource-group prisma-azure-example --server UNIQUE_DB_SERVER_NAME --name allow-local-acccess --start-ip-address YOUR_PUBLIC_IP --end-ip-address YOUR_PUBLIC_IP
 ```
 
-> **Checkpoint:** After creating the firewall rule, the command should output the following:
+> **检查点:** 创建防火墙规则后，该命令应输出以下内容:
 
 ```json
 {
@@ -207,27 +207,27 @@ az sql server firewall-rule create --resource-group prisma-azure-example --serve
 }
 ```
 
-### Allow access from Azure Functions
+### 允许从 AzureAzure Functions 访问
 
-To allow applications hosted inside Azure to connect to your SQL server, Azure connections must be enabled. To enable Azure connections, there must be a firewall rule with starting and ending IP addresses set to `0.0.0.0`.
+要允许在 Azure 内部托管的应用程序连接到你的 SQL 服务器，必须启用 Azure 连接。要启用 Azure 连接，必须有一个防火墙规则，其起始和结束 IP 地址设置为 0.0.0.0。
 
-Create the rule with the following command:
+用以下命令创建该规则:
 
 ```terminal copy
 az sql server firewall-rule create --resource-group prisma-azure-example --server UNIQUE_DB_SERVER_NAME --name allow-function-acccess --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
 ```
 
-## 7. Create a storage account
+## 7. 创建一个存储账户
 
-In this step, you will create a storage account used to maintain state and other information about your functions.
+在这一步，你将创建一个存储账户，用来维护你的功能的状态和其他信息。
 
-Run the following command to create the storage account, replacing `UNIQUE_STORAGE_ACCOUNT_NAME` with a name for the storage account:
+运行下面的命令来创建存储账户，用存储账户的名字替换`UNIQUE_STORAGE_ACCOUNT_NAME`:
 
 ```terminal copy
 az storage account create --name UNIQUE_STORAGE_ACCOUNT_NAME --location germanywestcentral --resource-group prisma-azure-example --sku Standard_LRS
 ```
 
-> **Checkpoint:** If the command succeeds, it will output a large json object. Verify that `provisioningState` is `Succeeded`:
+> **检查点:** 如果命令成功，它将输出一个大的 json 对象。验证`provisioningState`是否为`Succeeded`:
 
 ```json
 {
@@ -238,54 +238,54 @@ az storage account create --name UNIQUE_STORAGE_ACCOUNT_NAME --location germanyw
 }
 ```
 
-## 8. Create the function app
+## 8. 创建函数应用程序
 
-In this step, you will create the function app, which provides the environment for executing your function code. A function app maps to your local function project and lets you group functions as a logical unit for easier management, deployment, and sharing of resources.
+在这一步，你将创建函数应用程序，它为执行你的函数代码提供环境。一个函数应用映射到你的本地函数项目，让你把函数作为一个逻辑单元分组，以便更容易管理、部署和共享资源。
 
-Copy the following command and replace `FUNCTION_APP_NAME` with a unique name for your function app, and `STORAGE_ACCOUNT_NAME` with the name you chose in the previous step:
+复制下面的命令，将`FUNCTION_APP_NAME`替换为你的函数应用程序的唯一名称，将`STORAGE_ACCOUNT_NAME`替换为你在上一步选择的名称:
 
 ```terminal copy
 az functionapp create --resource-group prisma-azure-example --consumption-plan-location germanywestcentral --runtime node --runtime-version 14 --functions-version 3 --name FUNCTION_APP_NAME --storage-account STORAGE_ACCOUNT_NAME --os-type Linux
 ```
 
-> **Note:** The Function App name must be globally unique as it will determine the subdomain of the deployed function.
+> **Note:** 功能应用的名称必须是全球唯一的，因为它将决定部署功能的子域。
 
-> **Checkpoint:** If the command succeeds, you will see a large JSON object in the terminal. Verify that that the `state` key in the object is set to `Running`.
+> **检查点:** 如果命令成功，你会在终端看到一个大的 JSON 对象。验证该对象中的`状态`是否被设置为`运行`。
 
-## 9. Set the DATABASE_URL environment variable locally
+## 9. 在本地设置 DATABASE_URL 环境变量
 
-In this step, you will define the `DATABASE_URL` environment variable locally to create the database schema and test the functions locally.
+在这一步，你将在本地定义`DATABASE_URL`环境变量，以创建数据库模式并在本地测试功能。
 
-To construct the connection URL, copy the following connection URL template:
+要构建 connection URL，请复制以下 connection URL 模板：
 
 ```no-lines
 sqlserver://DB_SERVER_NAME.database.windows.net:1433;database=DB_NAME;user=DB_ADMIN_USER@DB_SERVER_NAME;password={DB_ADMIN_PASSWORD};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30
 ```
 
-Replace the following parts:
+替换以下部分:
 
-- `DB_SERVER_NAME` with the database server name defined in step 4
-- `DB_NAME` with the database name defined in step 5
-- `DB_ADMIN_USER` with the database admin user set in step 4 to `prisma`
-- `DB_ADMIN_PASSWORD` with the database admin password set in step 4
+- `DB_SERVER_NAME` 替换为步骤 4 中定义的数据库服务器名称
+- `DB_NAME` 用步骤 5 中定义的数据库名称代替
+- `DB_ADMIN_USER`用步骤 4 中设置的数据库管理用户`prisma`代替
+- `DB_ADMIN_PASSWORD`使用步骤 4 中设置的数据库管理密码
 
-After setting all the values, set it as a local environment variable:
+设置完所有的值后，将其设置为本地环境变量:
 
 ```terminal copy
 export DATABASE_URL="sqlserver://DB_SERVER_NAME.database.windows.net:1433;database=DB_NAME;user=DB_ADMIN_USER@DB_SERVER_NAME;password={DB_ADMIN_PASSWORD};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30"
 ```
 
-## 10. Create the Azure Functions local configuration
+## 10. 创建 Azure Functions 本地配置
 
-In this step, you will create the [local configuration](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local#local-settings-file) file for Azure Functions. The file is used to define local configuration such as environment variables for the functions and the runtime – in this case Node.js.
+在这一步，你将为 Azure Functions 创建[本地配置]（https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local#local-settings-file）文件。该文件用于定义本地配置，如函数和运行时的环境变量 - 在这里是 Node.js。
 
-Create a file named `local.settings.json` in the root of the project with the following command:
+用以下命令在项目的根目录下创建一个名为`local.settings.json`的文件：
 
 ```command copy
 touch local.settings.json
 ```
 
-And add the following contents to it:
+并在其中添加以下内容:
 
 ```json
 {
@@ -297,19 +297,19 @@ And add the following contents to it:
 }
 ```
 
-## 11. Create the database schema
+## 11. 创建 database schema
 
-With the `DATABASE_URL` environment variable set, you will create the database schema using the [`prisma migrate deploy`](/reference/api-reference/command-reference#migrate-deploy) command.
+设置好`DATABASE_URL`环境变量后，你将使用[`prisma migrate deploy`](/reference/api-reference/command-reference#migrate-deploy)命令创建数据库模式。
 
-> **Note:** The `prisma migrate deploy` command will run migration files from the `prisma/migrations` folder. The initial migration is already included in the example. To learn more about how to create migrations, check out the [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) docs.
+> **注意：** `prisma migrate deploy`命令将运行`prisma/migrations`文件夹中的迁移文件。初始迁移已经包含在例子中。要了解更多关于如何创建迁移的信息，请查看[Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate)文档。
 
-Run the following command to create the database schema:
+运行下面的命令来创建数据库模式:
 
 ```terminal copy
 npx prisma migrate deploy
 ```
 
-**Checkpoint:** The `prisma migrate deploy` should show the following:
+**检查点:** `prisma migrate deploy` 执行后应该看到如下内容:
 
 ```no-lines
 1 migration found in prisma/migrations
@@ -323,41 +323,41 @@ migrations/
 All migrations have been successfully applied.
 ```
 
-## 12. Expose the DATABASE_URL environment variable to the functions
+## 12. 将 DATABASE_URL 环境变量暴露给函数
 
-In this step, you will expose the `DATABASE_URL` environment variable to the functions so that Prisma can connect to the database. In Azure Functions, environment variables are set using [app settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings).
+在这一步中，你将把`DATABASE_URL`环境变量暴露给函数，以便 Prisma 能够连接到数据库。在 Azure Functions 中，环境变量是用[应用设置](https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings)设置的。
 
-Run the following command, after replacing `FUNCTION_APP_NAME_FROM_STEP_8` with the name of the **Function App** created in step 8:
+在用步骤 8 中创建的**函数应用**的名称替换`FUNCTION_APP_NAME_FROM_STEP_8`后，运行以下命令:
 
 ```terminal copy
 az functionapp config appsettings set --name FUNCTION_APP_NAME_FROM_STEP_8 --resource-group prisma-azure-example --settings DATABASE_URL=$DATABASE_URL
 ```
 
-The command will set the `DATABASE_URL` app setting using the locally defined `DATABASE_URL` environment variable set in step 9.
+该命令将使用步骤 9 中设置的本地定义的`DATABASE_URL`环境变量来设置`DATABASE_URL`应用程序。
 
-> **Note:** By default, app settings are not encrypted. Since the `DATABASE_URL` contains sensitive information, it can be stored more securely using [Azure's Key Vault](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?toc=/azure/azure-functions/toc.json)
+> **注意:** 默认情况下，应用设置是不加密的。由于`DATABASE_URL`包含敏感信息，可以使用[Azure 的密钥库](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?toc=/azure/azure-functions/toc.json)更安全地存储它。
 
-Congratulations! You have created all the necessary resources and configuration, which means your API is ready to be deployed.
+恭喜你！你已经创建了所有必要的资源和配置。你已经创建了所有必要的资源和配置，这意味着你的 API 已经准备好被部署。
 
-## 13. Deploy the functions
+## 13. 发布函数应用
 
-In this step, you will generate Prisma Client and deploy the functions.
+在这一步，你将生成 Prisma 客户端并部署功能：
 
-From the project folder, run the following command:
+从项目文件夹中，运行以下命令:
 
 ```terminal copy
 npx prisma generate
 ```
 
-The command will generate Prisma Client into the `node_modules` folder.
+该命令将生成 Prisma 客户端到 node_modules 文件夹中。
 
-To deploy the functions, run the following command:
+要部署这些功能，请运行以下命令：
 
 ```terminal copy
 npx func azure functionapp publish FUNCTION_APP_NAME
 ```
 
-> **Checkpoint:** If the functions have been successfully deployed you should see the following output:
+> **检查点:** 如果这些功能已经成功部署，你应该看到以下输出:
 
 ```no-lines
 Getting site publishing info...
@@ -383,23 +383,23 @@ Functions in FUNCTION_APP_NAME:
         Invoke url: https://FUNCTION_APP_NAME.azurewebsites.net/api/publish/{postid}
 ```
 
-Congratulations 🎊! If you've made it this far, you've successfully deployed a Prisma based REST API to Azure Functions which uses Azure SQL as the database.
+恭喜你 🎊! 如果你已经走到了这一步，你已经成功地将基于 Prisma 的 REST API 部署到 Azure Functions 中，它使用 Azure SQL 作为数据库。
 
-In the next step, you'll test the functions and take a closer look at how the functions are implemented.
+在下一步，你将测试这些函数，并仔细看看这些函数是如何实现的。
 
-## 14. Test the deployed functions
+## 14. 测试已部署的函数
 
-In this step, you will test the API's different endpoints using the URLs from the previous step.
+在这一步，你将使用上一步的 URL 来测试 API 的不同端点。
 
-Begin by making a POST HTTP request to the _CreateUser_ endpoint with curl:
+首先，用 curl 向*CreateUser*端点发出一个 POST HTTP 请求：
 
 ```terminal copy
 curl --request POST --data '{"email":"alice@prisma.io","name":"Alice"}' https://FUNCTION_APP_NAME.azurewebsites.net/api/user
 ```
 
-> **Note:** Replace the **`FUNCTION_APP_NAME`** in the URL with the app name you chose in step 8.
+> **注意：**将 URL 中的**`FUNCTION_APP_NAME`**替换为你在步骤 8 中选择的应用程序名称。
 
-If the request succeeds, you should see the created user object returned:
+如果请求成功，你应该看到返回创建的用户对象：
 
 ```json
 {
@@ -410,18 +410,18 @@ If the request succeeds, you should see the created user object returned:
 }
 ```
 
-The files associated with the function can be found in the `CreateUser` folder, which contains two files:
+与该函数相关的文件可以在`CreateUser`文件夹中找到，其中包含两个文件。
 
-- `function.json`: Function configuration, e.g. HTTP method, path, and return value
-- `index.js`: The function handler where Prisma Client is used to create the user in the Azure SQL database
+- `function.json`: 函数配置，例如 HTTP 方法、路径和返回值
+- `index.js`: Prisma 客户端用于在 Azure SQL 数据库中创建用户的函数处理程序。
 
-Now, try creating a _post_ associated with the user you just created with the following command:
+现在，尝试用以下命令创建一个与你刚刚创建的用户相关的*post*:
 
 ```terminal copy
 curl --request POST --data '{"title":"Prisma with Azure","content":"","authorEmail":"alice@prisma.io"}' https://FUNCTION_APP_NAME.azurewebsites.net/api/post
 ```
 
-If the request succeeds, you should see the created _post_ object returned:
+如果请求成功，你应该看到返回创建的*post*对象:
 
 ```json
 {
@@ -435,13 +435,13 @@ If the request succeeds, you should see the created _post_ object returned:
 }
 ```
 
-To update the `published` field of the post, make the following request:
+要更新帖子的`published`字段，请提出以下请求:
 
 ```terminal copy
 curl --request PUT https://FUNCTION_APP_NAME.azurewebsites.net/api/publish/1
 ```
 
-If the request succeeds, you should see the updated _post_ object:
+如果请求成功，你应该看到更新的*post*对象:
 
 ```json
 {
@@ -455,13 +455,13 @@ If the request succeeds, you should see the updated _post_ object:
 }
 ```
 
-Finally, to test the _feed_ endpoint, make the following request:
+最后，为了测试*feed*端点，发起以下请求:
 
 ```terminal copy
 curl https://FUNCTION_APP_NAME.azurewebsites.net/api/feed
 ```
 
-If the request succeeds, you should see the post you created and the related author:
+如果请求成功，你应该看到你创建的帖子和相关的作者:
 
 ```json
 [
@@ -483,42 +483,42 @@ If the request succeeds, you should see the post you created and the related aut
 ]
 ```
 
-## Developing and debugging the functions locally
+## 在本地开发和调试函数
 
-When implementing Azure Functions, you can also start a local development environment using the Azure Functions Core tools' function runtime. That way, you can test and debug the implementation of the functions locally.
+在实现 Azure Functions 时，你也可以使用 Azure Functions 核心工具的函数运行时间启动本地开发环境。这样一来，你就可以在本地测试和调试函数的实现。
 
-To launch the functions runtime, run the following command:
+要启动函数运行时，请运行以下命令:
 
 ```terminal copy
 npx func start
 ```
 
-The command starts a local server and allows you to call any of the functions in the project.
+该命令启动一个本地服务器，允许你调用项目中的任何函数。
 
-You can inject environment variables into the functions by adding them to the `Values` object in the `local.settings.json` file at the root of the project.
+你可以将环境变量添加到项目根部的`local.settings.json`文件中的`Values`对象中，从而将环境变量注入函数中。
 
-## Setting up a local database for development
+## 为开发设置一个本地数据库
 
-When developing locally, you should consider running a local Microsoft SQL Server instance. [While Microsoft SQL Server is not the same as Azure SQL, the two have high compatibility with each other.](https://docs.microsoft.com/en-us/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview).
+在本地开发时，你应该考虑运行一个本地的 Microsoft SQL Server 实例。[虽然 Microsoft SQL Server 与 Azure SQL 不同，但两者之间有很高的兼容性。]（https://docs.microsoft.com/en-us/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview）。
 
-The quickest way to set up a local Microsoft SQL Server is with Docker. Check out the [Microsoft SQL Server example](https://github.com/prisma/prisma-examples/tree/latest/databases/sql-server) for more information on how to set it up.
+建立本地 Microsoft SQL Server 的最快捷方式是使用 Docker。请查看[Microsoft SQL Server 实例](https://github.com/prisma/prisma-examples/tree/latest/databases/sql-server)，了解更多关于如何设置的信息。
 
-## Bootstrapping a new function
+## 引导一个新的函数
 
-When you want to create a new function, you can use the following command to bootstrap a new function:
+当你想创建一个新的函数时，你可以使用以下命令来引导一个新的函数：
 
 ```command copy
 npx func function new --language JavaScript --template "HTTP trigger" --name FUNCTION_NAME
 ```
 
-The command creates a folder with the `index.js` and `function.json` files.
+该命令创建一个包含`index.js`和`function.json`文件的文件夹。
 
 ## Summary
 
-Congratulations! You have successfully deployed the REST API to Azure Functions and used Prisma Client to handle database queries to the Azure SQL database.
+恭喜你！你已经成功地将 REST API 部署到 Azure Functions，并使用 Prisma Client 处理对 Azure SQL 数据库的查询。你已经成功地将 REST API 部署到 Azure Functions，并使用 Prisma Client 来处理对 Azure SQL 数据库的数据库查询。
 
-For more insight into Prisma Client's API, explore the function handlers and check out the [Prisma Client API Reference](/reference/api-reference/prisma-client-reference)
+要深入了解 Prisma 客户端的 API，请探索函数处理程序，并查看[Prisma Client API 参考资料](/reference/api-reference/prisma-client-reference)。
 
-It's worth noting that while this guide used the Azure CLI to create all the resources, this can also be achieved via the Azure Portal UI or the VSCode extension, which supports deployments directly from VSCode.
+值得注意的是，虽然本指南使用 Azure CLI 来创建所有的资源，但这也可以通过 Azure Portal UI 或 VSCode 扩展来实现，它支持直接从 VSCode 进行部署。
 
-As a next step, you could look into implementing a continuous delivery pipeline using [GitHub Actions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions?tabs=javascript) to automate the deployment process from a GitHub repository.
+作为下一步，你可以考虑使用[GitHub Actions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions?tabs=javascript)实现持续交付管道，以便从 GitHub 仓库自动部署过程。

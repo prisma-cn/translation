@@ -1,19 +1,19 @@
 ---
-title: 'Prisma CLI reference'
-metaTitle: 'Prisma CLI Command Reference'
-metaDescription: 'This page gives an overview of all available Prisma CLI commands, explains their options and shows numerous usage examples.'
+title: 'Prisma CLI 参考'
+metaTitle: 'Prisma CLI 命令引用'
+meta描述: '此页面概述了所有可用的Prisma CLI命令，解释它们的可选项，并展示若干使用示例。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-This document describes the Prisma CLI commands, arguments, and options.
+本文档介绍 Prisma CLI 命令、参数和选项。
 
 </TopBlock>
 
-## Synopsis
+## 概述
 
-The `prisma` command can be called from command line once installed. When called without arguments, it will display its command usage and help document:
+安装后，就可以从命令行调用 `prisma` 命令。无参数调用会输出命令用法和帮助文档：
 
 <CodeWithResult expanded={true}>
 
@@ -28,43 +28,43 @@ prisma
 <cmdResult>
 
 ```
-Prisma is a modern DB toolkit to query, migrate and model your database (https://prisma.io)
+Prisma是一个用于查询、迁移和建模数据库的现代数据库工具包(https://prisma.io)
 
-Usage
+用法
 
   $ prisma [command]
 
-Commands
+命令
 
-            init   Setup Prisma for your app
-        generate   Generate artifacts (e.g. Prisma Client)
-              db   Manage your database schema and lifecycle
-         migrate   Migrate your database
-          studio   Browse your data with Prisma Studio
-          format   Format your schema
+            init   为你的应用程序安装Prisma
+        generate   生成工件（例如Prisma Client）
+              db   管理数据库架构和生命周期
+         migrate   迁移数据库
+          studio   使用Prisma Studio浏览您的数据
+          format   格式化您的模式
 
-Flags
+标记
 
-     --preview-feature   Run Preview Prisma commands
+     --preview-feature   运行预览Prisma命令
 
-Examples
+示例
 
-  Setup a new Prisma project
+  创建新的Prisma项目
   $ prisma init
 
-  Generate artifacts (e.g. Prisma Client)
+  生成artifacts（例如Prisma Client）
   $ prisma generate
 
-  Browse your data
+  浏览您的数据
   $ prisma studio
 
-  Create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
+  从Prisma模型创建迁移，将其应用于数据库，生成artifacts（例如Prisma Client）
   $ prisma migrate dev
 
-  Pull the schema from an existing database, updating the Prisma schema
+  从现有数据库中提取模式，更新Prisma模型
   $ prisma db pull
 
-  Push the Prisma schema state to the database
+  将Prisma模型状态推送到数据库
   $ prisma db push
 ```
 
@@ -72,25 +72,25 @@ Examples
 
 </CodeWithResult>
 
-You can get additional help on any of the `prisma` commands by adding the `--help` flag after the command.
+使用 `--help` 参数可以查看 `prisma` 命令的其他帮助信息。
 
-## Commands
+## 命令
 
 ### <inlinecode>version</inlinecode> (<inlinecode>-v</inlinecode>)
 
-The `version` command outputs information about your current `prisma` version, platform, and engine binaries.
+`version` 命令输出有关当前 `prisma` 版本、平台和引擎二进制文件的信息。
 
-#### Options
+#### 选项
 
-The `version` command recognizes the following options to modify its behavior:
+`version` 命令可通过以下选项来修改其行为：
 
-| Option   | Required | Description                                 |
-| -------- | -------- | ------------------------------------------- |
-| `--json` | No       | Outputs version information in JSON format. |
+| 选项     | 必须 | 描述                     |
+| -------- | ---- | ------------------------ |
+| `--json` | 否   | 以 JSON 格式输出版本信息 |
 
-#### Examples
+#### 示例
 
-##### Output version information
+##### 输出版本信息
 
 <CodeWithResult expanded={true}>
 
@@ -121,7 +121,7 @@ Studio               : 0.365.0
 
 </CodeWithResult>
 
-##### Output version information (<inlinecode>-v</inlinecode>)
+##### 输出版本信息 (<inlinecode>-v</inlinecode>)
 
 <CodeWithResult expanded={true}>
 
@@ -152,7 +152,7 @@ Studio               : 0.365.0
 
 </CodeWithResult>
 
-##### Output version information as JSON
+##### 将版本信息输出为 JSON
 
 <CodeWithResult expanded={true}>
 
@@ -187,19 +187,19 @@ Environment variables loaded from prisma\.env
 
 ### <inlinecode>init</inlinecode>
 
-Bootstraps a fresh Prisma project within the current directory.
+在当前目录中初始化一个新的 Prisma 项目。
 
-The `init` command does not interpret any existing files. Instead, it creates a `prisma` directory containing a bare-bones `schema.prisma` file within your current directory.
+`init` 命令不解析任何已有文件。而是会在当前目录中创建一个 `prisma` 目录，其中包含一个最简化的 `schema.prisma` 文件。
 
-#### Arguments
+#### 参数
 
-| Argument                | Required | Description                                                                                                                                                            | Default      |
-| ----------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--datasource-provider` | No       | Specifies the default value for the `provider` field in the `datasource` block - can be `sqlite`, `mysql`, `sqlserver` (Preview, requires preview flag), `postgresql`. | `postgresql` |
+| 参数                    | 必须 | 描述                                                                                                                    | 默认         |
+| ----------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `--datasource-provider` | 否   | 指定 `datasource` 块中 `provider` 字段的默认值可以是：'sqlite'，'mysql'，'sqlserver'（预览，需要预览标志），'postgresql | `postgresql` |
 
-#### Examples
+#### 示例
 
-##### Run `prisma init`
+##### 运行 `prisma init`
 
 <CodeWithResult expanded={true}>
 
@@ -235,17 +235,17 @@ https://pris.ly/d/getting-started
 prisma init datasource-provider sqlite
 ```
 
-The command output contains helpful information on how to use the generated files and begin using Prisma with your project.
+命令输出内容包括：1.如何使用生成的文件 2.在项目中使用 Prisma
 
-#### Generated Assets
+#### 生成文件
 
 **`prisma/schema.prisma`**
 
-A minimal `schema.prisma` file to define your schema in:
+schema.prisma 在以下位置定义模型:
 
 ```prisma
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// 这是你的Prisma模型文件内容,
+// 更多请访问: https://pris.ly/d/prisma-schema
 
 datasource db {
   provider = "postgresql"
@@ -259,31 +259,30 @@ generator client {
 
 **`prisma/.env`**
 
-A file to define environment variables for your project:
+定义项目环境变量的文件：
 
 ```
-# Environment variables declared in this file are automatically made available to Prisma.
-# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+# 此文件中声明的环境变量将被用于Prisma
+# 有关更多详细信息，请参阅文档: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
 
-# Prisma supports the native connection URL format for PostgreSQL, MySQL and SQLite.
-# See the documentation for all the connection URL options: https://pris.ly/d/connection-strings
+# Prisma支持URL格式连接PostgreSQL、MySQL和SQLite
+# 关于URL连接数据库的所有选项，请参阅文档：https://pris.ly/d/connection-strings
 
 DATABASE_URL="postgresql://johndoe:johndoe@localhost:5432/mydb?schema=public"
 ```
 
 ### <inlinecode>generate</inlinecode>
 
-The `generate` command generates assets like Prisma Client based on the [`generator`](../../../concepts/components/prisma-schema/generators) and [`data model`](../../../concepts/components/prisma-schema/data-model) blocks defined in your `prisma/schema.prisma` file.
+`generate` 命令根据 `Prisma/schema.Prisma` 文件中定义的 [`generator`](../../../concepts/components/prisma-schema/generators) 和 [`data model`](../../../concepts/components/prisma-schema/data-model) 块生成类似于 Prisma Client 的文件。
+`generate` 命令最常用于使用 `prisma-client-js` 生成器生成 Prisma Client. 这做了三件事：
 
-The `generate` command is most often used to generate Prisma Client with the `prisma-client-js` generator. This does three things:
+1. 搜索当前目录和父目录以查找适用的 `npm` 项目。如果找不到文件，它将在当前目录中创建一个 `package.json` 文件。
+2. 将 `@prisma/client` 安装到 `npm` 项目中（如果尚未安装）。
+3. 检查当前目录以查找要处理的 Prisma 模型文件。然后它将为你的项目生成一个定制的[Prisma Client](https://github.com/prisma/prisma-client-js)。
 
-1. Searches the current directory and parent directories to find the applicable `npm` project. It will create a `package.json` file in the current directory if it cannot find one.
-2. Installs the `@prisma/client` into the `npm` project if it is not already present.
-3. Inspects the current directory to find a Prisma schema file to process. It will then generate a customized [Prisma Client](https://github.com/prisma/prisma-client-js) for your project.
+#### 先决条件
 
-#### Prerequisites
-
-To use the `generate` command, you must add a generator definition in your `schema.prisma` file. The `prisma-client-js` generator, used to generate Prisma Client, can be added by including the following in your `schema.prisma` file:
+要使用 `generate` 命令，必须在 `schema.prisma` 文件中添加生成器。可以通过在 `schema.prisma` 文件中加入以下内容来添加用于生成 Prisma Client 的 `prisma-client-js` 生成器
 
 ```prisma
 generator client {
@@ -291,21 +290,21 @@ generator client {
 }
 ```
 
-#### Options
+#### 选项
 
-| Option    | Required | Description                                                                                                           | Default |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------- | ------- |
-| `--watch` | No       | The `generate` command will continue to watch the `schema.prisma` file and re-generate Prisma Client on file changes. |
+| 选项      | 必须 | 描述                                                                               | 默认 |
+| --------- | ---- | ---------------------------------------------------------------------------------- | ---- |
+| `--watch` | 否   | `generate` 命令将持续监控 `schema.prisma` 文件并在文件更改时重新生成 Prisma Client |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                         | Default                                     |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                | 默认                                        |
+| ---------- | ---- | ------------------------------------------------------------------- | ------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`, `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-##### Generate Prisma Client using the default `schema.prisma` path
+##### 使用默认 `schema.prisma` 路径生成 Prisma Client
 
 <CodeWithResult expanded={true}>
 
@@ -336,13 +335,13 @@ Explore the full API: https://pris.ly/d/client
 
 </CodeWithResult>
 
-##### Generate Prisma Client using a non-default `schema.prisma` path
+##### 使用非默认 `schema.prisma` 路径生成 Prisma Client
 
 ```terminal
 prisma generate --schema=./alternative/schema.prisma
 ```
 
-##### Continue watching the `schema.prisma` file for changes to automatically re-generate Prisma Client
+##### 持续监控 `schema.prisma` 文件的变化，以自动重新生成 Prisma Client
 
 <CodeWithResult expanded={true}>
 
@@ -366,37 +365,36 @@ Watching... /home/prismauser/prisma/prisma-play/prisma/schema.prisma
 
 </CodeWithResult>
 
-#### Generated Assets
+#### 生成文件
 
-The `prisma-client-js` generator creates a customized client for working with your database within the `./node_modules/.prisma/client` directory by default - you can [customize the output folder](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client#using-a-custom-output-path).
+默认情况下， `prisma-client-js` 生成器会创建一个定制的客户端来处理./node_modules/.prisma/client 目录中的数据库——您可以[指定输出文件夹](../../concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client#using-a-custom-output-path)
 
 ### <inlinecode>introspect</inlinecode>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Introspection does not currently support the [MongoDB connector](../../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Introspection 目前不支持[MongoDB 连接器](../../../concepts/database-connectors/mongodb).
 
-**Deprecation warning** <br />
-From Prisma 3.0.0 onwards, the `prisma introspect` command will be deprecated and replaced with the [`prisma db pull`](#db-pull) command.
+**弃用警告** <br />
+从 Prisma 3.0.0 开始，该`prisma introspect`命令将被弃用并替换为该[`prisma db pull`](#db-pull) 命令.
 
 </Admonition>
+`introspect` 命令连接到您的数据库并将 Prisma 模型添加到反映当前数据库架构的 Prisma 架构中。
 
-The `introspect` command connects to your database and adds Prisma models to your Prisma schema that reflect the current database schema.
-
-To run the `introspect` command, a `schema.prisma` file with a valid [`datasource`](../../concepts/components/prisma-schema/data-sources) must be available.
+要运行 `introspect` 命令， `schema.prisma` 必须存在一个有效的文件 datasource 可用。
 
 <Admonition type="warning">
 
-**Warning**: The command will overwrite the current `schema.prisma` file with the new schema. Any manual changes or customization will be lost. Be sure to back up your current `schema.prisma` file before running `introspect` if it contains important modifications.
+**警告**: 该命令将`schema.prisma`使用新模型覆盖当前文件，任何手动更改或自定义都将丢失。如果当前`schema.prisma`文件`introspect`包含重要修改，请确保在运行前备份当前文件。
 
 </Admonition>
 
-#### Prerequisites
+#### 先决条件
 
-Before using the `introspect` command, you must define a valid [`datasource`](../../concepts/components/prisma-schema/data-sources) within your `schema.prisma` file.
+在使用 `introspect` 命令之前，您必须在 `schema.prisma` 文件中定义一个有效的[`datasource`](../../concepts/components/prisma-schema/data-sources)
 
-For example, the following `datasource` defines a SQLite database file within the current directory:
+例如，以下 `datasource` 在当前目录中定义了一个 SQLite 数据库文件：
 
 ```prisma
 datasource db {
@@ -405,22 +403,22 @@ datasource db {
 }
 ```
 
-#### Options
+#### 选项
 
-| Option    | Required | Description                                                                                                           | Default |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------- | ------- |
-| `--force` | No       | Force overwrite of manual changes made to schema. The generated schema will be based on the introspected schema only. |
-| `--print` | No       | Prints the created `schema.prisma` to the screen instead of writing it to the filesystem.                             |
+| 选项      | 必须 | 描述                                                       | 默认 |
+| --------- | ---- | ---------------------------------------------------------- | ---- |
+| `--force` | 否   | 强制覆盖对模型所做的手动更改。生成的模型将仅基于自检模型。 |
+| `--print` | 否   | 将创建的内容打印到屏幕而不是将其写入文件系统。             |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                         | Default                                     |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                   | 默认                                        |
+| ---------- | ---- | ---------------------------------------------------------------------- | ------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma ` 要处理的所需文件的路径。支持绝对路径和相对路径。 | `./schema.prisma`, `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-##### Analyze the database and write its schema to the `schema.prisma` file
+##### 分析数据库并将其模型写入 `schema.prisma` 文件
 
 <CodeWithResult expanded={true}>
 
@@ -446,7 +444,7 @@ Run prisma generate to generate Prisma Client.
 
 </CodeWithResult>
 
-##### Specify an alternative `schema.prisma` file to read and write to
+##### 指定 `schema.prisma` 要读取和写入的替代文件
 
 <CodeWithResult expanded={true}>
 
@@ -472,7 +470,7 @@ Run prisma generate to generate Prisma Client.
 
 </CodeWithResult>
 
-##### Display the generated `schema.prisma` file instead of writing it to the filesystem
+##### 显示生成的 `schema.prisma` 文件而不是将其写入文件系统
 
 <CodeWithResult expanded={true}>
 
@@ -526,17 +524,17 @@ model Profile {
 
 ### <inlinecode>format</inlinecode>
 
-Formats the Prisma schema file, which includes validating, formatting, and persisting the schema.
+格式化 Prisma 模型文件，其中包括验证、格式化和持久化模型。
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                         | Default                                     |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired `schema.prisma` file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`, `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                  | 默认                                        |
+| ---------- | ---- | --------------------------------------------------------------------- | ------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径。 | `./schema.prisma`, `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-##### Validate a schema without errors
+##### 验证模型没有错误
 
 <CodeWithResult>
 <cmd>
@@ -557,7 +555,7 @@ Formatted /urs/prisma/schema.prisma in 116ms �
 </cmdResult>
 </CodeWithResult>
 
-##### Formatting a schema with validation errors
+##### 格式化模型并检验错误
 
 <CodeWithResult>
 <cmd>
@@ -592,36 +590,33 @@ Validation Error Count: 1
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Introspection does not currently support the [MongoDB connector](./../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+Introspection 目前不支持[MongoDB connector](./../../concepts/database-connectors/mongodb).
 
 </Admonition>
 
-`db pull` was introduced in [2.18.0](https://github.com/prisma/prisma/releases/tag/2.18.0) and will eventually replace [`introspect`](#introspect).
+`db pull` 在[2.18.0](https://github.com/prisma/prisma/releases/tag/2.18.0)引入 and will 取代 [`introspect`](#introspect).
 
 ### <inlinecode>db push</inlinecode>
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-`db push` uses the Migration Engine and does not currently support the [MongoDB connector](./../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+`db push` 使用迁移引擎，目前不支持[MongoDB connector](./../../concepts/database-connectors/mongodb).
 
 </Admonition>
 
-The `db push` command pushes the state of your Prisma schema file to the database without using migrations. It creates the database if the database does not exist.
+`db push` 命令将 Prisma 模型文件的状态推送到数据库，而无需使用迁移。如果数据库不存在，它将创建数据库。
+当您不需要更改版本模型时，此命令是一个不错的选择，例如在模型设计和本地开发期间。
+也可以看看:
 
-This command is a good choice when you do not need to version schema changes, such as during prototyping and local development.
+- [`db push`的概念概述以及何时在 Prisma 上使用它](../../../concepts/components/prisma-migrate/db-push) <span class="concept"></span>
+- [`db push` 模型的原型](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span>
 
-See also:
+#### 先决条件
 
-- [Conceptual overview of `db push` and when to use it over Prisma Migrate](../../../concepts/components/prisma-migrate/db-push) <span class="concept"></span>
-- [Schema prototyping with `db push`](../../../guides/database/prototyping-schema-db-push) <span class="guide"></span>
-
-#### Prerequisites
-
-Before using the `db push` command, you must define a valid [datasource](../../concepts/components/prisma-schema/data-sources) within your `schema.prisma` file.
-
-For example, the following `datasource` defines a SQLite database file within the current directory:
+在使用 `db push` 命令之前，您必须在 `schema.prisma` 文件中定义一个有效的[`datasource`](../../concepts/components/prisma-schema/data-sources)
+例如，以下 `datasource` 在当前目录中定义了一个 SQLite 数据库文件：
 
 ```prisma
 datasource db {
@@ -630,36 +625,36 @@ datasource db {
 }
 ```
 
-#### Options
+#### 选项
 
-| Options              | Required | Description                                                                                                                |
-| :------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------- |
-| `--skip-generate`    | No       | Skip generation of artifacts such as Prisma Client                                                                         |
-| `--force-reset`      | No       | Resets the database and then updates the schema - useful if you need to start from scratch due to unexecutable migrations. |
-| `--accept-data-loss` | No       | Ignore data loss warnings. This option is required if as a result of making the schema changes, data may be lost.          |
-| `--help` / `--h`     | No       | Displays the help message                                                                                                  |
+| 选项                 | 必须 | 描述                                                                                  |
+| :------------------- | :--- | :------------------------------------------------------------------------------------ |
+| `--skip-generate`    | 否   | 跳过 Prisma Client 等工件的生成                                                       |
+| `--force-reset`      | 否   | 重置数据库，然后更新模型 - 如果由于无法执行的迁移而需要从头开始，这个命令就非常有用。 |
+| `--accept-data-loss` | 否   | 忽略数据丢失警告。更改模型可能会导致数据丢失，此选项可忽略警告。                      |
+| `--help` / `--h`     | 否   | 显示帮助信息                                                                          |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                              | 默认                                             |
+| :--------- | :--- | :---------------------------------------------------------------- | :----------------------------------------------- |
+| `--schema` | 否   | 指定`schema.prisma`要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-Push the schema:
+推送模型:
 
 ```terminal
 npx prisma db push
 ```
 
-Push the schema, accepting data loss:
+推送模型, 接受数据丢失:
 
 ```terminal
 npx prisma db push --accept-data-loss
 ```
 
-Push the schema with a custom schema location:
+使用自定义位置推送模型:
 
 ```terminal
 npx prisma db push --schema=/tmp/schema.prisma
@@ -669,16 +664,16 @@ npx prisma db push --schema=/tmp/schema.prisma
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-`db push` uses the Migration Engine and does not currently support the [MongoDB connector](./../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+`db push` 使用迁移引擎，目前不支持[MongoDB connector](./../../concepts/database-connectors/mongodb).
 
 </Admonition>
 
-> **Note**: `db seed` is currently in [Preview](../../../about/releases#preview). Features in Preview may still have some issues, and are not recommended for use in production environments. To access commands in Preview, you must opt-in via the `--preview-feature` flag. For a simple and integrated way to re-create data in your development database as often as needed, check out our [seeding guide](../../../guides/database/seed-database).
+> **注意**: `db seed` 目前处于[预览状态](../../../about/releases#preview)。 预览版中的功能可能仍然存在一些问题，不建议在生产环境中使用。要在预览版中使用命令，您必须加入`--preview-feature`标志。要获得一种经常在开发数据库中重新创建数据的简单且集成的方法，请查看我们的[seeding guide](../../../guides/database/seed-database).
 
 #### Remarks
 
-- In [2.18.0](https://github.com/prisma/prisma/releases/tag/2.18.0) and later you can pass `--compiler-options` into the `ts-node` command that runs seed scripts (for example, if you are working with Next.js, which has specific requirements for `ts-node`.) Prisma's script is specifically named `ts-node`:
+- 在 [2.18.0](https://github.com/prisma/prisma/releases/tag/2.18.0) 及更高版本中，您可以将`--compiler-options`传递到运行种子脚本的 `ts-node`命令中(例如：如果您正在使用 Next.js，它对 ts node 有特定的要求) Prisma 的脚本专门命名为`ts-node`:
 
   ```js
   "scripts": {
@@ -686,20 +681,20 @@ npx prisma db push --schema=/tmp/schema.prisma
   },
   ```
 
-#### Options
+#### 选项
 
-| Options             | Required | Description                             |
-| :------------------ | :------- | :-------------------------------------- |
-| `--preview-feature` | Yes      | Enables use of Preview feature commands |
-| `--help` / `--h`    | No       | Displays the help message               |
+| 选项                | 必须 | 描述             |
+| :------------------ | :--- | :--------------- |
+| `--preview-feature` | 是   | 启用预览功能命令 |
+| `--help` / `--h`    | 否   | 显示帮助信息     |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                              | 默认                                             |
+| :--------- | :--- | :---------------------------------------------------------------- | :----------------------------------------------- |
+| `--schema` | 否   | 指定`schema.prisma`要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
 ```terminal
 npx prisma db seed --preview-feature
@@ -707,49 +702,49 @@ npx prisma db seed --preview-feature
 
 ## Prisma Migrate
 
-Prisma Migrate changed from Preview to Generally Available (GA) in 2.19.0.
+Prisma Migrate 在 2.19.0 中从预览版更改为正式发布 (GA)
 
 <Admonition type="warning">
 
-**MongoDB not supported** <br />
-Prisma Migrate does not currently support the [MongoDB connector](./../../concepts/database-connectors/mongodb).
+**不支持 MongoDB** <br />
+`Prisma Migrate`目前不支持[MongoDB connector](./../../concepts/database-connectors/mongodb).
 
 </Admonition>
 
 ### <inlinecode>migrate dev</inlinecode>
 
-**For use in development environments only, requires shadow database**
+**仅用于开发环境，需要影子数据库**
 
-The `migrate dev` command updates your database using migrations during development and creates the database if it does not exist. See also:
+`migrate dev` 命令在开发期间使用迁移更新您的数据库，如果数据库不存在则创建该数据库。 也可以看看：
 
-- [Conceptual overview of Prisma Migrate](../../../concepts/components/prisma-migrate) <span class="concept"></span>
-- [Developing with Prisma Migrate](../../../guides/database/developing-with-prisma-migrate) <span class="guide"></span>
+- [Prisma Migrate 的概念概述](../../../concepts/components/prisma-migrate) <span class="concept"></span>
+- [使用 Prisma Migrate 进行开发](../../../guides/database/developing-with-prisma-migrate) <span class="guide"></span>
 
-#### Options
+#### 选项
 
-| Option            | Required | Description                                                                                                                         | Default |
-| :---------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| `--create-only`   | No       | Creates a new migration based on the changes in the schema but does not apply that migration. Run `migrate dev` to apply migration. |         |
-| `--skip-seed`     | No       | Skip triggering seed                                                                                                                |         |
-| `--skip-generate` | No       | Skip triggering generators (for example, Prisma Client)                                                                             |         |
-| `--help` / `--h`  | No       | Displays the help message                                                                                                           |
+| 选项              | 必须 | 描述                                                                        | 默认 |
+| :---------------- | :--- | :-------------------------------------------------------------------------- | :--- |
+| `--create-only`   | 否   | 根据模型中的更改创建新迁移，但不应用该迁移。运行 `migrate dev` 以应用迁移。 |      |
+| `--skip-seed`     | 否   | 跳过触发 seed                                                               |      |
+| `--skip-generate` | 否   | 跳过触发生成器（例如 Prisma Client）                                        |      |
+| `--help` / `--h`  | 否   | 显示帮助信息                                                                |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--name`   | No       | The name of the migration. If no name is provided, the CLI will prompt you.                                                                       |                                                  |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                | 默认                                             |
+| :--------- | :--- | :------------------------------------------------------------------ | :----------------------------------------------- |
+| `--name`   | 否   | 迁移的名称。如果未提供名称，CLI 将提示您。                          |                                                  |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-Apply all migrations, then create and apply any new migrations:
+应用所有迁移，然后创建并应用新迁移：
 
 ```terminal
 prisma migrate dev
 ```
 
-Apply all migrations and create a new migration if there are schema changes, but do not apply it:
+如果有模型更改，则应用所有迁移并创建新迁移，但不要应用它：
 
 ```terminal
 prisma migrate dev --create-only
@@ -757,26 +752,26 @@ prisma migrate dev --create-only
 
 ### <inlinecode>migrate reset</inlinecode>
 
-**For use in development environments only**
+**仅用于开发环境**
 
-This command deletes and recreates the database, or performs a 'soft reset' by removing all data, tables, indexes, and other artifacts.
+此命令删除并重新创建数据库，或通过删除所有数据、表、索引和其他工件来执行“软重置”。
 
-#### Options
+#### 选项
 
-| Option            | Required | Description                                             | Default |
-| :---------------- | :------- | :------------------------------------------------------ | :------ |
-| `--force`         | No       | Skip the confirmation prompt                            |         |
-| `--skip-generate` | No       | Skip triggering generators (for example, Prisma Client) |         |
-| `--skip-seed`     | No       | Skip triggering seed                                    |         |
-| `--help` / `--h`  | No       | Displays the help message                               |
+| 选项              | 必须 | 描述                                 | 默认 |
+| :---------------- | :--- | :----------------------------------- | :--- |
+| `--force`         | 否   | 跳过确认提示                         |      |
+| `--skip-generate` | 否   | 跳过触发生成器（例如 Prisma Client） |      |
+| `--skip-seed`     | 否   | 跳过触发 seed                        |      |
+| `--help` / `--h`  | 否   | 显示帮助信息                         |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                | 默认                                             |
+| :--------- | :--- | :------------------------------------------------------------------ | :----------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
 ```terminal
 prisma migrate reset
@@ -784,25 +779,25 @@ prisma migrate reset
 
 ### <inlinecode>migrate deploy</inlinecode>
 
-The `migrate deploy` command applies all pending migrations, and creates the database if it does not exist. Primarily used in non-development environments. This command:
+`migrate deploy` 命令应用所有挂起的迁移，如果数据库不存在则创建该数据库。主要用于非开发环境。这个命令：
 
-- Does **not** look for drift in the database or changes in the Prisma schema
-- Does **not** reset the database or generate artifacts
-- Does **not** rely on a shadow database
+- 不查找数据库中的漂移或 Prisma 模型中的更改
+- 不会重置数据库或生成 artifacts
+- 不依赖于影子数据库
 
-#### Options
+#### 选项
 
-| Option           | Required | Description               | Default |
-| :--------------- | :------- | :------------------------ | :------ |
-| `--help` / `--h` | No       | Displays the help message |
+| 选项             | 必须 | 描述         | 默认 |
+| :--------------- | :--- | :----------- | :--- |
+| `--help` / `--h` | 否   | 显示帮助信息 |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                | 默认                                             |
+| :--------- | :--- | :------------------------------------------------------------------ | :----------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
 ```terminal
 prisma migrate deploy
@@ -810,25 +805,25 @@ prisma migrate deploy
 
 ### <inlinecode>migrate resolve</inlinecode>
 
-The `migrate resolve` command allows you to solve migration history issues in production by marking a migration as already applied (supports baselining) or rolled back.
+`migrate resolve`命令允许您通过将迁移标记为已应用（支持基线）或回滚来解决生产中的迁移历史问题。
 
-#### Options
+#### 选项
 
-| Option           | Required | Description               | Default |
-| :--------------- | :------- | :------------------------ | :------ |
-| `--help` / `--h` | No       | Displays the help message |
+| 选项             | 必须 | 描述         | 默认 |
+| :--------------- | :--- | :----------- | :--- |
+| `--help` / `--h` | 否   | 显示帮助信息 |
 
-#### Arguments
+#### 参数
 
-| Argument        | Required | Description                                                                                                                                       | Default                                          |
-| :-------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--applied`     | No\*     | Record a specific migration as applied - for example `--applied "20201231000000_add_users_table"`                                                 |                                                  |
-| `--rolled-back` | No\*     | Record a specific migration as rolled back - for example `--rolled-back "20201231000000_add_users_table"`                                         | `./schema.prisma`<br /> `./prisma/schema.prisma` |
-| `--schema`      | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数            | 必须 | 描述                                                                         | 默认                                             |
+| :-------------- | :--- | :--------------------------------------------------------------------------- | :----------------------------------------------- |
+| `--applied`     | No\* | 将特定迁移记录为已应用 - 例如 `--applied "20201231000000_add_users_table"`   |                                                  |
+| `--rolled-back` | No\* | 将特定迁移记录为回滚 - 例如 `--rolled-back "20201231000000_add_users_table"` | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| `--schema`      | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径          | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-You must specify either `--rolled-back` _or_ `--applied`.
+您必须指定 `--rolled-back` 或 `--applied`.
 
-#### Examples
+#### 示例
 
 ```terminal
 prisma migrate resolve --applied 20201231000000_add_users_table
@@ -840,7 +835,7 @@ prisma migrate resolve --rolled-back 20201231000000_add_users_table
 
 ### <inlinecode>migrate status</inlinecode>
 
-The `prisma migrate status` command looks up the migrations in `/prisma/migrations/*` folder and the entries in the `_prisma_migrations` table and compiles information about the state of the migrations in your database. For example:
+`prisma migrate status` 命令可在 `/prisma/migrations/*` 文件夹和 `_prisma_migrations` 表中查找迁移，并编译有关数据库中迁移状态的信息。例如：
 
 ```
 Status
@@ -857,19 +852,19 @@ The migrations from the database are not found locally in prisma/migrations:
 20201208100950_new_migration
 ```
 
-#### Options
+#### 选项
 
-| Option           | Required | Description               | Default |
-| :--------------- | :------- | :------------------------ | :------ |
-| `--help` / `--h` | No       | Displays the help message |
+| 选项             | 必须 | 描述         | 默认 |
+| :--------------- | :--- | :----------- | :--- |
+| `--help` / `--h` | 否   | 显示帮助信息 |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                              | 默认                                             |
+| :--------- | :--- | :---------------------------------------------------------------- | :----------------------------------------------- |
+| `--schema` | 否   | 指定`schema.prisma`要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
 ```terminal
 prisma migrate status
@@ -879,13 +874,13 @@ prisma migrate status
 
 ### <inlinecode>studio</inlinecode>
 
-The `studio` command allows you to interact with and manage your data interactively. It does this by starting a local web server with a web app configured with your project's data schema and records.
+`studio` 命令允许您以交互方式操作您的数据。它通过启动配置了项目数据模型的本地 Web 服务来实现此目的。
 
-#### Prerequisites
+#### 先决条件
 
-Before using the `studio` command, you must define a valid [`datasource`](../../concepts/components/prisma-schema/data-sources) within your `schema.prisma` file.
+在使用 `studio` 命令之前，您必须在 `schema.prisma` 文件中定义一个有效的[`datasource`](../../concepts/components/prisma-schema/data-sources)
 
-For example, the following `datasource` defines a SQLite database file within the current directory:
+例如，以下 `datasource` 在当前目录中定义了一个 SQLite 数据库文件：
 
 ```prisma
 datasource db {
@@ -894,43 +889,43 @@ datasource db {
 }
 ```
 
-#### Options
+#### 选项
 
 The `studio` command recognizes the following options:
 
-| Option            | Required | Description                         | Default                  |
-| ----------------- | -------- | ----------------------------------- | ------------------------ |
-| `-b`, `--browser` | No       | The browser to auto-open Studio in. | `<your-default-browser>` |
-| `-h`, `--help`    | No       | Show all available options and exit |                          |
-| `-p`, `--port`    | No       | The port number to start Studio on. | 5555                     |
+| 选项              | 必须 | 描述                         | 默认                     |
+| ----------------- | ---- | ---------------------------- | ------------------------ |
+| `-b`, `--browser` | 否   | 用于自动打开 Studio 的浏览器 | `<your-default-browser>` |
+| `-h`, `--help`    | 否   | 显示所有可用选项并退出       |                          |
+| `-p`, `--port`    | 否   | 启动 Studio 的端口号         | 5555                     |
 
-#### Arguments
+#### 参数
 
-| Argument   | Required | Description                                                                                                                                       | Default                                          |
-| :--------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
-| `--schema` | No       | Specifies the path to the desired schema.prisma file to be processed instead of the default path. Both absolute and relative paths are supported. | `./schema.prisma`<br /> `./prisma/schema.prisma` |
+| 参数       | 必须 | 描述                                                                | 默认                                             |
+| :--------- | :--- | :------------------------------------------------------------------ | :----------------------------------------------- |
+| `--schema` | 否   | 指定 `schema.prisma` 要处理的所需文件的路径。支持绝对路径和相对路径 | `./schema.prisma`<br /> `./prisma/schema.prisma` |
 
-#### Examples
+#### 示例
 
-#### Start Studio on the default port and open a new browser tab to it
+#### 在默认端口上启动 Studio 并打开一个新的浏览器选项卡
 
 ```terminal
 prisma studio
 ```
 
-#### Start Studio on a different port and open a new browser tab to it
+#### 在不同的端口上启动 Studio 并打开一个新的浏览器选项卡
 
 ```terminal
 prisma studio --port 7777
 ```
 
-#### Start Studio and open a Firefox tab to it
+#### 启动 Studio 并打开一个 Firefox 选项卡
 
 ```terminal
 prisma studio --browser firefox
 ```
 
-#### Start Studio without opening a new browser tab to it
+#### 启动 Studio 而不打开新的浏览器选项卡
 
 ```terminal
 prisma studio --browser none

@@ -1,29 +1,29 @@
 ---
-title: 'Connection URLs'
-metaTitle: 'Connection URLs (Reference)'
-metaDescription: 'Learn about the format and syntax Prisma uses for defining database connection URLs for PostgreSQL, MySQL and SQLite.'
+title: '连接URL'
+metaTitle: '连接URL（参考）'
+metaDescription: '了解Prisma用于为PostgreSQL、MySQL和SQLite定义数据库连接URL的格式和语法。'
 tocDepth: 2
 ---
 
 <TopBlock>
 
-Prisma needs a connection URL to be able to connect to your database, e.g. when sending queries with [Prisma Client](../../concepts/components/prisma-client) or when changing the database schema with [Prisma Migrate](../../concepts/components/prisma-migrate).
+Prisma 需要一个 URL 才能连接到数据库，例如使用[Prisma Client](../../concepts/components/prisma-client)发送查询或使用[Prisma Migrate](../../concepts/components/prisma-migrate)更改数据库架构时
 
-The connection URL is provided via the `url` field of a `datasource` block in your Prisma schema. It generally consists of the following components (except for SQLite):
+连接 URL 是通过 Prisma schema 中 `datasource` 块的 `url` 字段提供的。通常由以下部分组成（SQLite 除外）：
 
-- **User**: The name of your database user
-- **Password**: The password for your database user
-- **Host**: The IP or domain name of the machine where your database server is running
-- **Port**: The port on which your database server is running
-- **Database name**: The name of the database you want to use
+- **User**: 数据库用户名
+- **Password**: 数据库用户密码
+- **Host**: 数据库服务器的 ip 或者域名
+- **Port**: 数据库服务器的端口
+- **Database name**: 数据库名称
 
-Make sure you have this information at hand when getting started with Prisma. If you don't have a database server running yet, you can either use a local SQLite database file (see the [Quickstart](../../getting-started/quickstart)) or [setup a free PostgreSQL database on Heroku](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1).
+使用 Prisma 前请准备好这些信息。如果你还没有数据库服务器，则可以使用本地 SQLite 数据库文件（请参阅 [快速开始](../../getting-started/quickstart)）或[在 Heroku 上设置免费的 PostgreSQL 数据库](https://dev.to/prisma/how-to-setup-a-free-postgresql-database-on-heroku-1dc1).
 
 </TopBlock>
 
-## Examples
+## 示例
 
-Here are examples for the connection URLs of the databases Prisma supports:
+以下是 Prisma 支持的数据库的连接 URL 示例：
 
 ### PostgreSQL
 
@@ -52,7 +52,7 @@ datasource db {
 }
 ```
 
-> **Note**: You must [enable the `microsoftSqlServer` Preview feature](../../concepts/components/preview-features/sql-server#enable-sql-server-preview-feature) in order to use the Microsoft SQL Server connector.
+> **注意**: 要使用 Microsoft sql server 连接器，必须[启用`microsoftSqlServer`预览功能](../../concepts/components/preview-features/sql-server#enable-sql-server-preview-feature)。
 
 ### SQLite
 
@@ -63,7 +63,7 @@ datasource db {
 }
 ```
 
-### MongoDB (Preview)
+### MongoDB (预览)
 
 ```prisma file=schema.prisma
 datasource db {
@@ -79,7 +79,7 @@ generator client {
 
 ## .env
 
-You can also provide the connection URL as an environment variable:
+你也可以将数据库连接 URL 配置在环境变量里：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -88,21 +88,21 @@ datasource db {
 }
 ```
 
-You can then either set the environment variable in your terminal or by providing a [dotenv](https://github.com/motdotla/dotenv) file named `.env`. This will automatically be picked up by the Prisma CLI.
+然后，你可以在终端中设置环境变量，也可以通过提供[dotenv](https://github.com/motdotla/dotenv)名为 `.env` 的文件。Prisma CLI 将自动获取该信息。
 
 ```
 DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/mydb
 ```
 
-## Format
+## 格式
 
-The format of the connection URL depends on the _database connector_ you're using. Prisma generally supports the standard formats for each database. You can find out more about the connection URL of your database on the dedicated docs page:
+连接 URL 的格式取决于你正在使用的*数据库连接器*。Prisma 通常支持每个数据库的标准格式。你可以在文档里找到有关数据库连接 URL 的更多信息：
 
 - [PostgreSQL](../../../concepts/database-connectors/postgresql)
 - [MySQL](../../../concepts/database-connectors/mysql)
 - [SQLite](../../../concepts/database-connectors/sqlite)
 - [MongoDB](../../../concepts/database-connectors/mongodb)
 
-### Special characters
+### 特殊字符
 
-For MySQL and PostgreSQL, you must percentage-encode special characters in any part of your connection URL - including passwords. For example, `p@$$w0rd` becomes `p%40%24%24w0rd`.
+对于 MySQL 和 PostgreSQL，你必须对连接 URL 的任何部分（包括密码）的特殊字符进行百分比编码。例如，`p@$$w0rd`变成`p%40%24%24w0rd`。
