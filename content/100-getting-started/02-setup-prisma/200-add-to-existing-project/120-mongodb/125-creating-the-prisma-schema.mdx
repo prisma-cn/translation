@@ -1,32 +1,32 @@
 ---
-title: 'Creating the Prisma schema'
-metaTitle: 'Creating the Prisma schema'
-metaDescription: 'Manually create the Prisma schema for MongoDB'
+title: '创建 Prisma 模型'
+metaTitle: '创建 Prisma 模型'
+metaDescription: '手动创建MongoDB Prisma 模型'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['mongodb']
 toc: false
 ---
 
-## Manually create the Prisma schema
+## 手动创建 Prisma 模型
 
 <Admonition type="warning">
 
-**Migrations and Introspection not supported** <br />
-Prisma does **not** currently support [Migrations](../../../../concepts/components/prisma-migrate) or [Introspection](../../../../concepts/components/introspection) when working with a MongoDB database.
+**不支持迁移检查** <br />
+Prisma当前在使用 MongoDB 数据库时不支持[迁移](../../../../concepts/components/prisma-migrate)或[检查](../../../../concepts/components/introspection)。
 
 </Admonition>
 
-[Introspection](../../../../concepts/components/introspection) is often used to get an initial version of your data model when adding Prisma to an existing project.
+[检查](../../../../concepts/components/introspection)通常用于在向现有项目添加Prisma时获得数据模型的初始版本。
 
-Seeing as Introspection is **not** currently supported when working with MongoDB, you have to manually mimic your data models structure using the [Prisma Schema Language](../../../../concepts/components/prisma-schema).
+由于使用 MongoDB 时当前不支持**检查**，因此您必须使用[Prisma Schema Language](../../../../concepts/components/prisma-schema)手动模拟数据模型结构。
 
 <Admonition type="info">
 
-Your own data structure will of course be different, but for this tutorial we will assume you are working with the following models: `User`, `Post` and `Comment`.
+您自己的数据结构当然会有所不同，但在本教程中，我们将假设您使用以下模型：`User`、`Post`和`Comment`。
 
 </Admonition>
 
-Open the `prisma/schema.prisma` file and replace the default configurations with the following:
+打开`prisma/schema.prisma`文件并将默认配置替换为以下内容：
 
 ```prisma file=prisma/schema.prisma
 datasource db {
@@ -66,13 +66,13 @@ model User {
 }
 ```
 
-Because MongoDB is currently a preview feature, you need to explicitly define that in the [`generator`](../../../../reference/api-reference/prisma-schema-reference#generator) block with `previewFeatures = ["mongoDb"]`.
+因为 MongoDB 目前是一个预览功能，您需要在[`generator`](../../../../reference/api-reference/prisma-schema-reference#generator)块中使用`previewFeatures = ["mongoDb"]`.
 
-There are also a number of subtle differences in how the schema is setup when compared to relational databases like PostgreSQL.
+与 PostgreSQL 等关系数据库相比，模式的设置方式也存在许多细微差别。
 
-For example, the the underlying `ID` field name is always `_id` and must be mapped with `@map("_id")`.
+例如，底层`ID`字段名称总是`_id`并且必须使用`@map("_id")`。
 
-For more information check out the [MongoDB schema reference](../../../../reference/api-reference/prisma-schema-reference#mongodb-2).
+有关更多信息，请查看[MongoDB 模型参考](../../../../reference/api-reference/prisma-schema-reference#mongodb-2)。
 
 <SwitchTech technologies={['node', 'mongodb']}>
 
@@ -84,7 +84,7 @@ For more information check out the [MongoDB schema reference](../../../../refere
   href="./connect-your-database-node-mongodb"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -93,7 +93,7 @@ For more information check out the [MongoDB schema reference](../../../../refere
   href="./install-prisma-client-node-mongodb"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma 客户端
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -110,7 +110,7 @@ For more information check out the [MongoDB schema reference](../../../../refere
   href="./connect-your-database-typescript-mongodb"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -119,7 +119,7 @@ For more information check out the [MongoDB schema reference](../../../../refere
   href="./install-prisma-client-typescript-mongodb"
   arrow
 >
-  Install Prisma Client
+  安装 Prisma 客户端
 </ButtonLink>
 
 </NavigationLinksContainer>

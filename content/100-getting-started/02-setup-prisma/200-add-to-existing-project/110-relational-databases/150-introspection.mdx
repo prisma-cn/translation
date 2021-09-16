@@ -1,17 +1,17 @@
 ---
-title: 'Introspection'
-metaTitle: 'Introspection'
-metaDescription: 'Introspection your database with Prisma'
+title: '检查'
+metaTitle: '检查'
+metaDescription: '使用Prisma检查您的数据库'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['postgres', 'mysql']
 toc: false
 ---
 
-## Introspect your database with Prisma
+## 使用Prisma检查您的数据库
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
-For the purpose of this guide, we'll use a demo SQL schema with three tables:
+在本指南中，我们将使用带有三个表的演示SQL模式：
 
 ```sql no-lines
 CREATE TABLE "public"."User" (
@@ -38,9 +38,9 @@ CREATE TABLE "public"."Profile" (
 );
 ```
 
-> **Note**: Some fields are written in double-quotes to ensure PostgreSQL uses proper casing. If no double-quotes were used, PostgreSQL would just read everything as _lowercase_ characters.
+> **注意**：有些字段是用双引号写的，以确保 PostgreSQL 使用正确的大小写。如果不使用双引号，PostgreSQL 只会将所有内容读为小写字符。
 
-<details><summary>Expand for a graphical overview of the tables</summary>
+<details><summary>展开以查看表格的图形概览</summary>
 
 **User**
 
@@ -75,7 +75,7 @@ CREATE TABLE "public"."Profile" (
 
 <SwitchTech technologies={['*', 'mysql']}>
 
-For the purpose of this guide, we'll use a demo SQL schema with three tables:
+在本指南中，我们将使用带有三个表的演示SQL模式：
 
 ```sql no-lines
 CREATE TABLE User (
@@ -102,7 +102,7 @@ CREATE TABLE Profile (
 );
 ```
 
-<details><summary>Expand for a graphical overview of the tables</summary>
+<details><summary>展开以查看表格的图形概览</summary>
 
 **User**
 
@@ -135,21 +135,21 @@ CREATE TABLE Profile (
 
 </SwitchTech>
 
-As a next step, you will introspect your database. The result of the introspection will be a [data model](../../../../concepts/components/prisma-schema/data-model) inside your Prisma schema.
+下一步，您将检查数据库。检查的结果将是Prisma模式中的[数据模型](../../../../concepts/components/prisma-schema/data-model)。
 
-Run the following command to introspect your database:
+运行以下命令来检查数据库:
 
 ```terminal copy
 npx prisma db pull
 ```
 
-This commands reads the `DATABASE_URL` environment variable that's defined in `.env` and connects to your database. Once the connection is established, it introspects the database (i.e. it _reads the database schema_). It then translates the database schema from SQL into a Prisma data model.
+这个命令读取`.env`中定义的`DATABASE_URL`环境变量。并连接到数据库。一旦建立了连接，它就会对数据库进行内省(_即读取数据库模式_)。然后将数据库模式从SQL转换为Prisma数据模型。
 
-After the introspection is complete, your Prisma schema file was updated:
+检查完成后，Prisma模式文件被更新:
 
-![Introspect your database with Prisma](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/f7itiYw.png)
+![使用Prisma检查数据库](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/f7itiYw.png)
 
-The data model now looks similar to this (note that the fields on the models have been reordered for better readability):
+数据模型现在看起来与此类似(注意模型上的字段被重新排序以提高可读性):
 
 ```prisma file=prisma/schema.prisma
 model Post {
@@ -178,17 +178,18 @@ model User {
 }
 ```
 
-Prisma's data model is a declarative representation of your database schema and serves as the foundation for the generated Prisma Client library. Your Prisma Client instance will expose queries that are _tailored_ to these models.
+Prisma的数据模型是数据库模式的声明性表示，并作为生成的Prisma Client库的基础。你的Prisma Client实例将会公开这些模型定制的查询。
 
-Right now, there's a few minor "issues" with the data model:
+现在，数据模型有几个小“问题”:
 
-- The `User` relation field is uppercased and therefore doesn't adhere to Prisma's [naming conventions](../../../../reference/api-reference/prisma-schema-reference#naming-conventions-1) <span class="api"></span>. To express more "semantics", it would also be nice if this field was called `author` to _describe_ the relationship between `User` and `Post` better.
-- The `Post` and `Profile` relation fields on `User` as well as the `User` relation field on `Profile` are all uppercased. To adhere to Prisma's [naming conventions](../../../../reference/api-reference/prisma-schema-reference#naming-conventions-1) <span class="api"></span>, both fields should be lowercased to `post`, `profile` and `user`.
+- `User`关系字段是大写的，因此不符合Prisma的[命名约定](../../../../reference/api-reference/prisma-schema-reference#naming-conventions-1)为了表达更多的“语义”，如果这个字段被称为`author`来更好地描述`author`和`Post`之间的关系也会更好。
+- `User`上的`Post`和`Profile`关系字段以及`Profile`上的`User`关系字段都是大写的。为了遵守Prisma的[命名约定](../../../../reference/api-reference/prisma-schema-reference#naming-conventions-1)，两个字段都应该小写，即`post`，`profile`和`user`。
 - Even after lowercasing, the `post` field on `User` is still slightly misnamed. That's because it actually refers to a [list](../../../../concepts/components/prisma-schema/data-model#type-modifiers) of posts – a better name therefore would be the plural form: `posts`.
+- 即使在小写后，`User`上的`post`字段仍然有轻微的错误命名。这是因为它实际上指的是一个[list](../../../../concepts/components/prisma-schema/data-model#type-modifiers)的posts——因此，更好的名称应该是复数形式:`posts`。
 
-These changes are relevant for the generated Prisma Client API where using lowercased relation fields `author`, `posts`, `profile` and `user` will feel more natural and idiomatic to JavaScript/TypeScript developers. You can therefore [configure your Prisma Client API](../../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names).
+这些变化与生成的Prisma Client API相关，在这个API中使用小写的关系字段`author`，`posts`，`profile`和`user`对JavaScript/TypeScript开发者来说更自然和习惯。因此，你可以[配置你的Prisma Client API](../../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names)。
 
-Because [relation fields](../../../../concepts/components/prisma-schema/relations#relation-fields) are _virtual_ (i.e. they _do not directly manifest in the database_), you can manually rename them in your Prisma schema without touching the database:
+因为[关联字段](../../../../concepts/components/prisma-schema/relations#relation-fields)是 _虚拟_ (即它们_不直接在数据库中显示)，你可以在你的Prisma schema中手动重命名它们，而不需要接触数据库:
 
 ```prisma file=prisma/schema.prisma highlight=7,14,22,23;edit
 model Post {
@@ -217,11 +218,11 @@ model User {
 }
 ```
 
-In this example, the database schema did follow the [naming conventions](../../../../reference/api-reference/prisma-schema-reference#naming-conventions) <span class="api"></span> for Prisma models (only the virtual relation fields that were generated from introspection did not adhere to them and needed adjustment). This optimizes the ergonomics of the generated Prisma Client API.
+在本例中,数据库模式是遵循[命名约定](../../../../reference/api-reference/prisma-schema-reference#naming-conventions)<span class="api"></span>Prisma模型(只有来自内省的虚拟关系字段不遵守他们,需要调整)。这优化了生成的Prisma Client API的人机工程学。
 
-Sometimes though, you may want to make additional changes to the names of the columns and tables that are exposed in the Prisma Client API. A common example is to translate _snake_case_ notation which is often used in database schemas into _PascalCase_ and _camelCase_ notations which feel more natural for JavaScript/TypeScript developers.
+不过，有时您可能希望对Prisma Client API中公开的列和表的名称进行额外的更改。一个常见的例子是将数据库模式中经常使用的_snake_case_表示法转换为_PascalCase_和_camelCase_表示法，这对JavaScript/TypeScript开发人员来说更自然。
 
-Assume you obtained the following model from introspection that's based on _snake_case_ notation:
+假设你从基于_snake_case_符号的自省中获得了以下模型:
 
 ```prisma no-lines
 model my_user {
@@ -231,7 +232,7 @@ model my_user {
 }
 ```
 
-If you generated a Prisma Client API for this model, it would pick up the _snake_case_ notation in its API:
+如果你为这个模型生成一个Prisma Client API，它会在它的API中选取_snake_case_符号:
 
 ```ts no-lines
 const user = await prisma.my_user.create({
@@ -242,7 +243,7 @@ const user = await prisma.my_user.create({
 })
 ```
 
-If you don't want to use the table and column names from your database in your Prisma Client API, you can configure them with [`@map` and `@@map`](../../../../concepts/components/prisma-schema/data-model#mapping-model-names-to-tables-or-collections):
+如果你不想在Prisma Client API中使用数据库中的表和列名，你可以使用[`@map`和`@@map`](../../../../concepts/components/prisma-schema/data-model#mapping-model-names-to-tables-or-collections)来配置它们:
 
 ```prisma no-lines
 model MyUser {
@@ -254,7 +255,7 @@ model MyUser {
 }
 ```
 
-With this approach, you can name your model and its fields whatever you like and use the `@map` (for field names) and `@@map` (for models names) to point to the underlying tables and columns. Your Prisma Client API now looks as follows:
+使用这种方法，您可以任意命名模型及其字段，并使用`@map`(用于字段名称)和`@@map`(用于模型名称)指向底层表和列。你的Prisma客户端API现在看起来如下:
 
 ```ts no-lines
 const user = await prisma.myUser.create({
@@ -265,7 +266,7 @@ const user = await prisma.myUser.create({
 })
 ```
 
-Learn more about this on the [Configuring your Prisma Client API](../../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names) page.
+在[配置您的Prisma客户端API](../../../../concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names)页面了解更多信息。
 
 <SwitchTech technologies={['node', 'postgresql']}>
 
@@ -277,7 +278,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./connect-your-database-node-postgres"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -286,7 +287,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./install-prisma-client-node-postgres"
   arrow
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -303,7 +304,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./connect-your-database-node-mysql"
   arrowRight
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -312,7 +313,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./install-prisma-client-node-mysql"
   arrow
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -329,7 +330,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./connect-your-database-typescript-postgres"
   arrowLeft
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -338,7 +339,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./install-prisma-client-typescript-postgres"
   arrow
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -355,7 +356,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./connect-your-database-typescript-mysql"
   arrowRight
 >
-  Connect your database
+  连接你的数据库
 </ButtonLink>
 
 <ButtonLink
@@ -364,7 +365,7 @@ Learn more about this on the [Configuring your Prisma Client API](../../../../co
   href="./install-prisma-client-typescript-mysql"
   arrow
 >
-  Install Prisma Client
+  安装Prisma客户端
 </ButtonLink>
 
 </NavigationLinksContainer>

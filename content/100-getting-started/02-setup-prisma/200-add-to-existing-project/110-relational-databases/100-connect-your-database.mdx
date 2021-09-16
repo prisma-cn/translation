@@ -1,15 +1,15 @@
 ---
-title: 'Connect your database'
-metaTitle: 'Connect your database'
-metaDescription: 'Connect your database to your project'
+title: '连接你的数据库'
+metaTitle: '连接你的数据库'
+metaDescription: '将数据库连接到项目'
 langSwitcher: ['typescript', 'node']
 dbSwitcher: ['postgres', 'mysql']
 toc: false
 ---
 
-## Connecting your database
+## 连接你的数据库
 
-To connect your database, you need to set the `url` field of the `datasource` block in your Prisma schema to your database [connection URL](../../../../reference/database-reference/connection-urls):
+要连接您的数据库，您需要将`Prisma`架构`url`中的`datasource`块字段设置为您的数据库[连接 URL](../../../../reference/database-reference/connection-urls):
 
 <SwitchTech technologies={['*', 'postgresql']}>
 
@@ -20,31 +20,31 @@ datasource db {
 }
 ```
 
-In this case, the `url` is [set via an environment variable](../../../../guides/development-environment/environment-variables) which is defined in `.env`:
+在本例中，`url`是[通过环境变量设置](../../../../guides/development-environment/environment-variables)，它在`.env`中定义：
 
 ```bash file=.env
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 ```
 
-You now need to adjust the connection URL to point to your own database.
+您现在需要调整连接 URL 以指向您自己的数据库。
 
-The format of the connection URL for your database depends on the database you use. For PostgreSQL, it looks as follows (the parts spelled all-uppercased are _placeholders_ for your specific connection details):
+数据库连接 URL 的格式取决于您使用的数据库。对于 PostgreSQL，它看起来如下（拼写全部大写的部分是您的特定连接详细信息的 _占位符_）：
 
 ```no-lines
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
 ```
 
-> **Note**: In most cases, you can use the [`postgres://` and `postgresql:// URI scheme designators interchangeably`](https://www.postgresql.org/docs/10/libpq-connect.html#id-1.7.3.8.3.6) - however, depending on how your database is hosted, you might need to be specific.
+> **注意**：在大多数情况下，您可以使用[`postgres://` and `postgresql:// URI scheme designators interchangeably`](https://www.postgresql.org/docs/10/libpq-connect.html#id-1.7.3.8.3.6) 但是，根据您的数据库的托管方式，您可能需要具体说明。
 
-If you're unsure what to provide for the `schema` parameter for a PostgreSQL connection URL, you can probably omit it. In that case, the default schema name `public` will be used.
+如果您不确定`schema`为 PostgreSQL 连接 URL的参数提供什么，您可以省略它。在这种情况下，`public`将使用默认架构名称。
 
-As an example, for a PostgreSQL database hosted on Heroku, the connection URL might look similar to this:
+例如，对于托管在 Heroku 上的 PostgreSQL 数据库，连接 URL 可能类似于：
 
 ```bash file=.env
 DATABASE_URL="postgresql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus?schema=hello-prisma"
 ```
 
-When running PostgreSQL locally on Mac OS, your user and password as well as the database name _typically_ correspond to the current _user_ of your OS, e.g. assuming the user is called `janedoe`:
+在 Mac OS 上本地运行 PostgreSQL 时，您的用户名和密码以及数据库名称通常对应于您操作系统的当前用户，例如假设用户名为janedoe：
 
 ```bash file=.env
 DATABASE_URL="postgresql://janedoe:janedoe@localhost:5432/janedoe?schema=hello-prisma"
@@ -61,7 +61,7 @@ datasource db {
 }
 ```
 
-Note that the default schema created by `prisma init` uses PostgreSQL, so you first need to switch the `provider` to `mysql`:
+注意，由`prisma init`创建的默认模式使用PostgreSQL，所以你首先需要将`provider`切换到`mysql`:
 
 ```prisma file=prisma/schema.prisma highlight=2;edit
 datasource db {
@@ -70,34 +70,34 @@ datasource db {
 }
 ```
 
-In this case, the `url` is [set via an environment variable](../../../../concepts/components/prisma-schema#accessing-environment-variables-from-the-schema) which is defined in `.env`:
+例如，`url`是[通过环境变量设置](../../../../concepts/components/prisma-schema#accessing-environment-variables-from-the-schema)，它是在`.env`中定义的：
 
 ```bash file=.env
 DATABASE_URL="mysql://johndoe:randompassword@localhost:3306/mydb"
 ```
 
-You now need to adjust the connection URL to point to your own database.
+现在需要调整连接URL以指向您自己的数据库。
 
-The format of the connection URL for your database typically depends on the database you use. For MySQL, it looks as follows (the parts spelled all-uppercased are _placeholders_ for your specific connection details):
+数据库连接URL的格式通常取决于所使用的数据库。对于MySQL，它如下所示（拼写为all大写的部分是_占位符u，表示您的特定连接详细信息）：
 
 ```no-lines
 mysql://USER:PASSWORD@HOST:PORT/DATABASE
 ```
 
-Here's a short explanation of each component:
+以下是对每个组件的简短解释:
 
-- `USER`: The name of your database user
-- `PASSWORD`: The password for your database user
-- `PORT`: The port where your database server is running (typically `3306` for MySQL)
-- `DATABASE`: The name of the [database](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
+- `USER`: 数据库用户的名称
+- `PASSWORD`: 数据库用户的密码
+- `PORT`: 数据库服务器运行的端口(MySQL通常是`3306`)
+- `DATABASE`: [数据库](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)名称
 
-As an example, for a MySQL database hosted on AWS RDS, the [connection URL](../../../../reference/database-reference/connection-urls) might look similar to this:
+例如，对于托管在AWS RDS上的MySQL数据库，[connection URL](../../../../reference/database-reference/connection-urls)可能类似于这样:
 
 ```bash file=.env
 DATABASE_URL="mysql://johndoe:XXX@mysql–instance1.123456789012.us-east-1.rds.amazonaws.com:3306/mydb"
 ```
 
-When running MySQL locally, your connection URL typically looks similar to this:
+当在本地运行MySQL时，你的连接URL通常看起来像这样:
 
 ```bash file=.env
 DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
@@ -115,7 +115,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="/getting-started/setup-prisma/add-to-existing-project/relational-databases/relational-databases-node-postgres"
   arrowLeft
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink
@@ -124,7 +124,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="./introspection-node-postgres"
   arrow
 >
-  Introspection
+  检查
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -141,11 +141,11 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="/getting-started/setup-prisma/add-to-existing-project/relational-databases/relational-databases-node-mysql"
   arrowRight
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink color="dark" type="primary" href="./introspection-node-mysql" arrow>
-  Introspection
+  检查
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -162,7 +162,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="/getting-started/setup-prisma/add-to-existing-project/relational-databases-typescript-postgres"
   arrowLeft
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink
@@ -171,7 +171,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="./introspection-typescript-postgres"
   arrow
 >
-  Introspection
+  检查
 </ButtonLink>
 
 </NavigationLinksContainer>
@@ -188,7 +188,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="/getting-started/setup-prisma/add-to-existing-project/relational-databases-typescript-mysql"
   arrowRight
 >
-  Installation
+  安装
 </ButtonLink>
 
 <ButtonLink
@@ -197,7 +197,7 @@ DATABASE_URL="mysql://root:randompassword@localhost:3306/mydb"
   href="./introspection-typescript-mysql"
   arrow
 >
-  Introspection
+  检查
 </ButtonLink>
 
 </NavigationLinksContainer>
