@@ -256,8 +256,8 @@ model User {
 
 以下是对上面例子的分析：
 
-- `datasource` 块定义了与数据库之间的连接。
-- `generator` 块告诉 Prisma 为 TypeScript 和 Node.js 生成客户端。
+- `datasource` 模块定义了与数据库之间的连接。
+- `generator` 模块告诉 Prisma 为 TypeScript 和 Node.js 生成客户端。
 - `Post` 和 `User` 模型映射到数据库表。
 - 这两个模型有一个 _1对n_ 的关联关系，每个 `User` 可以有许多相关的 `Post`。
 - 模型中的每个字段都有一个类型，例如：`id` 的类型是 `Int`。
