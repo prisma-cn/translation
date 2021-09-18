@@ -21,18 +21,17 @@ dbSwitcher: ['mongodb']
 - 安装[Node.js](https://nodejs.org/en/)在你的机器上
 - 使用副本集部署访问 MongoDB 4.2+ 服务器。我们推荐使用[MongoDB Atlas](https://www.mongodb.com/cloud/atlas)。
 
-  <Admonition type="warning">
+<Admonition type="warning">
 
-  MongoDB数据库连接器使用事务来支持嵌套写。事务**需要**一个[副本集](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)部署。部署副本集的最简单方法是使用[Atlas](https://docs.atlas.mongodb.com/getting-started/)。这是免费的开始。
-  
+MongoDB 数据库连接器使用事务来支持嵌套写。事务**需要**一个[副本集](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)部署。部署副本集的最简单方法是使用[Atlas](https://docs.atlas.mongodb.com/getting-started/)。可以免费试用。
 
-  </Admonition>
+</Admonition>
 
 确保您手头有您的数据库[连接 URL](../../../../reference/database-reference/connection-urls)（包括您的身份验证凭据）！如果您没有运行数据库服务器而只想探索 Prisma，请查看[快速入门](../../../quickstart)。
 
 > 有关确切的[版本要求](../../../../reference/system-requirements)，请参阅系统要求。
 
-## 设置Prisma
+## 设置 Prisma
 
 第一步，导航到包含该`package.json`文件的项目目录。
 
@@ -55,7 +54,7 @@ Next, set up your Prisma project by creating your [Prisma schema](../../../../co
 npx prisma init
 ```
 
-此命令创建了一个名为的新目录`prisma`，其中包含一个名为`schema.prisma`的`.env`文件和项目根目录中的一个文件。schema.prisma包含带有数据库连接和 Prisma 客户端生成器的 Prisma 模型。 `.env`是一个[dotenv](https://github.com/motdotla/dotenv)文件，用于定义环境变量（用于数据库连接）。
+此命令创建了一个名为的新目录`prisma`，其中包含一个名为`schema.prisma`的`.env`文件和项目根目录中的一个文件。schema.prisma 包含带有数据库连接和 Prisma 客户端生成器的 Prisma 模型。 `.env`是一个[dotenv](https://github.com/motdotla/dotenv)文件，用于定义环境变量（用于数据库连接）。
 
 <SwitchTech technologies={['node', 'mongodb']}>
 
