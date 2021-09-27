@@ -1,19 +1,19 @@
 ---
-title: 'Foreign keys'
+title: '外键
 metaTitle: ''
 toc: false
 ---
 
-## Overview
+## 概览
 
-A foreign key links data in one table to data in another table. For example, records in a `Posts` table might have a foreign key named `authorId` that refers to the `id` column of the `User` table. This relationship makes it possible to, for example, find all blog posts by a particular author.
+外键将一个表中的数据和另一表中的数据建立连接关系。 例如，`Posts` 表中有名为 `authorId”` 的外键，它指向 `User` 表的 `id` 列。 这种关系可以实现查找某个作者的所有博客文章。
 
-The Prisma schema represents tables as models, and connections between two models are called [relations](../../../../../../concepts/components/prisma-schema/relations). You can [filter and query by relations](../../../../concepts/components/prisma-client/relation-queries) - for example, you can get all posts where the author's email address contains _"prisma.io"_.
+Prisma schema 将表表示为模型，两个模型之间的连接称为 [关系](../../../../../../concepts/components/prisma-schema/relations)。 您可以[按关系过滤和查询](../../../../concepts/components/prisma-client/relation-queries) - 例如，您可以获取作者电子邮件地址包含 _prisma.io_ 的所有帖子。
 
-This section describes how to configure foreign key relationships for different databases. When you introspect a database, these relationships are represented in the Prisma schema as **relations**.
+本节介绍如何为不同的数据库配置外键关系。 内省数据库时，这些关系在 Prisma schema 中表示为 **relations**。
 
 ![](foreign-keys/foreign-keys-illustration.png)
 
-## In this section
+## 本节
 
 <Subsections />

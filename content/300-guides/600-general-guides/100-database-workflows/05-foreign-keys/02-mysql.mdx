@@ -1,53 +1,54 @@
 ---
-title: 'Foreign keys / relations (MySQL)'
-metaTitle: 'Configure foreign keys with Prisma and MySQL'
-metaDescription: 'Learn how to configure foreign keys with Prisma and MySQL by following the step-by-step instructions in this practical guide.'
+title: '外键(MySQL)'
+metaTitle: '使用 Prisma 和 MySQL 配置外键'
+metaDescription: '如何使用 Prisma 和 MySQL 一步一步配置外键。'
 ---
 
-## Overview
+## 概览
 
-This page explains how to configure [foreign key constraints](https://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html) in your MySQL database. Foreign keys are used to represent _relations_ in your database.
+介绍如何在 MySQL 数据库中配置 [外键约束](https://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html)。 外键表示数据库中的关联关系。
 
-In this guide, you'll create two tables where one references the other via a foreign key. Foreign keys can be defined on a **single column** or on **multiple columns**. This guide covers both approaches.
+本指南创建两个表，其中一个表通过外键引用另一个表。 外键可以在**单列**或**多列**上定义。
 
-At the end of the guide, you'll introspect your database to reflect the foreign key in the Prisma schema, then you'll generate Prisma Client and write a simple Node.js script to test the foreign key relation.
+在指南最后，将检查数据库以反映 Prisma schema 中的外键，然后您将生成 Prisma Client 并编写一个简单的 Node.js 脚本来测试外键关系。
 
-## Prerequisites
+## 先决条件
 
-In order to follow this guide, you need:
+需要准备:
 
-- a [MySQL](https://www.mysql.com/) database server running
-- the [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html) command line client for MySQL
-- [Node.js](https://nodejs.org/) installed on your machine
+- 运行的 [MySQL](https://www.mysql.com/) 数据库服务器
+- MySQL 的 [`mysql`](https://dev.mysql.com/doc/refman/5.7/en/mysql.html) 命令行程序
+- 安装 [Node.js](https://nodejs.org/)
 
-> **Note**: If you are using a version of MySQL where MyISAM is the default engine, you must specify `ENGINE = InnoDB;` when you create a table.
+> **注意**：如果您使用的是 MyISAM 为默认引擎的 MySQL 版本，在创建表时必须指定 `ENGINE = InnoDB`。
 
-## 1. Create a new database and project directory
+## 1. 创建一个新的数据库和项目目录
 
-Start by creating a project directory where you can put the files you'll create throughout this guide:
+先创建项目目录：
 
 ```
 mkdir foreign-key-demo
 cd foreign-key-demo
 ```
 
-Next, make sure that your MySQL database server is running. Then execute the following command in your terminal to create a new database called `ForeignKeyDemo`:
+接下来，确认 MySQL 数据库服务器正在运行。 在终端执行命令创建一个名为 `ForeignKeyDemo` 的新数据库：
 
 ```
 mysql -e 'CREATE DATABASE `ForeignKeyDemo`;'
 ```
 
+运行 `SHOW TABLES` 命令来验证数据库是否已创建，该命令列出了数据库中的所有表（_关系_）（现在没有）：
 You can validate that the database was created by running the `SHOW TABLES` command which lists all tables (_relations_) in your database (right now there are none):
 
 ```
 mysql -e 'SHOW TABLES in `ForeignKeyDemo`;'
 ```
 
-## 2. Create two tables with a single-column foreign key constraint
+## 2. 使用单列外键约束创建两个表
 
-In this section, you'll **create two tables where one references the other via a single-column foreign key** in the `ForeignKeyDemo` database.
+在 `ForeignKeyDemo` 数据库中**创建两个表，其中一个表通过单列外键**引用另一个表。
 
-Create a new file named `single-column-foreign-key.sql` and add the following code to it:
+创建一个名为 `single-column-foreign-key.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE `ForeignKeyDemo`.`User` (
@@ -63,19 +64,19 @@ CREATE TABLE `ForeignKeyDemo`.`Post` (
 );
 ```
 
-Now run the SQL statement against your database to create the two tables:
+运行 SQL 语句创建两个表：
 
 ```
 mysql < single-column-foreign-key.sql
 ```
 
-Congratulations, you just created two tables called `User` and `Post` in the database. The `Post` table references the `User` table via the foreign key defined on the `authorId` column.
+在数据库中创建了两个名为 `User` 和 `Post` 的表。 `Post` 表通过定义在 `authorId` 列上的外键引用了 `User` 表。
 
-## 3. Create a table with a multi-column foreign key constraint
+## 3. 创建具有多列外键约束的表
 
-In this section, you'll **create two tables where one references the other via a single-column foreign key** in the `ForeignKeyDemo` database.
+在 `ForeignKeyDemo` 数据库中**创建两个表，其中一个表通过单列外键**引用另一个表。
 
-Create a new file named `multi-column-foreign-key.sql` and add the following code to it:
+创建名为 `multi-column-foreign-key.sql` 的新文件，添加以下代码：
 
 ```sql
 CREATE TABLE `ForeignKeyDemo`.`AnotherUser` (
@@ -94,35 +95,35 @@ CREATE TABLE `ForeignKeyDemo`.`AnotherPost` (
 );
 ```
 
-> **Note**: The `UNIQUE` constraint on `AnotherUser` is needed to be able to reference the columns as foreign keys.
+> **注意**：`AnotherUser` 上的 `UNIQUE` 约束需要能够将列作为外键引用。
 
-Now run the SQL statement against your database to create a new table called `AnotherUser`:
+运行 SQL 语句以创建名为 `AnotherUser` 的新表：
 
 ```
 mysql < multi-column-foreign-key.sql
 ```
 
-Congratulations, you just created two tables called `AnotherUser` and `AnotherPost` in the database. The `AnotherPost` table references the `AnotherUser` table via the foreign key defined on the `authorFirstName` and `authorLastName` columns.
+在数据库中创建了两个名为 `AnotherUser` 和 `AnotherPost` 的表。 `AnotherPost` 表通过定义在 `authorFirstName` 和 `authorLastName` 列上的外键引用了 `AnotherUser` 表。
 
-## 4. Introspect your database with Prisma
+## 4. 使用 Prisma 内省数据库
 
-In the previous sections, you created two different foreign key constraints using four total tables:
+总共使用四个表创建了两个不同的外键约束：
 
-- The table `Post` has a singe-column foreign key on it's `authorId` column which points to the `id` field of the `User` table.
-- The table `AnotherPost` has a multi-column foreign key on it's `authorFirstName` and `authorLastName` columns which point to the `firstName` and `lastField` columns of the `AnotherUser` table.
+- 表 `Post` 的 `authorId` 列上有单列外键，指向 `User` 表的 `id` 字段。
+- 表 `AnotherPost` 有多列外键，它的 `authorFirstName` 和 `authorLastName` 列指向 `AnotherUser` 表的 `firstName` 和 `lastField` 列。
 
-In this section you'll introspect your database to generate the Prisma models for these tables.
+检查数据库以生成这些表的 Prisma 模型。
 
-To start, set up a new Node.js project and add the `prisma` CLI as a development dependency:
+新建一个 Node.js 项目并添加 `prisma` CLI 作为开发依赖：
 
 ```
 npm init -y
 npm install prisma --save-dev
 ```
 
-In order to introspect your database, you need to tell Prisma how to connect to it. You do so by configuring a `datasource` in your Prisma schema.
+要内省数据库，需要告诉 Prisma 如何连接数据库。 通过在 Prisma schema 中配置 `datasource` 来实现。
 
-Create a new file named `schema.prisma` and add the following code to it:
+创建名为 `schema.prisma` 的新文件，并添加以下代码：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -131,27 +132,28 @@ datasource db {
 }
 ```
 
-The database connection URL is set via an environment variable. The Prisma CLI automatically supports the [`dotenv`](https://github.com/motdotla/dotenv) format which automatically picks up environment variables defined in a file named `.env`.
 
-Create a new file named `.env` and set your database connection URL as the `DATABASE_URL` environment variable:
+数据库连接 URL 是通过环境变量设置的。 Prisma CLI 自动支持 [`dotenv`](https://github.com/motdotla/dotenv) 格式，该格式会自动选取名为 `.env` 的文件中定义的环境变量。
+
+创建一个名为 `.env` 的文件并将你的数据库连接 URL 设置为 `DATABASE_URL` 环境变量：
 
 ```
 DATABASE_URL=mysql://__USER__:__PASSWORD__@__HOST__:__PORT__/ForeignKeyDemo
 ```
 
-In the above code snippet, you need to replace the uppercase placeholders with your own connection details. For example, if your database is running locally it could look like this:
+需要用连接信息替换大写占位符。 例如，如果您的数据库在本地运行，它可能如下所示：
 
 ```
 DATABASE_URL=mysql://janedoe:mypassword@localhost:3306/ForeignKeyDemo
 ```
 
-With both the `schema.prisma` and `.env` files in place, you can run Prisma's introspection with the following command:
+有了 `schema.prisma` 和 `.env` 文件，可以使用以下命令运行 Prisma 自省：
 
 ```
 npx prisma db pull
 ```
 
-This command introspects your database and for each table adds a Prisma model to the Prisma schema:
+此命令会检查数据库，并为每个表向 Prisma 模式添加 Prisma schema：
 
 ```prisma file=schema.prisma
 datasource db {
@@ -194,11 +196,11 @@ model User {
 }
 ```
 
-## 5. Generate Prisma Client
+## 5. 生成 Prisma Client
 
-To validate whether the foreign key constraints work, you'll now generate Prisma Client and send a few sample queries to the database to test the relations.
+要外键约束是否有效，生成 Prisma Client 并向数据库发送一些示例查询以测试关系。
 
-First, add a `generator` block to your Prisma schema (typically added right below the `datasource` block):
+在 Prisma schema 中添加一个 `generator` 块（通常添加在 `datasource` 块的正下方）：
 
 ```prisma file=schema.prisma
 generator client {
@@ -206,17 +208,17 @@ generator client {
 }
 ```
 
-Run the following command to install and generate Prisma Client in your project:
+运行以下命令在项目中安装并生成 Prisma Client：
 
 ```
 npx prisma generate
 ```
 
-Now you can use Prisma Client to send database queries in Node.js.
+现在您可以使用 Prisma Client 在 Node.js 中发送数据库查询。
 
 ## 6. Validate the foreign key constraints in a Node.js script
 
-Create a new file named `index.js` and add the following code to it:
+创建 `index.js` 新文件，并添加以下代码：
 
 ```js
 const { PrismaClient } = require('@prisma/client')
@@ -259,15 +261,15 @@ async function main() {
 main()
 ```
 
-In this code, you're creating two `User` records, each with a related `Post` record.
+创建了两个 `User` 记录，每个记录都有一个相关的 `Post` 记录。
 
-Run the code with this command:
+执行：
 
 ```
 node index.js
 ```
 
-The following output indicates that the foreign key constraint is working as intended:
+以下输出表明外键约束按预期生效：
 
 ```js
 {

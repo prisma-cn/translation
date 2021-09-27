@@ -17,19 +17,19 @@ metaDescription: '如何使用 Prisma 和 PostgreSQL 一步一步配置外键。
 需要准备:
 
 - 运行的 [PostgreSQL](https://www.postgresql.org/) 数据库服务器
-- [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html) 命令行实用程序
+- [`createdb`](https://www.postgresql.org/docs/9.1/app-createdb.html) 命令行程序
 - PostgreSQL 的 [`psql`](https://www.postgresql.org/docs/10/app-psql.html) 命令行客户端
 - 安装 [Node.js](https://nodejs.org/)
 
 ## 1. 创建一个新的数据库和项目目录
 
-先创建一个项目目录，在其中放置创建的文件：
+先创建一个项目目录：
 
 ```
 mkdir foreign-key-demo
 cd foreign-key-demo
 ```
-接下来，确认 PostgreSQL 数据库服务器正在运行。 在终端中执行以下命令以创建一个名为 `ForeignKeyDemo` 的新数据库：
+接下来，确认 PostgreSQL 数据库服务器正在运行。 在终端执行命令以创建一个名为 `ForeignKeyDemo` 的新数据库：
 
 ```
 createdb ForeignKeyDemo
@@ -136,7 +136,7 @@ npm init -y
 npm install prisma --save-dev
 ```
 
-要内省数据库，需要告诉 Prisma 如何连接数据库。 通过在 Prisma 模式中配置 `datasource` 来实现。
+要内省数据库，需要告诉 Prisma 如何连接数据库。 通过在 Prisma schema 中配置 `datasource` 来实现。
 
 创建名为 `schema.prisma` 的新文件，并添加以下代码：
 
