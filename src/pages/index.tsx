@@ -418,6 +418,13 @@ const Homepage = () => {
             ))}
           </List>
         </Row>
+        <Space height={80} />
+        <SubHeading>翻译</SubHeading>
+        <NormalPara>Prisma中文文档由Prisma中国社区成员共同翻译，特此鸣谢</NormalPara>
+        <img alt='1' src="/contributions/1.jpg" />
+        <img alt='2' src="/contributions/2.jpg" />
+        <img alt='3' src="/contributions/3.jpg" />
+        <img alt='4' src="/contributions/4.jpg" />
       </QuickLinks>
     </Layout>
   )
