@@ -127,7 +127,6 @@ const PageBottom = ({ editDocsPath }: any) => {
   return (
     <PageBottomWrapper>
       <Feedback>
-        <h4>Was this helpful?</h4>
         <div className="sentiments">
           <button
             id="happy"
@@ -180,7 +179,7 @@ const PageBottom = ({ editDocsPath }: any) => {
       </Wrapper>
       {editDocsPath && (
         <Link className="edit-git" to={`${editDocsPath}`}>
-          Edit this page on GitHub
+          编辑本页内容
         </Link>
       )}
     </PageBottomWrapper>
