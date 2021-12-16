@@ -61,7 +61,7 @@ const user = await prisma.comment
   .user()
 ```
 
-**删除一条`User`记录**
+**删除一条`User`记录（不适用于级联删除场景）**
 
 ```js
 const deletedUser = await prisma.user.delete({
