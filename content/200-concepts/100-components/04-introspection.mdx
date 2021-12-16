@@ -269,7 +269,7 @@ Prisma 支持在 Prisma 架构中定义多对多关系的两种方式：
 
 #### 消除关系歧义
 
-如果不需要，Prisma 通常会在[`@relation`](prisma-schema/relations#the-relation-attribute)属性上省略 `name `参数。考虑上一节中的 `User` ↔ `Post` 示例。`@relation` 属性只有 `ferences` 参数，这里不需要 `name`，所以省略了 `name`:
+如果不需要，Prisma 通常会在[`@relation`](prisma-schema/relations#the-relation-attribute)属性上省略 `name `参数。考虑上一节中的 `User` ↔ `Post` 示例。`@relation` 属性只有 `references` 参数，这里不需要 `name`，所以省略了 `name`:
 
 ```prisma
 model Post {
