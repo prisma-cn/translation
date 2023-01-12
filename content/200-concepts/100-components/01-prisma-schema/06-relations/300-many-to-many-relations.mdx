@@ -173,7 +173,7 @@ const getAssignments = await prisma.category.findMany({
 })
 ```
 
-以下查询返回所有满足条件的类别指定 (`CategoryOnPost`)，这些类别指定由 `"Bob"` 完成且被指定的博文在给定的 5 篇博文范围中：
+以下查询返回所有满足条件的类别指定 (`CategoryOnPost`)，这些类别指定由 `"Bob"` 完成且被指定的帖子在给定的 5 篇帖子范围中：
 
 ```ts
 const getAssignments = await prisma.categoriesOnPosts.findMany({
@@ -403,8 +403,8 @@ model CategoriesOnPosts {
 
 此例中，`assignedAt` 字段储存 `Post` 和 `Category` 间关系的附加信息：
 
-- `assignedAt` 储存 _何时_ 将此博文指定为此类别
-- `assignedBy` 储存 _谁_ 将此博文指定为此类别
+- `assignedAt` 储存 _何时_ 将此帖子指定为此类别
+- `assignedBy` 储存 _谁_ 将此帖子指定为此类别
 
 注意相同的规则也适用于 [一对多关系](one-to-many-relations) (因为 `Post`↔ `CategoriesOnPosts` 和 `Category` ↔ `CategoriesOnPosts` 实际上都是一对多关系)，意味着关系的一侧需要用 `@relation` 属性标注。
 
@@ -413,23 +413,23 @@ model CategoriesOnPosts {
 ## MongoDB
 
 MongoDB 中，多对多关系由以下构成：
+- 关系两侧的关系字段，_两侧_ 都有一个 `@relation` 属性，带有必填字段和引用参数
+- 两侧引用的 ID 标量列表，其类型与另一侧的 ID 字段匹配
 
-- 关系两侧的关系字段，_两侧_ 都有 `@relation` 属性
-- 两侧的引用 ID 标量列表，包括 `@db.Array(X)` 属性，其中 `X` 是 ID 类型 (`ObjectId`, `String`)
-
-以下示例展示了博文和类别间的多对多关系：
+以下示例展示了帖子和类别间的多对多关系：
 
 ```prisma
 model Post {
-  id          String     @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  categoryIDs String[]   @db.Array(ObjectId)
-  categories  Category[] @relation(fields: [categoryIDs])
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  categoryIDs String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIDs], references: [id])
 }
 
 model Category {
-  id      String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  postIDs String[] @db.Array(ObjectId)
-  posts   Post[]   @relation(fields: [postIDs])
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  postIDs String[] @db.ObjectId
+  posts   Post[]   @relation(fields: [postIDs], references: [id])
 }
 ```
 
@@ -447,6 +447,8 @@ const posts = await prisma.post.findMany({
   },
 })
 ```
+
+以下查询查找类别名称中包含字符串“Servers”的帖子：
 
 ```ts
 const posts = await prisma.post.findMany({
