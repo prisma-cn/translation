@@ -38,7 +38,7 @@ export DEBUG="prisma:client"
 
 `BROWSER` 用于指定 Prisma Studio 在哪个浏览器中打开，如果未设置，将在默认浏览器中打开。从 CLI 启动 studio 时也将使用此值。
 
-```js
+```terminal
 BROWSER=firefox prisma studio --port 5555
 ```
 
@@ -49,6 +49,10 @@ prisma studio --browser firefox
 查看更多信息，请参阅 [Studio](./command-reference/#studio) 文档。
 
 ## Prisma CLI
+
+### <inlinecode>PRISMA_HIDE_PREVIEW_FLAG_WARNINGS</inlinecode>
+
+`PRISMA_HIDE_PREVIEW_FLAG_WARNINGS` 设置这个可以隐藏预览功能的警告消息。设定即代表屏蔽预览警告。
 
 ### <inlinecode>PRISMA_HIDE_UPDATE_MESSAGE</inlinecode>
 
@@ -65,6 +69,11 @@ const shouldHide = process.env.PRISMA_HIDE_UPDATE_MESSAGE
 ### <inlinecode>PRISMA_DISABLE_WARNINGS</inlinecode>
 
 禁用 `logger.warn` 生成的所有 CLI 警告。
+
+### <inlinecode>PRISMA_GENERATE_DATAPROXY</inlinecode>
+ 
+将 `prisma generate` 配置为在任何执行时候[为数据代理生成 Prisma 客户端](https://www.prisma.io/docs/data-platform/data-proxy)，即使在命令行 CLI 没有明确指定 `--data-proxy` 参数。设定有效值即代表生成（例如 `PRISMA_GENERATE_DATAPROXY=true`）。
+
 
 ## 网络代理环境变量
 
@@ -93,6 +102,96 @@ HTTP_PROXY=http://proxy.example.com
 ```terminal
 HTTPS_PROXY=https://proxy.example.com
 ```
+
+## 引擎环境变量
+
+### 配置查询引擎类型
+
+### <inlinecode>PRISMA_CLI_QUERY_ENGINE_TYPE</inlinecode>
+`PRISMA_CLI_QUERY_ENGINE_TYPE` 是[用来定义 Prisma CLI 下载和使用的查询引擎类型](https://www.prisma.io/docs/concepts/components/prisma-engines/query-engine#configuring-the-query-engine)。默认是库文件，但也可以设置为二进制文件:
+
+```js
+PRISMA_CLI_QUERY_ENGINE_TYPE=binary
+```
+
+### <inlinecode>PRISMA_CLIENT_ENGINE_TYPE</inlinecode>
+`PRISMA_CLIENT_ENGINE_TYPE` 是[用来定义 Prisma Client 下载和使用的查询引擎类型](https://www.prisma.io/docs/concepts/components/prisma-engines/query-engine#configuring-the-query-engine)。默认是库文件，但也可以设置为二进制文件:
+
+```js
+PRISMA_CLIENT_ENGINE_TYPE=binary
+```
+
+注意：您需要在设置此变量后，再生成您的 Prisma Client 才能使配置生效并下载库文件。 否则 Prisma Client 将缺少适当的查询引擎库文件，您将不得不使用 [PRISMA_QUERY_ENGINE_LIBRARY](https://www.prisma.io/docs/reference/api-reference/environment-variables-reference?query=BINARY_DOWNLOAD_VERSION&page=1#prisma_query_engine_library) 指定它们的路径。
+
+它是`generator client`代码块里 engineType 属性的等效环境变量，使您能够在 Prisma Schema 中定义相同的设置。
+
+### 下载引擎
+
+### <inlinecode>PRISMA_ENGINES_MIRROR</inlinecode>
+
+`PRISMA_ENGINES_MIRROR` 可以用来指定自定义的 CDN 或服务器来下载 CLI/Client 的引擎文件。 默认值是 https://binaries.prisma.sh, 来托管引擎文件。
+
+```js
+PRISMA_ENGINES_MIRROR=https://example.org/custom-engines/
+```
+> 译者注：亲测 `PRISMA_ENGINES_MIRROR=http://prisma-builds.s3-eu-west-1.amazonaws.com` 有效。补充两个国内地址：https://r.cnpmjs.org/binary.html?path=prisma/ 和 https://registry.npmmirror.com/-/binary/prisma/
+
+### 自定义引擎文件路径
+
+By default, all engine files are downloaded when you install Prisma CLI, copied when generating Prisma Client, and put into known locations. There are however situations where you may want to use a custom engine file from custom locations:
+
+### <inlinecode>PRISMA_QUERY_ENGINE_BINARY</inlinecode>
+
+`PRISMA_QUERY_ENGINE_BINARY` is used to set a custom location for your own query engine binary.
+
+```js
+PRISMA_QUERY_ENGINE_BINARY=custom/query-engine-<target>
+# Example: ./prisma/binaries/query-engine-linux-arm64-openssl-1.0.x
+```
+
+For Prisma CLI it allows you to define the query engine file to be used.
+For Prisma Client, on build time (during prisma generate), it defines where the query engine file will be copied from into the Prisma Client. At run time (when using the generated Client) it can be used to define the specific query engine file to be used instead of the included one.
+
+Note: This can only have an effect if the engine type of CLI or Client are set to binary
+
+### <inlinecode>PRISMA_QUERY_ENGINE_LIBRARY</inlinecode>
+
+`PRISMA_QUERY_ENGINE_LIBRARY` is used to set a custom location for your own query engine library.
+
+```js
+PRISMA_QUERY_ENGINE_LIBRARY=custom/libquery_engine-<target>.so.node
+# Example: ./prisma/binaries/libquery_engine-linux-arm64-openssl-1.0.x.so.node
+```
+
+For Prisma CLI it allows you to define the query engine file to be used.
+For Prisma Client, on build time (during prisma generate), it defines where the query engine file will be copied from into the Prisma Client. At run time (when using the generated Client) it can be used to define the specific query engine file to be used instead of the included one.
+
+Note: This can only have an effect if the engine type of CLI or Client are set to `library`
+
+### <inlinecode>PRISMA_MIGRATION_ENGINE_BINARY</inlinecode>
+
+`PRISMA_MIGRATION_ENGINE_BINARY` is used to set a custom location for your own migration engine binary.
+
+```js
+PRISMA_MIGRATION_ENGINE_BINARY=custom/my-migration-engine-unix
+```
+
+### <inlinecode>PRISMA_INTROSPECTION_ENGINE_BINARY</inlinecode>
+
+`PRISMA_INTROSPECTION_ENGINE_BINARY` is used to set a custom location for your own introspection engine binary.
+
+```js
+PRISMA_INTROSPECTION_ENGINE_BINARY=custom/my-introspection-engine-unix
+```
+
+### <inlinecode>PRISMA_FMT_BINARY</inlinecode>
+
+`PRISMA_FMT_BINARY` is used to set a custom location for your own format engine binary.
+
+```js
+PRISMA_FMT_BINARY=custom/my-custom-format-engine-unix
+```
+
 
 ## 二进制文件下载代理
 
