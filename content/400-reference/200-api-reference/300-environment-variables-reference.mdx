@@ -19,7 +19,7 @@ tocDepth: 2
 
 Prisma Client 层的 debug 信息输出配置示例:
 
-```terminal
+```js
 # 开启 `prisma:client` 层的debug信息输出
 export DEBUG="prisma:client"
 ```
@@ -38,11 +38,11 @@ export DEBUG="prisma:client"
 
 `BROWSER` 用于指定 Prisma Studio 在哪个浏览器中打开，如果未设置，将在默认浏览器中打开。从 CLI 启动 studio 时也将使用此值。
 
-```terminal
+```js
 BROWSER=firefox prisma studio --port 5555
 ```
 
-```terminal
+```js
 prisma studio --browser firefox
 ```
 
@@ -71,7 +71,7 @@ const shouldHide = process.env.PRISMA_HIDE_UPDATE_MESSAGE
 禁用 `logger.warn` 生成的所有 CLI 警告。
 
 ### <inlinecode>PRISMA_GENERATE_DATAPROXY</inlinecode>
- 
+
 将 `prisma generate` 配置为在任何执行时候[为数据代理生成 Prisma 客户端](https://www.prisma.io/docs/data-platform/data-proxy)，即使在命令行 CLI 没有明确指定 `--data-proxy` 参数。设定有效值即代表生成（例如 `PRISMA_GENERATE_DATAPROXY=true`）。
 
 
@@ -83,7 +83,7 @@ Prisma CLI 支持使用自定义 HTTP(S) 代理来下载 Prisma 引擎。当在�
 
 `NO_PROXY` 是不需要代理的主机名或 IP 地址的逗号分隔列表。
 
-```terminal
+```js
 NO_PROXY=myhostname.com,10.11.12.0/16,172.30.0.0/16
 ```
 
@@ -91,7 +91,7 @@ NO_PROXY=myhostname.com,10.11.12.0/16,172.30.0.0/16
 
 `HTTP_PROXY` 使用的代理服务器的主机名或 IP 地址设置。
 
-```terminal
+```js
 HTTP_PROXY=http://proxy.example.com
 ```
 
@@ -99,7 +99,7 @@ HTTP_PROXY=http://proxy.example.com
 
 `HTTPS_PROXY` 使用的代理服务器的主机名或 IP 地址设置。
 
-```terminal
+```js
 HTTPS_PROXY=https://proxy.example.com
 ```
 
@@ -138,117 +138,69 @@ PRISMA_ENGINES_MIRROR=https://example.org/custom-engines/
 
 ### 自定义引擎文件路径
 
-By default, all engine files are downloaded when you install Prisma CLI, copied when generating Prisma Client, and put into known locations. There are however situations where you may want to use a custom engine file from custom locations:
+默认情况下，所有引擎文件在您安装 Prisma CLI 时下载，在生成 Prisma Client 时复制并放入已知路径。 但是在某些情况下，您可能希望自定义引擎文件的路径：
 
 ### <inlinecode>PRISMA_QUERY_ENGINE_BINARY</inlinecode>
 
-`PRISMA_QUERY_ENGINE_BINARY` is used to set a custom location for your own query engine binary.
+`PRISMA_QUERY_ENGINE_BINARY` 用于自定义设置查询引擎二进制文件的路径。
 
 ```js
 PRISMA_QUERY_ENGINE_BINARY=custom/query-engine-<target>
 # Example: ./prisma/binaries/query-engine-linux-arm64-openssl-1.0.x
 ```
 
-For Prisma CLI it allows you to define the query engine file to be used.
-For Prisma Client, on build time (during prisma generate), it defines where the query engine file will be copied from into the Prisma Client. At run time (when using the generated Client) it can be used to define the specific query engine file to be used instead of the included one.
+对于 Prisma CLI，它允许您定义要使用的查询引擎文件。
+对于 Prisma 客户端，在构建时（在 `prisma generate` 期间），它定义了查询引擎文件将从何处复制到 Prisma 客户端中。 在运行时（使用生成的客户端时），它可用于定义要使用的特定查询引擎文件，而不是包含的查询引擎文件。
 
-Note: This can only have an effect if the engine type of CLI or Client are set to binary
+注意：这仅在 CLI 或客户端的引擎类型设置为 `binary` 时有效
 
 ### <inlinecode>PRISMA_QUERY_ENGINE_LIBRARY</inlinecode>
 
-`PRISMA_QUERY_ENGINE_LIBRARY` is used to set a custom location for your own query engine library.
+`PRISMA_QUERY_ENGINE_LIBRARY` 用于自定义设置查询引擎库文件的路径。
 
 ```js
 PRISMA_QUERY_ENGINE_LIBRARY=custom/libquery_engine-<target>.so.node
 # Example: ./prisma/binaries/libquery_engine-linux-arm64-openssl-1.0.x.so.node
 ```
 
-For Prisma CLI it allows you to define the query engine file to be used.
-For Prisma Client, on build time (during prisma generate), it defines where the query engine file will be copied from into the Prisma Client. At run time (when using the generated Client) it can be used to define the specific query engine file to be used instead of the included one.
-
-Note: This can only have an effect if the engine type of CLI or Client are set to `library`
-
-### <inlinecode>PRISMA_MIGRATION_ENGINE_BINARY</inlinecode>
-
-`PRISMA_MIGRATION_ENGINE_BINARY` is used to set a custom location for your own migration engine binary.
-
-```js
-PRISMA_MIGRATION_ENGINE_BINARY=custom/my-migration-engine-unix
-```
-
-### <inlinecode>PRISMA_INTROSPECTION_ENGINE_BINARY</inlinecode>
-
-`PRISMA_INTROSPECTION_ENGINE_BINARY` is used to set a custom location for your own introspection engine binary.
-
-```js
-PRISMA_INTROSPECTION_ENGINE_BINARY=custom/my-introspection-engine-unix
-```
-
-### <inlinecode>PRISMA_FMT_BINARY</inlinecode>
-
-`PRISMA_FMT_BINARY` is used to set a custom location for your own format engine binary.
-
-```js
-PRISMA_FMT_BINARY=custom/my-custom-format-engine-unix
-```
-
-
-## 二进制文件下载代理
-
-默认情况下，安装 Prisma CLI 时会下载所有二进制文件。但是，在某些情况下，您可能希望使用自定义二进制文件。有关详细信息，请参阅 [Prisma Engines](../../concepts/components/prisma-engines) for more information。
-
-### <inlinecode>PRISMA_BINARIES_MIRROR</inlinecode>
-
-可用于指定自定义 CDN（或服务器）以下载 CLI/Client 的引擎二进制文件。默认值为`https://binaries.prisma.sh`，Prisma 在其中托管二进制文件。
-
-```terminal
-PRISMA_BINARIES_MIRROR=https://my-allowed-url
-```
-
-有关如何使用此环境变量的概念概述，请参见 [Prisma engines](../../concepts/components/prisma-engines#hosting-binaries)。
-
-### <inlinecode>PRISMA_MIGRATION_ENGINE_BINARY</inlinecode>
-
-`PRISMA_MIGRATION_ENGINE_BINARY` 用于为您自己的迁移引擎二进制文件设置自定义位置。
-
-```terminal
-PRISMA_MIGRATION_ENGINE_BINARY=custom/my-migration-engine-unix
-```
-
-### <inlinecode>PRISMA_QUERY_ENGINE_BINARY</inlinecode>
-
-`PRISMA_QUERY_ENGINE_BINARY` 用于为您自己的查询引擎二进制文件设置自定义位置。
-
-```terminal
-PRISMA_QUERY_ENGINE_BINARY=custom/my-query-engine-unix
-```
-
 对于 Prisma CLI，它允许您定义要使用的查询引擎文件。
-对于 Prisma Client，在构建时（`prisma generate`期间），它定义将查询引擎文件从何处复制到 Prisma Client。在运行时（使用生成的 Client 时），它可用于定义要使用的特定查询引擎文件，而不是内置的文件。
+对于 Prisma 客户端，在构建时（在 `prisma generate` 期间），它定义了查询引擎文件将从何处复制到 Prisma 客户端中。 在运行时（使用生成的客户端时），它可用于定义要使用的特定查询引擎文件，而不是包含的查询引擎文件。
+
+注意：这仅在 CLI 或客户端的引擎类型设置为 `library` 时有效
+
+### <inlinecode>PRISMA_MIGRATION_ENGINE_BINARY</inlinecode>
+
+`PRISMA_MIGRATION_ENGINE_BINARY` 用于为您自己的迁移引擎二进制文件设置自定义路径。
+
+```js
+PRISMA_MIGRATION_ENGINE_BINARY=custom/my-migration-engine-unix
+```
 
 ### <inlinecode>PRISMA_INTROSPECTION_ENGINE_BINARY</inlinecode>
 
-`PRISMA_INTROSPECTION_ENGINE_BINARY` 用于为内省引擎二进制文件设置自定义位置。
+`PRISMA_INTROSPECTION_ENGINE_BINARY` 用于为内省引擎二进制文件设置自定义路径。
 
-```terminal
+```js
 PRISMA_INTROSPECTION_ENGINE_BINARY=custom/my-introspection-engine-unix
 ```
 
 ### <inlinecode>PRISMA_FMT_BINARY</inlinecode>
 
-`PRISMA_FMT_BINARY` 用于为您自己的格式引擎二进制文件设置自定义位置。
+`PRISMA_FMT_BINARY` 用于指定格式化命令(即：`npx prisma format`) 的二进制引擎文件自定义路径。
 
-```terminal
+```js
 PRISMA_FMT_BINARY=custom/my-custom-format-engine-unix
 ```
+
+### CLI 二进制目标
 
 ### <inlinecode>PRISMA_CLI_BINARY_TARGETS</inlinecode>
 
-`PRISMA_CLI_BINARY_TARGETS` 可用于指定 CLI 将下载的一个或多个二进制目标，必须在 `npm install` 时提供。
+`PRISMA_CLI_BINARY_TARGETS` 可用于指定 Prisma CLI 将在安装期间下载的一个或多个二进制目标（因此它必须在 Prisma CLI 的 `npm install` 期间提供，并且不会影响 Prisma CLI 或 Prisma Client 的运行时）。
 
-例如:
-在 macOS 上，二进制文件是 `darwin`，在 AWS Lambda 上为 `rhel-openssl-1.0.x`。
+如果您 1) 通过上传包含依赖项的本地项目部署到特定平台，以及 2) 您的本地环境与目标不同（例如 AWS Lambda 是 `rhel-openssl-1.0.x`，并且您的本地环境），请使用 PRISMA_CLI_BINARY_TARGETS 可能是 macOS arm64 `darwin-arm64`）。 使用 `PRISMA_CLI_BINARY_TARGETS` 环境变量可确保同时下载目标引擎文件。
 
-```terminal
+```js
 PRISMA_CLI_BINARY_TARGETS=darwin,rhel-openssl-1.0.x npm install
 ```
+
