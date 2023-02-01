@@ -19,7 +19,7 @@ tocDepth: 2
 
 Prisma Client 层的 debug 信息输出配置示例:
 
-```js
+```terminal
 # 开启 `prisma:client` 层的debug信息输出
 export DEBUG="prisma:client"
 ```
@@ -38,11 +38,11 @@ export DEBUG="prisma:client"
 
 `BROWSER` 用于指定 Prisma Studio 在哪个浏览器中打开，如果未设置，将在默认浏览器中打开。从 CLI 启动 studio 时也将使用此值。
 
-```js
+```terminal
 BROWSER=firefox prisma studio --port 5555
 ```
 
-```js
+```terminal
 prisma studio --browser firefox
 ```
 
@@ -83,7 +83,7 @@ Prisma CLI 支持使用自定义 HTTP(S) 代理来下载 Prisma 引擎。当在�
 
 `NO_PROXY` 是不需要代理的主机名或 IP 地址的逗号分隔列表。
 
-```js
+```terminal
 NO_PROXY=myhostname.com,10.11.12.0/16,172.30.0.0/16
 ```
 
@@ -91,7 +91,7 @@ NO_PROXY=myhostname.com,10.11.12.0/16,172.30.0.0/16
 
 `HTTP_PROXY` 使用的代理服务器的主机名或 IP 地址设置。
 
-```js
+```terminal
 HTTP_PROXY=http://proxy.example.com
 ```
 
@@ -99,7 +99,7 @@ HTTP_PROXY=http://proxy.example.com
 
 `HTTPS_PROXY` 使用的代理服务器的主机名或 IP 地址设置。
 
-```js
+```terminal
 HTTPS_PROXY=https://proxy.example.com
 ```
 
@@ -131,7 +131,7 @@ PRISMA_CLIENT_ENGINE_TYPE=binary
 
 `PRISMA_ENGINES_MIRROR` 可以用来指定自定义的 CDN 或服务器来下载 CLI/Client 的引擎文件。 默认值是 https://binaries.prisma.sh, 来托管引擎文件。
 
-```js
+```terminal
 PRISMA_ENGINES_MIRROR=https://example.org/custom-engines/
 ```
 > 译者注：亲测 `PRISMA_ENGINES_MIRROR=http://prisma-builds.s3-eu-west-1.amazonaws.com` 有效。补充两个国内地址：https://r.cnpmjs.org/binary.html?path=prisma/ 和 https://registry.npmmirror.com/-/binary/prisma/
@@ -200,7 +200,7 @@ PRISMA_FMT_BINARY=custom/my-custom-format-engine-unix
 
 如果您 1) 通过上传包含依赖项的本地项目部署到特定平台，以及 2) 您的本地环境与目标不同（例如 AWS Lambda 是 `rhel-openssl-1.0.x`，并且您的本地环境），请使用 PRISMA_CLI_BINARY_TARGETS 可能是 macOS arm64 `darwin-arm64`）。 使用 `PRISMA_CLI_BINARY_TARGETS` 环境变量可确保同时下载目标引擎文件。
 
-```js
+```terminal
 PRISMA_CLI_BINARY_TARGETS=darwin,rhel-openssl-1.0.x npm install
 ```
 
