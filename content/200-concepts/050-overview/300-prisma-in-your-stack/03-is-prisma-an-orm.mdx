@@ -196,7 +196,7 @@ Prisma 通过提供 _类型安全_、丰富的自动补全、平滑的 API 等�
 
 随着现代云数据库和 DevOps 实践的兴起，更多的团队接受了跨职能的方式，即团队掌控包含应用开发和数据库在内的整个开发生命周期。
 
-Prisma 实现了数据库 schema 和对象 schema 的同步更新，从而减少了对，从而减少了偏差
+Prisma 实现了数据库 schema 和对象 schema 的同步更新，从而一开始就减少了[离差](https://zh.wikipedia.org/wiki/%E7%A6%BB%E5%B7%AE)，同时仍然允许您使用 @map 属性将应用程序和数据库保持相对解耦。虽然这可能看起来是一种限制，it prevents the domain model's evolution (through the object schema) from getting imposed on the database as an afterthought.
 
 为了理解 Prisma 对数据映射器模式（Data Mapper pattern）的实现在概念上与传统的数据映射器 ORM 有什么不同，我们将其概念和构建模块进行一个简单的对比：
 
