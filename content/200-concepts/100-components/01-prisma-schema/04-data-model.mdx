@@ -313,13 +313,13 @@ model Comment {
 
 - 一个 **[字段名称](../../../reference/api-reference/prisma-schema-reference#model-fields)** <span class="api"></span>
 - 一个 **[字段类型](../../../reference/api-reference/prisma-schema-reference#model-fields)** <span class="api"></span>
-- 选填的 **[类型修饰符（type modifiers）](#type-modifiers)**
-- 选填的 **[属性（attributes）](#defining-attributes)**，包含 [数据库原生类型属性](#native-types-mapping)
+- 选填的 **[类型修饰符（type modifiers）](#类型修饰符)**
+- 选填的 **[属性（attributes）](#定义属性)**，包含 [数据库原生类型映射](#原生类型映射)
 
 字段类型决定了它的 _结构_，且分为以下两类：
 
-- [标量类型](data-model#scalar-fields)（Scalar types，包括 [枚举](data-model#defining-enums))，映射至数据库列（关系型数据库）或文件字段（MongoDB）- 例如，[`String`](../../../reference/api-reference/prisma-schema-reference#string) <span class="api"></span> 或 [`Int`](../../../reference/api-reference/prisma-schema-reference#int) <span class="api"></span>
-- 模型类型（Model types，该字段因此被称为 [关系字段](relations#relation-fields)）- 例如 `Post` 或 `Comment[]`。
+- [标量类型](data-model#标量字段)（Scalar types，包括 [枚举](data-model#定义枚举))，映射至数据库列（关系型数据库）或文件字段（MongoDB）- 例如，[`String`](../../../reference/api-reference/prisma-schema-reference#string) <span class="api"></span> 或 [`Int`](../../../reference/api-reference/prisma-schema-reference#int) <span class="api"></span>
+- 模型类型（Model types，该字段因此被称为 [关系字段](relations#关系字段)）- 例如 `Post` 或 `Comment[]`。
 
 下表展示了示例 schema 中 `User` 模型的字段：
 
@@ -338,7 +338,7 @@ model Comment {
 
 ### 标量字段
 
-以下例子用若干标量类型扩展了 `Comment` 和 `Tag` 模型。部分字段含有 [属性](#defining-attributes):
+以下例子用若干标量类型扩展了 `Comment` 和 `Tag` 模型。部分字段含有 [定义属性](#定义属性):
 
 <TabbedContent tabs={[<FileWithIcon text="关系型数据库" icon="database"/>, <FileWithIcon text="MongoDB" icon="database"/>]}>
 <tab>
@@ -432,18 +432,18 @@ model Post {
 }
 ```
 
-_只有_ 在底层原生类型 **不是默认类型** 时，schema 中才会加入类型属性。例如，如果你使用 PostgreSQL 作为 provider，底层原生类型对应 `text` 的 `String` 字段不需要类型属性。
-
-除此之外，类型属性：
+类型属性：
 
 - 特定于底层 provider - 例如，PostgreSQL 使用 `@db.Boolean` 对应 `Boolean` 而 MySQL 则使用 `@db.TinyInt(1)`
 - 采用大驼峰格式书写（例如， `VarChar` 或 `Text`）
 - 以 `@db` 为前缀，`db` 是你 schema 中 `datasource` 代码块的名字
 
-#### 功效和流程（Benefits and workflows）
+除此之外，在[内省 Introspection](../../introspection)期间，_只有_ 在底层原生类型 **不是默认类型** 时，schema 中才会加入类型属性。例如，如果你使用 PostgreSQL 作为 provider，`String` 字段底层对应的 `text` 原生类型没有类型属性（type attribute）。
+
+#### 好处和操作流程（Benefits and workflows）
 
 - 控制 [Prisma Migrate](../prisma-migrate) 在数据库中创建的 **实际原生类型** - 例如，一个 `String` 字段可以是 `@db.VarChar(200)` 或 `@db.Char(50)`
-- 内省可得到 **信息丰富的 schema**
+- 内省(introspect) 时可得到 **更精确的 schema**
 
 ### 类型修饰符
 
@@ -604,7 +604,7 @@ isAdmin   Boolean @default(false) // @default(value: false) 的简写形式
 
 ### 定义 ID 字段
 
-ID 字段唯一地标识模型的每一天记录。一个模型只能有 _一个_ ID 字段：
+ID 字段唯一地标识模型的每一条记录。一个模型只能有 _一个_ ID 字段：
 
 - 在 **关系型数据库** 中，ID 可以基于单个字段或多个字段。如果模型没有定义 `@id` 或 `@@id`，你必须定义一个必填的 `@unique` 字段或 `@@unique` 块。
 - 在 **MongoDB** 中，ID 必须是单个字段且定义了 `@id` 属性和 `@map("_id")` 属性。
